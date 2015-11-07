@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{904F56DA-B11C-43DC-9EB9-417501E79437}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Baconit</RootNamespace>
+    <AssemblyName>Baconit</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>Baconit_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>E141841E35BA82A846D7ADD71DD03BA2913A5E00</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxPackageDir>C:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
+    <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Baconit_StoreKey.pfx" />
+    <None Include="project.json" />
+    <None Include="Service References\Application Insights\ConnectedService.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\BasicImageFlipControl.xaml.cs">
+      <DependentUpon>BasicImageFlipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\FlipViewContentControl.xaml.cs">
+      <DependentUpon>FlipViewContentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\GifImageFliplControl.xaml.cs">
+      <DependentUpon>GifImageFliplControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\RedditMarkdownFlipControl.xaml.cs">
+      <DependentUpon>RedditMarkdownFlipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\RedditContentFlipControl.xaml.cs">
+      <DependentUpon>RedditContentFlipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\WebPageFlipControl.xaml.cs">
+      <DependentUpon>WebPageFlipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlipViewControls\YoutubeFlipControl.xaml.cs">
+      <DependentUpon>YoutubeFlipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\CircleIconButton.xaml.cs">
+      <DependentUpon>CircleIconButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\CommentBox.xaml.cs">
+      <DependentUpon>CommentBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\CommentsLoadingFooter.xaml.cs">
+      <DependentUpon>CommentsLoadingFooter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\EndDetectingListView.cs" />
+    <Compile Include="HelperControls\GlobalContentPresenter.xaml.cs">
+      <DependentUpon>GlobalContentPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\LoadingOverlay.xaml.cs">
+      <DependentUpon>LoadingOverlay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\SimpleTextButton.cs" />
+    <Compile Include="HelperControls\SlidingImages.xaml.cs">
+      <DependentUpon>SlidingImages.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\TipPopUp.xaml.cs">
+      <DependentUpon>TipPopUp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\UiControlHelpers.cs" />
+    <Compile Include="HelperControls\MotdPopUp.xaml.cs">
+      <DependentUpon>MotdPopUp.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\IFlipViewContentControl.cs" />
+    <Compile Include="Interfaces\IFlipViewContentHost.cs" />
+    <Compile Include="Interfaces\IMainPage.cs" />
+    <Compile Include="Interfaces\IPanel.cs" />
+    <Compile Include="Interfaces\IPanelHost.cs" />
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PanelManager.xaml.cs">
+      <DependentUpon>PanelManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\FlipViewPostCommentManager.cs" />
+    <Compile Include="Panels\MessageInbox.xaml.cs">
+      <DependentUpon>MessageInbox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\AboutSettings.xaml.cs">
+      <DependentUpon>AboutSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml.cs">
+      <DependentUpon>BackgroundUpdatingSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\DeveloperSettings.xaml.cs">
+      <DependentUpon>DeveloperSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\FlipViewSettings.xaml.cs">
+      <DependentUpon>FlipViewSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\SubredditViewSettings.xaml.cs">
+      <DependentUpon>SubredditViewSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\MarkdownTextBox.xaml.cs">
+      <DependentUpon>MarkdownTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\FlipViewPanel.xaml.cs">
+      <DependentUpon>FlipViewPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\LoginPanel.xaml.cs">
+      <DependentUpon>LoginPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\WelcomePanel.xaml.cs">
+      <DependentUpon>WelcomePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SubredditPanel.xaml.cs">
+      <DependentUpon>SubredditPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestControl.xaml.cs">
+      <DependentUpon>TestControl.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="Baconit_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-100.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-125.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-150.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-200.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-400.png" />
+    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-100.png" />
+    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-125.png" />
+    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-150.png" />
+    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-200.png" />
+    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-16.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-24.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-256.png" />
+    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-48.png" />
+    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-400.png" />
+    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-100.png" />
+    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-125.png" />
+    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-150.png" />
+    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-200.png" />
+    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-100.png" />
+    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-125.png" />
+    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-150.png" />
+    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-200.png" />
+    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-400.png" />
+    <Content Include="Assets\FlipView\MenuIcon.png" />
+    <Content Include="Assets\FlipView\UpCarret.png" />
+    <Content Include="Assets\MainPage\BaconitLogo.png" />
+    <Content Include="Assets\MainPage\FavoriteIcon.png" />
+    <Content Include="Assets\MainPage\NewMailIcon.png" />
+    <Content Include="Assets\MainPage\NotFavoriteIcon.png" />
+    <None Include="Package.StoreAssociation.xml" />
+    <Content Include="Assets\Settings\AboutBaconitIcon.png" />
+    <Content Include="Assets\Welcome\MarilynImageMedium.jpg" />
+    <Content Include="Assets\Welcome\QuinnImageMedium.jpg" />
+    <Content Include="Properties\Default.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="FlipViewControls\BasicImageFlipControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlipViewControls\FlipViewContentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlipViewControls\GifImageFliplControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlipViewControls\RedditMarkdownFlipControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlipViewControls\RedditContentFlipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlipViewControls\WebPageFlipControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlipViewControls\YoutubeFlipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\CircleIconButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\CommentBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\CommentsLoadingFooter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\GlobalContentPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\LoadingOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\MarkdownTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="HelperControls\SlidingImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\TipPopUp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\MotdPopUp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PanelManager.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\FlipViewPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\LoginPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\MessageInbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\Search.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\Settings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\SettingsPanels\AboutSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\DeveloperSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\FlipViewSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\SubredditViewSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\SubredditPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\WelcomePanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TestControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaconBackend\BaconBackend.csproj">
+      <Project>{760d26fa-938b-4b0a-9c87-915adaed244d}</Project>
+      <Name>BaconBackend</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BaconBackground\BaconBackground.csproj">
+      <Project>{c79ac423-5427-4379-ab5b-11f531b5229c}</Project>
+      <Name>BaconBackground</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

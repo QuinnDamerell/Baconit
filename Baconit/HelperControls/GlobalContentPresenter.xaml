@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="Baconit.HelperControls.GlobalContentPresenter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <!--  The backgound that blocks out the UI  -->
+    <Grid x:Name="ui_background" Background="#BB000000">
+        <Grid.Resources>
+            <!--  The main animation for the UI  -->
+            <Storyboard x:Name="ui_storyAnimation" Completed="Animation_Completed">
+                <DoubleAnimation x:Name="ui_animBackgroundAnimation"
+                                 Duration="0:0:0.3"
+                                 From="0"
+                                 Storyboard.TargetName="ui_background"
+                                 Storyboard.TargetProperty="Opacity"
+                                 To="1">
+                    <DoubleAnimation.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation x:Name="ui_animContentRootAnimation"
+                                 BeginTime="0:0:0.3"
+                                 Duration="0:0:0.3"
+                                 From="0"
+                                 Storyboard.TargetName="ui_mainHolder"
+                                 Storyboard.TargetProperty="Opacity"
+                                 To="1">
+                    <DoubleAnimation.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation x:Name="ui_animContentRootScaleXAnimation"
+                                 BeginTime="0:0:0.3"
+                                 Duration="0:0:0.3"
+                                 From="0"
+                                 Storyboard.TargetName="ui_mainHolderTransform"
+                                 Storyboard.TargetProperty="ScaleX"
+                                 To="1">
+                    <DoubleAnimation.EasingFunction>
+                        <QuinticEase x:Name="ui_easeContentRootScaleX" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation x:Name="ui_animContentRootScaleYAnimation"
+                                 BeginTime="0:0:0.3"
+                                 Duration="0:0:0.3"
+                                 From="0"
+                                 Storyboard.TargetName="ui_mainHolderTransform"
+                                 Storyboard.TargetProperty="ScaleY"
+                                 To="1">
+                    <DoubleAnimation.EasingFunction>
+                        <QuinticEase x:Name="ui_easeContentRootScaleY" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            </Storyboard>
+        </Grid.Resources>
+
+        <!--  A grid to hold everything  -->
+        <Grid x:Name="ui_mainHolder" RenderTransformOrigin="0.5,0.5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.RenderTransform>
+                <CompositeTransform x:Name="ui_mainHolderTransform" />
+            </Grid.RenderTransform>
+
+            <!--  Where the main content will go  -->
+            <Grid x:Name="ui_contentRoot" Margin="12" />
+
+            <!--  Grid to show the action buttons  -->
+            <Grid Grid.Row="1"
+                  Margin="12"
+                  HorizontalAlignment="Center">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Open to browser Icon  -->
+                <local:CircleIconButton Grid.Column="0"
+                                        OnIconTapped="Browser_Tapped"
+                                        SymbolIcon="Globe" />
+
+                <!--  Close Icon  -->
+                <local:CircleIconButton Grid.Column="1"
+                                        OnIconTapped="Close_Tapped"
+                                        SymbolIcon="Cancel" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

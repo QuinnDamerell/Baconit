@@ -1,0 +1,357 @@
+﻿<UserControl x:Class="Baconit.Panels.FlipViewPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:flipControls="using:Baconit.FlipViewControls"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="800"
+             d:DesignWidth="1280"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="FlipViewStoryHeader">
+            <!--  Story Header Block  -->
+            <Grid Background="#333333"
+                  Loaded="FlipViewStoryHeader_Loaded">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <!--  Story title  -->
+                <TextBlock Margin="8,8,8,2"
+                           HorizontalAlignment="Center"
+                           Text="{Binding Title}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+
+                <!--  Story subtext  -->
+                <Grid Grid.Row="1"
+                      Margin="8,2,8,2"
+                      HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Margin="0,0,6,0"
+                               Foreground="#939393"
+                               Text="{Binding Author}"
+                               TextTrimming="WordEllipsis" />
+                    <TextBlock Grid.Column="1"
+                               Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                               Text="{Binding FlipViewSecondary}"
+                               TextTrimming="WordEllipsis" />
+                </Grid>
+
+                <!--  Action icons  -->
+                <Grid Grid.Row="2"
+                      Margin="8,2,8,2"
+                      HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Up Vote Icon  -->
+                    <Grid Margin="8"
+                          Background="Transparent"
+                          Tapped="UpVote_Tapped">
+                        <Ellipse Width="30"
+                                 Height="30"
+                                 Fill="#444444" />
+                        <Polygon Margin="0,6,0,0"
+                                 HorizontalAlignment="Center"
+                                 Fill="{Binding UpVoteColor}"
+                                 Points="0,10 14,10 7,0" />
+                        <Rectangle Width="6"
+                                   Height="9"
+                                   Margin="0,8,0,0"
+                                   HorizontalAlignment="Center"
+                                   Fill="{Binding UpVoteColor}" />
+                    </Grid>
+
+                    <!--  Down Vote Icon  -->
+                    <Grid Grid.Column="1"
+                          Margin="8"
+                          Background="Transparent"
+                          Tapped="DownVote_Tapped">
+                        <Ellipse Width="30"
+                                 Height="30"
+                                 Fill="#444444" />
+                        <Polygon Margin="0,14,0,0"
+                                 HorizontalAlignment="Center"
+                                 Fill="{Binding DownVoteColor}"
+                                 Points="0,0 14,0,7,10" />
+                        <Rectangle Width="6"
+                                   Height="9"
+                                   Margin="0,-9,0,0"
+                                   HorizontalAlignment="Center"
+                                   Fill="{Binding DownVoteColor}" />
+                    </Grid>
+
+                    <!--  Comment Icon  -->
+                    <helperControls:CircleIconButton Grid.Column="2"
+                                                     OnIconTapped="PostCommentOn_OnIconTapped"
+                                                     SymbolIcon="Message" />
+
+                    <!--  Open to browser Icon  -->
+                    <helperControls:CircleIconButton Grid.Column="3"
+                                                     OnIconTapped="OpenBrowser_Tapped"
+                                                     SymbolIcon="Globe" />
+
+                    <!--  Share Icon  -->
+                    <helperControls:CircleIconButton Grid.Column="4"
+                                                     OnIconTapped="SharePost_Tapped"
+                                                     SymbolIcon="ReShare" />
+
+                    <!--  Menu Icon  -->
+                    <helperControls:CircleIconButton Grid.Column="5"
+                                                     IconImageSource="ms-appx:///Assets/FlipView/MenuIcon.png"
+                                                     OnIconTapped="MenuPost_Tapped"
+                                                     Visibility="{Binding FlipViewMenuButton}" />
+                </Grid>
+
+                <!--  Show all comments header  -->
+                <Grid Grid.Row="3"
+                      Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                      Tapped="ViewEntireThread_Tapped"
+                      Visibility="{Binding FlipViewShowEntireThreadMessage}">
+                    <TextBlock Margin="8"
+                               Text="Tap here to view the entire thread"
+                               TextWrapping="Wrap" />
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="FlipViewListHeaderItem">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Height="{Binding HeaderSize}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  The post content control  -->
+                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}" IsVisible="{Binding IsPostVisible}" />
+
+                    <!--  The post header control  -->
+                    <ContentControl Grid.Row="2"
+                                    HorizontalContentAlignment="Stretch"
+                                    ContentTemplate="{StaticResource FlipViewStoryHeader}" />
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FlipViewListFooterItem">
+            <Grid>
+                <helperControls:CommentsLoadingFooter Height="80"
+                                                      ShowErrorText="{Binding ShowCommentsErrorMessage}"
+                                                      ShowLoading="{Binding ShowCommentLoadingMessage}" />
+            </Grid>
+        </DataTemplate>
+
+
+        <DataTemplate x:Name="CommentListItemTemplate">
+
+            <!--  Note the 15 padding on the right keeps us off the scrollbar on desktop  -->
+            <Border Margin="{Binding CommentMargin}"
+                    VerticalAlignment="Stretch"
+                    Background="{Binding CommentBackgroundColor}"
+                    BorderBrush="{Binding CommentBorderColor}"
+                    BorderThickness="2,0,0,0"
+                    Padding="0,10,15,10">
+
+                <!--  Grid to hold the full and collapsed comment views  -->
+                <Grid>
+
+                    <!--  The collapsed comment view  -->
+                    <Grid Margin="-10"
+                          Background="#01000000"
+                          Padding="15,10,10,10"
+                          Tapped="CollapsedComment_Tapped"
+                          Visibility="{Binding ShowCollapsedCommentVis}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Margin="0,0,8,0"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding Author}" />
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,0,8,0"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding Score}" />
+                        <TextBlock Grid.Column="2"
+                                   Margin="0,0,8,0"
+                                   Foreground="#999999"
+                                   Text="{Binding TimeString}" />
+                        <TextBlock Grid.Column="3"
+                                   Margin="0,0,8,0"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding CollapsedCommentCount}" />
+                    </Grid>
+
+
+                    <!--  The full comment view  -->
+                    <Grid Margin="5,0,0,0" Visibility="{Binding ShowFullCommentVis}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Margin="0,-5,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Margin="0,0,8,0"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text="{Binding Author}" />
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,0,8,0"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text="{Binding Score}" />
+                            <TextBlock Grid.Column="2"
+                                       Margin="0,0,8,0"
+                                       Foreground="#999999"
+                                       Text="{Binding TimeString}" />
+                        </Grid>
+
+                        <helperControls:MarkdownTextBox Grid.Row="1" Markdown="{Binding Body}" />
+
+                        <!--  Comment buttons  -->
+                        <!--  Note we use - margins and postive padding to make the hit box larger  -->
+                        <!--  Note!! We can't use the simpleTextButton control here because it is too expensive.  -->
+                        <StackPanel Grid.Row="2"
+                                    Margin="0,5,0,0"
+                                    Orientation="Horizontal">
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentUp_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="{Binding UpVoteColor}"
+                                           Text="up" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentDown_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="{Binding DownVoteColor}"
+                                           Text="down" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentReply_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="reply" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentShare_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="share" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentCollpase_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="collapse" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <!--  The main content root  -->
+    <Grid x:Name="ui_contentRoot"
+          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          SizeChanged="ui_contentRoot_SizeChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <!--  The main flip view root, gives us the horizontal flipping action  -->
+        <FlipView x:Name="ui_flipView" SelectionChanged="FlipView_SelectionChanged">
+            <FlipView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </FlipView.ItemsPanel>
+
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
+                        <helperControls:EndDetectingListView FooterTemplate="{StaticResource FlipViewListFooterItem}"
+                                                             HeaderTemplate="{StaticResource FlipViewListHeaderItem}"
+                                                             ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                             ItemTemplate="{StaticResource CommentListItemTemplate}"
+                                                             ItemsSource="{Binding Comments}"
+                                                             Loaded="EndDetectingListView_Loaded"
+                                                             ScrollViewer.VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility}"
+                                                             SelectionChanged="EndDetectingListView_SelectionChanged">
+
+                            <!--  This animates the comments in and out when hidden  -->
+                            <ListView.ItemContainerTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                    <AddDeleteThemeTransition />
+                                </TransitionCollection>
+                            </ListView.ItemContainerTransitions>
+                        </helperControls:EndDetectingListView>
+
+                        <!--  The sticky header for flip view  -->
+                        <ContentControl VerticalAlignment="Top"
+                                        HorizontalContentAlignment="Stretch"
+                                        ContentTemplate="{StaticResource FlipViewStoryHeader}"
+                                        Visibility="{Binding FlipViewStickyHeaderVis}" />
+                    </Grid>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+
+        <!--
+            The comment reply box; due to some odd bug this must live out side of the flip view or the system will
+            not position the UI correclty when the keyboard deploys and the text box will be covered.
+        -->
+        <helperControls:CommentBox x:Name="ui_commmentBox"
+                                   Grid.Row="1"
+                                   VerticalAlignment="Bottom"
+                                   SizeChanged="CommentBox_SizeChanged" />
+    </Grid>
+</UserControl>

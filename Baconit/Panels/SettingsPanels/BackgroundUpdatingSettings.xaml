@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Baconit.Panels.SettingsPanels.BackgroundUpdatingSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.Panels.SettingsPanels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="800"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <StackPanel Grid.Row="0"
+                    Background="#333333"
+                    Orientation="Horizontal"
+                    Padding="12">
+            <TextBlock VerticalAlignment="Bottom" Text="Updating and Lock Screen Images" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Grid.Row="1" Margin="12">
+                <TextBlock Margin="0,0,0,12"
+                           Text="These settings allows Baconit to automatically update your lock screen image and desktop wallpaper from images on any subreddit. On a mobile device, the desktop wallpaper is the image behind your tiles. These settings don't roam so you can set them per device."
+                           TextWrapping="Wrap" />
+
+                <TextBlock Margin="0,0,0,12"
+                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                           Text="Note: These settings might take a little while to apply."
+                           TextWrapping="Wrap" />
+
+                <TextBlock Text="Allow Baconit to update my lock screen image." TextWrapping="Wrap" />
+                <ToggleSwitch x:Name="ui_enableLockScreen" Toggled="ToggleSwitch_Toggled" />
+                <TextBlock Margin="0,12,0,0"
+                           Text="Allow Baconit to update my desktop wallpaper."
+                           TextWrapping="Wrap" />
+                <ToggleSwitch x:Name="ui_enableDesktop" Toggled="ToggleSwitch_Toggled" />
+                <TextBlock Margin="0,12,0,0"
+                           Text="Subreddit to source images from for lock screen."
+                           TextWrapping="Wrap" />
+                <ComboBox x:Name="ui_lockScreenSource"
+                          Margin="0,8,0,8"
+                          SelectionChanged="ComboBox_SelectionChanged" />
+                <TextBlock Margin="0,12,0,0"
+                           Text="Subreddit to source images from for desktop wallpaper."
+                           TextWrapping="Wrap" />
+                <ComboBox x:Name="ui_desktopSource"
+                          Margin="0,8,0,8"
+                          SelectionChanged="ComboBox_SelectionChanged" />
+                <TextBlock Margin="0,12,0,0"
+                           Text="Image update frequency."
+                           TextWrapping="Wrap" />
+                <ComboBox x:Name="ui_imageFrequency"
+                          Margin="0,8,0,8"
+                          SelectionChanged="ComboBox_SelectionChanged" />
+
+                <TextBlock x:Name="ui_lastAttemptedUpdate"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="Last Attempted Update:"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="ui_lastSuccessfulUpdate"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="Last Successful Update:"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

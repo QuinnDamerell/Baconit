@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Baconit.Panels.SettingsPanels.FlipViewSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.Panels.SettingsPanels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Flipview Header  -->
+        <StackPanel Grid.Row="0"
+                    Background="#333333"
+                    Orientation="Horizontal"
+                    Padding="12">
+            <TextBlock VerticalAlignment="Bottom" Text="Flip View Settings" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="12">
+            <TextBlock Text="Preload comments for the current post." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_preLoadComments"
+                          Margin="0,0,0,8"
+                          Toggled="PreLoadComments_Toggled" />
+            <TextBlock Text="Show UI Help Tips." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_showHelpTips" Toggled="ShowHelpTips_Toggled" />
+        </StackPanel>
+    </Grid>
+</UserControl>

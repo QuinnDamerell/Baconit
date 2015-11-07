@@ -1,0 +1,189 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BaconBackend.Managers
+{
+    public class UiSettingManager
+    {
+        BaconManager m_baconMan;
+
+        public UiSettingManager(BaconManager baconMan)
+        {
+            m_baconMan = baconMan;
+
+            // If debug turn on debugging messages
+            if(Debugger.IsAttached)
+            {
+                Developer_Debug = true;
+            }
+            Developer_Debug = false;
+        }
+
+        #region Settings
+
+        /// <summary>
+        /// If the user is in debug mode or not.
+        /// </summary>
+        public bool Developer_Debug
+        {
+            get
+            {
+                if (!m_developer_Debug.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("Developer_Debug"))
+                    {
+                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("Developer_Debug");
+                    }
+                    else
+                    {
+                        m_developer_Debug = false;
+                    }
+                }
+                return m_developer_Debug.Value;
+            }
+            set
+            {
+                m_developer_Debug = value;
+                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("Developer_Debug", m_developer_Debug.Value);
+            }
+        }
+        private bool? m_developer_Debug = null;
+
+        #endregion
+
+        #region MainPage
+
+
+        #endregion
+
+        #region Subreddit View
+
+        /// <summary>
+        /// If the user wants to show full titles or not.
+        /// </summary>
+        public bool SubredditList_ShowFullTitles
+        {
+            get
+            {
+                if (!m_subredditList_ShowFullTitles.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_ShowFullTitles"))
+                    {
+                        m_subredditList_ShowFullTitles = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.SubredditList_ShowFullTitles");
+                    }
+                    else
+                    {
+                        m_subredditList_ShowFullTitles = false;
+                    }
+                }
+                return m_subredditList_ShowFullTitles.Value;
+            }
+            set
+            {
+                m_subredditList_ShowFullTitles = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.SubredditList_ShowFullTitles", m_subredditList_ShowFullTitles.Value);
+            }
+        }
+        private bool? m_subredditList_ShowFullTitles = null;
+
+        /// <summary>
+        /// The default Subreddit to show when the app opens
+        /// </summary>
+        public string SubredditList_DefaultSubredditDisplayName
+        {
+            get
+            {
+                if (m_subredditList_DefaultSubreddit == null)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSubredditDisplayName"))
+                    {
+                        m_subredditList_DefaultSubreddit = m_baconMan.SettingsMan.ReadFromRoamingSettings<string>("UiSettingManager.SubredditList_DefaultSubredditDisplayName");
+                    }
+                    else
+                    {
+                        m_subredditList_DefaultSubreddit = "frontpage";
+                    }
+                }
+                return m_subredditList_DefaultSubreddit;
+            }
+            set
+            {
+                // Validate
+                if(String.IsNullOrWhiteSpace(value))
+                {
+                    return;
+                }
+
+                m_subredditList_DefaultSubreddit = value.ToLower();
+                m_baconMan.SettingsMan.WriteToRoamingSettings<string>("UiSettingManager.SubredditList_DefaultSubredditDisplayName", m_subredditList_DefaultSubreddit);
+            }
+        }
+        private string m_subredditList_DefaultSubreddit = null;
+
+        #endregion
+
+        #region Flip View
+
+        /// <summary>
+        /// If the user wants to pre load comments or not.
+        /// </summary>
+        public bool FlipView_PreloadComments
+        {
+            get
+            {
+                if (!m_flipView_PreloadComments.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadComments"))
+                    {
+                        m_flipView_PreloadComments = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadComments");
+                    }
+                    else
+                    {
+                        m_flipView_PreloadComments = true;
+                    }
+                }
+                return m_flipView_PreloadComments.Value;
+            }
+            set
+            {
+                m_flipView_PreloadComments = value;
+                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_PreloadComments", m_flipView_PreloadComments.Value);
+            }
+        }
+        private bool? m_flipView_PreloadComments = null;
+
+        /// <summary>
+        /// If we should show the user the comment tip or not.
+        /// </summary>
+        public bool FlipView_ShowCommentScrollTip
+        {
+            get
+            {
+                if (!m_flipView_ShowCommentScrollTip.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_ShowCommentScrollTip"))
+                    {
+                        m_flipView_ShowCommentScrollTip = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_ShowCommentScrollTip");
+                    }
+                    else
+                    {
+                        m_flipView_ShowCommentScrollTip = true;
+                    }
+                }
+                return m_flipView_ShowCommentScrollTip.Value;
+            }
+            set
+            {
+                m_flipView_ShowCommentScrollTip = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.FlipView_ShowCommentScrollTip", m_flipView_ShowCommentScrollTip.Value);
+            }
+        }
+        private bool? m_flipView_ShowCommentScrollTip = null;
+
+        #endregion
+    }
+}

@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="Baconit.HelperControls.CircleIconButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="46"
+             d:DesignWidth="46"
+             mc:Ignorable="d">
+
+    <Grid>
+        <!--  Animations  -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ButtonAnimations">
+
+                <VisualState x:Name="ButtonPressed">
+                    <Storyboard>
+                        <ColorAnimation Duration="00:00:00.2"
+                                        From="#444444"
+                                        Storyboard.TargetName="ui_buttonEllipse"
+                                        Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                        To="#666666">
+                            <ColorAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </ColorAnimation.EasingFunction>
+                        </ColorAnimation>
+
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_iconScaleTrans"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         To="1.2">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_iconScaleTrans"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         To="1.2">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+
+                <!--  We make these slow so the user has more time to see if after they move their finger  -->
+                <VisualState x:Name="ButtonReleased">
+                    <Storyboard>
+                        <ColorAnimation Duration="00:00:00.3"
+                                        From="#666666"
+                                        Storyboard.TargetName="ui_buttonEllipse"
+                                        Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                        To="#444444">
+                            <ColorAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </ColorAnimation.EasingFunction>
+                        </ColorAnimation>
+
+                        <DoubleAnimation Duration="00:00:00.3"
+                                         From="1.2"
+                                         Storyboard.TargetName="ui_iconScaleTrans"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.3"
+                                         From="1.2"
+                                         Storyboard.TargetName="ui_iconScaleTrans"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!--  The main UI  -->
+        <Grid Grid.Column="1"
+              Margin="8"
+              Background="Transparent"
+              PointerCanceled="Icon_PointerCanceled"
+              PointerCaptureLost="Icon_PointerCaptureLost"
+              PointerExited="Icon_PointerExited"
+              PointerPressed="Icon_PointerPressed"
+              PointerReleased="Icon_PointerReleased"
+              RenderTransformOrigin="0.5,0.5"
+              Tapped="Icon_Tapped">
+
+            <Grid.RenderTransform>
+                <ScaleTransform x:Name="ui_iconScaleTrans" />
+            </Grid.RenderTransform>
+
+            <Ellipse x:Name="ui_buttonEllipse"
+                     Width="30"
+                     Height="30"
+                     Fill="#444444" />
+            <Viewbox Width="16" Height="16">
+                <SymbolIcon x:Name="ui_symbolTextBlock"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="#989898"
+                            Symbol="Send" />
+            </Viewbox>
+            <Image x:Name="ui_symbolImage"
+                   Width="21"
+                   Height="21" />
+        </Grid>
+    </Grid>
+</UserControl>

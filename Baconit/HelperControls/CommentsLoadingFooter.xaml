@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Baconit.HelperControls.CommentsLoadingFooter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="80"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid x:Name="ui_contentRoot" Opacity="0">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="ui_contentRootTransform" />
+            </Grid.RenderTransform>
+
+            <Grid.Resources>
+                <Storyboard x:Name="story_MoveLoading">
+                    <DoubleAnimation x:Name="anim_MoveLoadingFade"
+                                     Duration="0:0:0.5"
+                                     From="0"
+                                     Storyboard.TargetName="ui_contentRoot"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1">
+                        <DoubleAnimation.EasingFunction>
+                            <QuinticEase EasingMode="EaseIn" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+
+                    <DoubleAnimation x:Name="anim_MoveLoadingTranslate"
+                                     Duration="0:0:0.5"
+                                     From="80"
+                                     Storyboard.TargetName="ui_contentRootTransform"
+                                     Storyboard.TargetProperty="TranslateTransform.Y"
+                                     To="0">
+                        <DoubleAnimation.EasingFunction>
+                            <QuadraticEase EasingMode="EaseOut" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </Grid.Resources>
+
+            <ProgressRing x:Name="ui_progressRing"
+                          Width="30"
+                          Height="30"
+                          Margin="12" />
+            <TextBlock x:Name="ui_textBlock"
+                       Grid.Column="1"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="Loading Comments" />
+        </Grid>
+    </Grid>
+</UserControl>

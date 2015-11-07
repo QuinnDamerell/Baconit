@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="Baconit.HelperControls.TipPopUp"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="250"
+             d:DesignWidth="280"
+             mc:Ignorable="d">
+
+    <Grid x:Name="ui_contentRoot"
+          Width="280"
+          RenderTransformOrigin="0.5,0.5">
+
+        <!--  Animations  -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ShowHideTipBox">
+                <VisualState x:Name="HideTipBox">
+                    <Storyboard Completed="HideStoryboard_Completed">
+                        <DoubleAnimation Duration="00:00:00.3"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_contentRoot"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.3"
+                                         From="1"
+                                         Storyboard.TargetName="ui_rootTransform"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         To=".5">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.3"
+                                         From="1"
+                                         Storyboard.TargetName="ui_rootTransform"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         To=".5">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_contentRoot"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.3">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="ShowTipBox">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.5" BeginTime="0:0:1"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_contentRoot"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.5" BeginTime="0:0:1"
+                                         From=".5"
+                                         Storyboard.TargetName="ui_rootTransform"
+                                         Storyboard.TargetProperty="ScaleX"
+                                         To="1">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.5" BeginTime="0:0:1"
+                                         From=".5"
+                                         Storyboard.TargetName="ui_rootTransform"
+                                         Storyboard.TargetProperty="ScaleY"
+                                         To="1">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:0"
+                                                       Storyboard.TargetName="ui_contentRoot"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                            <DiscreteObjectKeyFrame KeyTime="00:00:1.1">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RenderTransform>
+            <CompositeTransform x:Name="ui_rootTransform" />
+        </Grid.RenderTransform>
+
+        <Rectangle Width="30"
+                   Height="30"
+                   VerticalAlignment="Bottom"
+                   Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
+                   RenderTransformOrigin="0.5,0.5">
+            <Rectangle.RenderTransform>
+                <CompositeTransform Rotation="45"
+                                    TranslateX="70"
+                                    TranslateY="-9" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Grid Margin="0,0,0,23"
+              Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+              Padding="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Margin="0,0,0,4"
+                       FontSize="24"
+                       Text="Pro Tip" />
+            <TextBlock Grid.Row="1"
+                       Margin="0,0,0,18"
+                       Text="To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down."
+                       TextWrapping="Wrap" />
+            <TextBlock Grid.Row="2"
+                       Margin="0,0,0,4"
+                       FontWeight="SemiBold"
+                       Text="Go ahead! Try it now!"
+                       TextWrapping="Wrap" />
+        </Grid>
+    </Grid>
+</UserControl>

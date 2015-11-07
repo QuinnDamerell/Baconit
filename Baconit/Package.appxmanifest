@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+  <Identity Name="9020QuinnDamerell.BaconitSuperEarlyAlpha" Publisher="CN=0E9109BC-07EF-4673-BFC9-D5C280E44460" Version="4.1.65.0" />
+  <mp:PhoneIdentity PhoneProductId="a941e755-1dc4-4a35-9f20-ca3d8d0beaaa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Properties>
+    <DisplayName>Baconit Super Early Alpha</DisplayName>
+    <PublisherDisplayName>Quinn Damerell</PublisherDisplayName>
+    <Logo>Assets\AppAssets\StoreLogo\StoreLogo.png</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Baconit.App">
+      <uap:VisualElements DisplayName="Baconit Super Early Alpha" Square150x150Logo="Assets\AppAssets\Square150x150\Square150.png" Square44x44Logo="Assets\AppAssets\Square44x44\Square44.png" Description="Baconit" BackgroundColor="transparent">
+        <uap:LockScreen Notification="badge" BadgeLogo="Assets\AppAssets\BadgeLogo\96.png" />
+        <uap:DefaultTile Wide310x150Logo="Assets\AppAssets\Wide310x310\Wide310.png" ShortName="Baconit" Square71x71Logo="Assets\AppAssets\Square71x71\Square71.png" Square310x310Logo="Assets\AppAssets\Square310x310\Square210.png">
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="Assets\AppAssets\SplashScreen\Splash.png" BackgroundColor="transparent" />
+      </uap:VisualElements>
+      <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="BaconBackground.BackgroundEntry">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

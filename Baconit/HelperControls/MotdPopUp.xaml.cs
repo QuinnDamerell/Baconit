@@ -1,0 +1,67 @@
+﻿using BaconBackend.Helpers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+
+namespace Baconit.HelperControls
+{
+    public sealed partial class MotdPopUp : UserControl
+    {
+        /// <summary>
+        /// Fired when the Motd box close
+        /// </summary>
+        public event EventHandler<EventArgs> OnHideComplete
+        {
+            add { m_onHideComplete.Add(value); }
+            remove { m_onHideComplete.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onHideComplete = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        public MotdPopUp(string title, string markdownContent)
+        {
+            this.InitializeComponent();
+
+            // Set the title and markdown
+            ui_titleText.Text = title;
+            ui_markdownText.Markdown = markdownContent;
+
+            // Hide the box
+            VisualStateManager.GoToState(this, "HideDialog", false);
+        }
+
+        public void ShowPopUp()
+        {
+            // Show it
+            VisualStateManager.GoToState(this, "ShowDialog", true);
+        }
+
+        private void Close_OnIconTapped(object sender, EventArgs e)
+        {
+            // Hide it
+            VisualStateManager.GoToState(this, "HideDialog", true);
+        }
+
+        /// <summary>
+        /// Fired when the hide animation is complete
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HideDialog_Completed(object sender, object e)
+        {
+            m_onHideComplete.Raise(this, new EventArgs());
+        }
+    }
+}

@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="Baconit.Panels.LoginPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             RequestedTheme="Dark"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid>
+        <helperControls:SlidingImages x:Name="ui_imageScrolBackground" Opacity="0.45" />
+        <Grid>
+            <Grid x:Name="ui_loginUI"
+                  MaxWidth="280"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
+                <Grid.Resources>
+                    <Storyboard x:Name="ui_storyLoginUi">
+                        <DoubleAnimation x:Name="ui_animLoginUi"
+                                         Storyboard.TargetName="ui_loginUI"
+                                         Storyboard.TargetProperty="Opacity">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Login" />
+                <TextBlock Grid.Row="1"
+                           Margin="0,8"
+                           Text="Unlock even more of Baconit by adding account. Reddit accounts are anonymous, simple, and free - and Baconit plans to keep it that way."
+                           TextWrapping="Wrap" />
+                <Button x:Name="ui_loginButton"
+                        Grid.Row="5"
+                        Margin="0,8"
+                        HorizontalAlignment="Stretch"
+                        Background="#60FFFFFF"
+                        Click="LoginButton_Click"
+                        Content="Login"
+                        Foreground="#FFFFFF" />
+
+                <Button x:Name="ui_createAccountButton"
+                        Grid.Row="6"
+                        Margin="0,8"
+                        HorizontalAlignment="Stretch"
+                        Background="#60FFFFFF"
+                        Click="CreateAccount_Click"
+                        Content="Create Account"
+                        Foreground="#FFFFFF" />
+            </Grid>
+            <Grid x:Name="ui_progressUI"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Opacity="0"
+                  Visibility="Collapsed">
+                <Grid.Resources>
+                    <Storyboard x:Name="ui_storyProgressUI">
+                        <DoubleAnimation x:Name="ui_animProgressUI"
+                                         Storyboard.TargetName="ui_progressUI"
+                                         Storyboard.TargetProperty="Opacity" />
+                    </Storyboard>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <ProgressRing x:Name="ui_progressRing"
+                              Width="40"
+                              Height="40" />
+                <TextBlock x:Name="ui_progressText"
+                           Grid.Column="1"
+                           Margin="10,0,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           Text="Logging you in" />
+            </Grid>
+            <Grid x:Name="ui_welcome"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Opacity="0"
+                  Visibility="Collapsed">
+                <Grid.Resources>
+                    <Storyboard x:Name="ui_storyWelcome">
+                        <DoubleAnimation x:Name="ui_animWelcome"
+                                         Completed="AnimWelcome_Completed"
+                                         Storyboard.TargetName="ui_welcome"
+                                         Storyboard.TargetProperty="Opacity">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="ui_welcomeText"
+                           Grid.Column="1"
+                           Margin="10,0,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           Text="Welcome Quinbd" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

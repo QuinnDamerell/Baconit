@@ -1,0 +1,291 @@
+﻿<UserControl x:Class="Baconit.HelperControls.CommentBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+
+
+    <Grid x:Name="ui_contentRoot" Background="#1F1F1F">
+        <!--  Animations  -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CommentBoxShowHide">
+                <VisualState x:Name="HideCommentBox">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_contentRoot"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0"
+                                         Storyboard.TargetName="ui_contentRootTranslate"
+                                         Storyboard.TargetProperty="Y"
+                                         To="50">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_contentRoot"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="ShowCommentBox">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_contentRoot"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="50"
+                                         Storyboard.TargetName="ui_contentRootTranslate"
+                                         Storyboard.TargetProperty="Y"
+                                         To="0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_contentRoot"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+
+                <VisualState x:Name="ShowOverlay">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_sendingOverlay"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_sendingOverlay"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideOverlay">
+                    <Storyboard Completed="HideOverlay_Completed">
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_sendingOverlay"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_sendingOverlay"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+
+                <VisualState x:Name="ShowLivePreview">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="180"
+                                         Storyboard.TargetName="ui_livePreveiwRotateTransform"
+                                         Storyboard.TargetProperty="Rotation"
+                                         To="0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <!--  Note we have to enable depedent animation, but it is ok here  -->
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         EnableDependentAnimation="True"
+                                         From="0"
+                                         Storyboard.TargetName="ui_livePreviewGrid"
+                                         Storyboard.TargetProperty="MaxHeight"
+                                         To="136">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideLivePreview">
+                    <Storyboard Completed="HideOverlay_Completed">
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="360"
+                                         Storyboard.TargetName="ui_livePreveiwRotateTransform"
+                                         Storyboard.TargetProperty="Rotation"
+                                         To="180">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <!--  Note we have to enable depedent animation, but it is ok here  -->
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         EnableDependentAnimation="True"
+                                         From="136"
+                                         Storyboard.TargetName="ui_livePreviewGrid"
+                                         Storyboard.TargetProperty="MaxHeight"
+                                         To="0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!--  the transform for the main content  -->
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="ui_contentRootTranslate" />
+        </Grid.RenderTransform>
+
+        <!--  Grid to hold the comment UI  -->
+        <Grid BorderBrush="#333333" BorderThickness="0,2,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <!--  Live markdown grid  -->
+            <Grid x:Name="ui_livePreviewGrid"
+                  MaxHeight="0"
+                  Background="#444444">
+                <ScrollViewer x:Name="ui_livePreviewScroller"
+                              VerticalScrollBarVisibility="Auto"
+                              ZoomMode="Disabled">
+                    <!--  the live preview box  -->
+                    <local:MarkdownTextBox x:Name="ui_livePreviewBox" Margin="18,6,18,6" />
+                </ScrollViewer>
+            </Grid>
+
+            <!--  Live preview button and text  -->
+            <Grid Grid.Row="1" Margin="0,3,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="1"
+                           Margin="0,0,2,0"
+                           VerticalAlignment="Center"
+                           Tapped="ToggleLivePreview_TextTapped"
+                           Text="Live Preview"
+                           TextAlignment="Right" />
+
+                <local:CircleIconButton Grid.Column="2"
+                                        Margin="-3"
+                                        IconImageSource="ms-appx:///Assets/FlipView/UpCarret.png"
+                                        OnIconTapped="ToggleLivePreview_OnIconTapped"
+                                        RenderTransformOrigin=".5,.5">
+                    <local:CircleIconButton.RenderTransform>
+                        <CompositeTransform x:Name="ui_livePreveiwRotateTransform"
+                                            Rotation="180"
+                                            ScaleX=".8"
+                                            ScaleY=".8" />
+                    </local:CircleIconButton.RenderTransform>
+                </local:CircleIconButton>
+            </Grid>
+
+            <!--  The main text box  -->
+            <TextBox x:Name="ui_textBox"
+                     Grid.Row="2"
+                     MinHeight="72"
+                     MaxHeight="130"
+                     Margin="6"
+                     AcceptsReturn="True"
+                     IsSpellCheckEnabled="True"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     TextChanged="TextBox_TextChanged"
+                     TextWrapping="Wrap" />
+
+            <!--  Grid to show the action buttons  -->
+            <Grid Grid.Row="3"
+                  Margin="6,0,6,6"
+                  HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Close Icon  -->
+                <local:CircleIconButton Grid.Column="1"
+                                        OnIconTapped="Close_OnIconTapped"
+                                        SymbolIcon="Cancel" />
+
+                <!--  Send Icon  -->
+                <local:CircleIconButton Grid.Column="2"
+                                        OnIconTapped="Send_OnIconTapped"
+                                        SymbolIcon="Send" />
+            </Grid>
+        </Grid>
+
+        <!--  Grid to show the sending overlay  -->
+        <Grid x:Name="ui_sendingOverlay"
+              Background="#DD000000"
+              Visibility="Collapsed">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <ProgressRing x:Name="ui_sendingOverlayProgress"
+                              Width="40"
+                              Height="40" />
+                <TextBlock Grid.Row="1"
+                           Margin="12"
+                           HorizontalAlignment="Center"
+                           Text="Sending Comment..." />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

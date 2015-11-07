@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="Baconit.Panels.SettingsPanels.AboutSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.Panels.SettingsPanels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="700"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Subreddit Header  -->
+        <StackPanel Grid.Row="0"
+                    Background="#333333"
+                    Orientation="Horizontal"
+                    Padding="12">
+            <TextBlock VerticalAlignment="Bottom" Text="About" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+
+            <Grid Margin="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Width="70"
+                      Height="70"
+                      Background="{StaticResource SystemControlBackgroundAccentBrush}"
+                      Tapped="Logo_Tapped">
+                    <Image Margin="8" Source="ms-appx:///Assets/Settings/AboutBaconitIcon.png" />
+                </Grid>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Margin="8,-10,8,0"
+                               FontSize="32"
+                               Text="Baconit" />
+                    <TextBlock x:Name="ui_buildString"
+                               Margin="8,0,0,0"
+                               Text="Build:" />
+
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Grid.Row="1"
+                       Margin="12"
+                       Text="Baconit is THE BEST open source reddit client on Windows. Baconit was originally written in 2010 for Windows Phone 7.5 by Quinn Damerell. It remained a closed sourced Silverlight app until the launch of Windows 10. At that point Quinn rewrote the entire app from the ground up on the new Universal App platform, enabling it to run on all Windows devices. It was released and opened sourced on to the world on (INSERT DATE HERE). Many thanks to all who have contributed."
+                       TextWrapping="Wrap" />
+
+            <Grid Grid.Row="2"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="RateAndReview_Tapped">
+                <TextBlock Text="Rate and Review" />
+            </Grid>
+
+            <Grid Grid.Row="3"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="ShowSource_Tapped">
+                <TextBlock Text="Check out the source code" />
+            </Grid>
+
+            <Grid Grid.Row="4"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="OpenBaconitSub_Tapped">
+                <TextBlock Text="Baconit's Subreddit" />
+            </Grid>
+
+            <Grid Grid.Row="5"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="Website_Tapped">
+                <TextBlock Text="Baconit's Website" />
+            </Grid>
+
+            <Grid Grid.Row="6"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="Facebook_Tapped">
+                <TextBlock Text="Facebook" />
+            </Grid>
+
+            <Grid Grid.Row="7"
+                  Margin="12"
+                  Background="Transparent"
+                  Tapped="Twitter_Tapped">
+                <TextBlock Text="Twitter" />
+            </Grid>
+
+            <HyperlinkButton Grid.Row="7"
+                             Margin="11,6"
+                             VerticalAlignment="Bottom"
+                             Content="QuinnDamerell.com"
+                             Foreground="White"
+                             NavigateUri="http://www.quinndamerell.com" />
+        </Grid>
+    </Grid>
+</UserControl>

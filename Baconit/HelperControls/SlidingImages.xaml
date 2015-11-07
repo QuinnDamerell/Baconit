@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="Baconit.HelperControls.SlidingImages"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Canvas>
+        <Image x:Name="ui_mainImage" RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <CompositeTransform x:Name="ui_mainImageCompositeTrans" />
+            </Image.RenderTransform>
+            <Image.Clip>
+                <RectangleGeometry>
+                    <RectangleGeometry.Transform>
+                        <TranslateTransform x:Name="ui_mainImageClipTransform" />
+                    </RectangleGeometry.Transform>
+                </RectangleGeometry>
+            </Image.Clip>
+            <Image.Resources>
+                <Storyboard x:Name="story_mainImageStory" Completed="MainImageStory_Completed">
+                    <DoubleAnimation x:Name="anim_mainImageTranslateAnim"
+                                     Duration="0:0:15"
+                                     Storyboard.TargetName="ui_mainImageCompositeTrans"
+                                     Storyboard.TargetProperty="TranslateX">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseInOut" Exponent="2" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+
+                    <DoubleAnimation x:Name="anim_mainImageClipTranslateAnim"
+                                     Duration="0:0:15"
+                                     Storyboard.TargetProperty="X">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseInOut" Exponent="2" />
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </Image.Resources>
+        </Image>
+    </Canvas>
+</UserControl>
