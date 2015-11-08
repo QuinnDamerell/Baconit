@@ -130,7 +130,8 @@ namespace Baconit.Panels
             }
 
             // Clear focus off the textbox
-            ui_searchResults.Focus(FocusState.Keyboard);
+            ui_searchBox.IsEnabled = false;
+            ui_searchBox.IsEnabled = true;
 
             if (!m_currentSearchType.HasValue || m_currentSearchType.Value == SearchResultTypes.Subreddit)
             {
