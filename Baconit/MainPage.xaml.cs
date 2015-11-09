@@ -9,6 +9,7 @@ using Baconit.Interfaces;
 using Baconit.Panels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -50,9 +51,14 @@ namespace Baconit
         PanelManager m_panelManager;
 
         /// <summary>
-        /// Holds a ref to the curernt trending subs helper
+        /// Holds a ref to the current trending subs helper
         /// </summary>
         TrendingSubredditsHelper m_trendingSubsHelper = null;
+
+        /// <summary>
+        /// Holds the current subreddit list
+        /// </summary>
+        ObservableCollection<Subreddit> m_subreddits = new ObservableCollection<Subreddit>();
 
         public MainPage()
         {
@@ -100,6 +106,9 @@ namespace Baconit
             // Sub to loaded
             Loaded += MainPage_Loaded;
             App.BaconMan.OnResuming += App_OnResuming;
+
+            // Set the subreddit list
+            ui_subredditList.ItemsSource = m_subreddits;
         }
 
         /// <summary>
@@ -175,31 +184,70 @@ namespace Baconit
         /// <param name="newSubreddits"></param>
         private void UpdateSubredditList(List<Subreddit> newSubreddits)
         {
-            // We only want to send a new list if there is a change.
-            List<Subreddit> currentList = (List<Subreddit>)ui_subredditList.ItemsSource;
-            bool wasChange = false;
-            int currentSubPos = 0;
-
-            foreach (Subreddit subreddit in newSubreddits)
+            int insertCount = 0;
+            for (int newListCount = 0; newListCount < newSubreddits.Count; newListCount++)
             {
-                // Look for a change
-                if(!wasChange && (currentList == null  ||
-                    currentList.Count >= currentSubPos ||
-                    !currentList[currentSubPos].DisplayName.Equals(subreddit.DisplayName) ||
-                    !currentList[currentSubPos].IsFavorite.Equals(subreddit.IsFavorite)))
+                Subreddit newSubreddit = newSubreddits[newListCount];
+
+                // Set some UI properties.
+                newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
+                newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
+
+                // If the two are the same, just update them.
+                if (m_subreddits.Count > insertCount && m_subreddits[insertCount].Id.Equals(newSubreddit.Id))
                 {
-                    wasChange = true;
+                    // If they are the same just update it
+                    m_subreddits[insertCount] = newSubreddit;
                 }
-
-                // Set the properties of the new list
-                subreddit.FavIconUri = subreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
-                subreddit.DisplayName = subreddit.DisplayName.ToLower();
+                // (subreddit insert) If the next element in the new list is the same as the current element in the old list, insert.
+                else if(m_subreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(m_subreddits[insertCount].Id))
+                {
+                    m_subreddits.Insert(insertCount, newSubreddit);
+                }
+                // (subreddit remove) If the current element in the new list is the same as the next element in the old list.
+                else if (m_subreddits.Count > insertCount + 1 && newSubreddits.Count > newListCount && newSubreddits[newListCount].Id.Equals(m_subreddits[insertCount + 1].Id))
+                {
+                    m_subreddits.RemoveAt(insertCount);
+                }
+                // If the old list is still larger than the new list, replace
+                else if(m_subreddits.Count > insertCount)
+                {
+                    m_subreddits[insertCount] = newSubreddit;
+                }
+                // Or just add.
+                else
+                {
+                    m_subreddits.Add(newSubreddit);
+                }
+                insertCount++;
             }
 
-            if (wasChange)
-            {
-                ui_subredditList.ItemsSource = newSubreddits;
-            }
+
+            //// We only want to send a new list if there is a change.
+            //List<Subreddit> currentList = (List<Subreddit>)ui_subredditList.ItemsSource;
+            //bool wasChange = false;
+            //int currentSubPos = 0;
+
+            //foreach (Subreddit subreddit in newSubreddits)
+            //{
+            //    // Look for a change
+            //    if(!wasChange && (currentList == null  ||
+            //        currentList.Count >= currentSubPos ||
+            //        !currentList[currentSubPos].DisplayName.Equals(subreddit.DisplayName) ||
+            //        !currentList[currentSubPos].IsFavorite.Equals(subreddit.IsFavorite)))
+            //    {
+            //        wasChange = true;
+            //    }
+
+            //    // Set the properties of the new list
+            //    subreddit.FavIconUri = subreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
+            //    subreddit.DisplayName = subreddit.DisplayName.ToLower();
+            //}
+
+            //if (wasChange)
+            //{
+            //    ui_subredditList.ItemsSource = newSubreddits;
+            //}
         }
 
         /// <summary>
@@ -259,7 +307,7 @@ namespace Baconit
 
             Subreddit subreddit = (sender as Grid).DataContext as Subreddit;
             Dictionary<string, object> args = new Dictionary<string, object>();
-            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
             m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
         }
 
