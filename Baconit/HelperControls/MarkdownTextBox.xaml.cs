@@ -297,16 +297,26 @@ namespace Baconit.HelperControls
                 }
             }
 
-            // Test for raw subreddit links
-            tempPos = markdown.IndexOf("r/", pos);
-            if (tempPos != -1 && tempPos < currentClosesPos)
+            // Test for raw subreddit links. We need to loop here so if we find a false positive
+            // we can keep checking before the current closest. Note this logic must match the logic
+            // in the subreddit link parser below.
+            int currentRawSubConsider = pos;
+            currentRawSubConsider = markdown.IndexOf("r/", currentRawSubConsider);
+            while (currentRawSubConsider != -1 && currentRawSubConsider < currentClosesPos)
             {
-                // Make sure there is something after the r/
-                if (tempPos + 1 < markdown.Length)
+                // Make sure the char before the r/ is not a letter
+                if (currentRawSubConsider == 0 || !Char.IsLetterOrDigit(markdown[currentRawSubConsider - 1]))
                 {
-                    currentClosesPos = tempPos;
-                    nextBlockType = BlockTypes.RawSubreddit;
+                    // Make sure there is something after the r/
+                    if (currentRawSubConsider + 2 < markdown.Length && Char.IsLetterOrDigit(markdown[currentRawSubConsider + 2]))
+                    {
+                        currentClosesPos = currentRawSubConsider;
+                        nextBlockType = BlockTypes.RawSubreddit;
+                        break;
+                    }
                 }
+                currentRawSubConsider += 2;
+                currentRawSubConsider = markdown.IndexOf("r/", currentRawSubConsider);
             }
 
             // Test for links
@@ -531,6 +541,22 @@ namespace Baconit.HelperControls
         {
             // Find the start of the link
             int subStart = markdown.IndexOf("r/", markdownPos);
+
+            // Since we have the looping false positive logic above we need it here also.
+            while (subStart != -1)
+            {
+                // Make sure the char before the r/ is not a letter
+                if (subStart == 0 || !Char.IsLetterOrDigit(markdown[subStart - 1]))
+                {
+                    // Make sure there is something after the r/
+                    if (subStart + 2 < markdown.Length && Char.IsLetterOrDigit(markdown[subStart + 2]))
+                    {
+                        break;
+                    }
+                }
+                subStart += 2;
+                subStart = markdown.IndexOf("r/", subStart);
+            }
 
             // Grab where to begin looking for the end.
             int subEnd = subStart + 2;
