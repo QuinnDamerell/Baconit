@@ -408,7 +408,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpVote_Tapped(object sender, TappedRoutedEventArgs e)
+        private void UpVote_Tapped(object sender, EventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.ChangePostVote(post, PostVoteAction.UpVote);
@@ -419,7 +419,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DownVote_Tapped(object sender, TappedRoutedEventArgs e)
+        private void DownVote_Tapped(object sender, EventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.ChangePostVote(post, PostVoteAction.DownVote);

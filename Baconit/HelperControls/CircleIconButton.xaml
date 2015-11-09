@@ -106,12 +106,31 @@
                 <SymbolIcon x:Name="ui_symbolTextBlock"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Foreground="#989898"
-                            Symbol="Send" />
+                            Foreground="#989898" />
             </Viewbox>
             <Image x:Name="ui_symbolImage"
                    Width="21"
                    Height="21" />
+
+            <!--  Vote Icon  -->
+            <Grid x:Name="ui_voteIconGrid"
+                  RenderTransformOrigin="0.5,0.5"
+                  Visibility="Collapsed">
+                <Grid.RenderTransform>
+                    <RotateTransform x:Name="ui_voteIconAngle" />
+                </Grid.RenderTransform>
+                <Polygon x:Name="ui_voteIconTri"
+                         Margin="0,6,0,0"
+                         HorizontalAlignment="Center"
+                         Fill="Red"
+                         Points="0,10 14,10 7,0" />
+                <Rectangle x:Name="ui_voteIconRect"
+                           Width="6"
+                           Height="9"
+                           Margin="0,8,0,0"
+                           HorizontalAlignment="Center"
+                           Fill="Red" />
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

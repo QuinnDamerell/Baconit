@@ -19,6 +19,12 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Baconit.HelperControls
 {
+    public enum VoteIconStatus
+    {
+        Up,
+        Down
+    }
+
     public sealed partial class CircleIconButton : UserControl
     {
         /// <summary>
@@ -100,12 +106,106 @@ namespace Baconit.HelperControls
 
         #endregion
 
+        #region Icon Vote Status
+
+        /// <summary>
+        /// This it how we get the vote status from the xmal binding.
+        /// </summary>
+        public VoteIconStatus VoteStatus
+        {
+            get { return (VoteIconStatus)GetValue(VoteStatusProperty); }
+            set { SetValue(VoteStatusProperty, value); }
+        }
+
+        public static readonly DependencyProperty VoteStatusProperty =
+            DependencyProperty.Register(
+                "VoteStatus",                     // The name of the DependencyProperty
+                typeof(VoteIconStatus),                   // The type of the DependencyProperty
+                typeof(CircleIconButton), // The type of the owner of the DependencyProperty
+                new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
+                    false,                      // The default value of the DependencyProperty
+                    new PropertyChangedCallback(OnVoteStatusChangedStatic)
+                ));
+
+        private static void OnVoteStatusChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var instance = d as CircleIconButton;
+            if (instance != null)
+            {
+                VoteIconStatus? newStatus = null;
+                if (e.NewValue.GetType() == typeof(VoteIconStatus))
+                {
+                    newStatus = (VoteIconStatus)e.NewValue;
+                }
+                instance.OnVoteStatusChanged(newStatus);
+            }
+        }
+
+        #endregion
+
+        #region Icon Vote Brush
+
+        /// <summary>
+        /// This it how we get the vote status from the xmal binding.
+        /// </summary>
+        public SolidColorBrush VoteBrush
+        {
+            get { return (SolidColorBrush)GetValue(VoteBrushProperty); }
+            set { SetValue(VoteBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty VoteBrushProperty =
+            DependencyProperty.Register(
+                "VoteBrush",                     // The name of the DependencyProperty
+                typeof(SolidColorBrush),                   // The type of the DependencyProperty
+                typeof(CircleIconButton), // The type of the owner of the DependencyProperty
+                new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
+                    false,                      // The default value of the DependencyProperty
+                    new PropertyChangedCallback(OnVoteBrushChangedStatic)
+                ));
+
+        private static void OnVoteBrushChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var instance = d as CircleIconButton;
+            if (instance != null)
+            {
+                SolidColorBrush newBrush = null;
+                if (e.NewValue.GetType() == typeof(SolidColorBrush))
+                {
+                    newBrush = (SolidColorBrush)e.NewValue;
+                }
+                instance.OnVoteBrushChanged(newBrush);
+            }
+        }
+
+        #endregion
+
         #region Setup logic
 
         public CircleIconButton()
         {
             this.InitializeComponent();
             VisualStateManager.GoToState(this, "ButtonReleased", false);
+        }
+
+        private void OnVoteBrushChanged(SolidColorBrush newBrush)
+        {
+            if (newBrush != null)
+            {
+                ui_voteIconRect.Fill = newBrush;
+                ui_voteIconTri.Fill = newBrush;
+            }
+        }
+
+        private void OnVoteStatusChanged(VoteIconStatus? newStatus)
+        {
+            ClearIcon();
+
+            if (newStatus.HasValue)
+            {
+                ui_voteIconGrid.Visibility = Visibility.Visible;
+                ui_voteIconAngle.Angle = newStatus.Value == VoteIconStatus.Up ? 0 : 180;
+            }
         }
 
         private void OnSymbolIconChanged(Symbol? newText)
@@ -133,8 +233,9 @@ namespace Baconit.HelperControls
 
         private void ClearIcon()
         {
+            ui_voteIconGrid.Visibility = Visibility.Collapsed;
             ui_symbolTextBlock.Visibility = Visibility.Collapsed;
-            ui_symbolImage.Visibility = Visibility.Visible;
+            ui_symbolImage.Visibility = Visibility.Collapsed;
             ui_symbolImage.Source = null;
         }
 
