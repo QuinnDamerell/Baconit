@@ -120,7 +120,7 @@ namespace BaconBackend.Helpers
         {
             if(top <= bottom)
             {
-                throw new Exception("top can't be bigger than bottom!");
+                throw new Exception("top can't be larger than bottom!");
             }
 
             int santyCheckCount = 0;
@@ -128,8 +128,10 @@ namespace BaconBackend.Helpers
             {
                 // See if we now have what they asked for, OR the list has elements but we don't have an after.
                 // (this is the case when we have hit the end of the list)
+                // #bug!?!? At some point I changed the children count in the after check to santyCheckCount == 0, but I can't remember why
+                // and it breaks lists that have ends. There is some bug where something doesn't try to refresh or something...
                 if (m_currentElementList.Children.Count >= top
-                    || (santyCheckCount != 0 && m_currentElementList.After == null)
+                    || (m_currentElementList.Children.Count != 0 && m_currentElementList.After == null)
                     || (santyCheckCount > 25))
                 {
                     // Return what they asked for capped at the list size
