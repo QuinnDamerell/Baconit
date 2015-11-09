@@ -176,7 +176,7 @@ namespace Baconit.Panels
         /// Fired when the collector state is updated.
         /// </summary>
         /// <param name="state">The new state</param>
-        private void Collector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs args)
+        private async void Collector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs args)
         {
             // Set loading if needed.
             ToggleLoadingBar(args.State == CollectorState.Updating || args.State == CollectorState.Extending);
@@ -188,6 +188,16 @@ namespace Baconit.Panels
             if (m_isVisible && args.State == CollectorState.Error)
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("That's Not Right", "We can't update this subreddit right now, check your internet connection.");
+            }
+
+            // Show no posts if nothing was loaded
+            if (args.State == CollectorState.Idle)
+            {
+                bool postLoaded = m_collector.GetCurrentPosts().Count != 0;
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    ui_noPostText.Visibility = postLoaded ? Visibility.Collapsed : Visibility.Visible;
+                });
             }
         }
 
@@ -503,7 +513,7 @@ namespace Baconit.Panels
         private void SetSubscribeStatus()
         {
             // Make sure the button should be visible.
-            if(m_subreddit.DisplayName.Equals("frontpage") || m_subreddit.DisplayName.Equals("all"))
+            if(m_subreddit.IsArtifical)
             {
                 ui_appBarSubButton.Visibility = Visibility.Collapsed;
                 return;

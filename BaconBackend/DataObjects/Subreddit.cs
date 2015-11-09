@@ -45,6 +45,12 @@ namespace BaconBackend.DataObjects
         public bool IsFavorite { get; set; }
 
         /// <summary>
+        /// Indicates this is not a real subreddit, we made it up.
+        /// </summary>
+        [JsonProperty(PropertyName = "isArtifical")]
+        public bool IsArtifical { get; set; } = false;
+
+        /// <summary>
         /// Uri to the favorite icon
         /// </summary>
         [JsonIgnore]

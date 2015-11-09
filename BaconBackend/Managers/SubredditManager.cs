@@ -336,14 +336,16 @@ namespace BaconBackend.Managers
             {
                 DisplayName = "all",
                 Title = "The top of reddit",
-                Id = "all"
+                Id = "all",
+                IsArtifical = true
             };
             subreddits.Add(subreddit);
             subreddit = new Subreddit()
             {
                 DisplayName = "frontpage",
                 Title = "Your front page",
-                Id = "frontpage"
+                Id = "frontpage",
+                IsArtifical = true
             };
             subreddits.Add(subreddit);
 
@@ -353,7 +355,7 @@ namespace BaconBackend.Managers
                 subreddit = new Subreddit()
                 {
                     DisplayName = "baconit",
-                    Title = "Your front page",
+                    Title = "The best reddit app ever!",
                     Id = "2rfk9"
                 };
                 subreddits.Add(subreddit);
@@ -369,6 +371,18 @@ namespace BaconBackend.Managers
                     DisplayName = "windows",
                     Title = "Windows",
                     Id = "2qh3k"
+                };
+                subreddits.Add(subreddit);
+            }
+            else
+            {
+                // If the user is signed in, add the saved subreddit.
+                subreddit = new Subreddit()
+                {
+                    DisplayName = "saved",
+                    Title = "Your saved posts",
+                    Id = "saved",
+                    IsArtifical = true
                 };
                 subreddits.Add(subreddit);
             }
@@ -477,16 +491,6 @@ namespace BaconBackend.Managers
                     else
                     {
                         m_subredditList = new List<Subreddit>();
-
-                        // We need to make sure the front page is always created
-                        // since it is immediately navigated to.
-                        Subreddit subreddit = new Subreddit()
-                        {
-                            DisplayName = "frontpage",
-                            Title = "Your front page",
-                            Id = "frontpage"
-                        };
-                        m_subredditList.Add(subreddit);
                     }
                 }
                 return m_subredditList;

@@ -257,6 +257,14 @@
             </ListView.ItemContainerTransitions>
         </helperControl:EndDetectingListView>
 
+        <!--  There are not post here text  -->
+        <TextBlock x:Name="ui_noPostText"
+                   Grid.Row="1"
+                   Margin="12,0,12,12"
+                   Foreground="#999999"
+                   Text="There are no post here."
+                   Visibility="Collapsed" />
+
         <!--  Custom App bar  -->
         <Grid Grid.Row="2"
               Background="#1F1F1F"

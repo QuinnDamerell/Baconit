@@ -74,6 +74,11 @@ namespace BaconBackend.Collectors
                 // Special case for the front page
                 subredditUrl = $"/{SortTypeToString(m_sortType)}/.json";
             }
+            else if(m_subreddit.DisplayName.ToLower() == "saved")
+            {
+                // Special case for the saved posts
+                subredditUrl = $"/user/{m_baconMan.UserMan.CurrentUser.Name}/saved/.json";
+            }
             else if(!String.IsNullOrWhiteSpace(subredditContainer.forcePostId))
             {
                 // We are only going to try to grab one specific post. This is used by search and inbox to 
@@ -311,7 +316,7 @@ namespace BaconBackend.Collectors
         /// <param name="posts">Posts to be formatted</param>
         override protected void ApplyCommonFormatting(ref List<Post> posts)
         {
-            bool isFrontPage = m_subreddit.Id.Equals("frontpage") || m_subreddit.Id.Equals("all");
+            bool isFrontPage = m_subreddit.IsArtifical;
 
             foreach(Post post in posts)
             {
