@@ -1,10 +1,12 @@
 ﻿using BaconBackend.DataObjects;
 using Baconit.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
@@ -24,6 +26,7 @@ namespace Baconit.FlipViewControls
         MediaElement m_gifVideo;
         bool m_loadingHidden = false;
         bool m_shouldBePlaying = false;
+        bool m_isDestoryed = false;
 
         public GifImageFliplControl(IFlipViewContentHost host)
         {
@@ -38,8 +41,8 @@ namespace Baconit.FlipViewControls
         /// <returns></returns>
         static public bool CanHandlePost(Post post)
         {
-            // See if we can get an image from the url
-            if (String.IsNullOrWhiteSpace(GetImageUrl(post.Url)))
+            // See if we can find a imgur or gfycat gif
+            if (String.IsNullOrWhiteSpace(GetImgurUrl(post.Url)) && String.IsNullOrWhiteSpace(GetGfyCatApiUrl(post.Url)))
             {
                 return false;
             }
@@ -58,15 +61,38 @@ namespace Baconit.FlipViewControls
             // Show loading
             m_host.ShowLoading();
 
+            // Try to get the imgur url
+            string gifUrl = GetImgurUrl(post.Url);
+
+            // If that failed try to get a url from GfyCat
+            if(gifUrl.Equals(String.Empty))
+            {
+                // We have to get it from gyfcat
+                gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(post.Url));
+            }
+
+            // If we didn't get anything something went wrong.
+            if(gifUrl.Equals(String.Empty))
+            {
+                m_host.ShowError();
+                return;
+            }
+
             // Since some of this can be costly, delay the work load until we aren't animating.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
+                // Make sure we aren't destroyed.
+                if(m_isDestoryed)
+                {
+                    return;
+                }
+
                 // Create the media element
                 m_gifVideo = new MediaElement();
                 m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
                 m_gifVideo.Tapped += OnVideoTapped;
                 m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
-                m_gifVideo.Source = new Uri(GetImageUrl(post.Url), UriKind.Absolute);
+                m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
                 m_gifVideo.Play();
                 m_gifVideo.IsLooping = true;
                 ui_contentRoot.Children.Add(m_gifVideo);
@@ -96,6 +122,9 @@ namespace Baconit.FlipViewControls
         /// </summary>
         public void OnDestroyContent()
         {
+            // Set that we are destroyed
+            m_isDestoryed = true;
+
             // Destroy the video
             if (m_gifVideo != null)
             {
@@ -157,7 +186,12 @@ namespace Baconit.FlipViewControls
             }
         }
 
-        private static string GetImageUrl(string postUrl)
+        /// <summary>
+        /// Tries to get a Imgur gif url
+        /// </summary>
+        /// <param name="postUrl"></param>
+        /// <returns></returns>
+        private static string GetImgurUrl(string postUrl)
         {
             // Send the url to lower, but we need both because some websites
             // have case sensitive urls.
@@ -174,6 +208,90 @@ namespace Baconit.FlipViewControls
             {
                 // If the link is imgur, replace the .gifv with a .mp4 and we should get a video back.
                 return postUrl.Replace(".gif", ".mp4");
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Tries to get a gfy cat api url.
+        /// </summary>
+        /// <param name="postUrl"></param>
+        /// <returns></returns>
+        private static string GetGfyCatApiUrl(string postUrl)
+        {
+            // Send the url to lower, but we need both because some websites
+            // have case sensitive urls.
+            string postUrlLower = postUrl.ToLower();
+
+            int gifNameStart = postUrlLower.IndexOf("gfycat.com/");
+
+            if (gifNameStart != -1)
+            {
+                // Get to the end of the domain
+                gifNameStart += 11;
+
+                // Look for the end of the gif name
+                int gifNameEnd = postUrlLower.IndexOf('/', gifNameStart);
+                if (gifNameEnd == -1)
+                {
+                    gifNameEnd = postUrlLower.Length;
+                }
+
+                // Use the original url to get the gif name.
+                string gifName = postUrl.Substring(gifNameStart, gifNameEnd - gifNameStart);
+                return $"http://gfycat.com/cajax/get/{gifName}";
+            }
+            return String.Empty;
+        }
+
+        private class GfyCatDataContainer
+        {
+            [JsonProperty(PropertyName = "gfyItem")]
+            public GfyItem item;
+        }
+
+        private class GfyItem
+        {
+            [JsonProperty(PropertyName = "mp4Url")]
+            public string Mp4Url;
+        }
+
+        /// <summary>
+        /// Gets a video url from gfycat
+        /// </summary>
+        /// <param name="apiUrl"></param>
+        /// <returns></returns>
+        private async Task<string> GetGfyCatGifUrl(string apiUrl)
+        {
+            // Return if we have nothing.
+            if(apiUrl.Equals(String.Empty))
+            {
+                return String.Empty;
+            }
+
+            try
+            {
+                // Make the call
+                string jsonReponse = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+
+                // Parse the data
+                GfyCatDataContainer gfyData = JsonConvert.DeserializeObject<GfyCatDataContainer>(jsonReponse);
+
+                // Validate the repsonse
+                string mp4Url = gfyData.item.Mp4Url;
+                if(String.IsNullOrWhiteSpace(mp4Url))
+                {
+                    throw new Exception("Gfycat response failed to parse");
+                }
+
+                // Return the url
+                return mp4Url;
+            }
+            catch(Exception e)
+            {
+                App.BaconMan.MessageMan.DebugDia("failed to get image from gfycat", e);
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FaileGfyCatApiCall", e);
             }
 
             return String.Empty;

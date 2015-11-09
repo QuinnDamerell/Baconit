@@ -53,10 +53,10 @@ namespace BaconBackend.Managers
         /// Called when the reddit subreddit list should be updated.
         /// </summary>
         /// <param name="force">Forces the update</param>
-        public bool Update(bool force = true)
+        public bool Update(bool force = false)
         {
             TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdate;
-            if (timeSinceLastUpdate.TotalMinutes < 300 && !force) //#todo make this config
+            if (!force && timeSinceLastUpdate.TotalMinutes < 300 && SubredditList.Count > 0)
             {
                return false;
             }
