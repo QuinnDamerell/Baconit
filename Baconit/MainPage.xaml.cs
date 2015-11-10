@@ -224,33 +224,6 @@ namespace Baconit
                 }
                 insertCount++;
             }
-
-
-            //// We only want to send a new list if there is a change.
-            //List<Subreddit> currentList = (List<Subreddit>)ui_subredditList.ItemsSource;
-            //bool wasChange = false;
-            //int currentSubPos = 0;
-
-            //foreach (Subreddit subreddit in newSubreddits)
-            //{
-            //    // Look for a change
-            //    if(!wasChange && (currentList == null  ||
-            //        currentList.Count >= currentSubPos ||
-            //        !currentList[currentSubPos].DisplayName.Equals(subreddit.DisplayName) ||
-            //        !currentList[currentSubPos].IsFavorite.Equals(subreddit.IsFavorite)))
-            //    {
-            //        wasChange = true;
-            //    }
-
-            //    // Set the properties of the new list
-            //    subreddit.FavIconUri = subreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
-            //    subreddit.DisplayName = subreddit.DisplayName.ToLower();
-            //}
-
-            //if (wasChange)
-            //{
-            //    ui_subredditList.ItemsSource = newSubreddits;
-            //}
         }
 
         /// <summary>
