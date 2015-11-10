@@ -45,6 +45,12 @@ namespace BaconBackend.DataObjects
         public bool IsFavorite { get; set; }
 
         /// <summary>
+        /// The type of subreddit this is
+        /// </summary>
+        [JsonProperty(PropertyName = "subreddit_type")]
+        public string SubredditType { get; set; }
+
+        /// <summary>
         /// Indicates this is not a real subreddit, we made it up.
         /// </summary>
         [JsonProperty(PropertyName = "isArtifical")]

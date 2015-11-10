@@ -28,9 +28,6 @@ namespace BaconBackend.Managers
                 return;
             }
 
-            // Note how many times we have been opened (actually how many times we have been resumed)
-            NumberOfTimesAppOpen++;
-
             // Check if we should update
             TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdate;
             if(timeSinceLastUpdate.TotalHours > c_minHoursBetweenCheck)
@@ -45,7 +42,7 @@ namespace BaconBackend.Managers
                     if(LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
                     {
                         // There is an update! Make sure we have been opened enough.
-                        if(NumberOfTimesAppOpen > newMotd.MinOpenTimes)
+                        if(m_baconMan.UiSettingsMan.AppOpenedCount > newMotd.MinOpenTimes)
                         {
                             if(!newMotd.isIngore)
                             {
@@ -142,34 +139,6 @@ namespace BaconBackend.Managers
             }
         }
         private MessageOfTheDay m_lastMotd = null;
-
-        /// <summary>
-        /// Keep track of the number times the app has been open
-        /// </summary>
-        public int NumberOfTimesAppOpen
-        {
-            get
-            {
-                if (m_numberOfTimesAppOpen == -1)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("MessageOfTheDayManager.NumberOfTimesAppOpen"))
-                    {
-                        m_numberOfTimesAppOpen = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("MessageOfTheDayManager.NumberOfTimesAppOpen");
-                    }
-                    else
-                    {
-                        m_numberOfTimesAppOpen = 0;
-                    }
-                }
-                return m_numberOfTimesAppOpen;
-            }
-            private set
-            {
-                m_numberOfTimesAppOpen = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("MessageOfTheDayManager.NumberOfTimesAppOpen", m_numberOfTimesAppOpen);
-            }
-        }
-        private int m_numberOfTimesAppOpen = -1;
 
         #endregion
     }

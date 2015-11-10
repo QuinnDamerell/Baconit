@@ -144,6 +144,9 @@
     <Compile Include="HelperControls\LoadingOverlay.xaml.cs">
       <DependentUpon>LoadingOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperControls\RateAndFeedbackPopUp.xaml.cs">
+      <DependentUpon>RateAndFeedbackPopUp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\SimpleTextButton.cs" />
     <Compile Include="HelperControls\SlidingImages.xaml.cs">
       <DependentUpon>SlidingImages.xaml</DependentUpon>
@@ -328,6 +331,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="HelperControls\MarkdownTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="HelperControls\RateAndFeedbackPopUp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

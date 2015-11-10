@@ -123,7 +123,8 @@ namespace BaconBackend.DataObjects
             get
             {
                 // Note the rest of the size are applied in XAML by padding.
-                return new Thickness((CommentDepth * 8), 0, 0, 0);
+                // We need a margin of 1 to keep the borders from overlapping.
+                return new Thickness((CommentDepth * 8), 1, 0, 0);
             }
         }
 
@@ -146,7 +147,7 @@ namespace BaconBackend.DataObjects
                 }
                 else
                 {
-                    int colorSub = CommentDepth * 25;
+                    int colorSub = CommentDepth * 23;
                     borderColor.B = (byte)Math.Max(0, borderColor.B - colorSub);
                     borderColor.R = (byte)Math.Max(0, borderColor.R - colorSub);
                     borderColor.G = (byte)Math.Max(0, borderColor.G - colorSub);

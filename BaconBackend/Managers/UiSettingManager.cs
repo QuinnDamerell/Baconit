@@ -21,7 +21,49 @@ namespace BaconBackend.Managers
                 Developer_Debug = true;
             }
             Developer_Debug = false;
+
+            // If we aren't a background +1 app opened.
+            if(!baconMan.IsBackgroundTask)
+            {
+                AppOpenedCount++;
+            }
+
+            baconMan.OnResuming += BaconMan_OnResuming;
         }
+
+        private void BaconMan_OnResuming(object sender, object e)
+        {
+            // When we are resuemd +1 the count;
+            AppOpenedCount++;
+        }
+
+        /// <summary>
+        /// Counts the number of times the app has been opened (or resumed)
+        /// </summary>
+        public int AppOpenedCount
+        {
+            get
+            {
+                if (!m_appOpenedCount.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.AppOpenedCount"))
+                    {
+                        m_appOpenedCount = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.AppOpenedCount");
+                    }
+                    else
+                    {
+                        m_appOpenedCount = 0;
+                    }
+                }
+                return m_appOpenedCount.Value;
+            }
+            set
+            {
+                m_appOpenedCount = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.AppOpenedCount", m_appOpenedCount.Value);
+            }
+        }
+        private int? m_appOpenedCount = null;
 
         #region Settings
 
@@ -57,6 +99,33 @@ namespace BaconBackend.Managers
 
         #region MainPage
 
+        /// <summary>
+        /// The next time we should annoy the user to leave a review
+        /// </summary>
+        public int MainPage_NextReviewAnnoy
+        {
+            get
+            {
+                if (!m_mainPage_NextReviewAnnoy.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.MainPage_NextReviewAnnoy"))
+                    {
+                        m_mainPage_NextReviewAnnoy = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.MainPage_NextReviewAnnoy");
+                    }
+                    else
+                    {
+                        m_mainPage_NextReviewAnnoy = 5;
+                    }
+                }
+                return m_mainPage_NextReviewAnnoy.Value;
+            }
+            set
+            {
+                m_mainPage_NextReviewAnnoy = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.MainPage_NextReviewAnnoy", m_mainPage_NextReviewAnnoy.Value);
+            }
+        }
+        private int? m_mainPage_NextReviewAnnoy = null;
 
         #endregion
 

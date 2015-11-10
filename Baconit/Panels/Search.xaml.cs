@@ -268,6 +268,13 @@ namespace Baconit.Panels
                     int count = 0;
                     foreach(Subreddit subreddit in e.ChangedItems)
                     {
+                        // Make sure it isn't private. Since we can't show these we will skip them for now
+                        // #todo fix this
+                        if(subreddit.SubredditType != null && subreddit.SubredditType.Equals("private"))
+                        {
+                            continue;
+                        }
+
                         // Make the result
                         SearchResult subredditResult = new SearchResult()
                         {

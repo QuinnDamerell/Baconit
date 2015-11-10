@@ -67,45 +67,12 @@
                                                      OnIconTapped="UpVote_Tapped"
                                                      VoteBrush="{Binding UpVoteColor}"
                                                      VoteStatus="Up" />
-                    <!--<Grid Margin="8"
-                          Background="Transparent"
-                          Tapped="UpVote_Tapped">
-                        <Ellipse Width="30"
-                                 Height="30"
-                                 Fill="#444444" />
-                        <Polygon Margin="0,6,0,0"
-                                 HorizontalAlignment="Center"
-                                 Fill="{Binding UpVoteColor}"
-                                 Points="0,10 14,10 7,0" />
-                        <Rectangle Width="6"
-                                   Height="9"
-                                   Margin="0,8,0,0"
-                                   HorizontalAlignment="Center"
-                                   Fill="{Binding UpVoteColor}" />
-                    </Grid>-->
 
                     <!--  Down Vote Icon  -->
                     <helperControls:CircleIconButton Grid.Column="1"
                                                      OnIconTapped="DownVote_Tapped"
                                                      VoteBrush="{Binding DownVoteColor}"
                                                      VoteStatus="Down" />
-                    <!--<Grid Grid.Column="1"
-                          Margin="8"
-                          Background="Transparent"
-                          Tapped="DownVote_Tapped">
-                        <Ellipse Width="30"
-                                 Height="30"
-                                 Fill="#444444" />
-                        <Polygon Margin="0,14,0,0"
-                                 HorizontalAlignment="Center"
-                                 Fill="{Binding DownVoteColor}"
-                                 Points="0,0 14,0,7,10" />
-                        <Rectangle Width="6"
-                                   Height="9"
-                                   Margin="0,-9,0,0"
-                                   HorizontalAlignment="Center"
-                                   Fill="{Binding DownVoteColor}" />
-                    </Grid>-->
 
                     <!--  Comment Icon  -->
                     <helperControls:CircleIconButton Grid.Column="2"

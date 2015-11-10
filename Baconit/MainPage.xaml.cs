@@ -141,6 +141,9 @@ namespace Baconit
 
             // Update the trending subreddits
             UpdateTrendingSubreddits();
+
+            // Show review if we should
+            CheckShowReviewAndFeedback();
         }
 
         /// <summary>
@@ -511,7 +514,7 @@ namespace Baconit
                         case 1:
                             ui_trendingSubreddit2.Text = e.TrendingSubredditsDisplayNames[i];
                             break;
-                        
+
                         case 2:
                             ui_trendingSubreddit3.Text = e.TrendingSubredditsDisplayNames[i];
                             break;
@@ -557,15 +560,6 @@ namespace Baconit
         }
 
         #endregion
-
-        /// <summary>
-        /// Called by the page manager when the menu should be opened.
-        /// </summary>
-        /// <param name="show">If it should be shown or hidden</param>
-        public void ToggleMenu(bool show)
-        {
-            ui_splitView.IsPaneOpen = show;
-        }
 
         #region IBackendActionListener
 
@@ -614,7 +608,7 @@ namespace Baconit
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, container.Comment);
                     m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + container.Post + container.Comment, commentArgs);
                     break;
-            }    
+            }
         }
 
         /// <summary>
@@ -666,5 +660,72 @@ namespace Baconit
         }
 
         #endregion
+
+        #region Review and Feedback
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="markdownContent"></param>
+        public async void CheckShowReviewAndFeedback()
+        {
+            // Check to see if we should show the review message.
+            if(App.BaconMan.UiSettingsMan.AppOpenedCount > App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy)
+            {
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    // Make the popup.
+                    RateAndFeedbackPopUp reviewPopup = new RateAndFeedbackPopUp();
+                    reviewPopup.OnHideComplete += ReviewPopup_OnHideComplete;
+
+                    // This is a little tricky, we need to add it second to last
+                    // so the global content presenter can sill come up over it for links.
+                    if (ui_mainHolder.Children.Count > 0)
+                    {
+                        ui_mainHolder.Children.Insert(ui_mainHolder.Children.Count - 1, reviewPopup);
+                    }
+                    else
+                    {
+                        ui_mainHolder.Children.Add(reviewPopup);
+                    }
+
+                    reviewPopup.ShowPopUp();
+                });
+
+                // If we showed the UI update the value to the next time we should annoy them.
+                // If they leave a review we will make this huge.
+                App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy += 40;
+            }
+        }
+
+        /// <summary>
+        /// Fired when the review box is hidden
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReviewPopup_OnHideComplete(object sender, RateAndFeedbackClosed e)
+        {
+            // Remove it
+            ui_mainHolder.Children.Remove((RateAndFeedbackPopUp)sender);
+
+            // Set the rate value
+            if(e.WasReviewGiven)
+            {
+                // Assume they rated the app. Set this to be huge.
+                App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy = int.MaxValue;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Called by the page manager when the menu should be opened.
+        /// </summary>
+        /// <param name="show">If it should be shown or hidden</param>
+        public void ToggleMenu(bool show)
+        {
+            ui_splitView.IsPaneOpen = show;
+        }
     }
 }

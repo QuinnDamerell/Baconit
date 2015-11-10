@@ -245,6 +245,9 @@ namespace Baconit.FlipViewControls
             return String.Empty;
         }
 
+// Disable this annoying warning.
+#pragma warning disable CS0649
+
         private class GfyCatDataContainer
         {
             [JsonProperty(PropertyName = "gfyItem")]
@@ -256,6 +259,8 @@ namespace Baconit.FlipViewControls
             [JsonProperty(PropertyName = "mp4Url")]
             public string Mp4Url;
         }
+
+#pragma warning restore
 
         /// <summary>
         /// Gets a video url from gfycat

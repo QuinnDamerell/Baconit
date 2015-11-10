@@ -40,7 +40,7 @@
                 <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Login" />
                 <TextBlock Grid.Row="1"
                            Margin="0,8"
-                           Text="Unlock even more of Baconit by adding account. Reddit accounts are anonymous, simple, and free - and Baconit plans to keep it that way."
+                           Text="Unlock even more of Baconit by adding account. Reddit accounts are anonymous, simple, and free - and Baconit will keep it that way."
                            TextWrapping="Wrap" />
                 <Button x:Name="ui_loginButton"
                         Grid.Row="5"

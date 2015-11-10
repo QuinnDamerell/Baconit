@@ -40,7 +40,10 @@ namespace Baconit.HelperControls
             Quote,
             Code,
             RawHyperLink,
-            RawSubreddit
+            RawSubreddit,
+            Header,
+            ListElement,
+            HorizontalRule
         }
 
         /// <summary>
@@ -219,6 +222,48 @@ namespace Baconit.HelperControls
                             currentPara = codePara;
                             break;
                         }
+                    case BlockTypes.Header:
+                        {
+                            Paragraph headerPara = ParseHeaderText(currentPara, markdown, ref curPos);
+
+                            // Add the paragraph header completed
+                            if (currentPara.Inlines.Count > 0)
+                            {
+                                blockList.Add(currentPara);
+                            }
+
+                            // Make the header para current
+                            currentPara = headerPara;
+                            break;
+                        }
+                    case BlockTypes.ListElement:
+                        {
+                            Paragraph listPara = ParseListElementText(currentPara, markdown, ref curPos);
+
+                            // Add the paragraph list completed
+                            if (currentPara.Inlines.Count > 0)
+                            {
+                                blockList.Add(currentPara);
+                            }
+
+                            // Make the list para current
+                            currentPara = listPara;
+                            break;
+                        }
+                    case BlockTypes.HorizontalRule:
+                        {
+                            Paragraph horzPara = ParseHorizontalRuleText(currentPara, markdown, ref curPos);
+
+                            // Add the paragraph completed
+                            if (currentPara.Inlines.Count > 0)
+                            {
+                                blockList.Add(currentPara);
+                            }
+
+                            // Make the para current
+                            currentPara = horzPara;
+                            break;
+                        }
                     case BlockTypes.Paragraph:
                     default:
                         {
@@ -357,6 +402,12 @@ namespace Baconit.HelperControls
                 currentClosesPos = tempPos;
                 nextBlockType = BlockTypes.Quote;
             }
+            // The same for the header
+            if (pos == 0 && markdown.Length > 0 && markdown[pos] == '#' && tempPos < currentClosesPos)
+            {
+                currentClosesPos = tempPos;
+                nextBlockType = BlockTypes.Header;
+            }
 
             // Test for a paragraph ending, look for /r or /n
             tempPos = FindNextCloestNewLineOrReturn(markdown, pos);
@@ -390,6 +441,23 @@ namespace Baconit.HelperControls
                 {
                     currentClosesPos = tempPos;
                     nextBlockType = BlockTypes.Quote;
+                }
+                // We have a header;
+                else if (markdown.Length > nextCharPos && markdown[nextCharPos] == '#')
+                {
+                    currentClosesPos = tempPos;
+                    nextBlockType = BlockTypes.Header;
+                }
+                // We have a list element;
+                else if (markdown.Length > nextCharPos + 1 && markdown[nextCharPos] == '*' && markdown[nextCharPos + 1] == ' ')
+                {
+                    currentClosesPos = tempPos;
+                    nextBlockType = BlockTypes.ListElement;
+                }
+                else if (markdown.IndexOf("*****", nextCharPos) == nextCharPos)
+                {
+                    currentClosesPos = tempPos;
+                    nextBlockType = BlockTypes.HorizontalRule;
                 }
                 else
                 {
@@ -608,7 +676,7 @@ namespace Baconit.HelperControls
 
             // Special case! If this quote is in the very beginning we don't want to
             // consider the current ending or our text will be wrong!
-            if(markdownPos == 0)
+            if(markdownPos == 0 && markdown[markdownPos] == '>')
             {
                 currentParaEnding = 0;
             }
@@ -694,6 +762,178 @@ namespace Baconit.HelperControls
             markdownPos = codeBegin;
 
             return codePara;
+        }
+
+        private Paragraph ParseHeaderText(Paragraph currentPar, string markdown, ref int markdownPos)
+        {
+            // Find the next ending
+            int currentParaEnding = FindNextCloestNewLineOrReturn(markdown, markdownPos);
+
+            // Special case! If this header is in the very beginning we don't want to
+            // consider the current ending or our text will be wrong!
+            if (markdownPos == 0 && markdown[markdownPos] == '#')
+            {
+                currentParaEnding = 0;
+            }
+
+            // Find the #
+            int hashPos = markdown.IndexOf('#', markdownPos);
+
+            // Find how many are in a row
+            int totalMarks = 0;
+            while (markdown.Length > hashPos && markdown[hashPos] == '#')
+            {
+                totalMarks++;
+                hashPos++;
+
+                // To match reddit's formatting if there are more than 6 we should start showing them.
+                if(totalMarks > 5)
+                {
+                    break;
+                }
+            }
+
+            // Take any text that is before the quote and put in the paragraph.
+            if (currentParaEnding > markdownPos)
+            {
+                Run preText = new Run();
+                preText.Text = markdown.Substring(markdownPos, currentParaEnding - markdownPos);
+                currentPar.Inlines.Add(preText);
+            }
+
+            // Make the new header paragraph
+            Paragraph headerPara = new Paragraph();
+            headerPara.Margin = new Thickness(0, 18, 0, 12);
+
+            switch(totalMarks)
+            {
+                case 1:
+                    headerPara.FontSize = 20;
+                    headerPara.FontWeight = FontWeights.Bold;
+                    break;
+                case 2:
+                    headerPara.FontSize = 20;
+                    break;
+                case 3:
+                    headerPara.FontSize = 17;
+                    headerPara.FontWeight = FontWeights.Bold;
+                    break;
+                case 4:
+                    headerPara.FontSize = 17;
+                    break;
+                case 5:
+                    headerPara.FontWeight = FontWeights.Bold;
+                    break;
+            }
+
+            // Set the markdownPos
+            markdownPos = hashPos;
+
+            return headerPara;
+        }
+
+        private Paragraph ParseListElementText(Paragraph currentPar, string markdown, ref int markdownPos)
+        {
+            // Find the next ending
+            int currentParaEnding = FindNextCloestNewLineOrReturn(markdown, markdownPos);
+
+            // Find where the list begins
+            int listStart = currentParaEnding;
+            int listIndent = 1;
+            while (markdown.Length > listStart)
+            {
+                if (markdown[listStart] == ' ')
+                {
+                    listIndent++;
+                }
+                else if(markdown[listStart] == '*')
+                {
+                    break;
+                }
+                listStart++;
+            }
+
+            // Remove one indent from the list. This doesn't work exactly like reddit's
+            // but it is close enough
+            listIndent = Math.Max(1, listIndent - 1);
+
+            // Move one past it
+            listStart++;
+
+            // Take any text that is before the quote and put in the paragraph.
+            if (currentParaEnding > markdownPos)
+            {
+                Run preText = new Run();
+                preText.Text = markdown.Substring(markdownPos, currentParaEnding - markdownPos);
+                currentPar.Inlines.Add(preText);
+            }
+
+            // Make the new header paragraph
+            Paragraph listPara = new Paragraph();
+            listPara.Margin = new Thickness(12 * listIndent, 0, 0, 0);
+            Run run = new Run();
+            run.Text = "•";
+            listPara.Inlines.Add(run);
+
+            // Set the markdownPos
+            markdownPos = listStart;
+
+            return listPara;
+        }
+
+        private Paragraph ParseHorizontalRuleText(Paragraph currentPar, string markdown, ref int markdownPos)
+        {
+            // Find the next ending
+            int currentParaEnding = FindNextCloestNewLineOrReturn(markdown, markdownPos);
+
+            // Find where the list begins
+            int horzStart = markdown.IndexOf('*', currentParaEnding);
+
+            // Find the end
+            int horzEnd = horzStart;
+            while (markdown.Length > horzEnd)
+            {
+                if (markdown[horzEnd] != '*')
+                {
+                    break;
+                }
+                horzEnd++;
+            }
+
+            // Take any text that is before the quote and put in the paragraph.
+            if (currentParaEnding > markdownPos)
+            {
+                Run preText = new Run();
+                preText.Text = markdown.Substring(markdownPos, currentParaEnding - markdownPos);
+                currentPar.Inlines.Add(preText);
+            }
+
+            // This is going to be weird. To make this work we need to make a UI element
+            // and fill it with text to make it stretch. If we don't fill it with text I can't
+            // make it stretch the width of the box, so for now this is an "ok" hack.
+            InlineUIContainer contianer = new InlineUIContainer();
+            Grid grid = new Grid();
+            grid.Height = 2;
+            grid.Background = new SolidColorBrush(Color.FromArgb(255, 153, 153, 153));
+
+            // Add the expanding text block.
+            TextBlock magicExpandingTextBlock = new TextBlock();
+            magicExpandingTextBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 153, 153, 153));
+            magicExpandingTextBlock.Text = "This is Quinn writing magic text. You will never see this. Like a ghost! I love Marilyn Welniak! This needs to be really long! RRRRREEEEEAAAAALLLLYYYYY LLLOOOONNNGGGG. This is Quinn writing magic text. You will never see this. Like a ghost! I love Marilyn Welniak! This needs to be really long! RRRRREEEEEAAAAALLLLYYYYY LLLOOOONNNGGGG";
+            grid.Children.Add(magicExpandingTextBlock);
+
+            // Add the grid.
+            contianer.Child = grid;
+
+            // Make the new horizontal rule paragraph
+            Paragraph horzPara = new Paragraph();
+            horzPara.Margin = new Thickness(0, 12, 0, 12);
+            horzPara.Inlines.Add(contianer);
+
+            // Set the markdownPos
+            markdownPos = horzEnd;
+
+            return horzPara;
         }
 
         private void ParseParagraphText(Paragraph currentPar, string markdown, ref int markdownPos)
