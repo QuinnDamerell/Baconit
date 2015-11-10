@@ -316,7 +316,7 @@ namespace BaconBackend.Collectors
         /// <param name="posts">Posts to be formatted</param>
         override protected void ApplyCommonFormatting(ref List<Post> posts)
         {
-            bool isFrontPage = m_subreddit.IsArtifical;
+            bool isFrontPage = m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage");
 
             foreach(Post post in posts)
             {

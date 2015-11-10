@@ -358,16 +358,21 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>9020QuinnDamerell.BaconitSuperEarlyAlpha</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.Baconit</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Baconit Super Early Alpha</ReservedName>
+      <ReservedName>Baconit</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
-    <MainPackageIdentityName>9020QuinnDamerell.Baconit</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.Baconit2</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.BaconitBeta</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.BaconitDonate</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.BaconitEarlyAccess</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.BaconitEarlyAccess-Beta</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.BaconitFree</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.BaconitPreview</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.BaconitPro</MainPackageIdentityName>
+    <MainPackageIdentityName>9020QuinnDamerell.BaconitSuperEarlyAlpha</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.Cortweeta</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.Cortwitana</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.uooS</MainPackageIdentityName>
@@ -378,5 +383,5 @@
     <MainPackageIdentityName>9020QuinnDamerell.Someone</MainPackageIdentityName>
     <MainPackageIdentityName>9020QuinnDamerell.tweetan</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9NBLGGH6D29X" />
+  <PackageInfoList LandingUrl="https://dev.windows.com/dashboard/Application?appId=9WZDNCRFJ0BC" />
 </StoreAssociation>

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="9020QuinnDamerell.BaconitSuperEarlyAlpha" Publisher="CN=0E9109BC-07EF-4673-BFC9-D5C280E44460" Version="4.1.76.0" />
+  <Identity Name="9020QuinnDamerell.Baconit" Publisher="CN=0E9109BC-07EF-4673-BFC9-D5C280E44460" Version="4.1.1.0" />
   <mp:PhoneIdentity PhoneProductId="a941e755-1dc4-4a35-9f20-ca3d8d0beaaa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Baconit Super Early Alpha</DisplayName>
+    <DisplayName>Baconit</DisplayName>
     <PublisherDisplayName>Quinn Damerell</PublisherDisplayName>
     <Logo>Assets\AppAssets\StoreLogo\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Baconit.App">
-      <uap:VisualElements DisplayName="Baconit Super Early Alpha" Square150x150Logo="Assets\AppAssets\Square150x150\Square150.png" Square44x44Logo="Assets\AppAssets\Square44x44\Square44.png" Description="Baconit" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Baconit" Square150x150Logo="Assets\AppAssets\Square150x150\Square150.png" Square44x44Logo="Assets\AppAssets\Square44x44\Square44.png" Description="Baconit is a free, beautiful, open source, reddit client rewritten from the ground up for all Windows 10 devices. Baconit is the highest rated reddit client on Windows and is known for its power, design, functionality, and quality." BackgroundColor="transparent">
         <uap:LockScreen Notification="badge" BadgeLogo="Assets\AppAssets\BadgeLogo\96.png" />
         <uap:DefaultTile Wide310x150Logo="Assets\AppAssets\Wide310x310\Wide310.png" ShortName="Baconit" Square71x71Logo="Assets\AppAssets\Square71x71\Square71.png" Square310x310Logo="Assets\AppAssets\Square310x310\Square210.png">
           <uap:ShowNameOnTiles>
