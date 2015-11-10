@@ -513,7 +513,7 @@ namespace Baconit.Panels
         private void SetSubscribeStatus()
         {
             // Make sure the button should be visible.
-            if(m_subreddit.IsArtifical)
+            if(m_subreddit != null && (m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage")))
             {
                 ui_appBarSubButton.Visibility = Visibility.Collapsed;
                 return;

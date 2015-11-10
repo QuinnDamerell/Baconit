@@ -125,9 +125,6 @@ namespace Baconit
             OnScreenSizeChanged((int)Window.Current.Bounds.Width, true);
             Window.Current.SizeChanged += Windows_SizeChanged;
 
-            // Report the app opened state
-            App.BaconMan.TelemetryMan.ReportEvent(this, "ScreenModeAppOpened", CurrentScreenMode() == ScreenMode.Single ? "Single" : "Split");
-
             // Set the starting panel
             if (startingPanel != null)
             {

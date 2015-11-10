@@ -337,6 +337,8 @@ namespace BaconBackend.Collectors
                 if (!String.IsNullOrEmpty(post.Selftext))
                 {
                     post.Selftext = WebUtility.HtmlDecode(post.Selftext);
+                    // Some times things are double escaped. So do it twice.
+                    post.Selftext = WebUtility.HtmlDecode(post.Selftext);
                 }
 
                 // Set the title size
