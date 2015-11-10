@@ -312,6 +312,10 @@ namespace Baconit.FlipViewControls
             {
                 VisualStateManager.GoToState(this, "ShowNsfwBlock", false);
             }
+            else
+            {
+                VisualStateManager.GoToState(this, "HideNsfwBlock", false);
+            }
         }
 
         private void NsfwBlockRoot_Tapped(object sender, TappedRoutedEventArgs e)
