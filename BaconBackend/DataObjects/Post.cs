@@ -60,6 +60,9 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "over_18")]
         public bool IsOver18 { get; set; }
 
+        [JsonProperty(PropertyName = "stickied")]
+        public bool IsStickied { get; set; }
+
         [JsonProperty(PropertyName = "is_self")]
         public bool IsSelf { get; set; }
 
@@ -80,6 +83,9 @@ namespace BaconBackend.DataObjects
 
         [JsonProperty(PropertyName = "permalink")]
         public string Permalink { get; set; }
+
+        [JsonProperty(PropertyName = "link_flair_text")]
+        public string LinkFlairText { get; set; }
 
         [JsonProperty(PropertyName = "likes")]
         public bool? Likes
@@ -446,6 +452,30 @@ namespace BaconBackend.DataObjects
                 {
                     return new Thickness(0, 0, 3, 0);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Used by the subreddit list to show or hide sticky
+        /// </summary>
+        [JsonIgnore]
+        public Visibility StickyVisibility
+        {
+            get
+            {
+                return IsStickied ? Visibility.Visible: Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Used by the subreddit list to show or hide link flair
+        /// </summary>
+        [JsonIgnore]
+        public Visibility FlairVisibility
+        {
+            get
+            {
+                return String.IsNullOrWhiteSpace(LinkFlairText) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 

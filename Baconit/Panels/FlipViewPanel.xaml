@@ -36,16 +36,28 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Margin="0,0,6,0"
+                               VerticalAlignment="Center"
                                Foreground="#939393"
                                Text="{Binding Author}"
                                TextTrimming="WordEllipsis" />
                     <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Text="{Binding FlipViewSecondary}"
                                TextTrimming="WordEllipsis" />
+                    <Grid Grid.Column="2"
+                          Margin="6,0,0,0"
+                          HorizontalAlignment="Left"
+                          Background="{Binding DarkenedAccentColorBrush}"
+                          Visibility="{Binding FlairVisibility}">
+                        <TextBlock Margin="6,2,6,2"
+                                   Foreground="#DDFFFFFF"
+                                   Text="{Binding LinkFlairText}" />
+                    </Grid>
                 </Grid>
 
                 <!--  Action icons  -->

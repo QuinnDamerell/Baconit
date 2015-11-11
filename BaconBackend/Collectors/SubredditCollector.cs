@@ -389,13 +389,20 @@ namespace BaconBackend.Collectors
                 // Set the second line for flipview
                 post.FlipViewSecondary = $"r/{post.Subreddit.ToLower()}";
 
-                // Escape the title and selftext
+                // Escape the title, flair, and selftext
                 post.Title = WebUtility.HtmlDecode(post.Title);
+                post.LinkFlairText = WebUtility.HtmlDecode(post.LinkFlairText);
                 if (!String.IsNullOrEmpty(post.Selftext))
                 {
                     post.Selftext = WebUtility.HtmlDecode(post.Selftext);
                     // Some times things are double escaped. So do it twice.
                     post.Selftext = WebUtility.HtmlDecode(post.Selftext);
+                }
+
+                // Don't show link flair on the front page
+                if(isFrontPage)
+                {
+                    post.LinkFlairText = "";
                 }
 
                 // Set the title size

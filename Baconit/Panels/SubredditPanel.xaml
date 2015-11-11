@@ -181,6 +181,23 @@
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Margin="0,0,8,0"
+                              HorizontalAlignment="Left"
+                              Background="{Binding DarkenedAccentColorBrush}"
+                              Visibility="{Binding StickyVisibility}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="#DDFFFFFF"
+                                       Text="Sticky" />
+                        </Grid>
+                        <Grid HorizontalAlignment="Left"
+                              Background="{Binding DarkenedAccentColorBrush}"
+                              Visibility="{Binding FlairVisibility}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="#DDFFFFFF"
+                                       Text="{Binding LinkFlairText}" />
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="2"
                             Margin="0,4,0,0"
