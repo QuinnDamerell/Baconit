@@ -1,6 +1,7 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
 using BaconBackend.Interfaces;
+using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,6 +82,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         private bool ActuallyDoTheUpdate(bool force)
         {
+            m_baconMan.TelemetryMan.ReportLog(this, "Updater updating.");
             bool wasSuccessfull = true;
             try
             {
@@ -90,17 +92,23 @@ namespace BaconBackend.Managers.Background
 
                 if (timeSinceLastFullUpdate.TotalMinutes > fullUpdateFequencyMins || force)
                 {
+                    m_baconMan.TelemetryMan.ReportLog(this, "Running full update");
+
                     // Update lock screen images
-                    if(IsLockScreenEnabled)
+                    if (IsLockScreenEnabled)
                     {
+                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
+
                         // We are doing a full update, grab new stories for lock screen
                         List<Post> posts = GetSubredditStories(LockScreenSubredditName);
 
                         // Check we successfully got new posts
                         if (posts != null)
                         {
+                            m_baconMan.TelemetryMan.ReportLog(this, "Lock screen post retrieved, getting images", SeverityLevel.Verbose);
+
                             // If so, get the images for the posts
-                            if(GetImagesFromPosts(posts, true))
+                            if (GetImagesFromPosts(posts, true))
                             {
                                 LastFullUpdate = DateTime.Now;
                                 // Set the index high so it will roll over.
@@ -108,32 +116,40 @@ namespace BaconBackend.Managers.Background
                             }
                             else
                             {
+                                m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen update failed, we failed to get images", SeverityLevel.Error);
                                 wasSuccessfull = false;
                             }
                         }
                         else
                         {
+                            m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen update failed, we have no posts", SeverityLevel.Error);
                             wasSuccessfull = false;
                         }
                     }
 
                     if(IsDeskopEnabled)
                     {
+                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
                         // Shortcut: If lock screen in enabled and it is the same subreddit just share the same cache. If not,
                         // get the desktop images
                         if (IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
                         {
                             // Set the desktop rotation to 1 so we offset lock screen
                             CurrentDesktopRotationIndex = 1;
+                            m_baconMan.TelemetryMan.ReportLog(this, "Desktop same sub as lockscreen, skipping image update.", SeverityLevel.Verbose);
                         }
                         else
                         {
+                            m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image", SeverityLevel.Verbose);
+
                             // We are doing a full update, grab new stories for desktop
                             List<Post> posts = GetSubredditStories(DesktopSubredditName);
 
                             // Check we successfully got new posts
                             if (posts != null)
                             {
+                                m_baconMan.TelemetryMan.ReportLog(this, "Desktop posts retrieved, getting images", SeverityLevel.Verbose);
+
                                 // If so, get the images for the posts
                                 if (GetImagesFromPosts(posts, false))
                                 {
@@ -143,16 +159,20 @@ namespace BaconBackend.Managers.Background
                                 }
                                 else
                                 {
+                                    m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image failed, we failed to get images", SeverityLevel.Error);
                                     wasSuccessfull = false;
                                 }
                             }
                             else
                             {
+                                m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image failed, we failed to get posts", SeverityLevel.Error);
                                 wasSuccessfull = false;
                             }
                         }
                     }
                 }
+
+                m_baconMan.TelemetryMan.ReportLog(this, "Image gathering done or skipped, moving on to setting.");
 
                 // Now update the images
                 using (AutoResetEvent aEvent = new AutoResetEvent(false))
@@ -167,6 +187,8 @@ namespace BaconBackend.Managers.Background
                             {
                                 lockScreenFiles = await GetCurrentCacheImages(true);
 
+                                m_baconMan.TelemetryMan.ReportLog(this, "Current lockscreen images in cache :"+lockScreenFiles.Count);
+
                                 if (lockScreenFiles.Count != 0)
                                 {
                                     // Update the index
@@ -176,8 +198,26 @@ namespace BaconBackend.Managers.Background
                                         CurrentLockScreenRotationIndex = 0;
                                     }
 
+                                    m_baconMan.TelemetryMan.ReportLog(this, "Current lockscreen index used to set image :" + CurrentLockScreenRotationIndex);
+
                                     // Set the image
-                                    await SetBackgroundImage(true, lockScreenFiles[CurrentLockScreenRotationIndex]);
+                                    bool localResult = await SetBackgroundImage(true, lockScreenFiles[CurrentLockScreenRotationIndex]);
+
+                                    if (!localResult)
+                                    {
+                                        m_baconMan.TelemetryMan.ReportLog(this, "Lockscreen image update failed", SeverityLevel.Error);
+                                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "LockscreenImageUpdateFailed");
+                                    }
+                                    else
+                                    {
+                                        m_baconMan.TelemetryMan.ReportLog(this, "Lockscreen image update success");
+                                    }
+
+                                    // Only set the result if we were already successful
+                                    if(wasSuccessfull)
+                                    {
+                                        wasSuccessfull = localResult;
+                                    }
                                 }
                                 else
                                 {
@@ -199,6 +239,7 @@ namespace BaconBackend.Managers.Background
                                     desktopFiles = await GetCurrentCacheImages(false);
                                 }
 
+                                m_baconMan.TelemetryMan.ReportLog(this, "Current desktop images in cache :" + lockScreenFiles.Count);
 
                                 if (desktopFiles != null && desktopFiles.Count != 0)
                                 {
@@ -209,8 +250,26 @@ namespace BaconBackend.Managers.Background
                                         CurrentDesktopRotationIndex = 0;
                                     }
 
+                                    m_baconMan.TelemetryMan.ReportLog(this, "Current desktop index used to set image :" + CurrentDesktopRotationIndex);
+
                                     // Set the image
-                                    await SetBackgroundImage(false, desktopFiles[CurrentDesktopRotationIndex]);
+                                    bool localResult = await SetBackgroundImage(false, desktopFiles[CurrentDesktopRotationIndex]);
+
+                                    if (!localResult)
+                                    {
+                                        m_baconMan.TelemetryMan.ReportLog(this, "Desktop image update failed", SeverityLevel.Error);
+                                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "DesktopImageUpdateFailed");
+                                    }
+                                    else
+                                    {
+                                        m_baconMan.TelemetryMan.ReportLog(this, "Desktop image update success");
+                                    }
+
+                                    // Only set the result if we were already successful
+                                    if (wasSuccessfull)
+                                    {
+                                        wasSuccessfull = localResult;
+                                    }
                                 }
                                 else
                                 {

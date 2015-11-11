@@ -92,5 +92,17 @@ namespace BaconBackend.Managers
             TelemetryClient client = new TelemetryClient();
             client.TrackPageView(pageName);
         }
+
+
+        /// <summary>
+        /// Reports a log event to telemetry.
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="metric"></param>
+        public void ReportLog(object component, string message, SeverityLevel level = SeverityLevel.Information)
+        {
+            TelemetryClient client = new TelemetryClient();
+            client.TrackTrace($"[{component.GetType().Name}] {message}", level);
+        }
     }
 }
