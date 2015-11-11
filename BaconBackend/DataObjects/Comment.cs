@@ -32,6 +32,9 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "link_id")]
         public string LinkId { get; set; }
 
+        [JsonProperty(PropertyName = "author_flair_text")]
+        public string AuthorFlairText { get; set; }
+
         [JsonProperty(PropertyName = "score")]
         public int Score
         {
@@ -88,6 +91,8 @@ namespace BaconBackend.DataObjects
         private static SolidColorBrush s_transparentBrush = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
         private static SolidColorBrush s_veryLightAccentBrush = null;
         private static SolidColorBrush s_accentBrush = null;
+        private static SolidColorBrush s_brightAccentColor = null;
+
         private static SolidColorBrush GetAccentBrush()
         {
             // Not thread safe, but that's ok
@@ -96,6 +101,21 @@ namespace BaconBackend.DataObjects
                 s_accentBrush = (SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"];
             }
             return s_accentBrush;
+        }
+
+        private static SolidColorBrush GetBrightAccentColor()
+        {            
+            // Not thread safe, but that's ok
+            if (s_brightAccentColor == null)
+            {
+                Color accent = GetAccentBrush().Color;
+                int colorAdd = 70;
+                accent.B = (byte)Math.Min(255, accent.B + colorAdd);
+                accent.R = (byte)Math.Min(255, accent.R + colorAdd);
+                accent.G = (byte)Math.Min(255, accent.G + colorAdd);
+                s_brightAccentColor = new SolidColorBrush(accent);
+            }
+            return s_brightAccentColor;
         }
 
         private static SolidColorBrush GetLightenedAccentBrush()
@@ -162,25 +182,24 @@ namespace BaconBackend.DataObjects
             get
             {
                 // Get the accent color
-                Color borderColor = GetAccentBrush().Color;
+                SolidColorBrush borderBrush;
 
                 if (CommentDepth == 0)
                 {
                     // For the first comment, make it darker, this will
                     // differentiate it more
-                    int colorAdd = 100;
-                    borderColor.B = (byte)Math.Min(255, borderColor.B + colorAdd);
-                    borderColor.R = (byte)Math.Min(255, borderColor.R + colorAdd);
-                    borderColor.G = (byte)Math.Min(255, borderColor.G + colorAdd);
+                    borderBrush = GetBrightAccentColor();
                 }
                 else
                 {
+                    Color borderColor = GetAccentBrush().Color;
                     int colorSub = CommentDepth * 23;
                     borderColor.B = (byte)Math.Max(0, borderColor.B - colorSub);
                     borderColor.R = (byte)Math.Max(0, borderColor.R - colorSub);
                     borderColor.G = (byte)Math.Max(0, borderColor.G - colorSub);
+                    borderBrush = new SolidColorBrush(borderColor);
                 }
-                return new SolidColorBrush(borderColor);
+                return borderBrush;
             }
         }
 
@@ -233,6 +252,15 @@ namespace BaconBackend.DataObjects
         }
 
         [JsonIgnore]
+        public SolidColorBrush FlairBrush
+        {
+            get
+            {
+                return GetBrightAccentColor();
+            }
+        }
+
+        [JsonIgnore]
         public Visibility ShowFullCommentVis
         {
             get
@@ -247,6 +275,15 @@ namespace BaconBackend.DataObjects
             get
             {
                 return m_showFullComment ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        [JsonIgnore]
+        public Visibility ShowFlairText
+        {
+            get
+            {
+                return String.IsNullOrWhiteSpace(AuthorFlairText) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 

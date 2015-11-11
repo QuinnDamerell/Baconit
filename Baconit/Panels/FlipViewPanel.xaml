@@ -210,6 +210,7 @@
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Margin="0,0,8,0"
@@ -220,6 +221,11 @@
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="{Binding Score}" />
                             <TextBlock Grid.Column="2"
+                                       Margin="0,0,8,0"
+                                       Foreground="{Binding FlairBrush}"
+                                       Text="{Binding AuthorFlairText}"
+                                       Visibility="{Binding ShowFlairText}" />
+                            <TextBlock Grid.Column="3"
                                        Margin="0,0,8,0"
                                        Foreground="#999999"
                                        Text="{Binding TimeString}" />

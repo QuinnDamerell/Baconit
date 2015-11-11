@@ -125,6 +125,7 @@ namespace BaconBackend.Collectors
 
                 // Decode the body
                 comment.Body = WebUtility.HtmlDecode(comment.Body);
+                comment.AuthorFlairText = WebUtility.HtmlDecode(comment.AuthorFlairText);
             }
         }
 
