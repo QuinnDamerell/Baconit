@@ -84,10 +84,20 @@
                                                      OnIconTapped="OpenBrowser_Tapped"
                                                      SymbolIcon="Globe" />
 
-                    <!--  Share Icon  -->
+                    <!--  More Icon  -->
                     <helperControls:CircleIconButton Grid.Column="4"
-                                                     OnIconTapped="SharePost_Tapped"
-                                                     SymbolIcon="ReShare" />
+                                                     OnIconTapped="More_Tapped"
+                                                     SymbolIcon="More">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
+                                <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
+                                <MenuFlyoutItem Click="SharePost_Click" Text="Share Post" />
+                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy Link" />
+                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy Permalink" />
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                    </helperControls:CircleIconButton>
 
                     <!--  Menu Icon  -->
                     <helperControls:CircleIconButton Grid.Column="5"
@@ -250,10 +260,17 @@
                             <Grid Margin="-4,-4,-4,-13"
                                   Background="#01000000"
                                   Padding="4,4,14,13"
-                                  Tapped="CommentShare_Tapped">
+                                  Tapped="CommentMore_Tapped">
+                                <FlyoutBase.AttachedFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Click="CommentSave_Click" Text="{Binding IsSavedMenuText}" />
+                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share Comment" />
+                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy Permalink" />
+                                    </MenuFlyout>
+                                </FlyoutBase.AttachedFlyout>
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
-                                           Text="share" />
+                                           Text="more" />
                             </Grid>
                             <Grid Margin="-4,-4,-4,-13"
                                   Background="#01000000"

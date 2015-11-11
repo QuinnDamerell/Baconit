@@ -491,6 +491,17 @@ namespace BaconBackend.Managers
                     else
                     {
                         m_subredditList = new List<Subreddit>();
+
+                        // We don't need this 100%, but when the app first
+                        // opens we won't have the subreddit yet so this prevents
+                        // us from grabbing the sub from the internet.
+                        Subreddit subreddit = new Subreddit()
+                        {
+                            DisplayName = "frontpage",
+                            Title = "Your front page",
+                            Id = "frontpage"
+                        };
+                        m_subredditList.Add(subreddit);
                     }
                 }
                 return m_subredditList;

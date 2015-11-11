@@ -98,6 +98,38 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool? m_likes = null;
 
+        [JsonProperty(PropertyName = "saved")]
+        public bool IsSaved
+        {
+            get
+            {
+                return m_isSaved;
+            }
+            set
+            {
+                m_isSaved = value;
+                NotifyPropertyChanged(nameof(IsSavedMenuText));
+            }
+        }
+        [JsonIgnore]
+        bool m_isSaved;
+
+        [JsonProperty(PropertyName = "hidden")]
+        public bool IsHidden
+        {
+            get
+            {
+                return m_isHidden;
+            }
+            set
+            {
+                m_isHidden = value;
+                NotifyPropertyChanged(nameof(IsHiddenMenuText));
+            }
+        }
+        [JsonIgnore]
+        bool m_isHidden;
+
         //
         // UI Vars
         //
@@ -307,6 +339,30 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         int m_titleMaxLines = 2;
+
+        /// <summary>
+        /// Sets text for a context menu item
+        /// </summary>
+        [JsonIgnore]
+        public string IsSavedMenuText
+        {
+            get
+            {
+                return IsSaved ? "Unsave Post" : "Save Post";
+            }
+        }
+
+        /// <summary>
+        /// Sets text for a context menu item
+        /// </summary>
+        [JsonIgnore]
+        public string IsHiddenMenuText
+        {
+            get
+            {
+                return IsHidden ? "Unhide Post" : "Hide Post";
+            }
+        }
 
         /// <summary>
         /// Used by subreddit view to mark the title read

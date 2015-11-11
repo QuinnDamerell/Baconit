@@ -428,27 +428,88 @@ namespace Baconit.Panels
         private async void OpenBrowser_Tapped(object sender, EventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
-            if (!String.IsNullOrWhiteSpace(post.Url))
+            string url = post.Url;
+            if (String.IsNullOrWhiteSpace(url))
             {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(post.Url, UriKind.Absolute));
+                url = post.Permalink;
             }
+
+            if (!String.IsNullOrWhiteSpace(url))
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
+                App.BaconMan.TelemetryMan.ReportEvent(this, "OpenInBrowser");
+            }
+        }
+
+        private void More_Tapped(object sender, EventArgs e)
+        {
+            // Show the more menu
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+
+            App.BaconMan.TelemetryMan.ReportEvent(this, "MoreTapped");
+        }
+
+        private void SavePost_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            m_collector.SaveOrHidePost(post, !post.IsSaved, null);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SavePostTapped");
+        }
+
+        private void HidePost_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            m_collector.SaveOrHidePost(post, null, !post.IsHidden);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
+        }
+
+        private void CopyLink_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post and copy the url into the clipboard
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            DataPackage data = new DataPackage();
+            if(String.IsNullOrWhiteSpace(post.Url))
+            {
+                data.SetText("http://www.reddit.com" + post.Permalink);
+            }
+            else
+            {
+                data.SetText(post.Url);
+            }
+            Clipboard.SetContent(data);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
+        }
+
+        private void CopyPermalink_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post and copy the url into the clipboard
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            DataPackage data = new DataPackage();
+            data.SetText("http://www.reddit.com" + post.Permalink);
+            Clipboard.SetContent(data);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         // I threw up a little while I wrote this.
         Post m_sharePost = null;
-        private void SharePost_Tapped(object sender, EventArgs e)
+        private void SharePost_Click(object sender, RoutedEventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             // #todo handle things other than URLs
-            if(!String.IsNullOrWhiteSpace(post.Url))
+            if (!String.IsNullOrWhiteSpace(post.Url))
             {
                 m_sharePost = post;
                 // Setup the share contract so we can share data
                 DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
                 dataTransferManager.DataRequested += DataTransferManager_DataRequested;
                 DataTransferManager.ShowShareUI();
-            }
+                App.BaconMan.TelemetryMan.ReportEvent(this, "SharePostTapped");
 
+            }
         }
 
         private void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
@@ -883,19 +944,53 @@ namespace Baconit.Panels
             ui_commmentBox.ShowBox(post, "t1_" +comment.Id);
         }
 
-        private void CommentShare_Tapped(object sender, TappedRoutedEventArgs e)
+        private void CommentMore_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Animate the text
             AnimateText((FrameworkElement)sender);
 
+            // Show the more menu
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentMoreTapped");    
+        }
+
+        private void CommentSave_Click(object sender, RoutedEventArgs e)
+        {
+            Comment comment = (sender as FrameworkElement).DataContext as Comment;
+            FlipViewPostCommentManager manager = FindCommentManager(comment.LinkId);
+            if (manager != null)
+            {
+                manager.Save_Tapped(comment);
+            }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSaveTapped");
+        }
+
+        private void CommentShare_Click(object sender, RoutedEventArgs e)
+        {
             Comment comment = (sender as FrameworkElement).DataContext as Comment;
             FlipViewPostCommentManager manager = FindCommentManager(comment.LinkId);
             if (manager != null)
             {
                 manager.Share_Tapped(comment);
             }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentShareTapped");
+        }
 
-            TextBlock textBlock = (TextBlock)VisualTreeHelper.GetChild((FrameworkElement)sender, 0);
+        private void CommentPermalink_Click(object sender, RoutedEventArgs e)
+        {
+            Comment comment = (sender as FrameworkElement).DataContext as Comment;
+
+            FlipViewPostCommentManager manager = FindCommentManager(comment.LinkId);
+            if (manager != null)
+            {
+                manager.CopyPermalink_Tapped(comment);
+            }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentPermalinkTapped");
         }
 
         private void CommentCollpase_Tapped(object sender, TappedRoutedEventArgs e)

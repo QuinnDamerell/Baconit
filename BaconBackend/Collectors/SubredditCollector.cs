@@ -265,6 +265,63 @@ namespace BaconBackend.Collectors
             });
         }
 
+        /// <summary>
+        /// Called by the consumer when a post should be saved or hidden
+        /// </summary>
+        /// <param name="post">The post to be marked as read</param>
+        /// <param name="postPosition">A hint to the position of the post</param>
+        public async void SaveOrHidePost(Post post, bool? save, bool? hide, int postPosition = 0)
+        {
+            // Using the post and suggested index, find the real post and index
+            Post collectionPost = post;
+            FindPostInCurrentCollection(ref collectionPost, ref postPosition);
+
+            if (collectionPost == null)
+            {
+                // We didn't find it.
+                return;
+            }
+
+            // Change the UI now
+            if (save.HasValue)
+            {
+                collectionPost.IsSaved = save.Value;
+            }
+            else if (hide.HasValue)
+            {
+                collectionPost.IsHidden = hide.Value;
+            }
+            else
+            {
+                return;
+            }
+
+            // Make the call to save or hide the post
+            bool success = await MiscellaneousHelper.SaveOrHideRedditItem(m_baconMan, "t3_" + collectionPost.Id, save, hide);
+
+            if (!success)
+            {
+                // We failed, revert the UI.
+                if (save.HasValue)
+                {
+                    collectionPost.IsSaved = save.Value;
+                }
+                else if (hide.HasValue)
+                {
+                    collectionPost.IsHidden = hide.Value;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                // Fire off that a update happened.
+                FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+            }
+        }
+
         #endregion
 
         /// <summary>

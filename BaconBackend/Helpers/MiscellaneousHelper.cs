@@ -83,6 +83,60 @@ namespace BaconBackend.Helpers
             return foundUser;
         }
 
+        /// <summary>
+        /// Saves, unsaves, hides, or unhides a reddit item.
+        /// </summary>
+        /// <returns>Returns null if it fails or the user doesn't exist.</returns>
+        public static async Task<bool> SaveOrHideRedditItem(BaconManager baconMan, string redditId, bool? save, bool? hide)
+        {
+            if(!baconMan.UserMan.IsUserSignedIn)
+            {
+                baconMan.MessageMan.ShowSigninMessage(save.HasValue ? "save item" : "hide item");
+                return false;
+            }
+
+            bool wasSuccess = false;
+            try
+            {
+                // Make the data
+                List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+                data.Add(new KeyValuePair<string, string>("id", redditId));
+
+                string url;
+                if (save.HasValue)
+                {
+                    url = save.Value ? "/api/save" : "/api/unsave";
+                }
+                else if(hide.HasValue)
+                {
+                    url = hide.Value ? "/api/hide" : "/api/unhide";
+                }
+                else
+                {
+                    return false;
+                }
+
+                // Make the call
+                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequest(url, data);
+
+                if(jsonResponse.Contains("{}"))
+                {
+                    wasSuccess = true;
+                }
+                else
+                {
+                    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to save or hide item, unknown response");
+                    baconMan.MessageMan.DebugDia("failed to save or hide item, unknown response");
+                }
+            }
+            catch (Exception e)
+            {
+                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to save or hide item", e);
+                baconMan.MessageMan.DebugDia("failed to save or hide item", e);
+            }
+            return wasSuccess;
+        }
+
 
         /// <summary>
         /// Attempts to parse out a reddit object from a reddit data object.

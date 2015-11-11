@@ -1,5 +1,6 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
+using BaconBackend.Helpers;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
 using System;
@@ -339,6 +340,30 @@ namespace Baconit.Panels
         public void Share_Tapped(Comment comment)
         {
             ShareComment(comment);
+        }
+
+        public async void Save_Tapped(Comment comment)
+        {
+            // Update the UI now
+            comment.IsSaved = !comment.IsSaved;
+
+            // Make the call
+            bool success = await MiscellaneousHelper.SaveOrHideRedditItem(App.BaconMan, "t1_" + comment.Id, comment.IsSaved, null);
+
+            // If we failed revert
+            if (!success)
+            {
+                comment.IsSaved = !comment.IsSaved;
+            }
+        }
+
+        public void CopyPermalink_Tapped(Comment comment)
+        {
+            // Get the link and copy the url into the clipboard
+            string commentLink = "https://reddit.com" + m_post.Permalink + comment.Id;
+            DataPackage data = new DataPackage();
+            data.SetText(commentLink);
+            Clipboard.SetContent(data);
         }
 
         public async void Collpase_Tapped(Comment comment)

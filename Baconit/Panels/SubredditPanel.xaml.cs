@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using BaconBackend.Collectors;
 using System.Threading.Tasks;
 using Baconit.HelperControls;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace Baconit.Panels
 {
@@ -406,6 +407,67 @@ namespace Baconit.Panels
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, m_currentSortType);
             args.Add(PanelManager.NAV_ARGS_POST_ID, post.Id);
             m_host.Navigate(typeof(FlipViewPanel), m_subreddit.DisplayName + m_currentSortType, args);
+        }
+
+        private void Post_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "PostHeldOpenedContextMenu");
+        }
+
+        private void Post_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "RightClickedOpenedContextMenu");
+        }
+
+        private void SavePost_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            m_collector.SaveOrHidePost(post, !post.IsSaved, null);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "PostSavedTapped");
+        }
+
+        private void HidePost_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            m_collector.SaveOrHidePost(post, null, !post.IsHidden);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
+        }
+
+        private void CopyLink_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post and copy the url into the clipboard
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            DataPackage data = new DataPackage();
+            if (String.IsNullOrWhiteSpace(post.Url))
+            {
+                data.SetText("http://www.reddit.com" + post.Permalink);
+            }
+            else
+            {
+                data.SetText(post.Url);
+            }
+            Clipboard.SetContent(data);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
+        }
+
+        private void CopyPermalink_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post and copy the url into the clipboard
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            DataPackage data = new DataPackage();
+            data.SetText("http://www.reddit.com" + post.Permalink);
+            Clipboard.SetContent(data);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         #endregion

@@ -65,6 +65,22 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool? m_likes = null;
 
+        [JsonProperty(PropertyName = "saved")]
+        public bool IsSaved
+        {
+            get
+            {
+                return m_isSaved;
+            }
+            set
+            {
+                m_isSaved = value;
+                NotifyPropertyChanged(nameof(IsSavedMenuText));
+            }
+        }
+        [JsonIgnore]
+        bool m_isSaved;
+
         //
         // UI Vars
         //
@@ -125,6 +141,18 @@ namespace BaconBackend.DataObjects
                 // Note the rest of the size are applied in XAML by padding.
                 // We need a margin of 1 to keep the borders from overlapping.
                 return new Thickness((CommentDepth * 8), 1, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// Sets text for a context menu item
+        /// </summary>
+        [JsonIgnore]
+        public string IsSavedMenuText
+        {
+            get
+            {
+                return IsSaved ? "Unsave Comment" : "Save Comment";
             }
         }
 

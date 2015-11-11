@@ -82,12 +82,23 @@
 
 
         <DataTemplate x:Key="SubredditItemItemDataTemplate">
-            <Grid Margin="0,0,6,15" Background="Transparent">
+            <Grid Margin="0,0,6,15"
+                  Background="Transparent"
+                  Holding="Post_Holding"
+                  RightTapped="Post_RightTapped">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="45" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <FlyoutBase.AttachedFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
+                        <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
+                        <MenuFlyoutItem Click="CopyLink_Click" Text="Copy Link" />
+                        <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy Permalink" />
+                    </MenuFlyout>
+                </FlyoutBase.AttachedFlyout>
 
                 <StackPanel Grid.Column="0"
                             Margin="0,0,0,0"

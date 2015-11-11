@@ -15,13 +15,6 @@ namespace BaconBackend.Managers
         {
             m_baconMan = baconMan;
 
-            // If debug turn on debugging messages
-            if(Debugger.IsAttached)
-            {
-                Developer_Debug = true;
-            }
-            Developer_Debug = false;
-
             // If we aren't a background +1 app opened.
             if(!baconMan.IsBackgroundTask)
             {
@@ -76,9 +69,9 @@ namespace BaconBackend.Managers
             {
                 if (!m_developer_Debug.HasValue)
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("Developer_Debug"))
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("Developer_Debug"))
                     {
-                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("Developer_Debug");
+                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("Developer_Debug");
                     }
                     else
                     {
@@ -90,7 +83,7 @@ namespace BaconBackend.Managers
             set
             {
                 m_developer_Debug = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("Developer_Debug", m_developer_Debug.Value);
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("Developer_Debug", m_developer_Debug.Value);
             }
         }
         private bool? m_developer_Debug = null;
