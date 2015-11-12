@@ -18,7 +18,7 @@ Big Todo. For now, you can find discussions on architecture on the [dev subreddi
 ## Style Guidelines
 Todo. For now just match the style conventions used in the files.
 
-###Contrubtors
+###Contributors
 
 * [Quinn Damerell](http://www.quinndamerell.com/) - Creator
 
