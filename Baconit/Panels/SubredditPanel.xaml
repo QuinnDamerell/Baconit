@@ -231,7 +231,8 @@
             <TextBlock x:Name="ui_subredditName"
                        Margin="12,12,0,12"
                        VerticalAlignment="Bottom"
-                       Text="Baconit" />
+                       Text="Baconit" 
+                       Tapped="Header_Tapped"/>
 
             <StackPanel Grid.Column="1"
                         HorizontalAlignment="Right"
