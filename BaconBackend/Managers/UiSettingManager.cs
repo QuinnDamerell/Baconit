@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace BaconBackend.Managers
 {
+    public enum NsfwBlockType
+    {
+        Always = 0,        
+        PerSubreddit,
+        Never,
+    }
+
     public class UiSettingManager
     {
         BaconManager m_baconMan;
@@ -189,6 +196,34 @@ namespace BaconBackend.Managers
         #endregion
 
         #region Flip View
+
+        /// <summary>
+        /// Indicates what we should do with NSFW blocks
+        /// </summary>
+        public NsfwBlockType FlipView_NsfwBlockingType
+        {
+            get
+            {
+                if (!m_flipView_NsfwBlockingType.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_NsfwBlockingType"))
+                    {
+                        m_flipView_NsfwBlockingType = m_baconMan.SettingsMan.ReadFromLocalSettings<NsfwBlockType>("UiSettingManager.FlipView_NsfwBlockingType");
+                    }
+                    else
+                    {
+                        m_flipView_NsfwBlockingType = NsfwBlockType.Always;
+                    }
+                }
+                return m_flipView_NsfwBlockingType.Value;
+            }
+            set
+            {
+                m_flipView_NsfwBlockingType = value;
+                m_baconMan.SettingsMan.WriteToLocalSettings<NsfwBlockType>("UiSettingManager.FlipView_NsfwBlockingType", m_flipView_NsfwBlockingType.Value);
+            }
+        }
+        private NsfwBlockType? m_flipView_NsfwBlockingType = null;
 
         /// <summary>
         /// If the user wants to pre load comments or not.

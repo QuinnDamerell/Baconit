@@ -228,10 +228,13 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="ui_subredditName"
-                       Margin="12,12,0,12"
-                       VerticalAlignment="Bottom"
-                       Text="Baconit" />
+            <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
+                <TextBlock x:Name="ui_subredditName"
+                           Margin="12,12,0,12"
+                           VerticalAlignment="Bottom"
+                           Text="Baconit" />
+            </Grid>
+
 
             <StackPanel Grid.Column="1"
                         HorizontalAlignment="Right"
@@ -290,7 +293,7 @@
                    Grid.Row="1"
                    Margin="12,0,12,12"
                    Foreground="#999999"
-                   Text="There are no post here."
+                   Text="There are no posts here."
                    Visibility="Collapsed" />
 
         <!--  Custom App bar  -->

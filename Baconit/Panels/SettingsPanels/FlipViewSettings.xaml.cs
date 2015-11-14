@@ -1,4 +1,5 @@
-﻿using Baconit.Interfaces;
+﻿using BaconBackend.Managers;
+using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -47,6 +48,7 @@ namespace Baconit.Panels.SettingsPanels
 
             ui_preLoadComments.IsOn = App.BaconMan.UiSettingsMan.FlipView_PreloadComments;
             ui_showHelpTips.IsOn = App.BaconMan.UiSettingsMan.FlipView_ShowCommentScrollTip;
+            ui_flipViewNsfwType.SelectedIndex = (int)App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType;
 
             m_takeChangeAction = true;
         }
@@ -69,6 +71,16 @@ namespace Baconit.Panels.SettingsPanels
             }
 
             App.BaconMan.UiSettingsMan.FlipView_ShowCommentScrollTip = ui_showHelpTips.IsOn;
+        }
+
+        private void FlipViewNsfwType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!m_takeChangeAction)
+            {
+                return;
+            }
+
+            App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType = (NsfwBlockType)ui_flipViewNsfwType.SelectedIndex;
         }
     }
 }

@@ -4,6 +4,7 @@ using BaconBackend.Helpers;
 using Baconit.FlipViewControls;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
+using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -738,6 +739,13 @@ namespace Baconit.Panels
             // Get the post
             Post post = ((Post)((FrameworkElement)sender).DataContext);
 
+            if(post == null)
+            {
+                App.BaconMan.TelemetryMan.ReportLog(this, "post is null in List_OnListEndDetectedEvent!", SeverityLevel.Critical);
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "postWasNullOnListEndDetectedEvent");
+                return;
+            }
+
             // Show or hide the scroll bar depending if we have gotten to comments yet or not.
             post.VerticalScrollBarVisibility = e.ListScrollTotalDistance > 60 ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
 
@@ -750,7 +758,15 @@ namespace Baconit.Panels
             {
                 foreach (Grid flipHeader in m_flipViewStoryHeaders)
                 {
-                    if ((flipHeader.DataContext as Post).Id.Equals(post.Id))
+                    Post headerPost = (Post)(flipHeader.DataContext);
+                    if(headerPost == null)
+                    {
+                        App.BaconMan.TelemetryMan.ReportLog(this, "post is null in List_OnListEndDetectedEvent! for loop", SeverityLevel.Critical);
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "postWasNullOnListEndDetectedEventForLoop");
+                        continue;
+                    }
+
+                    if (headerPost.Id.Equals(post.Id))
                     {
                         currentPostHeaderSize = flipHeader.ActualHeight;
                         break;
