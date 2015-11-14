@@ -291,7 +291,7 @@
                    Grid.Row="1"
                    Margin="12,0,12,12"
                    Foreground="#999999"
-                   Text="There are no post here."
+                   Text="There are no posts here."
                    Visibility="Collapsed" />
 
         <!--  Custom App bar  -->
