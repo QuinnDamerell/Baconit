@@ -330,6 +330,13 @@ namespace Baconit.FlipViewControls
 
         private void NsfwBlockRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            // Return if there is no post.
+            if(m_currentPost == null)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CurrentPostNullInNSFWBlockTapped");
+                return;
+            }
+
             // When the block is tapped, animate out the block screen and add it to the list
             // not to block again
             s_previousLoweredNsfwBlocks.Add(m_currentPost.Id, true);

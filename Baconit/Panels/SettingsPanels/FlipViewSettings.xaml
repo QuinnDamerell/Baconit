@@ -33,7 +33,7 @@
                           Toggled="ShowHelpTips_Toggled" />
 
             <TextBlock Margin="0,0,0,8"
-                       Text="NSFW post block screen strategy."
+                       Text="NSFW screen blocking strategy."
                        TextWrapping="Wrap" />
             <ComboBox x:Name="ui_flipViewNsfwType" SelectionChanged="FlipViewNsfwType_SelectionChanged">
                 <ComboBoxItem>Always</ComboBoxItem>
