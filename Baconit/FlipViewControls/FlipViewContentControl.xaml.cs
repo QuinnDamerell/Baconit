@@ -1,5 +1,6 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
+using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,11 @@ namespace Baconit.FlipViewControls
         private static Dictionary<string, bool> s_previousLoweredNsfwBlocks = new Dictionary<string, bool>();
 
         /// <summary>
+        /// This is a list of subreddits the block has been lowered for
+        /// </summary>
+        private static Dictionary<string, bool> s_previousLoweredNsfwSubreddits = new Dictionary<string, bool>();
+
+        /// <summary>
         /// Holds a reference to the control we are using.
         /// </summary>
         IFlipViewContentControl m_control;
@@ -33,7 +39,7 @@ namespace Baconit.FlipViewControls
         /// <summary>
         /// Holds the current post id, this is used to ignore multiple calls.
         /// </summary>
-        string m_currentPostId;
+        Post m_currentPost;
 
         public FlipViewContentControl()
         {
@@ -118,7 +124,7 @@ namespace Baconit.FlipViewControls
         /// <param name="flipPost">New post</param>
         public void OnPostChanged(Post flipPost)
         {
-            if(!String.IsNullOrWhiteSpace(m_currentPostId) && flipPost != null && m_currentPostId.Equals(flipPost.Id))
+            if(m_currentPost != null && flipPost != null && m_currentPost.Id.Equals(flipPost.Id))
             {
                 // We already have this loaded, jump out of here
                 return;
@@ -129,7 +135,7 @@ namespace Baconit.FlipViewControls
 
             if (flipPost != null)
             {
-                m_currentPostId = flipPost.Id;
+                m_currentPost = flipPost;
                 ShowNsfwIfNeeded(flipPost);
                 CreateNewControl(flipPost);
             }
@@ -144,7 +150,7 @@ namespace Baconit.FlipViewControls
             ui_contentRoot.Children.Clear();
 
             // Clear the current post
-            m_currentPostId = String.Empty;
+            m_currentPost = null;
 
             if (m_control != null)
             {
@@ -307,8 +313,12 @@ namespace Baconit.FlipViewControls
 
         public void ShowNsfwIfNeeded(Post post)
         {
-            // If the post is over 18 and it hasn't been lowered already show the block
-            if(post.IsOver18 && !s_previousLoweredNsfwBlocks.ContainsKey(post.Id))
+            // If the post is over 18, and it hasn't been lowered, and we don't have block off, and we won't have per subreddit on and the subreddit has been lowered
+            if(post.IsOver18 && 
+               !s_previousLoweredNsfwBlocks.ContainsKey(post.Id) &&
+                    (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always || 
+                        (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit && 
+                        !s_previousLoweredNsfwSubreddits.ContainsKey(post.Subreddit))))
             {
                 VisualStateManager.GoToState(this, "ShowNsfwBlock", false);
             }
@@ -322,7 +332,15 @@ namespace Baconit.FlipViewControls
         {
             // When the block is tapped, animate out the block screen and add it to the list
             // not to block again
-            s_previousLoweredNsfwBlocks.Add(m_currentPostId, true);
+            s_previousLoweredNsfwBlocks.Add(m_currentPost.Id, true);
+
+            // If the block is tapped and we are in subreddit mode add it to the ignore subreddit list.
+            if(App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit)
+            {
+                s_previousLoweredNsfwSubreddits.Add(m_currentPost.Subreddit, true); 
+            }
+
+            // Animate out the NSFW block.
             VisualStateManager.GoToState(this, "HideNsfwBlock", true);
         }
 
