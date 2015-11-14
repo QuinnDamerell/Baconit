@@ -470,6 +470,11 @@ namespace Baconit.Panels
             App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
+        private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            m_host.ToggleMenu(true);
+        }
+
         #endregion
 
         #region EndlessScrollingLogic
