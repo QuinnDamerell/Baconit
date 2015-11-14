@@ -243,11 +243,12 @@ namespace Baconit
             {
                 // If we have mail so the mail icon.
                 if (App.BaconMan.UserMan.CurrentUser.HasMail)
-                {
+                {   
                     ui_accountHeaderMailBox.Visibility = Visibility.Visible;
+                    ui_inboxCountTextBlock.Text = App.BaconMan.UserMan.CurrentUser.InboxCount.ToString();
                 }
                 else
-                {
+                {   
                     ui_accountHeaderKarmaHolder.Visibility = Visibility.Visible;
                     ui_accountHeaderKaramaLink.Text = App.BaconMan.UserMan.CurrentUser.LinkKarma.ToString();
                     // The space is need to ensure the UI looks correct.

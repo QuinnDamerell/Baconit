@@ -265,10 +265,13 @@
                                     Grid.Column="2"
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal"
-                                    Visibility="Collapsed">
-                            <Image Width="20"
-                                   Margin="12"
-                                   Source="ms-appx:///Assets/MainPage/NewMailIcon.png" />
+                                    Visibility="Collapsed"
+                                    Margin="12,0"
+                                    Tapped="InboxGrid_Tapped">
+                            <TextBlock x:Name="ui_inboxCountTextBlock"
+                                       VerticalAlignment="Center"/>
+                            <SymbolIcon Symbol="Mail"
+                                        Margin="4,0,0,0"/>
                         </StackPanel>
                     </Grid>
 

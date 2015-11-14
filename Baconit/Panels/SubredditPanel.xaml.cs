@@ -721,6 +721,11 @@ namespace Baconit.Panels
             m_host.ToggleMenu(true);
         }
 
+        private void Header_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            m_host.ToggleMenu(true);
+        }
+
         private void Refresh_Click(object sender, EventArgs e)
         {
             // Kick off an update.
