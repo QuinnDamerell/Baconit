@@ -278,6 +278,7 @@ namespace Baconit
                 if (App.BaconMan.UserMan.CurrentUser.HasMail)
                 {
                     ui_accountHeaderMailBox.Visibility = Visibility.Visible;
+                    ui_inboxCountTextBlock.Text = App.BaconMan.UserMan.CurrentUser.InboxCount.ToString();
                 }
                 else
                 {

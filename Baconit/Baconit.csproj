@@ -279,7 +279,6 @@
     <Content Include="Assets\FlipView\UpCarret.png" />
     <Content Include="Assets\MainPage\BaconitLogo.png" />
     <Content Include="Assets\MainPage\FavoriteIcon.png" />
-    <Content Include="Assets\MainPage\NewMailIcon.png" />
     <Content Include="Assets\MainPage\NotFavoriteIcon.png" />
     <None Include="Package.StoreAssociation.xml">
       <SubType>Designer</SubType>

@@ -369,12 +369,13 @@
                         </StackPanel>
                         <StackPanel x:Name="ui_accountHeaderMailBox"
                                     Grid.Column="2"
+                                    Margin="12,0"
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal"
+                                    Tapped="InboxGrid_Tapped"
                                     Visibility="Collapsed">
-                            <Image Width="20"
-                                   Margin="12"
-                                   Source="ms-appx:///Assets/MainPage/NewMailIcon.png" />
+                            <TextBlock x:Name="ui_inboxCountTextBlock" VerticalAlignment="Center" />
+                            <SymbolIcon Margin="8,0,0,0" Symbol="Mail" />
                         </StackPanel>
                     </Grid>
 
