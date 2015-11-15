@@ -80,7 +80,7 @@ namespace Baconit.Panels
 
         public void OnNavigatingTo()
         {
-            // Ignore for now
+            ui_searchBox.Focus(FocusState.Programmatic);
         }
 
         public void OnNavigatingFrom()
