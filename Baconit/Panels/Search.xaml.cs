@@ -71,16 +71,32 @@ namespace Baconit.Panels
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
             m_panelManager = host;
+
+            // If we get passed a search term search it right away.
+            if(arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_QUERY))
+            {
+                ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
+                Search_Tapped(null, null);
+            }
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore for now
+            // If we get passed a search term search it right away.
+            if (arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_QUERY))
+            {
+                ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
+                Search_Tapped(null, null);
+            }
         }
 
         public void OnNavigatingTo()
         {
-            // Ignore for now
+            // Focus the search box when we open if the query is empty.
+            if (String.IsNullOrWhiteSpace(ui_searchBox.Text))
+            {
+                ui_searchBox.Focus(FocusState.Programmatic);
+            }
         }
 
         public void OnNavigatingFrom()

@@ -141,6 +141,7 @@
     <Compile Include="HelperControls\GlobalContentPresenter.xaml.cs">
       <DependentUpon>GlobalContentPresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperControls\KeyboardShortcutHelper.cs" />
     <Compile Include="HelperControls\LoadingOverlay.xaml.cs">
       <DependentUpon>LoadingOverlay.xaml</DependentUpon>
     </Compile>

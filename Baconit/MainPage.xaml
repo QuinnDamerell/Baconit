@@ -9,7 +9,61 @@
       mc:Ignorable="d">
 
     <Grid x:Name="ui_mainHolder" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <SplitView x:Name="ui_splitView" PaneBackground="#1F1F1F">
+
+        <!--  Animations  -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="QuickSearch">
+                <VisualState x:Name="HideQuichSeachResults">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_quickSearchResultBox"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_quickSearchResultBox"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="ShowQuichSeachResults">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_quickSearchResultBox"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_quickSearchResultBox"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+
+        <SplitView x:Name="ui_splitView"
+                   PaneBackground="#1F1F1F"
+                   PaneClosed="SplitView_PaneClosed">
             <SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -101,30 +155,82 @@
                         </ListView.ItemContainerTransitions>
                     </ListView>
 
+                    <!--  The quick serach results, overlays the subreddit list when open  -->
+                    <StackPanel x:Name="ui_quickSearchResultBox"
+                                Grid.Row="6"
+                                Grid.ColumnSpan="2"
+                                VerticalAlignment="Bottom"
+                                Background="White">
+                        <Grid x:Name="ui_quickSearchLowPriGrid"
+                              Background="Transparent"
+                              Tapped="QuickSearchLowPriGrid_Tapped">
+                            <TextBlock x:Name="ui_quickSearchLowPriText"
+                                       Margin="10"
+                                       Foreground="Black"
+                                       Text="baconit" />
+                        </Grid>
+                        <Grid x:Name="ui_quickSearchMedPriGrid"
+                              Background="Transparent"
+                              Tapped="QuickSearchMedPriGrid_Tapped">
+                            <TextBlock x:Name="ui_quickSearchMedPriText"
+                                       Margin="10"
+                                       Foreground="Black"
+                                       Text="baconit" />
+                        </Grid>
+                        <Grid x:Name="ui_quickSearchHiPriGrid"
+                              Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                              Tapped="QuickSearchHiPriGrid_Tapped">
+                            <TextBlock x:Name="ui_quickSearchHiPriText"
+                                       Margin="10"
+                                       Foreground="Black"
+                                       Text="baconit" />
+                        </Grid>
+                    </StackPanel>
+
                     <!--  Search Header  -->
                     <Grid x:Name="ui_searchHeader"
                           Grid.Row="7"
-                          Grid.ColumnSpan="2"
-                          Tapped="SearchHeader_Tapped">
+                          Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition x:Name="ui_quickSearchTextBoxColumDef" Width="auto" />
+                            <ColumnDefinition x:Name="ui_quickSearchHeaderColumDef" Width="*" />
                         </Grid.ColumnDefinitions>
-                        <SymbolIcon Width="25"
-                                    Height="25"
-                                    Margin="8,8,12,8"
-                                    RenderTransformOrigin="0.5, 0.5"
-                                    Symbol="Find">
-                            <SymbolIcon.RenderTransform>
-                                <ScaleTransform ScaleX=".9" ScaleY=".9" />
-                            </SymbolIcon.RenderTransform>
-                        </SymbolIcon>
-                        <TextBlock Grid.Column="1"
-                                   Margin="0,0,0,3"
-                                   VerticalAlignment="Center"
-                                   FontSize="16"
-                                   Style="{ThemeResource TitleTextBlockStyle}"
-                                   Text="Search" />
+
+                        <!--  The inline quick search box  -->
+                        <TextBox x:Name="ui_quickSearchBox"
+                                 Grid.Column="0"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="16"
+                                 KeyUp="QuickSearchBox_KeyUp"
+                                 Padding="8,7,0,0"
+                                 PlaceholderText="Search Anything"
+                                 Visibility="Collapsed" />
+
+                        <!--  The actual search UI  -->
+                        <Grid Grid.Column="1" Tapped="SearchHeader_Tapped">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <SymbolIcon Grid.Column="0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="8,8,12,8"
+                                        RenderTransformOrigin="0.5, 0.5"
+                                        Symbol="Find">
+                                <SymbolIcon.RenderTransform>
+                                    <ScaleTransform ScaleX=".9" ScaleY=".9" />
+                                </SymbolIcon.RenderTransform>
+                            </SymbolIcon>
+                            <TextBlock x:Name="ui_searchTextBlock"
+                                       Grid.Column="1"
+                                       Margin="0,0,0,3"
+                                       VerticalAlignment="Center"
+                                       FontSize="16"
+                                       Style="{ThemeResource TitleTextBlockStyle}"
+                                       Text="Search" />
+                        </Grid>
                     </Grid>
 
                     <!--  Trending Subreddits Header  -->

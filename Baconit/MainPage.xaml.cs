@@ -10,6 +10,7 @@ using Baconit.Panels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -60,9 +61,17 @@ namespace Baconit
         /// </summary>
         ObservableCollection<Subreddit> m_subreddits = new ObservableCollection<Subreddit>();
 
+        /// <summary>
+        /// Used to detect keyboard strokes
+        /// </summary>
+        KeyboardShortcutHelper m_keyboardShortcutHepler;
+
         public MainPage()
         {
             this.InitializeComponent();
+
+            // Set up the UI
+            VisualStateManager.GoToState(this, "HideQuichSeachResults", false);
 
             // Set ourselves as the backend action listener
             App.BaconMan.SetBackendActionListner(this);
@@ -109,6 +118,10 @@ namespace Baconit
 
             // Set the subreddit list
             ui_subredditList.ItemsSource = m_subreddits;
+
+            // Setup the keyboard shortcut helper and sub.
+            m_keyboardShortcutHepler = new KeyboardShortcutHelper();
+            m_keyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
         }
 
         /// <summary>
@@ -154,6 +167,26 @@ namespace Baconit
         private void App_OnResuming(object sender, object e)
         {
             UpdateTrendingSubreddits();
+        }
+
+        /// <summary>
+        /// Called by the page manager when the menu should be opened.
+        /// </summary>
+        /// <param name="show">If it should be shown or hidden</param>
+        public void ToggleMenu(bool show)
+        {
+            ui_splitView.IsPaneOpen = show;
+        }
+
+        /// <summary>
+        /// Fired when the panel is closed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void SplitView_PaneClosed(SplitView sender, object args)
+        {
+            // Make sure all panels are closed.
+            CloseAllPanels();
         }
 
         #region UI Updates
@@ -282,9 +315,7 @@ namespace Baconit
             ToggleMenu(false);
 
             Subreddit subreddit = (sender as Grid).DataContext as Subreddit;
-            Dictionary<string, object> args = new Dictionary<string, object>();
-            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
-            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
+            NavigateToSubreddit(subreddit);
         }
 
         private void SubredditList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -324,10 +355,12 @@ namespace Baconit
         {
             CloseTrendingSubredditsPanelIfOpen();
             CloseAccoutPanelIfOpen();
+            ToggleQuickSearch(true);
+            VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
 
-            if(closeMenu)
+            if (closeMenu)
             {
-                ui_splitView.IsPaneOpen = false;
+                ToggleMenu(false);
             }
         }
 
@@ -399,7 +432,7 @@ namespace Baconit
             else
             {
                 // Close the panel
-                CloseAllPanels(true);
+                ToggleMenu(false);
 
                 // Navigate
                 m_panelManager.Navigate(typeof(LoginPanel), "LoginPanel");
@@ -410,31 +443,263 @@ namespace Baconit
         {
             // Navigate to the inbox
             m_panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
-            CloseAllPanels(true);
+            ToggleMenu(false);
         }
 
         private void SettingsGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Navigate to the settings page.
             m_panelManager.Navigate(typeof(Settings), "Settings");
-            CloseAllPanels(true);
+            ToggleMenu(false);
         }
 
-        private void ExploreSubreddits_Tapped(object sender, TappedRoutedEventArgs e)
+        #endregion
+
+        #region Quick Search
+
+        /// <summary>
+        /// Fired when the keyboard combo is fired.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardShortcutHepler_OnQuickSearchActivation(object sender, EventArgs e)
         {
-            CloseAllPanels(true);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "QuickSearchKeyboardShortcut");
+            ToggleMenu(true);
+            SearchHeader_Tapped(null, null);
         }
 
-        private void AddOrRemoveSubreddits_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            CloseAllPanels(true);
-        }
-
+        /// <summary>
+        /// Fired when the search header is tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchHeader_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            m_panelManager.Navigate(typeof(Search), "Search");
-            CloseAllPanels(true);
+            // If the search box is empty close or open the box
+            if (String.IsNullOrWhiteSpace(ui_quickSearchBox.Text))
+            {
+                App.BaconMan.TelemetryMan.ReportEvent(this, "QuickSearchOpened");
+                ToggleQuickSearch();
+            }
+            else
+            {
+                // We have search content, go to search.
+                Dictionary<string, object> args = new Dictionary<string, object>();
+                args.Add(PanelManager.NAV_ARGS_SEARCH_QUERY, ui_quickSearchBox.Text);
+                m_panelManager.Navigate(typeof(Search), "Search", args);
+                CloseAllPanels(true);
+            }
         }
+
+        /// <summary>
+        /// Opens or closes the quick search UI
+        /// </summary>
+        /// <param name="forceClose"></param>
+        private void ToggleQuickSearch(bool forceClose = false)
+        {
+            bool shouldClose = forceClose || ui_quickSearchBox.Visibility == Visibility.Visible;
+
+            // Clear the text.
+            if (shouldClose)
+            {
+                ui_quickSearchBox.Text = "";
+                ui_quickSearchHiPriText.DataContext = null;
+                ui_quickSearchMedPriText.DataContext = null;
+                ui_quickSearchLowPriText.DataContext = null;
+            }
+
+            // Set the Grid columns
+            ui_quickSearchHeaderColumDef.Width = new GridLength(1, shouldClose ? GridUnitType.Star : GridUnitType.Auto);
+            ui_quickSearchTextBoxColumDef.Width = new GridLength(1, shouldClose ? GridUnitType.Auto : GridUnitType.Star);
+
+            // Set the visibility
+            ui_quickSearchBox.Visibility = shouldClose ? Visibility.Collapsed : Visibility.Visible;
+            ui_searchTextBlock.Visibility = shouldClose ? Visibility.Visible : Visibility.Collapsed;
+
+            // Focus the box
+            if (!shouldClose)
+            {
+                ui_quickSearchBox.Focus(FocusState.Keyboard);
+            }
+        }
+
+        /// <summary>
+        /// Fire when a key is pressed up in the search box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QuickSearchBox_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if(e.Key == Windows.System.VirtualKey.Enter)
+            {
+                if(ui_quickSearchHiPriText.DataContext == null)
+                {
+                    // Fake a tap, this will navigate us to search.
+                    SearchHeader_Tapped(null, null);
+                }
+                else
+                {
+                    // We have a selected item, navigate to the subreddit
+                    NavigateToSubreddit((Subreddit)ui_quickSearchHiPriText.DataContext);
+
+                    // Close the panel
+                    CloseAllPanels(true);
+                }
+            }
+            else
+            {
+                // Update the live list
+                SetSearchSubreddits(ui_quickSearchBox.Text.ToLower());
+            }
+        }
+
+        private void SetSearchSubreddits(string query)
+        {
+            // Clear the current subreddit selected
+            ui_quickSearchHiPriText.DataContext = null;
+            ui_quickSearchMedPriText.DataContext = null;
+            ui_quickSearchLowPriText.DataContext = null;
+
+            // If we don't have a query hide the box
+            if (String.IsNullOrWhiteSpace(query))
+            {            
+                VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
+                return;                
+            }
+
+            // Get the subreddits
+            List<Subreddit> subreddits = App.BaconMan.SubredditMan.SubredditList;
+
+            // Go through all of the subreddits and set the text
+            int placementPos = 0;
+            foreach (Subreddit subreddit in subreddits)
+            {
+                if (subreddit.DisplayName.ToLower().StartsWith(query))
+                {
+                    switch (placementPos)
+                    {
+                        case 0:
+                            ui_quickSearchHiPriText.Text = "r/"+subreddit.DisplayName;
+                            ui_quickSearchHiPriText.DataContext = subreddit;
+                            break;
+                        case 1:
+                            ui_quickSearchMedPriText.Text = "r/" + subreddit.DisplayName;
+                            ui_quickSearchMedPriText.DataContext = subreddit;
+                            break;
+                        case 2:
+                            ui_quickSearchLowPriText.Text = "r/" + subreddit.DisplayName;
+                            ui_quickSearchLowPriText.DataContext = subreddit;
+                            break;
+                    }
+
+                    placementPos++;
+
+                    // Break if done
+                    if (placementPos == 3)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            // If we have some item, set the accent color
+            if(placementPos != 0)
+            {
+                Color accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
+                accentColor.A = 100;
+                ui_quickSearchHiPriGrid.Background = new SolidColorBrush(accentColor);
+            }
+
+            // We are done with the loop, figure out what to show / hide
+            switch (placementPos)
+            {
+                case 0:
+                    //ui_quickSearchHiPriGrid.Background = new SolidColorBrush(Color.FromArgb(1,0,0,0));
+                    ui_quickSearchHiPriText.Text = $"Search {query}...";
+                    ui_quickSearchHiPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchMedPriGrid.Visibility = Visibility.Collapsed;
+                    ui_quickSearchLowPriGrid.Visibility = Visibility.Collapsed;
+                    break;
+                case 1:
+                    ui_quickSearchHiPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchMedPriGrid.Visibility = Visibility.Collapsed;
+                    ui_quickSearchLowPriGrid.Visibility = Visibility.Collapsed;
+                    break;
+                case 2:
+                    ui_quickSearchHiPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchMedPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchLowPriGrid.Visibility = Visibility.Collapsed;
+                    break;
+                case 3:
+                    ui_quickSearchHiPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchMedPriGrid.Visibility = Visibility.Visible;
+                    ui_quickSearchLowPriGrid.Visibility = Visibility.Visible;
+                    break;
+            }
+
+            // Show the search results
+            VisualStateManager.GoToState(this, "ShowQuichSeachResults", true);
+        }
+
+
+        /// <summary>
+        /// When a user taps on the top item in search results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QuickSearchLowPriGrid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if(ui_quickSearchLowPriText.DataContext != null)
+            {
+                NavigateToSubreddit((Subreddit)ui_quickSearchLowPriText.DataContext);
+                CloseAllPanels(true);
+            }
+        }
+
+        /// <summary>
+        /// When a user taps on the second item in search results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QuickSearchMedPriGrid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ui_quickSearchMedPriText.DataContext != null)
+            {
+                NavigateToSubreddit((Subreddit)ui_quickSearchMedPriText.DataContext);
+                CloseAllPanels(true);
+            }
+        }
+
+        /// <summary>
+        /// When a user taps on the first item in search results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void QuickSearchHiPriGrid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ui_quickSearchHiPriText.DataContext != null)
+            {
+                NavigateToSubreddit((Subreddit)ui_quickSearchHiPriText.DataContext);
+                CloseAllPanels(true);
+            }
+            else
+            {
+                // They tapped advance, navigate to search.
+                SearchHeader_Tapped(null, null);
+            }
+        }
+
+        /// <summary>
+        /// Navigates to a subreddit.
+        /// </summary>
+        /// <param name="subreddit"></param>
+        private void NavigateToSubreddit(Subreddit subreddit)
+        {
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
+            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
+        }    
 
         #endregion
 
@@ -691,14 +956,5 @@ namespace Baconit
         }
 
         #endregion
-
-        /// <summary>
-        /// Called by the page manager when the menu should be opened.
-        /// </summary>
-        /// <param name="show">If it should be shown or hidden</param>
-        public void ToggleMenu(bool show)
-        {
-            ui_splitView.IsPaneOpen = show;
-        }
     }
 }
