@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 
 namespace BaconBackend.Managers
 {
@@ -41,29 +42,37 @@ namespace BaconBackend.Managers
                     // Check for an update
                     if(LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
                     {
-                        // There is an update! Make sure we have been opened enough.
-                        if(m_baconMan.UiSettingsMan.AppOpenedCount > newMotd.MinOpenTimes)
-                        {
-                            if(!newMotd.isIngore)
-                            {
-                                // Show the message!
-                                // We need to loop because sometimes we can get the message faster than the UI is even ready.
-                                // When the UI isn't ready the function will return false. So just sleep until we can show it.
-                                bool showSuccess = false;
-                                while(!showSuccess)
-                                {
-                                    showSuccess = m_baconMan.ShowMessageOfTheDay(newMotd.Title, newMotd.MarkdownContent);
+                        // Get the current package version.
+                        PackageVersion curVer = Package.Current.Id.Version;
 
-                                    if(!showSuccess)
+                        // There is an update! If we have a version number in the MOTD make sure we are >= the min.
+                        if ((newMotd.MinVerMajor == 0)
+                            || (curVer.Major >= newMotd.MinVerMajor && curVer.Minor >= newMotd.MinVerMinor && curVer.Build >= newMotd.MinVerBuild && curVer.Revision >= newMotd.MinVerRev))
+                        {
+                            // Make sure we have been opened enough.
+                            if (m_baconMan.UiSettingsMan.AppOpenedCount > newMotd.MinOpenTimes)
+                            {
+                                if (!newMotd.isIngore)
+                                {
+                                    // Show the message!
+                                    // We need to loop because sometimes we can get the message faster than the UI is even ready.
+                                    // When the UI isn't ready the function will return false. So just sleep until we can show it.
+                                    bool showSuccess = false;
+                                    while (!showSuccess)
                                     {
-                                        await Task.Delay(500);
+                                        showSuccess = m_baconMan.ShowMessageOfTheDay(newMotd.Title, newMotd.MarkdownContent);
+
+                                        if (!showSuccess)
+                                        {
+                                            await Task.Delay(500);
+                                        }
                                     }
                                 }
-                            }
 
-                            // Update the message and last updated time
-                            LastUpdate = DateTime.Now;
-                            LastMotd = newMotd;
+                                // Update the message and last updated time
+                                LastUpdate = DateTime.Now;
+                                LastMotd = newMotd;
+                            }
                         }
                     }
                 }

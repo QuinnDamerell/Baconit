@@ -27,5 +27,17 @@ namespace BaconBackend.DataObjects
 
         [JsonProperty(PropertyName = "unique_id")]
         public string UniqueId { get; set; }
+
+        [JsonProperty(PropertyName = "min_version_major")]
+        public int MinVerMajor { get; set; }
+
+        [JsonProperty(PropertyName = "min_version_minor")]
+        public int MinVerMinor { get; set; }
+
+        [JsonProperty(PropertyName = "min_version_build")]
+        public int MinVerBuild { get; set; }
+
+        [JsonProperty(PropertyName = "min_version_rev")]
+        public int MinVerRev { get; set; }
     }
 }
