@@ -196,7 +196,7 @@
                         <TextBlock Grid.Column="1"
                                    Margin="0,0,8,0"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{Binding Score}" />
+                                   Text="{Binding ScoreText}" />
                         <TextBlock Grid.Column="2"
                                    Margin="0,0,8,0"
                                    Foreground="#999999"
@@ -231,7 +231,7 @@
                             <TextBlock Grid.Column="1"
                                        Margin="0,0,8,0"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="{Binding Score}" />
+                                       Text="{Binding ScoreText}" />
                             <TextBlock Grid.Column="2"
                                        Margin="0,0,8,0"
                                        Foreground="{Binding FlairBrush}"

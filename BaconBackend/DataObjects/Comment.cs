@@ -45,7 +45,7 @@ namespace BaconBackend.DataObjects
             set
             {
                 m_score = value;
-                NotifyPropertyChanged(nameof(Score));
+                NotifyPropertyChanged(nameof(ScoreText));
             }
         }
         [JsonIgnore]
@@ -319,6 +319,16 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         string m_collapsedCommentCount = "";
+
+        [JsonIgnore]
+        public string ScoreText
+        {
+            get
+            {
+                return $"{Score} points";
+            }
+        }
+
 
         public Comment()
         { }
