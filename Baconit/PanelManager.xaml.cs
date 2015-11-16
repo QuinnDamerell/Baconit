@@ -36,6 +36,11 @@ namespace Baconit
         public ScreenMode NewScreenMode;
     }
 
+    public class OnGoBackArgs : EventArgs
+    {
+        public bool IsHandled = false;
+    }
+
     public sealed partial class PanelManager : UserControl, IPanelHost
     {
         /// <summary>
@@ -58,6 +63,15 @@ namespace Baconit
         }
         SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>> m_onScreenModeChanged = new SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>>();
 
+        /// <summary>
+        /// Fired when something wants to go back.
+        /// </summary>
+        public event EventHandler<OnGoBackArgs> OnGoBack
+        {
+            add { m_onGoBack.Add(value); }
+            remove { m_onGoBack.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<OnGoBackArgs>> m_onGoBack = new SmartWeakEvent<EventHandler<OnGoBackArgs>>();
 
         //
         // Private Vars
@@ -303,6 +317,16 @@ namespace Baconit
         /// <param name="e"></param>
         private void PanelManager_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
         {
+            // If if anyone else wants to handle this
+            OnGoBackArgs args = new OnGoBackArgs();
+            m_onGoBack.Raise(this, args);
+
+            // If someone else already reacted don't do anything.
+            if(args.IsHandled)
+            {
+                return;
+            }
+
             // If we can go back mark it handled
             e.Handled = CanGoBack();
 

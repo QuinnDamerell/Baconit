@@ -20,20 +20,23 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Baconit.HelperControls
 {
+    /// <summary>
+    /// States of the global content presenter
+    /// </summary>
+    public enum GlobalContentStates
+    {
+        Idle,
+        Opening,
+        Showing,
+        Closing
+    }
+
     public sealed partial class GlobalContentPresenter : UserControl
     {
-        enum State
-        {
-            Idle,
-            Opening,
-            Showing,
-            Closing
-        }
-
         /// <summary>
         /// Represents the current state of the presenter
         /// </summary>
-        State m_state;
+        public GlobalContentStates State { get; private set; }
 
         /// <summary>
         /// Holds a reference to the content control
@@ -56,11 +59,11 @@ namespace Baconit.HelperControls
             // Make sure we are in the correct state
             lock(this)
             {
-                if(m_state != State.Idle)
+                if(State != GlobalContentStates.Idle)
                 {
                     return;
                 }
-                m_state = State.Opening;
+                State = GlobalContentStates.Opening;
             }
 
             // Create the content control
@@ -78,6 +81,21 @@ namespace Baconit.HelperControls
 
             // Show the panel
             ToggleShown(true);
+        }
+
+        public void Close()
+        {
+            // Make sure we can close
+            lock (this)
+            {
+                if (State != GlobalContentStates.Showing)
+                {
+                    return;
+                }
+                State = GlobalContentStates.Closing;
+            }
+
+            ToggleShown(false);
         }
 
         /// <summary>
@@ -109,17 +127,7 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void Close_Tapped(object sender, EventArgs e)
         {
-            // Make sure we can close
-            lock (this)
-            {
-                if (m_state != State.Showing)
-                {
-                    return;
-                }
-                m_state = State.Closing;
-            }
-
-            ToggleShown(false);
+            Close();
         }
 
         /// <summary>
@@ -176,13 +184,13 @@ namespace Baconit.HelperControls
         {
             lock (this)
             {
-                if (m_state == State.Opening)
+                if (State == GlobalContentStates.Opening)
                 {
-                    m_state = State.Showing;
+                    State = GlobalContentStates.Showing;
                 }
-                else if (m_state == State.Closing)
+                else if (State == GlobalContentStates.Closing)
                 {
-                    m_state = State.Idle;
+                    State = GlobalContentStates.Idle;
                     CloseComplete();
                 }
             }

@@ -92,6 +92,7 @@ namespace Baconit
             // Create the panel manager
             m_panelManager = new PanelManager(this, (IPanel)panel);
             ui_contentRoot.Children.Add(m_panelManager);
+            m_panelManager.OnGoBack += PanelManager_OnGoBack;
 
             // Add transparency to the account header, this will make it darker
             Color accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
@@ -801,6 +802,21 @@ namespace Baconit
         #endregion
 
         #region IBackendActionListener
+
+        /// <summary>
+        /// Fired when the user tapped go back. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PanelManager_OnGoBack(object sender, OnGoBackArgs e)
+        {
+            // If the presenter is open close it and mark the back handled.
+            if(ui_globalContentPresenter.State != GlobalContentStates.Idle)
+            {
+                ui_globalContentPresenter.Close();
+                e.IsHandled = true;
+            }
+        }
 
         /// <summary>
         /// Fired when someone wants to show the global content presenter
