@@ -8,7 +8,14 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#191919">
+    <Grid x:Name="ui_contentRoot"
+          Background="#191919">
+        <FlyoutBase.AttachedFlyout>
+            <MenuFlyout x:Name="flyoutMenu">
+                <MenuFlyoutItem Click="SaveImage_Click" Text="Save Image" />
+            </MenuFlyout>
+        </FlyoutBase.AttachedFlyout>
+
         <Grid.Resources>
             <Storyboard x:Name="ui_storyContentRoot">
                 <DoubleAnimation x:Name="ui_animContentRoot"

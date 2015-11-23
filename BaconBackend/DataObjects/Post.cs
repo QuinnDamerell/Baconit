@@ -614,6 +614,12 @@ namespace BaconBackend.DataObjects
         Visibility m_flipViewShowEntireThreadMessage = Visibility.Collapsed;
 
         /// <summary>
+        ///  Used to indicate if the save image option should be visible
+        /// </summary>
+        [JsonIgnore]
+        public Visibility ShowSaveImageMenu { get; set; } 
+
+        /// <summary>
         /// Used by flip view to show the comment or post reply box
         /// </summary>
         [JsonIgnore]

@@ -1,6 +1,7 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
+using BaconBackend.Managers;
 using Baconit.FlipViewControls;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
@@ -495,6 +496,13 @@ namespace Baconit.Panels
             App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
+        private void SaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            App.BaconMan.ImageMan.SaveImageLocally(post.Url);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
+        }
+
         // I threw up a little while I wrote this.
         Post m_sharePost = null;
         private void SharePost_Click(object sender, RoutedEventArgs e)
@@ -739,13 +747,6 @@ namespace Baconit.Panels
             // Get the post
             Post post = ((Post)((FrameworkElement)sender).DataContext);
 
-            if(post == null)
-            {
-                App.BaconMan.TelemetryMan.ReportLog(this, "post is null in List_OnListEndDetectedEvent!", SeverityLevel.Critical);
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "postWasNullOnListEndDetectedEvent");
-                return;
-            }
-
             // Show or hide the scroll bar depending if we have gotten to comments yet or not.
             post.VerticalScrollBarVisibility = e.ListScrollTotalDistance > 60 ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
 
@@ -759,14 +760,7 @@ namespace Baconit.Panels
                 foreach (Grid flipHeader in m_flipViewStoryHeaders)
                 {
                     Post headerPost = (Post)(flipHeader.DataContext);
-                    if(headerPost == null)
-                    {
-                        App.BaconMan.TelemetryMan.ReportLog(this, "post is null in List_OnListEndDetectedEvent! for loop", SeverityLevel.Critical);
-                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "postWasNullOnListEndDetectedEventForLoop");
-                        continue;
-                    }
-
-                    if (headerPost.Id.Equals(post.Id))
+                    if (headerPost != null && headerPost.Id.Equals(post.Id))
                     {
                         currentPostHeaderSize = flipHeader.ActualHeight;
                         break;

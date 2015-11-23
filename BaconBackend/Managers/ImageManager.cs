@@ -10,6 +10,8 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Runtime.InteropServices.WindowsRuntime;
+using BaconBackend.Helpers;
+using Windows.Storage;
 
 namespace BaconBackend.Managers
 {
@@ -36,12 +38,17 @@ namespace BaconBackend.Managers
             public string ImageId = "";
 
             /// <summary>
-            /// A callback listener for the image.
+            /// Fired when the image is ready.
             /// </summary>
-            public IImageManagerCallback Callback;
+            public event EventHandler<ImageManagerResponseEventArgs> OnRequestComplete
+            {
+                add { m_onRequestComplete.Add(value); }
+                remove { m_onRequestComplete.Remove(value); }
+            }
+            internal SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>> m_onRequestComplete = new SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>>();
         }
 
-        public class ImageManagerResponse
+        public class ImageManagerResponseEventArgs : EventArgs
         {
             /// <summary>
             /// The original request.
@@ -87,8 +94,7 @@ namespace BaconBackend.Managers
         public void QueueImageRequest(ImageManagerRequest orgionalRequest)
         {
             // Validate
-            if(String.IsNullOrWhiteSpace(orgionalRequest.Url)
-                || orgionalRequest.Callback == null)
+            if(String.IsNullOrWhiteSpace(orgionalRequest.Url))
             {
                 throw new Exception("You must supply both a ULR and callback");
             }
@@ -163,7 +169,7 @@ namespace BaconBackend.Managers
                         imageStream.Seek(0);
 
                         // Create a response
-                        ImageManagerResponse response = new ImageManagerResponse()
+                        ImageManagerResponseEventArgs response = new ImageManagerResponseEventArgs()
                         {
                             ImageStream = imageStream,
                             Request = currentRequest.Context,
@@ -171,23 +177,23 @@ namespace BaconBackend.Managers
                         };
 
                         // Fire the callback
-                        currentRequest.Context.Callback.OnRequestComplete(response);
+                        currentRequest.Context.m_onRequestComplete.Raise(currentRequest.Context, response);
                     }
                 }
                 catch (Exception e)
                 {
                     // Report the error
-                    m_baconMan.MessageMan.DebugDia("Error getting image", e);
+                    m_baconMan.MessageMan.DebugDia("Error getting image", e);                 
 
                     // Create a response
-                    ImageManagerResponse response = new ImageManagerResponse()
+                    ImageManagerResponseEventArgs response = new ImageManagerResponseEventArgs()
                     {
                         Request = currentRequest.Context,
                         Success = false
                     };
 
                     // Send the response
-                    currentRequest.Context.Callback.OnRequestComplete(response);
+                    currentRequest.Context.m_onRequestComplete.Raise(currentRequest.Context, response);
                 }
 
                 // Once we are done, check to see if there is another we should service.
@@ -246,6 +252,81 @@ namespace BaconBackend.Managers
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Gets an image and saves it locally.
+        /// </summary>
+        /// <param name="postUrl"></param>
+        public void SaveImageLocally(string postUrl)
+        {
+            try
+            {
+                string imageUrl = GetImageUrl(postUrl);
+
+                // Fire off a request for the image.
+                Random rand = new Random((int)DateTime.Now.Ticks);
+                ImageManagerRequest request = new ImageManagerRequest()
+                {
+                    ImageId = rand.NextDouble().ToString(),
+                    Url = imageUrl
+                };
+
+                // Set the callback
+                request.OnRequestComplete += async (object sender, ImageManager.ImageManagerResponseEventArgs response) =>
+                {
+                    try
+                    {
+                        // If success
+                        if(response.Success)
+                        {
+                            // Get the photos library
+                            StorageLibrary myPictures = await Windows.Storage.StorageLibrary.GetLibraryAsync(Windows.Storage.KnownLibraryId.Pictures);
+
+                            // Get the save folder
+                            StorageFolder saveFolder = myPictures.SaveFolder;
+
+                            // Try to find the saved pictures folder
+                            StorageFolder savedPicturesFolder = null;
+                            IReadOnlyList<StorageFolder> folders = await saveFolder.GetFoldersAsync();
+                            foreach(StorageFolder folder in folders)
+                            {
+                                if (folder.DisplayName.Equals("Saved Pictures"))
+                                {
+                                    savedPicturesFolder = folder;
+                                }
+                            }
+
+                            // If not found create it.
+                            if(savedPicturesFolder == null)
+                            {
+                                savedPicturesFolder = await saveFolder.CreateFolderAsync("Saved Pictures");
+                            }
+
+                            // Write the file.
+                            StorageFile file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
+                            using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                            {
+                                await RandomAccessStream.CopyAndCloseAsync(response.ImageStream.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
+                            }
+
+                            // Tell the user
+                            m_baconMan.MessageMan.ShowMessageSimple("Image Saved", "You can find the image in the 'Saved Pictures' folder in your photos library.");
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToSaveImageLocallyCallback", ex);
+                        m_baconMan.MessageMan.DebugDia("failed to save image locally in callback", ex);
+                    }
+                };
+                QueueImageRequest(request);
+            }
+            catch (Exception e)
+            {
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToSaveImageLocally", e);
+                m_baconMan.MessageMan.DebugDia("failed to save image locally", e);
+            }
         }
 
         /// <summary>

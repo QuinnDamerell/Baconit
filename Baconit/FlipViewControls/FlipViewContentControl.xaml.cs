@@ -330,21 +330,34 @@ namespace Baconit.FlipViewControls
 
         private void NsfwBlockRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            Post currentPost = m_currentPost;
             // Return if there is no post.
-            if(m_currentPost == null)
+            if(currentPost == null)
             {
                 App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CurrentPostNullInNSFWBlockTapped");
                 return;
             }
 
+            if (currentPost.Id == null)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CurrentPostNullInNSFWBlockTapped_IDNULL");
+                return;
+            }
+
+            if (currentPost.Subreddit == null)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CurrentPostNullInNSFWBlockTapped_SUBREDDITNUL");
+                return;
+            }
+
             // When the block is tapped, animate out the block screen and add it to the list
             // not to block again
-            s_previousLoweredNsfwBlocks.Add(m_currentPost.Id, true);
+            s_previousLoweredNsfwBlocks.Add(currentPost.Id, true);
 
             // If the block is tapped and we are in subreddit mode add it to the ignore subreddit list.
             if(App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit)
             {
-                s_previousLoweredNsfwSubreddits.Add(m_currentPost.Subreddit, true); 
+                s_previousLoweredNsfwSubreddits.Add(currentPost.Subreddit, true); 
             }
 
             // Animate out the NSFW block.

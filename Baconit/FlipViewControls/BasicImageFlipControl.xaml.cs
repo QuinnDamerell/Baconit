@@ -22,11 +22,12 @@ using System.Threading.Tasks;
 
 namespace Baconit.FlipViewControls
 {
-    public sealed partial class BasicImageFlipControl : UserControl, IFlipViewContentControl, IImageManagerCallback
+    public sealed partial class BasicImageFlipControl : UserControl, IFlipViewContentControl
     {
         bool m_isDestoryed = false;
         IFlipViewContentHost m_host;
         Image m_image;
+        string m_postUrl;
 
         public BasicImageFlipControl(IFlipViewContentHost host)
         {
@@ -64,6 +65,9 @@ namespace Baconit.FlipViewControls
             // Hide the content root
             ui_contentRoot.Opacity = 0;
 
+            // Grab the post URL
+            m_postUrl = post.Url;
+
             // Do the rest of the work on a background thread.
             Task.Run(async () =>
             {
@@ -87,10 +91,10 @@ namespace Baconit.FlipViewControls
                 // Fire off a request for the image.
                 ImageManager.ImageManagerRequest request = new ImageManager.ImageManagerRequest()
                 {
-                    Callback = this,
                     ImageId = post.Id,
                     Url = imageUrl
                 };
+                request.OnRequestComplete += OnRequestComplete;
                 App.BaconMan.ImageMan.QueueImageRequest(request);
             });
         }
@@ -117,6 +121,9 @@ namespace Baconit.FlipViewControls
                 // Set the flag
                 m_isDestoryed = true;
 
+                // Kill the URL
+                m_postUrl = null;
+
                 // Remove the image from the UI
                 ui_contentRoot.Children.Clear();
 
@@ -126,7 +133,9 @@ namespace Baconit.FlipViewControls
                 {
                     // Kill the image
                     m_image.Source = null;
-                    m_image = null;
+                    m_image.RightTapped -= ContentRoot_RightTapped;
+                    m_image.Holding -= ContentRoot_Holding;
+                    m_image = null;               
                 }
             }
         }
@@ -135,8 +144,12 @@ namespace Baconit.FlipViewControls
         /// Callback when we get the image.
         /// </summary>
         /// <param name="response"></param>
-        public async void OnRequestComplete(ImageManager.ImageManagerResponse response)
+        public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
+            // Remove the event
+            ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
+            request.OnRequestComplete -= OnRequestComplete;
+
             // Jump back to the UI thread
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -164,6 +177,10 @@ namespace Baconit.FlipViewControls
                     m_image.Source = bitImage;
                     ui_contentRoot.Children.Add(m_image);
 
+                    // Setup the save image tap
+                    m_image.RightTapped += ContentRoot_RightTapped;
+                    m_image.Holding += ContentRoot_Holding;
+
                     // Hide the loading screen
                     m_host.HideLoading();
 
@@ -171,6 +188,49 @@ namespace Baconit.FlipViewControls
                     ui_storyContentRoot.Begin();
                 }
             });
+        }
+
+        /// <summary>
+        /// Fired when save image is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            if(!String.IsNullOrWhiteSpace(m_postUrl))
+            {
+                App.BaconMan.ImageMan.SaveImageLocally(m_postUrl);
+            }
+        }
+
+        /// <summary>
+        /// Fired when the image is right clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ContentRoot_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                Point p = e.GetPosition(element);
+                flyoutMenu.ShowAt(element, p);
+            }
+        }
+
+        /// <summary>
+        /// Fired when the image is press and held
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ContentRoot_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                Point p = e.GetPosition(element);
+                flyoutMenu.ShowAt(element, p);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ using Windows.System.UserProfile;
 
 namespace BaconBackend.Managers.Background
 {
-    public class BackgroundImageUpdater : IImageManagerCallback
+    public class BackgroundImageUpdater
     {
         ///
         /// Const Vars
@@ -402,10 +402,10 @@ namespace BaconBackend.Managers.Background
                     // Make the request
                     ImageManager.ImageManagerRequest request = new ImageManager.ImageManagerRequest()
                     {
-                        Callback = this,
                         Url = imageUrl,
                         ImageId = post.Id
                     };
+                    request.OnRequestComplete += OnRequestComplete;
                     m_baconMan.ImageMan.QueueImageRequest(request);
                     m_reqeustCount++;
                 }
@@ -423,8 +423,12 @@ namespace BaconBackend.Managers.Background
             return m_imageDoneCount >= (c_maxImageCacheCount - 2);
         }
 
-        public async void OnRequestComplete(ImageManager.ImageManagerResponse response)
+        public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
+            // Remove event
+            ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
+            request.OnRequestComplete -= OnRequestComplete;
+
             // Make sure we were successfully.
             if (!response.Success)
             {

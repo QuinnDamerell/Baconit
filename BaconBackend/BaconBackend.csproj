@@ -116,7 +116,6 @@
     <Compile Include="Helpers\TimeToTextHelper.cs" />
     <Compile Include="Helpers\TrendingSubredditsHelper.cs" />
     <Compile Include="Interfaces\IBackendActionListener.cs" />
-    <Compile Include="Interfaces\IImageManagerCallback.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\BackgroundManager.cs" />
     <Compile Include="Managers\Background\BackgroundImageUpdater.cs" />

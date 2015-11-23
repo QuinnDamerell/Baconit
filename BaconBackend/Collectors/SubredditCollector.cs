@@ -408,6 +408,9 @@ namespace BaconBackend.Collectors
                 // Set the title size
                 post.TitleMaxLines = m_baconMan.UiSettingsMan.SubredditList_ShowFullTitles ? 99 : 2;
 
+                // Set if we should show the save image or not
+                post.ShowSaveImageMenu = String.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+
                 // Check if it has been read
                 if (ReadPostsList.ContainsKey(post.Id))
                 {

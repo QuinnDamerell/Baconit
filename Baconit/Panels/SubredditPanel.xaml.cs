@@ -27,7 +27,7 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace Baconit.Panels
 {
-    public sealed partial class SubredditPanel : UserControl, IPanel, IImageManagerCallback
+    public sealed partial class SubredditPanel : UserControl, IPanel
     {
         //
         // Private vars
@@ -262,10 +262,10 @@ namespace Baconit.Panels
                             {
                                 ImageManager.ImageManagerRequest request = new ImageManager.ImageManagerRequest()
                                 {
-                                    Callback = this,
                                     Url = post.Thumbnail,
                                     ImageId = post.Id
                                 };
+                                request.OnRequestComplete += OnRequestComplete;
                                 App.BaconMan.ImageMan.QueueImageRequest(request);
                             }
                         }
@@ -312,10 +312,14 @@ namespace Baconit.Panels
 
         #region Image Managment
 
-        public async void OnRequestComplete(ImageManager.ImageManagerResponse response)
+        public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
+            // Remove the event
+            ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
+            request.OnRequestComplete -= OnRequestComplete;
+
             // Make sure we were successful.
-            if(response.Success)
+            if (response.Success)
             {
                 // Try to find the post
                 Post owningPost = null;
