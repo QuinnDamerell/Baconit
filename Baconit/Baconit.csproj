@@ -18,7 +18,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>E141841E35BA82A846D7ADD71DD03BA2913A5E00</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>D8B187A1D3023C4B338007386C6493BE9719A075</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
@@ -100,6 +100,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Baconit_StoreKey.pfx" />
+    <None Include="Baconit_TemporaryKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
   </ItemGroup>
@@ -219,7 +220,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Baconit_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-100.png" />
