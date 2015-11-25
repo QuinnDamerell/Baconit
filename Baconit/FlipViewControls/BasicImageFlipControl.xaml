@@ -9,7 +9,8 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot"
-          Background="#191919">
+          Background="#191919"
+          SizeChanged="ContentRoot_SizeChanged">
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">
                 <MenuFlyoutItem Click="SaveImage_Click" Text="Save Image" />
@@ -30,5 +31,13 @@
                 </DoubleAnimation>
             </Storyboard>
         </Grid.Resources>
+
+        <ScrollViewer x:Name="ui_scrollViewer"
+                      HorizontalScrollBarVisibility="Auto"
+                      IsZoomInertiaEnabled="True"
+                      VerticalScrollBarVisibility="Auto"
+                      ViewChanged="ScrollViewer_ViewChanged"
+                      ViewChanging="ScrollViewer_ViewChanging"
+                      ZoomMode="Enabled" />
     </Grid>
 </UserControl>

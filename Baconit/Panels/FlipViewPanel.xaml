@@ -148,12 +148,15 @@
                     </Grid.RowDefinitions>
 
                     <!--  The post content control  -->
-                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}" IsVisible="{Binding IsPostVisible}" />
+                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}"
+                                                         IsVisible="{Binding IsPostVisible}"
+                                                         OnToggleFullscreen="FlipViewContentControl_OnToggleFullscreen" />
 
                     <!--  The post header control  -->
                     <ContentControl Grid.Row="2"
                                     HorizontalContentAlignment="Stretch"
-                                    ContentTemplate="{StaticResource FlipViewStoryHeader}" />
+                                    ContentTemplate="{StaticResource FlipViewStoryHeader}"
+                                    Visibility="{Binding IsPostHeaderVisible}" />
                 </Grid>
             </Grid>
         </DataTemplate>

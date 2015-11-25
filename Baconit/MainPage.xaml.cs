@@ -92,7 +92,7 @@ namespace Baconit
             // Create the panel manager
             m_panelManager = new PanelManager(this, (IPanel)panel);
             ui_contentRoot.Children.Add(m_panelManager);
-            m_panelManager.OnGoBack += PanelManager_OnGoBack;
+            App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
             // Add transparency to the account header, this will make it darker
             Color accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
@@ -808,10 +808,10 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PanelManager_OnGoBack(object sender, OnGoBackArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
             // If the presenter is open close it and mark the back handled.
-            if(ui_globalContentPresenter.State != GlobalContentStates.Idle)
+            if (ui_globalContentPresenter.State != GlobalContentStates.Idle)
             {
                 ui_globalContentPresenter.Close();
                 e.IsHandled = true;
@@ -912,6 +912,14 @@ namespace Baconit
         {
             // Navigate
             m_panelManager.Navigate(typeof(LoginPanel), "LoginPanel");
+        }
+
+        /// <summary>
+        /// Called by the action listener when we should nav back
+        /// </summary>
+        public bool NavigateBack()
+        {
+            return m_panelManager.GoBack();
         }
 
         #endregion

@@ -39,5 +39,11 @@ namespace Baconit.Interfaces
         /// </summary>
         /// <param name="show"></param>
         void ToggleMenu(bool show);
+
+        /// <summary>
+        /// Enters or exits full screen mode for the content panel
+        /// </summary>
+        /// <param name="goFullScreen"></param>
+        void ToggleFullScreen(bool goFullScreen);
     }
 }

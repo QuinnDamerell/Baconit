@@ -28,17 +28,13 @@ namespace Baconit
     public enum ScreenMode
     {
         Split,
-        Single
+        Single,
+        FullScreen
     }
 
     public class OnScreenModeChangedArgs : EventArgs
     {
         public ScreenMode NewScreenMode;
-    }
-
-    public class OnGoBackArgs : EventArgs
-    {
-        public bool IsHandled = false;
     }
 
     public sealed partial class PanelManager : UserControl, IPanelHost
@@ -62,16 +58,6 @@ namespace Baconit
             remove { m_onScreenModeChanged.Remove(value); }
         }
         SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>> m_onScreenModeChanged = new SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>>();
-
-        /// <summary>
-        /// Fired when something wants to go back.
-        /// </summary>
-        public event EventHandler<OnGoBackArgs> OnGoBack
-        {
-            add { m_onGoBack.Add(value); }
-            remove { m_onGoBack.Remove(value); }
-        }
-        SmartWeakEvent<EventHandler<OnGoBackArgs>> m_onGoBack = new SmartWeakEvent<EventHandler<OnGoBackArgs>>();
 
         //
         // Private Vars
@@ -149,8 +135,7 @@ namespace Baconit
                 ui_contentRoot.Children.Add((UserControl)startingPanel);
             }
 
-            // Register and set the back button
-            SystemNavigationManager.GetForCurrentView().BackRequested += PanelManager_BackRequested;
+            // Set the back button
             UpdateBackButton();
 
             // Register for app suspend commands
@@ -175,7 +160,7 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnSuspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        private void OnSuspending(object sender, EventArgs e)
         {
             FireOnSuspendOrResumeEvents(true);
         }
@@ -271,7 +256,7 @@ namespace Baconit
         /// <summary>
         /// Navigates back to the previous page
         /// </summary>
-        public bool GoBack()
+        private bool GoBack_Internal()
         {
             IPanel leavingPanel = null;
             lock(m_panelStack)
@@ -315,38 +300,31 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PanelManager_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs e)
+        public bool GoBack()
         {
-            // If if anyone else wants to handle this
-            OnGoBackArgs args = new OnGoBackArgs();
-            m_onGoBack.Raise(this, args);
+            bool handled = false;
 
-            // If someone else already reacted don't do anything.
-            if(args.IsHandled)
-            {
-                return;
-            }
-
-            // If we can go back mark it handled
-            e.Handled = CanGoBack();
-
-            if(e.Handled)
+            // If we can go back, do it.
+            if(CanGoBack())
             {
                 // Call go back but this might not work, we can't go back while something else is navigating.
                 // If we can't go back right now just silently ignore the request.
-                GoBack();
+                handled = GoBack_Internal();
             }
-            else
+            
+            if(!handled)
             {
                 // If we can't go back anymore for the last back show the menu.
                 // After that let the user leave.
                 if(!m_finalNavigateHasShownMenu)
                 {
                     m_finalNavigateHasShownMenu = true;
-                    e.Handled = true;
+                    handled = true;
                     ToggleMenu(true);
                 }
             }
+
+            return handled;
         }
 
         /// <summary>
@@ -652,11 +630,28 @@ namespace Baconit
             OnScreenSizeChanged((int)e.Size.Width);
         }
 
-        private void OnScreenSizeChanged(int newSize, bool forceSet = false)
+        private void OnScreenSizeChanged(int newSize, bool forceSet = false, bool? toggleFullScreen = null)
         {
             // Figure what mode we should be in.
             ScreenMode newMode = newSize > (MAX_PANEL_SIZE *2) ? ScreenMode.Split : ScreenMode.Single;
 
+            // Enter full screen if we should.
+            if(toggleFullScreen.HasValue && toggleFullScreen.Value)
+            {
+                newMode = ScreenMode.FullScreen;
+            }
+
+            // If we are in full screen...
+            if(m_screenMode == ScreenMode.FullScreen)
+            {
+                // and we don't have a value for toggle or the value it true...
+                if(!toggleFullScreen.HasValue || toggleFullScreen.Value)
+                {
+                    // Make sure we stay in full screen.
+                    newMode = ScreenMode.FullScreen;
+                }
+            }
+            
             if (newMode != m_screenMode || forceSet)
             {
                 // If we are animating we can't update. So set the deferral and it will
@@ -688,6 +683,8 @@ namespace Baconit
             UpdatePanelSizes();
 
             // We either showed a window or hide one, we need to tell that window.
+            // If we are full screen don't tell anyone anything, the world will be restored
+            // when we leave full screen.
             if(m_panelStack.Count > 1)
             {
                 PanelType topPanelType = GetPanelType(m_panelStack.Last().Panel);
@@ -787,6 +784,22 @@ namespace Baconit
         public ScreenMode CurrentScreenMode()
         {
             return m_screenMode;
+        }
+
+        #endregion
+
+        #region Full Screen Logic
+
+        /// <summary>
+        /// Enters or exits full screen mode
+        /// </summary>
+        /// <param name="goFullScreen"></param>
+        public void ToggleFullScreen(bool goFullScreen)
+        {
+            // #todo check locking
+            // #todo a lot more logic here
+            throw new Exception("This logic insn't done yet. Don't call this.");
+            //OnScreenSizeChanged((int)Window.Current.Bounds.Width, false, goFullScreen);
         }
 
         #endregion

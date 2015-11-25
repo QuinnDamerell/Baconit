@@ -249,6 +249,25 @@ namespace BaconBackend.DataObjects
         bool m_isPostVisible = false;
 
         /// <summary>
+        /// Used by flip view to indicate when the post header is visible
+        /// </summary>
+        [JsonIgnore]
+        public Visibility IsPostHeaderVisible
+        {
+            get
+            {
+                return m_isPostHeaderVisible;
+            }
+            set
+            {
+                m_isPostHeaderVisible = value;
+                NotifyPropertyChanged(nameof(IsPostHeaderVisible));
+            }
+        }
+        [JsonIgnore]
+        Visibility m_isPostHeaderVisible = Visibility.Visible;
+
+        /// <summary>
         /// Used by subreddit view to show unread comment count
         /// </summary>
         [JsonIgnore]
@@ -617,7 +636,7 @@ namespace BaconBackend.DataObjects
         ///  Used to indicate if the save image option should be visible
         /// </summary>
         [JsonIgnore]
-        public Visibility ShowSaveImageMenu { get; set; } 
+        public Visibility ShowSaveImageMenu { get; set; }
 
         /// <summary>
         /// Used by flip view to show the comment or post reply box

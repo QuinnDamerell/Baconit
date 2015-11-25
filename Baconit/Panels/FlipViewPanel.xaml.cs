@@ -635,7 +635,7 @@ namespace Baconit.Panels
                         if(ui_flipView.SelectedIndex == i)
                         {
                             PreFetchPostComments(ref post);
-                        }                        
+                        }
                     }
                     else
                     {
@@ -966,7 +966,7 @@ namespace Baconit.Panels
                 FlyoutBase.ShowAttachedFlyout(element);
             }
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentMoreTapped");    
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentMoreTapped");
         }
 
         private void CommentSave_Click(object sender, RoutedEventArgs e)
@@ -1248,5 +1248,26 @@ namespace Baconit.Panels
         {
             SetHeaderSizes();
         }
+
+        #region Full Screen Logic
+
+        /// <summary>
+        /// Fired when the control wants to go full screen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FlipViewContentControl_OnToggleFullscreen(object sender, FlipViewContentControl.OnToggleFullScreenEventArgs e)
+        {
+            // Get the post
+            Post post = ((Post)((FrameworkElement)sender).DataContext);
+
+            // Hide or show the header
+            // #todo, animate this
+            post.IsPostHeaderVisible = e.GoFullScreen ? Visibility.Collapsed : Visibility.Visible;
+
+            // #todo scroll comments to the top so they aren't visible?
+        }
+
+        #endregion
     }
 }

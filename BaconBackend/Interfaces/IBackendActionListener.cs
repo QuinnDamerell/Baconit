@@ -16,5 +16,7 @@ namespace BaconBackend.Interfaces
         void ShowMessageOfTheDay(string title, string markdownContent);
 
         void NavigateToLogin();
+
+        bool NavigateBack();
     }
 }

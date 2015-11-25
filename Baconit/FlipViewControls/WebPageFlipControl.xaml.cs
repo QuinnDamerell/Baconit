@@ -39,7 +39,7 @@ namespace Baconit.FlipViewControls
         bool m_loadingHidden;
 
         /// <summary>
-        /// Indicates if we should be destoryed
+        /// Indicates if we should be destroyed
         /// </summary>
         bool m_isDestroyed = false;
 
@@ -47,6 +47,12 @@ namespace Baconit.FlipViewControls
         {
             this.InitializeComponent();
             m_host = host;
+
+            // Hide the full screen icon if we can't go full screen.
+            ui_fullScreenHolder.Visibility = m_host.CanGoFullScreen ? Visibility.Visible : Visibility.Collapsed;
+
+            // Listen for back presses
+            App.BaconMan.OnBackButton += BaconMan_OnBackButton;
         }
 
         /// <summary>
@@ -89,10 +95,13 @@ namespace Baconit.FlipViewControls
                     m_webView.NavigationFailed += NavigationFailed;
                     m_webView.DOMContentLoaded += DOMContentLoaded;
                     m_webView.ContentLoading += ContentLoading;
+                    m_webView.ContainsFullScreenElementChanged += WebView_ContainsFullScreenElementChanged;
 
                     // Navigate
                     m_webView.Navigate(new Uri(post.Url, UriKind.Absolute));
-                    ui_contentRoot.Children.Add(m_webView);
+
+                    // Insert this before the full screen button.
+                    ui_contentRoot.Children.Insert(0, m_webView);
                 }
             });
         }
@@ -127,7 +136,7 @@ namespace Baconit.FlipViewControls
             }
 
             // Clear the UI
-            ui_contentRoot.Children.Clear();
+            ui_contentRoot.Children.Remove(m_webView);
         }
 
 
@@ -168,5 +177,69 @@ namespace Baconit.FlipViewControls
             // Hide it.
             m_host.HideLoading();
         }
+
+        #region Full Screen Logic
+
+        /// <summary>
+        /// Fired when the user taps the full screen button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FullScreenHolder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ToggleFullScreen(!m_host.IsFullScreen());
+        }
+
+        /// <summary>
+        /// Fire when the user presses back.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        {
+            // Kill it if we are.
+            e.IsHandled = ToggleFullScreen(false);
+        }
+
+        /// <summary>
+        /// Fired when something in the website goes full screen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void WebView_ContainsFullScreenElementChanged(WebView sender, object args)
+        {
+            if (m_webView.ContainsFullScreenElement)
+            {
+                // Go full screen
+                ToggleFullScreen(true);
+
+                // Hide the full screen button, let the webcontrol take care of it (we don't want to overlap
+                ui_fullScreenHolder.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                // Jump out of full screen
+                ToggleFullScreen(false);
+
+                // Restore the button
+                ui_fullScreenHolder.Visibility = m_host.CanGoFullScreen ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private bool ToggleFullScreen(bool goFullScreen)
+        {
+            // Set the state
+            bool didAction = m_host.ToggleFullScreen(goFullScreen);
+
+            // Update the icon
+            ui_fullScreenIcon.Symbol = m_host.IsFullScreen() ? Symbol.BackToWindow : Symbol.FullScreen;
+
+            // Set our manipulation mode to capture all input
+            ManipulationMode = m_host.IsFullScreen() ? ManipulationModes.All : ManipulationModes.System;
+
+            return didAction;
+        }
+
+        #endregion
     }
 }

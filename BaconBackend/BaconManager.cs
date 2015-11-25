@@ -8,9 +8,16 @@ using Windows.UI.Xaml;
 using Windows.ApplicationModel;
 using BaconBackend.Interfaces;
 using BaconBackend.Helpers;
+using Windows.UI.Core;
 
 namespace BaconBackend
 {
+    // Used for the on back event
+    public class OnBackButtonArgs : EventArgs
+    {
+        public bool IsHandled = false;
+    }
+
     public class BaconManager
     {
         /// <summary>
@@ -24,12 +31,32 @@ namespace BaconBackend
         /// <summary>
         /// Fired when the app is suspending
         /// </summary>
-        public event SuspendingEventHandler OnSuspending;
+        public event EventHandler<EventArgs> OnSuspending
+        {
+            add { m_onSuspending.Add(value); }
+            remove { m_onSuspending.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onSuspending = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         /// <summary>
         /// Fired when the app is resuming
         /// </summary>
-        public event EventHandler<object> OnResuming;
+        public event EventHandler<EventArgs> OnResuming
+        {
+            add { m_onResuming.Add(value); }
+            remove { m_onResuming.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onResuming = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        /// <summary>
+        /// Fired when the back button is pressed
+        /// </summary>
+        public event EventHandler<OnBackButtonArgs> OnBackButton
+        {
+            add { m_onBackButton.Add(value); }
+            remove { m_onBackButton.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<OnBackButtonArgs>> m_onBackButton = new SmartWeakEvent<EventHandler<OnBackButtonArgs>>();
 
         /// <summary>
         /// Responsible for managing the current subreddits.
@@ -126,10 +153,8 @@ namespace BaconBackend
         /// <param name="e"></param>
         public void OnSuspending_Fired(object sender, SuspendingEventArgs e)
         {
-            if(OnSuspending != null)
-            {
-                OnSuspending(sender, e);
-            }
+            // Fire the event
+            m_onSuspending.Raise(this, new EventArgs());
         }
 
         /// <summary>
@@ -139,13 +164,34 @@ namespace BaconBackend
         /// <param name="e"></param>
         public void OnResuming_Fired(object sender, object e)
         {
-            if(OnResuming != null)
-            {
-                OnResuming(sender, e);
-            }
+            // Fire the event.
+            m_onResuming.Raise(this, new EventArgs());
 
             // Fire off an update
             FireOffUpdate();
+        }
+
+        /// <summary>
+        /// Called by the app when the back button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnBackButton_Fired(object sender, BackRequestedEventArgs e)
+        {
+            // Fire the event.
+            OnBackButtonArgs args = new OnBackButtonArgs();
+            m_onBackButton.Raise(this, args);
+
+            // If someone handled it don't navigate back
+            if(args.IsHandled)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Tell the UI to go back. Technically it could just listen to the event
+            // and check the handled var, but this ensures it is always last.
+            e.Handled = m_backendActionListener.NavigateBack();
         }
 
         /// <summary>

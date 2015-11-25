@@ -41,6 +41,34 @@ namespace Baconit.FlipViewControls
         /// </summary>
         Post m_currentPost;
 
+        /// <summary>
+        /// Indicates if we can go full screen or not.
+        /// </summary>
+        bool m_canGoFullScreen = true;
+
+        /// <summary>
+        /// Indicates is we are current fullscreen or not.
+        /// </summary>
+        bool m_isFullScreen = false;
+
+        /// <summary>
+        /// Args for toggle full screen
+        /// </summary>
+        public class OnToggleFullScreenEventArgs : EventArgs
+        {
+            public bool GoFullScreen { get; set; }
+        }
+
+        /// <summary>
+        /// Fired when full screen is toggled
+        /// </summary>
+        public event EventHandler<OnToggleFullScreenEventArgs> OnToggleFullscreen
+        {
+            add { m_onToggleFullscreen.Add(value); }
+            remove { m_onToggleFullscreen.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>> m_onToggleFullscreen = new SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>>();
+
         public FlipViewContentControl()
         {
             this.InitializeComponent();
@@ -111,6 +139,39 @@ namespace Baconit.FlipViewControls
             if (instance != null)
             {
                 instance.OnVisibleChanged(e.NewValue.GetType() == typeof(bool) ? (bool)e.NewValue : false);
+            }
+        }
+
+        #endregion
+
+        #region CanGoFullScreen Logic
+
+        /// <summary>
+        /// This it how we get the visibility from flip view
+        /// </summary>
+        public bool CanGoFullScreen
+        {
+            get { return (bool)GetValue(CanGoFullScreenProperty); }
+            set { SetValue(CanGoFullScreenProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanGoFullScreenProperty =
+            DependencyProperty.Register(
+                "CanGoFullScreen",                      // The name of the DependencyProperty
+                typeof(bool),                 // The type of the DependencyProperty
+                typeof(FlipViewContentControl), // The type of the owner of the DependencyProperty
+                new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
+                    true,                      // The default value of the DependencyProperty
+                    new PropertyChangedCallback(OnCanGoFullScreenChangedStatic)
+                ));
+
+        private static void OnCanGoFullScreenChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var instance = d as FlipViewContentControl;
+            if (instance != null)
+            {
+                // Set the new state
+                instance.m_canGoFullScreen = (bool)e.NewValue;
             }
         }
 
@@ -314,10 +375,10 @@ namespace Baconit.FlipViewControls
         public void ShowNsfwIfNeeded(Post post)
         {
             // If the post is over 18, and it hasn't been lowered, and we don't have block off, and we won't have per subreddit on and the subreddit has been lowered
-            if(post.IsOver18 && 
+            if(post.IsOver18 &&
                !s_previousLoweredNsfwBlocks.ContainsKey(post.Id) &&
-                    (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always || 
-                        (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit && 
+                    (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always ||
+                        (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit &&
                         !s_previousLoweredNsfwSubreddits.ContainsKey(post.Subreddit))))
             {
                 VisualStateManager.GoToState(this, "ShowNsfwBlock", false);
@@ -357,11 +418,51 @@ namespace Baconit.FlipViewControls
             // If the block is tapped and we are in subreddit mode add it to the ignore subreddit list.
             if(App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit)
             {
-                s_previousLoweredNsfwSubreddits.Add(currentPost.Subreddit, true); 
+                s_previousLoweredNsfwSubreddits.Add(currentPost.Subreddit, true);
             }
 
             // Animate out the NSFW block.
             VisualStateManager.GoToState(this, "HideNsfwBlock", true);
+        }
+
+        #endregion
+
+        #region Full Screen
+
+        public bool ToggleFullScreen(bool goFullscreen)
+        {
+            // If we are disabled don't let them.
+            if (!m_canGoFullScreen)
+            {
+                return false;
+            }
+
+            // Ignore if we are already in this state
+            if(goFullscreen == m_isFullScreen)
+            {
+                return false;
+            }
+            m_isFullScreen = goFullscreen;
+
+            // Set the manipulation mode to steal all of the touch events
+            ManipulationMode = goFullscreen ? ManipulationModes.All : ManipulationModes.System;
+
+            // Fire the event
+            OnToggleFullScreenEventArgs args = new OnToggleFullScreenEventArgs()
+            {
+                GoFullScreen = goFullscreen
+            };
+            m_onToggleFullscreen.Raise(this, args);
+            return true;
+        }
+
+        /// <summary>
+        /// Indicates if the control is currently full screen.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFullScreen()
+        {
+            return m_isFullScreen;
         }
 
         #endregion

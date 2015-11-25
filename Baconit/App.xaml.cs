@@ -10,6 +10,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -61,6 +62,9 @@ namespace Baconit
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            // Register for back
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -123,6 +127,16 @@ namespace Baconit
         private void OnResuming_Fired(object sender, object e)
         {
             BaconMan.OnResuming_Fired(sender, e);
+        }
+
+        /// <summary>
+        /// Invoked when the back button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnBackRequested(object sender, BackRequestedEventArgs e)
+        {
+            BaconMan.OnBackButton_Fired(sender, e);
         }
 
         /// <summary>
