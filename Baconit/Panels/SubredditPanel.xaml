@@ -277,8 +277,9 @@
                                             IsTapEnabled="False"
                                             ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                                             ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
-                                            Padding="0,0,12,0"
-                                            SelectionChanged="PostList_SelectionChanged">
+                                            Padding="0,0,8,0"
+                                            SelectionChanged="PostList_SelectionChanged"
+                                            Style="{StaticResource ListViewStyle}">
 
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>

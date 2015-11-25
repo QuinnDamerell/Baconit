@@ -35,6 +35,7 @@
         <ScrollViewer x:Name="ui_scrollViewer"
                       HorizontalScrollBarVisibility="Auto"
                       IsZoomInertiaEnabled="True"
+                      Style="{StaticResource ScrollViewerStyle}"
                       VerticalScrollBarVisibility="Auto"
                       ViewChanged="ScrollViewer_ViewChanged"
                       ViewChanging="ScrollViewer_ViewChanging"

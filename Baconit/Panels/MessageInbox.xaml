@@ -80,7 +80,8 @@
                   Grid.Row="1"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   ItemTemplate="{StaticResource MessageListItem}"
-                  SelectionChanged="MessageList_SelectionChanged">
+                  SelectionChanged="MessageList_SelectionChanged"
+                  Style="{StaticResource ListViewStyle}">
 
             <!--  This animates the messages in  -->
             <ListView.ItemContainerTransitions>

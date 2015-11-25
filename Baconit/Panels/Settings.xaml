@@ -24,8 +24,10 @@
 
         <ListView x:Name="ui_settingsList"
                   Grid.Row="1"
+                  Margin="12"
                   Background="#000000"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                  SelectionChanged="SettingsList_SelectionChanged" Margin="12" />
+                  SelectionChanged="SettingsList_SelectionChanged"
+                  Style="{StaticResource ListViewStyle}" />
     </Grid>
 </UserControl>

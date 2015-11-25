@@ -285,7 +285,8 @@
                       Grid.ColumnSpan="2"
                       ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                       ItemTemplate="{StaticResource SearchResultListItem}"
-                      SelectionChanged="SearchResults_SelectionChanged">
+                      SelectionChanged="SearchResults_SelectionChanged"
+                      Style="{StaticResource ListViewStyle}">
 
                 <!--  This animates the search results in  -->
                 <ListView.ItemContainerTransitions>

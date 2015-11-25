@@ -112,7 +112,8 @@
                               VerticalAlignment="Top"
                               Background="#00000000"
                               ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                              SelectionChanged="SubredditList_SelectionChanged">
+                              SelectionChanged="SubredditList_SelectionChanged"
+                              Style="{StaticResource ListViewStyle}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0" HorizontalAlignment="Stretch">

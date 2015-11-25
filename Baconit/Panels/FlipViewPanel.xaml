@@ -339,7 +339,8 @@
                                                              ItemsSource="{Binding Comments}"
                                                              Loaded="EndDetectingListView_Loaded"
                                                              ScrollViewer.VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility}"
-                                                             SelectionChanged="EndDetectingListView_SelectionChanged">
+                                                             SelectionChanged="EndDetectingListView_SelectionChanged"
+                                                             Style="{StaticResource ListViewStyle}">
 
                             <!--  This animates the comments in and out when hidden  -->
                             <ListView.ItemContainerTransitions>
