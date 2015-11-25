@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Baconit"
              RequestedTheme="Dark">
-
     <Application.Resources>
 
         <Style x:Key="ListViewItemNoHighlight" TargetType="ListViewItem">
@@ -402,17 +401,18 @@
                                 <Rectangle x:Name="HorizontalTrackRect"
                                            Grid.ColumnSpan="5"
                                            Margin="0"
-                                           Fill="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
-                                           Stroke="{ThemeResource SystemControlForegroundTransparentBrush}"
+                                           Fill="Transparent"
+                                           Stroke="Transparent"
                                            StrokeThickness="{ThemeResource ScrollBarTrackBorderThemeThickness}" />
                                 <RepeatButton x:Name="HorizontalSmallDecrease"
                                               Grid.Column="0"
-                                              Width="4"
+                                              Width="0"
                                               MinHeight="4"
                                               Margin="0"
                                               VerticalAlignment="Center"
                                               Interval="50"
                                               IsTabStop="False"
+                                              Opacity="0"
                                               Template="{StaticResource HorizontalDecrementTemplate}" />
                                 <RepeatButton x:Name="HorizontalLargeDecrease"
                                               Grid.Column="1"
@@ -471,7 +471,7 @@
                                 <RepeatButton x:Name="VerticalSmallDecrease"
                                               Grid.Row="0"
                                               Height="0"
-                                              MinWidth="8"
+                                              MinWidth="6"
                                               Margin="0,2"
                                               HorizontalAlignment="Center"
                                               Interval="50"
@@ -488,7 +488,7 @@
                                               Template="{StaticResource RepeatButtonTemplate}" />
                                 <Thumb x:Name="VerticalThumb"
                                        Grid.Row="2"
-                                       Width="8"
+                                       Width="6"
                                        MinHeight="48"
                                        AutomationProperties.AccessibilityView="Raw"
                                        Background="{ThemeResource SystemControlForegroundChromeHighBrush}"
@@ -503,7 +503,7 @@
                                 <RepeatButton x:Name="VerticalSmallIncrease"
                                               Grid.Row="4"
                                               Height="0"
-                                              MinWidth="8"
+                                              MinWidth="6"
                                               Margin="0,2"
                                               HorizontalAlignment="Center"
                                               Interval="50"
@@ -512,7 +512,7 @@
                             </Grid>
                             <Grid x:Name="VerticalPanningRoot" MinHeight="24">
                                 <Border x:Name="VerticalPanningThumb"
-                                        Width="8"
+                                        Width="6"
                                         MinHeight="48"
                                         VerticalAlignment="Top"
                                         Background="{ThemeResource SystemControlForegroundChromeHighBrush}"
