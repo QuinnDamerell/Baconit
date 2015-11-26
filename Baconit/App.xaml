@@ -224,7 +224,7 @@
                                 <ControlTemplate x:Key="VerticalThumbTemplate" TargetType="Thumb">
                                     <Border x:Name="ThumbVisual"
                                             Background="{ThemeResource SystemControlForegroundBaseLowBrush}"
-                                            CornerRadius="4">
+                                            CornerRadius="2">
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal" />
@@ -449,10 +449,10 @@
                             <Grid x:Name="HorizontalPanningRoot" MinWidth="24">
                                 <Border x:Name="HorizontalPanningThumb"
                                         Height="4"
-                                        MinWidth="4"
+                                        MinWidth="12"
                                         HorizontalAlignment="Left"
-                                        Background="{ThemeResource SystemControlForegroundChromeHighBrush}"
-                                        BorderThickness="0" />
+                                        Background="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                        BorderThickness="0"  CornerRadius="2" />
                             </Grid>
                             <Grid x:Name="VerticalRoot" IsHitTestVisible="False">
                                 <Grid.RowDefinitions>
@@ -512,11 +512,11 @@
                             </Grid>
                             <Grid x:Name="VerticalPanningRoot" MinHeight="24">
                                 <Border x:Name="VerticalPanningThumb"
-                                        Width="6"
-                                        MinHeight="48"
+                                        Width="4"
+                                        MinHeight="12"
                                         VerticalAlignment="Top"
-                                        Background="{ThemeResource SystemControlForegroundChromeHighBrush}"
-                                        BorderThickness="0" />
+                                        Background="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                        BorderThickness="0" CornerRadius="2" />
                             </Grid>
                         </Grid>
                     </ControlTemplate>
