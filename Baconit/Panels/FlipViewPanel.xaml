@@ -111,7 +111,7 @@
                                                 Text="Save Image"
                                                 Visibility="{Binding ShowSaveImageMenu}" />
                                 <MenuFlyoutSeparator />
-                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go To Subreddit" />                                
+                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go To Subreddit" />
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                     </helperControls:CircleIconButton>
@@ -233,18 +233,20 @@
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Margin="0,0,8,0"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="{Binding Author}" />
+                            <Grid Margin="-2,0,6,0" Background="{Binding AuthorTextBackground}">
+                                <TextBlock Margin="2,0,2,0"
+                                           Foreground="{Binding AuthorTextColor}"
+                                           Text="{Binding Author}" />
+                            </Grid>
                             <TextBlock Grid.Column="1"
-                                       Margin="0,0,8,0"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="{Binding ScoreText}" />
-                            <TextBlock Grid.Column="2"
                                        Margin="0,0,8,0"
                                        Foreground="{Binding FlairBrush}"
                                        Text="{Binding AuthorFlairText}"
                                        Visibility="{Binding ShowFlairText}" />
+                            <TextBlock Grid.Column="2"
+                                       Margin="0,0,8,0"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text="{Binding ScoreText}" />
                             <TextBlock Grid.Column="3"
                                        Margin="0,0,8,0"
                                        Foreground="#999999"

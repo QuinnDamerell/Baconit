@@ -126,6 +126,9 @@ namespace BaconBackend.Collectors
                 // Decode the body
                 comment.Body = WebUtility.HtmlDecode(comment.Body);
                 comment.AuthorFlairText = WebUtility.HtmlDecode(comment.AuthorFlairText);
+
+                // Set if this post is from the op
+                comment.IsCommentFromOp = comment.Author.Equals(m_post.Author);
             }
         }
 

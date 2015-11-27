@@ -575,7 +575,7 @@ namespace Baconit.Panels
         }
 
         /// <summary>
-        /// Fired when the user tapps the go to subreddit button
+        /// Fired when the user taps the go to subreddit button
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

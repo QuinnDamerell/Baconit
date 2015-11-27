@@ -9,15 +9,16 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#191919">
-        <Grid x:Name="ui_fullScreenHolder"
-              Margin="24"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Bottom"
-              Background="#BB000000"
-              Tapped="FullScreenHolder_Tapped">
+        <Border x:Name="ui_fullScreenHolder"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Background="#BB000000"
+                CornerRadius="2"
+                Tapped="FullScreenHolder_Tapped">
             <ContentPresenter Width="40" Height="40">
                 <SymbolIcon x:Name="ui_fullScreenIcon" Symbol="FullScreen" />
             </ContentPresenter>
-        </Grid>
+        </Border>
     </Grid>
 </UserControl>
