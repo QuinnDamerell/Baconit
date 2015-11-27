@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="using:Baconit.HelperControls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              d:DesignHeight="800"
              d:DesignWidth="400"
              mc:Ignorable="d">
@@ -76,9 +77,10 @@
 
 
             <!--  Subreddit info block  -->
-            <local:MarkdownTextBox x:Name="ui_markdownTextBox"
-                                   Grid.Row="4"
-                                   Margin="12,24,12,24" />
+            <universalMarkdown:MarkdownTextBlock x:Name="ui_markdownTextBox"
+                                                 Grid.Row="4"
+                                                 Margin="12,24,12,24"
+                                                 OnMarkdownLinkTapped="MarkdownTextBox_OnMarkdownLinkTapped" />
         </Grid>
     </ScrollViewer>
 </UserControl>

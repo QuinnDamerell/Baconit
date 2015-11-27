@@ -5,6 +5,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.HelperControls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
@@ -199,7 +200,9 @@
                               VerticalScrollBarVisibility="Auto"
                               ZoomMode="Disabled">
                     <!--  the live preview box  -->
-                    <local:MarkdownTextBox x:Name="ui_livePreviewBox" Margin="18,6,18,6" />
+                    <universalMarkdown:MarkdownTextBlock x:Name="ui_livePreviewBox"
+                                                         Margin="18,6,18,6"
+                                                         OnMarkdownLinkTapped="LivePreviewBox_OnMarkdownLinkTapped" />
                 </ScrollViewer>
             </Grid>
 
@@ -241,6 +244,7 @@
                      AcceptsReturn="True"
                      IsSpellCheckEnabled="True"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Style="{StaticResource AlwaysWhiteTextBoxStyle}"
                      TextChanged="TextBox_TextChanged"
                      TextWrapping="Wrap" />
 

@@ -2,10 +2,17 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace BaconBackend.Helpers
 {
@@ -24,6 +31,31 @@ namespace BaconBackend.Helpers
         public string Subreddit;
         public string Post;
         public string Comment;
+    }
+
+    public enum SubmiteNewPostErrors
+    {
+        NONE,
+        UNKNOWN,
+        INVALID_OPTION,
+        BAD_CAPTCHA,
+        BAD_URL,
+        SUBREDDIT_NOEXIST,
+        SUBREDDIT_NOTALLOWED,
+        SUBREDDIT_REQUIRED,
+        NO_SELFS,
+        NO_LINKS,
+        IN_TIMEOUT,
+        RATELIMIT,
+        DOMAIN_BANNED,
+        ALREADY_SUB
+    }
+
+    public class SubmitNewPostResponse
+    {
+        public bool Success = false;
+        public string NewPostLink = String.Empty;
+        public SubmiteNewPostErrors RedditError = SubmiteNewPostErrors.NONE;
     }
 
     public class MiscellaneousHelper
@@ -138,6 +170,118 @@ namespace BaconBackend.Helpers
                 baconMan.MessageMan.DebugDia("failed to save or hide item", e);
             }
             return wasSuccess;
+        }
+
+        /// <summary>
+        /// Submits a new reddit post
+        /// </summary>
+        public static async Task<SubmitNewPostResponse> SubmitNewPost(BaconManager baconMan, string title, string urlOrText, string subredditDisplayName, bool isSelfText, bool sendRepliesToInbox)
+        {
+            if (!baconMan.UserMan.IsUserSignedIn)
+            {
+                baconMan.MessageMan.ShowSigninMessage("submit a new post");
+                return new SubmitNewPostResponse(){ Success = false };
+            }
+
+            try
+            {
+                // Make the data
+                List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+                data.Add(new KeyValuePair<string, string>("kind", isSelfText ? "self" : "link"));
+                data.Add(new KeyValuePair<string, string>("sr", subredditDisplayName));
+                data.Add(new KeyValuePair<string, string>("sendreplies", sendRepliesToInbox ? "true" : "false"));
+                if (isSelfText)
+                {
+                    data.Add(new KeyValuePair<string, string>("text", urlOrText));
+                }
+                else
+                {
+                    data.Add(new KeyValuePair<string, string>("url", urlOrText));
+                }
+                data.Add(new KeyValuePair<string, string>("title", title));
+
+                // Make the call
+                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequest("/api/submit/", data);
+
+                // Try to see if we can find the word redirect and if we can find the subreddit url
+                string responseLower = jsonResponse.ToLower();
+                if (responseLower.Contains("redirect") && responseLower.Contains($"://www.reddit.com/r/{subredditDisplayName}/comments/"))
+                {
+                    // Success, try to parse out the new post link
+                    int startOfLink = responseLower.IndexOf($"://www.reddit.com/r/{subredditDisplayName}/comments/");
+                    if(startOfLink == -1)
+                    {
+                        return new SubmitNewPostResponse() { Success = false };
+                    }
+
+                    int endofLink = responseLower.IndexOf('"', startOfLink);
+                    if (endofLink == -1)
+                    {
+                        return new SubmitNewPostResponse() { Success = false };
+                    }
+
+                    // Try to get the link
+                    string link = "https" + jsonResponse.Substring(startOfLink, endofLink - startOfLink);
+
+                    // Return
+                    return new SubmitNewPostResponse() { Success = true, NewPostLink = link};
+                }
+                else
+                {
+                    // We have a reddit error. Try to figure out what it is.
+                    for(int i = 0; i < Enum.GetNames(typeof(SubmiteNewPostErrors)).Length; i++)
+                    {
+                        string enumName = Enum.GetName(typeof(SubmiteNewPostErrors), i).ToLower(); ;
+                        if (responseLower.Contains(enumName))
+                        {
+                            baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; error: "+ enumName);
+                            baconMan.MessageMan.DebugDia("failed to submit post; error: "+ enumName);
+                            return new SubmitNewPostResponse() { Success = false, RedditError = (SubmiteNewPostErrors)i};
+                        }
+                    }
+
+                    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; unknown reddit error: ");
+                    baconMan.MessageMan.DebugDia("failed to submit post; unknown reddit error");
+                    return new SubmitNewPostResponse() { Success = false, RedditError = SubmiteNewPostErrors.UNKNOWN };
+                }
+            }
+            catch (Exception e)
+            {
+                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post", e);
+                baconMan.MessageMan.DebugDia("failed to submit post", e);
+                return new SubmitNewPostResponse() { Success = false };
+            }
+        }
+
+        /// <summary>
+        /// Uploads a image file to imgur.
+        /// </summary>
+        /// <param name="baconMan"></param>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public static string UploadImageToImgur(BaconManager baconMan, FileRandomAccessStream imageStream)
+        {
+            //try
+            //{
+            //    // Make the data
+            //    List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+            //    data.Add(new KeyValuePair<string, string>("key", "1a507266cc9ac194b56e2700a67185e4"));
+            //    data.Add(new KeyValuePair<string, string>("title", "1a507266cc9ac194b56e2700a67185e4"));
+
+            //    // Read the image from the stream and base64 encode it.
+            //    Stream str = imageStream.AsStream();
+            //    byte[] imageData = new byte[str.Length];
+            //    await str.ReadAsync(imageData, 0, (int)str.Length);
+            //    data.Add(new KeyValuePair<string, string>("image", WebUtility.UrlEncode(Convert.ToBase64String(imageData))));
+            //    string repsonse = await baconMan.NetworkMan.MakePostRequest("https://api.imgur.com/2/upload.json", data);
+            //}
+            //catch (Exception e)
+            //{
+            //    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post", e);
+            //    baconMan.MessageMan.DebugDia("failed to submit post", e);
+            //    return new SubmitNewPostResponse() { Success = false };
+            //}
+            throw new NotImplementedException("This function isn't complete!");
         }
 
 
@@ -278,7 +422,7 @@ namespace BaconBackend.Helpers
                                             containter.Type = RedditContentType.Comment;
                                         }
                                     }
-                                }                               
+                                }
                             }
                         }
                     }
@@ -301,7 +445,7 @@ namespace BaconBackend.Helpers
         public static Color GetComplementaryColor(Color source)
         {
             Color inputColor = source;
-            // If RGB values are close to each other by a diff less than 10%, then if RGB values are lighter side, 
+            // If RGB values are close to each other by a diff less than 10%, then if RGB values are lighter side,
             // decrease the blue by 50% (eventually it will increase in conversion below), if RBB values are on darker
             // side, decrease yellow by about 50% (it will increase in conversion)
             byte avgColorValue = (byte)((source.R + source.G + source.B) / 3);

@@ -99,20 +99,7 @@ namespace Baconit
             ui_contentRoot.Children.Add(m_panelManager);
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
-            // Add transparency to the account header, this will make it darker
-            Color accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 200;
-            ui_accountHeaderGrid.Background = new SolidColorBrush(accentColor);
 
-            // Add some transparency to the subreddit header also.
-            accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 137;
-            ui_trendingSubredditsHeader.Background = new SolidColorBrush(accentColor);
-
-            // Add some transparency to the search header also.
-            accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 75;
-            ui_searchHeader.Background = new SolidColorBrush(accentColor);
 
             // Sub to callbacks
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditUpdate;
@@ -608,9 +595,9 @@ namespace Baconit
 
             // If we don't have a query hide the box
             if (String.IsNullOrWhiteSpace(query))
-            {            
+            {
                 VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
-                return;                
+                return;
             }
 
             // Get the subreddits
@@ -744,7 +731,7 @@ namespace Baconit
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
             m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
-        }    
+        }
 
         #endregion
 
@@ -847,7 +834,7 @@ namespace Baconit
         #region IBackendActionListener
 
         /// <summary>
-        /// Fired when the user tapped go back. 
+        /// Fired when the user tapped go back.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

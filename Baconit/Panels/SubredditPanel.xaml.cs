@@ -24,6 +24,7 @@ using BaconBackend.Collectors;
 using System.Threading.Tasks;
 using Baconit.HelperControls;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.UI;
 
 namespace Baconit.Panels
 {
@@ -603,6 +604,16 @@ namespace Baconit.Panels
             HideFullScreenLoading();
         }
 
+        /// <summary>
+        /// Fired by the side bar when it should be closed because it is navigating.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SubredditSideBar_OnShouldClose(object sender, EventArgs e)
+        {
+            ui_splitView.IsPaneOpen = false;
+        }
+
         #endregion
 
         #region Full Screen Loading
@@ -646,7 +657,10 @@ namespace Baconit.Panels
                 overlay = m_loadingOverlay;
             }
 
-            overlay.Hide();
+            if(overlay != null)
+            {
+                overlay.Hide();
+            }
         }
 
         /// <summary>

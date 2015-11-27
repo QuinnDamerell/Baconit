@@ -343,5 +343,10 @@ namespace Baconit.HelperControls
         }
 
         #endregion
+
+        private void LivePreviewBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            App.BaconMan.ShowGlobalContent(e.Link);
+        }
     }
 }

@@ -125,6 +125,7 @@
     <Compile Include="Managers\Background\MessageOfTheDayManager.cs" />
     <Compile Include="Managers\NetworkManager.cs" />
     <Compile Include="Managers\SettingsManager.cs" />
+    <Compile Include="Managers\DraftManager.cs" />
     <Compile Include="Managers\SubredditManager.cs" />
     <Compile Include="Managers\TelemetryManager.cs" />
     <Compile Include="Managers\TileManager.cs" />

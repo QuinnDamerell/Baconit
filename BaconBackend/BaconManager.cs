@@ -119,6 +119,11 @@ namespace BaconBackend
         public TileManager TileMan { get; }
 
         /// <summary>
+        /// Used for draft management.
+        /// </summary>
+        public DraftManager DraftMan { get; }
+
+        /// <summary>
         /// Holds a connection to the front end, a way for things back here to
         /// interact with the front end.
         /// </summary>
@@ -143,6 +148,7 @@ namespace BaconBackend
             BackgroundMan = new BackgroundManager(this);
             MotdMan = new MessageOfTheDayManager(this);
             TileMan = new TileManager(this);
+            DraftMan = new DraftManager(this);
 
             // Don't do this if we are a background task; it will
             // call this when it is ready.

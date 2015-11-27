@@ -159,7 +159,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="ui_searchBox"
                          KeyUp="SearchBox_KeyUp"
-                         PlaceholderText="Search for anything; subreddits, users, post, etc." />
+                         PlaceholderText="Search for anything; subreddits, users, post, etc."
+                         Style="{StaticResource AlwaysWhiteTextBoxStyle}" />
                 <Grid Grid.Column="1"
                       Width="35"
                       Margin="4,0,0,0"

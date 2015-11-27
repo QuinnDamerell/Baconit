@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using BaconBackend.Helpers;
 using Baconit.Interfaces;
 using Baconit.Panels;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -32,7 +34,7 @@ namespace Baconit.HelperControls
         /// The current subreddit we are showing
         /// </summary>
         Subreddit m_currentSubreddit;
-        
+
         /// <summary>
         /// A brush for active buttons
         /// </summary>
@@ -42,6 +44,17 @@ namespace Baconit.HelperControls
         /// A brush for inactive buttons
         /// </summary>
         SolidColorBrush m_buttonInactive;
+
+        /// <summary>
+        /// Fired when the sidebar should be closed because we are navigating somewhere.
+        /// </summary>
+        public event EventHandler<EventArgs> OnShouldClose
+        {
+            add { m_onShouldClose.Add(value); }
+            remove { m_onShouldClose.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onShouldClose = new SmartWeakEvent<EventHandler<EventArgs>>();
+
 
         public SubredditSideBar()
         {
@@ -87,14 +100,10 @@ namespace Baconit.HelperControls
             // Make sure we don't already have it.
             if (m_currentSubreddit != null && m_currentSubreddit.Id.Equals(subreddit.Id))
             {
-                // Update the sub button
+                // Update the buttons
                 SetSubButton();
-
-                // Update the pin button
+                SetSearchButton();
                 SetPinButton();
-
-                // Update the post button
-                SetSubmitPostButton();
 
                 // Scroll the scroller to the top
                 ui_contentRoot.ChangeView(null, 0, null, true);
@@ -102,7 +111,7 @@ namespace Baconit.HelperControls
                 return;
             }
 
-            // Set the current subreddit 
+            // Set the current subreddit
             m_currentSubreddit = subreddit;
 
             // Set the title
@@ -120,19 +129,15 @@ namespace Baconit.HelperControls
 
             // Set the subscribe button
             SetSubButton();
-
-            // Set the pin button
             SetPinButton();
-
-            // Update the post button
-            SetSubmitPostButton();
+            SetSearchButton();
 
             // Set the markdown
             SetMarkdown();
         }
 
         #region Subscribe button
-         
+
         /// <summary>
         /// Setups the sub button
         /// </summary>
@@ -161,13 +166,16 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private async void SubscribeButton_Click(object sender, RoutedEventArgs e)
         {
-            // Ensure we are signed in. 
+            // Ensure we are signed in.
             // #todo should we disable the button if they aren't signed in?
             if (!App.BaconMan.UserMan.IsUserSignedIn)
             {
                 App.BaconMan.MessageMan.ShowSigninMessage("subscribe to reddits");
                 return;
             }
+
+            // Report
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditSubscribeTapped");
 
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
             bool subscribe = ui_subscribeButton.Content.Equals("subscribe");
@@ -216,6 +224,9 @@ namespace Baconit.HelperControls
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
             bool pin = ui_pinToStartButton.Content.Equals("pin to start");
 
+            // Report
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SubPinToStartTapped");
+
             // Update the button now so the UI responds
             SetPinButton(pin);
 
@@ -232,7 +243,7 @@ namespace Baconit.HelperControls
 
             if (!success)
             {
-                // Don't show an error bc the only way this can really happen is if the user cancled the action                
+                // Don't show an error bc the only way this can really happen is if the user cancled the action
 
                 // Fix the button
                 SetPinButton(!pin);
@@ -243,6 +254,11 @@ namespace Baconit.HelperControls
 
         #region Search
 
+        private void SetSearchButton()
+        {
+            ui_searchSubreddit.Content = m_currentSubreddit.IsArtifical ? "search reddit" : "search this subreddit";
+        }
+
         /// <summary>
         /// Fired when the user taps search.
         /// </summary>
@@ -250,47 +266,67 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void SearchSubreddit_Click(object sender, RoutedEventArgs e)
         {
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SubSidebarSearchTapped");
+
             Dictionary<string, object> args = new Dictionary<string, object>();
             // If this is an artificial subreddit make the name "" so we just search all posts.
             string displayName = m_currentSubreddit.IsArtifical ? "" : m_currentSubreddit.DisplayName;
             args.Add(PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME, displayName);
             m_host.Navigate(typeof(Search), "Search", args);
+            FireShouldClose();
         }
 
 
         #endregion
 
-        #region Submit link and post
-
-        private void SetSubmitPostButton()
-        {
-            // Disable if artifical
-            if(m_currentSubreddit.IsArtifical)
-            {
-                ui_submitPostButton.IsEnabled = false;
-            }
-        }
+        #region Submit post
 
         private void SubmitPostButton_Click(object sender, RoutedEventArgs e)
         {
-            // #todo
-            App.BaconMan.MessageMan.ShowMessageSimple("Soon... very soon", "This feature isn't quite ready yet, for now please use the website. This will be added soon!");
+            if (!App.BaconMan.UserMan.IsUserSignedIn)
+            {
+                App.BaconMan.MessageMan.ShowSigninMessage("submit a new post");
+                return;
+            }
 
-            App.BaconMan.ShowGlobalContent($"https://reddit.com/r/{m_currentSubreddit.DisplayName}/submit");
+            // Report
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SidebarSubmitPostTapped");
+
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            if (!m_currentSubreddit.IsArtifical && !m_currentSubreddit.DisplayName.Equals("frontpage") && !m_currentSubreddit.DisplayName.Equals("all"))
+            {
+                args.Add(PanelManager.NAV_ARGS_SUBMIT_POST_SUBREDDIT, m_currentSubreddit.DisplayName);
+            }
+            m_host.Navigate(typeof(SubmitPost), m_currentSubreddit.DisplayName, args);
+            FireShouldClose();
         }
 
         #endregion
 
-        #region Markdown 
+        #region Markdown
 
-        private void SetMarkdown()
+        private async void SetMarkdown()
         {
             if (!String.IsNullOrWhiteSpace(m_currentSubreddit.Description))
             {
+                // Delay this just a little so we don't hang the UI thread as much.
+                await Task.Delay(5);
+
                 ui_markdownTextBox.Markdown = m_currentSubreddit.Description;
-            }            
+            }
+        }
+
+        private void MarkdownTextBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            App.BaconMan.ShowGlobalContent(e.Link);
+            FireShouldClose();
         }
 
         #endregion
+
+        private void FireShouldClose()
+        {
+            m_onShouldClose.Raise(this, new EventArgs());
+        }
     }
 }

@@ -63,5 +63,10 @@ namespace Baconit.HelperControls
         {
             m_onHideComplete.Raise(this, new EventArgs());
         }
+
+        private void MarkdownText_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            App.BaconMan.ShowGlobalContent(e.Link);
+        }
     }
 }

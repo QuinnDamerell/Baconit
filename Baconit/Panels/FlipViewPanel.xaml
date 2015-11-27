@@ -6,6 +6,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              d:DesignHeight="800"
              d:DesignWidth="1280"
              mc:Ignorable="d">
@@ -253,7 +254,9 @@
                                        Text="{Binding TimeString}" />
                         </Grid>
 
-                        <helperControls:MarkdownTextBox Grid.Row="1" Markdown="{Binding Body}" />
+                        <universalMarkdown:MarkdownTextBlock Grid.Row="1"
+                                                             Markdown="{Binding Body}"
+                                                             OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                         <!--  Comment buttons  -->
                         <!--  Note we use - margins and postive padding to make the hit box larger  -->

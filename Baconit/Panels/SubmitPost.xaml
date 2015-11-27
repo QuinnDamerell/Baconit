@@ -1,0 +1,255 @@
+﻿<UserControl x:Class="Baconit.Panels.SubmitPost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <!--  Animations  -->
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="FadeUrlSelfTextUi">
+                <VisualState x:Name="ShowUrl">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_postSelfTextHeader"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_postUrlHeader"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_postSelfTextHeader"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_postUrlHeader"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="ShowSelfText">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_postSelfTextHeader"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_postUrlHeader"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_postSelfTextHeader"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_postUrlHeader"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!--  Scroll viewer for the content  -->
+        <ScrollViewer Style="{StaticResource ScrollViewerStyle}">
+            <!--  The main Grid for the content  -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--  Header container  -->
+                <StackPanel Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+                    <TextBlock Margin="12"
+                               VerticalAlignment="Bottom"
+                               Text="SUBMIT POST" />
+                </StackPanel>
+
+                <!--  title  -->
+                <StackPanel Grid.Row="1" Background="{StaticResource BaconitAccentColorLevel1Brush}">
+                    <TextBlock Margin="12,12,12,6" Text="Title" />
+                    <TextBox x:Name="ui_postTitleTextBox"
+                             Margin="12,0,12,12"
+                             MaxLength="300"
+                             Style="{StaticResource AlwaysWhiteTextBoxStyle}"
+                             TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!--  Url / Selftext  -->
+                <Grid Grid.Row="2" Background="{StaticResource BaconitAccentColorLevel2Brush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Text Header - we have two to fade between  -->
+                    <TextBlock x:Name="ui_postUrlHeader"
+                               Margin="12,12,12,6"
+                               Text="Url" />
+                    <TextBlock x:Name="ui_postSelfTextHeader"
+                               Margin="12,12,12,6"
+                               Text="Self Text" />
+
+                    <!--  Url / Selftext box  -->
+                    <TextBox x:Name="ui_postUrlTextBox"
+                             Grid.Row="1"
+                             Margin="12,0,12,12"
+                             MaxLength="15000"
+                             Style="{StaticResource AlwaysWhiteTextBoxStyle}"
+                             TextChanged="PostUrlTextBox_TextChanged"
+                             TextWrapping="Wrap">
+                        <TextBox.Resources>
+                            <Storyboard x:Name="ui_storyPostUrlTextBox">
+                                <!--  This is a dependent animation which is bad, but in this case it is ok  -->
+                                <DoubleAnimation x:Name="ui_animPostUrlTextBox"
+                                                 Duration="0:0:0.3"
+                                                 EnableDependentAnimation="True"
+                                                 From="0"
+                                                 Storyboard.TargetName="ui_postUrlTextBox"
+                                                 Storyboard.TargetProperty="MinHeight">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuinticEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </TextBox.Resources>
+                    </TextBox>
+
+                    <!--  Formatted Text  -->
+                    <StackPanel x:Name="ui_formattedPreviewHolder"
+                                Grid.Row="2"
+                                Visibility="Collapsed">
+
+                        <StackPanel.Resources>
+                            <Storyboard x:Name="ui_storyFormattedPreview" Completed="StoryFormattedPreview_Completed">
+                                <!--  This is a dependent animation which is bad, but in this case it is ok  -->
+                                <DoubleAnimation x:Name="ui_animFormattedPreview"
+                                                 Duration="0:0:0.3"
+                                                 EnableDependentAnimation="True"
+                                                 From="0"
+                                                 Storyboard.TargetName="ui_formattedPreviewHolder"
+                                                 Storyboard.TargetProperty="MaxHeight">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuinticEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </StackPanel.Resources>
+
+                        <helperControls:RedditMarkdownVisualHelper Margin="12,0,12,12" OnHelperTapped="RedditMarkdownVisualHelper_OnHelperTapped" />
+
+                        <TextBlock Margin="12,0,12,6" Text="Formatted Preview" />
+
+                        <Grid Margin="12,0,12,12"
+                              Background="#66000000"
+                              Padding="12,4">
+                            <universalMarkdown:MarkdownTextBlock x:Name="ui_formattedTextBlock"
+                                                                 MinHeight="72"
+                                                                 OnMarkdownLinkTapped="FormattedTextBlock_OnMarkdownLinkTapped" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!--  Checkbox  -->
+                    <CheckBox x:Name="ui_isSelfPostCheckBox"
+                              Grid.Row="3"
+                              Margin="12,0,12,12"
+                              Click="IsSelfPostCheckBox_Click"
+                              Content="is self text post" />
+                </Grid>
+
+                <StackPanel Grid.Row="3" Background="{StaticResource BaconitAccentColorLevel3Brush}">
+                    <TextBlock Margin="12,12,12,6" Text="Subreddit" />
+                    <AutoSuggestBox x:Name="ui_subredditSuggestBox"
+                                    Margin="12,0,12,12"
+                                    SuggestionChosen="SubredditSuggestBox_SuggestionChosen"
+                                    TextChanged="SubredditSuggestBox_TextChanged" />
+
+                    <CheckBox x:Name="ui_sendRepliesToInbox"
+                              Margin="12,0,12,12"
+                              Content="send replies to my inbox"
+                              IsChecked="True" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Background="{StaticResource BaconitAccentColorLevel4Brush}">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Width="150"
+                                Margin="12"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Click="Submit_Click"
+                                Content="Submit Post" />
+                        <Button Width="150"
+                                Margin="0,12,12,12"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Click="Discard_Click"
+                                Content="Discard" />
+                    </StackPanel>
+                    <TextBlock x:Name="ui_lastDraftSaveTime"
+                               Margin="12,0,12,12"
+                               VerticalAlignment="Bottom"
+                               FontSize="14"
+                               Foreground="#999999" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+
+        <helperControls:LoadingOverlay x:Name="ui_loadingOverlay" />
+    </Grid>
+</UserControl>

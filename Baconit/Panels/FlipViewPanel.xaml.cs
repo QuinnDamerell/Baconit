@@ -108,12 +108,16 @@ namespace Baconit.Panels
         /// </summary>
         LoadingOverlay m_loadingOverlay = null;
 
+        /// <summary>
+        /// Used to defer the first comments loading so we give the UI time to load before we start
+        /// the intense work of loading comments.
+        /// </summary>
+        bool m_isFirstPostLoad = true;
+
+
         public FlipViewPanel()
         {
             this.InitializeComponent();
-
-            // Set the list to the UI.
-            ui_flipView.ItemsSource = m_postsLists;
 
             // Set the comment box invisible for now. It should hide itself
             // when created but it doesn't seem to work. So for now just hide it
@@ -359,22 +363,36 @@ namespace Baconit.Panels
                         post.FlipViewMenuButton = flipViewMenuVis;
 
                         // Check if we are looking for a post
-                        if (!String.IsNullOrWhiteSpace(m_targetPost))
+                        if (foundTargetPost == -1 && !String.IsNullOrWhiteSpace(m_targetPost))
                         {
                             // Check if this post is it
                             if (post.Id.Equals(m_targetPost))
                             {
                                 // Found it! Cache the index for now, we will set it when the list is done loading.
                                 foundTargetPost = insertIndex;
-                                m_targetPost = string.Empty;
                             }
                         }
                         insertIndex++;
                     }
 
-                    // Now that we set the list set the target index
-                    if(foundTargetPost != -1)
+                    // If the list isn't set set it now. We want to delay this set so as we add elements into 
+                    // the flipview they don't get virtualized in until we can also set the selected index.
+                    if (ui_flipView.ItemsSource == null)
                     {
+                        ui_flipView.ItemsSource = m_postsLists;
+                    }                    
+
+                    // Now that we set the list set the target index
+                    if (foundTargetPost != -1)
+                    {
+                        // Note this is very important to be unset here. All selected item changed events on flip view 
+                        // will be ignored until this is empty, so if we set this empty before we set the list (above) the 0
+                        // indexes will fire and set.
+                        lock(m_postsLists)
+                        {
+                            m_targetPost = String.Empty;
+                        }
+
                         ui_flipView.SelectedIndex = foundTargetPost;
 
                         if (foundTargetPost == 0)
@@ -389,6 +407,8 @@ namespace Baconit.Panels
                         // This is a good place to show the comment tip if we have to
                         ShowCommentScrollTipIfNeeded();
                     }
+
+               
                 }
 
                 SetHeaderSizes();
@@ -629,8 +649,11 @@ namespace Baconit.Panels
         /// <summary>
         /// Updates the content in all of the panels in flipview.
         /// </summary>
-        private void UpdatePanelContent()
+        private async void UpdatePanelContent()
         {
+            // Create a list we need to set to the UI.
+            List<Tuple<Post, bool>> setToUiList = new List<Tuple<Post, bool>>();
+
             // Lock the list
             lock(m_postsLists)
             {
@@ -642,17 +665,13 @@ namespace Baconit.Panels
                     Post post = m_postsLists[i];
                     if (i >= minContentLoad && i <= maxContentLoad)
                     {
-                        // We found an item to preload, ask it to.
-                        SetPostContent(ref post, ui_flipView.SelectedIndex == i);
-
-                        // If this is the current item also preload the comments
-                        if(ui_flipView.SelectedIndex == i)
-                        {
-                            PreFetchPostComments(ref post);
-                        }
+                        // Add the post to the list of posts to set. We have to do this outside of the lock
+                        // because we might delay while doing it.
+                        setToUiList.Add(new Tuple<Post, bool>(post, ui_flipView.SelectedIndex == i));            
                     }
                     else
                     {
+                        // If we don't want these clear out the values.
                         ClearPostContent(ref post);
                         ClearPostComments(ref post);
                     }
@@ -664,6 +683,29 @@ namespace Baconit.Panels
                 if(m_postsLists.Count > 5 && m_collector.GetCurrentPosts().Count < maxContentLoad + 4)
                 {
                     m_collector.ExtendCollection(25);
+                }
+            }
+
+            // Now that we are out of lock set the items we want to set.
+            foreach(Tuple<Post, bool> tuple in setToUiList)
+            {
+                // We found an item to show or prelaod, do it.
+                Post postToSet = tuple.Item1;
+                SetPostContent(ref postToSet, tuple.Item2);
+
+                // If this is the first post to load delay for a while to give the UI time to setup.
+                // This will delay setting the next post as well as prefetching the comments for this
+                // current post.
+                if(m_isFirstPostLoad)
+                {
+                    m_isFirstPostLoad = false;
+                    await Task.Delay(500);
+                }
+
+                // If this is the current item also preload the comments now.
+                if (tuple.Item2)
+                {
+                    PreFetchPostComments(ref postToSet);
                 }
             }
 
@@ -1110,6 +1152,16 @@ namespace Baconit.Panels
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Fired when a user taps a link in a comment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            App.BaconMan.ShowGlobalContent(e.Link);
         }
 
         #endregion

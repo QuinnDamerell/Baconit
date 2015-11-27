@@ -5,6 +5,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              RequestedTheme="Dark"
              d:DesignHeight="700"
              d:DesignWidth="400"
@@ -37,7 +38,9 @@
                                Text="{Binding HeaderSecond}" />
                 </Grid>
 
-                <helperControls:MarkdownTextBox Grid.Row="1" Markdown="{Binding Body}" />
+                <universalMarkdown:MarkdownTextBlock Grid.Row="1"
+                                                     Markdown="{Binding Body}"
+                                                     OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                 <!--  Message buttons  -->
                 <!--  Note we use - margins and postive padding to make the hit box larger  -->

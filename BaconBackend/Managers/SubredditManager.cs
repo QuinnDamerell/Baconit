@@ -209,7 +209,7 @@ namespace BaconBackend.Managers
                 }
 
                 // Format the subreddit
-                foundSubreddit.Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(foundSubreddit.Description));
+                foundSubreddit.Description = WebUtility.HtmlDecode(foundSubreddit.Description);
             }        
 
             return foundSubreddit;
@@ -408,7 +408,7 @@ namespace BaconBackend.Managers
                 subreddit.IsFavorite = FavoriteSubreddits.ContainsKey(subreddit.Id);
 
                 // Escape the description, we need to do it twice because sometimes it is double escaped.
-                subreddit.Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(subreddit.Description));
+                subreddit.Description = WebUtility.HtmlDecode(subreddit.Description);
 
                 // Do a simple inert sort, account for favorites
                 bool wasAdded = false;

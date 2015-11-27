@@ -58,6 +58,7 @@ namespace BaconBackend.Managers
             tile.VisualElements.ShowNameOnSquare150x150Logo = true;
             tile.VisualElements.ShowNameOnSquare310x310Logo = true;
             tile.VisualElements.ShowNameOnWide310x150Logo = true;
+            tile.RoamingEnabled = true;
 
             // Request the create.
             return await tile.RequestCreateAsync();

@@ -259,7 +259,9 @@
         </SplitView.Content>
 
         <SplitView.Pane>
-            <helperControl:SubredditSideBar x:Name="ui_subredditSideBar" />
+            <helperControl:SubredditSideBar x:Name="ui_subredditSideBar"
+                                            Background="#171717"
+                                            OnShouldClose="SubredditSideBar_OnShouldClose" />
         </SplitView.Pane>
     </SplitView>
 </UserControl>

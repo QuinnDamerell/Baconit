@@ -232,25 +232,29 @@ namespace Baconit.FlipViewControls
             // First figure out who can handle this post.
             // Important, the order we ask matter since there maybe overlap
             // in handlers.
-            if(GifImageFliplControl.CanHandlePost(flipPost))
+            if (GifImageFliplControl.CanHandlePost(flipPost))
             {
                 m_control = new GifImageFliplControl(this);
             }
-            else if(YoutubeFlipControl.CanHandlePost(flipPost))
+            else if (YoutubeFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new YoutubeFlipControl(this);
             }
-            else if(BasicImageFlipControl.CanHandlePost(flipPost))
+            else if (BasicImageFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new BasicImageFlipControl(this);
             }
-            else if(RedditMarkdownFlipControl.CanHandlePost(flipPost))
+            else if (RedditMarkdownFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new RedditMarkdownFlipControl(this);
             }
             else if (RedditContentFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new RedditContentFlipControl(this);
+            }
+            else if (WindowsAppFlipControl.CanHandlePost(flipPost))
+            {
+                m_control = new WindowsAppFlipControl(this);
             }
             else
             {
@@ -276,6 +280,10 @@ namespace Baconit.FlipViewControls
         {
             if(isVisible)
             {
+                // Confirm the NSFW block is correct. We need to do this again to check if the user has lowered
+                // the nsfw block for this subreddit.
+                ShowNsfwIfNeeded(m_currentPost);
+
                 // If we are now visible fire the on visible event.
                 if(m_control != null)
                 {
@@ -413,10 +421,14 @@ namespace Baconit.FlipViewControls
 
             // When the block is tapped, animate out the block screen and add it to the list
             // not to block again
-            s_previousLoweredNsfwBlocks.Add(currentPost.Id, true);
+            if(!s_previousLoweredNsfwBlocks.ContainsKey(currentPost.Id))
+            {
+                s_previousLoweredNsfwBlocks.Add(currentPost.Id, true);
+            }
 
             // If the block is tapped and we are in subreddit mode add it to the ignore subreddit list.
-            if(App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit)
+            if (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit &&
+                !s_previousLoweredNsfwSubreddits.ContainsKey(currentPost.Subreddit))
             {
                 s_previousLoweredNsfwSubreddits.Add(currentPost.Subreddit, true);
             }

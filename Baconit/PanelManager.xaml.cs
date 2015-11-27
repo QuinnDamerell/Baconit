@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -49,6 +50,7 @@ namespace Baconit
         public const string NAV_ARGS_FORCE_COMMENT_ID = "Pane.ForceCommentId";
         public const string NAV_ARGS_SEARCH_QUERY = "Pane.SearchQuery";
         public const string NAV_ARGS_SEARCH_SUBREDDIT_NAME = "Pane.SearchSubredditName";
+        public const string NAV_ARGS_SUBMIT_POST_SUBREDDIT = "Pane.SubmitPostSubreddit";
 
         /// <summary>
         /// Fired when the screen mode changes
@@ -863,6 +865,21 @@ namespace Baconit
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("OnNavigatingTo failed!", e);
+            }
+        }
+
+        /// <summary>
+        /// Sets the status bar color for mobile.
+        /// </summary>
+        /// <param name="color"></param>
+        public async void SetStatusBarColor(Color color)
+        {
+            // #todo this doesn't seem to work...
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+                await statusbar.ShowAsync();
+                statusbar.BackgroundColor = color;
             }
         }
     }

@@ -191,7 +191,8 @@
                     <!--  Search Header  -->
                     <Grid x:Name="ui_searchHeader"
                           Grid.Row="7"
-                          Grid.ColumnSpan="2">
+                          Grid.ColumnSpan="2"
+                          Background="{StaticResource BaconitAccentColorLevel3Brush}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition x:Name="ui_quickSearchTextBoxColumDef" Width="auto" />
                             <ColumnDefinition x:Name="ui_quickSearchHeaderColumDef" Width="*" />
@@ -238,6 +239,7 @@
                     <Grid x:Name="ui_trendingSubredditsHeader"
                           Grid.Row="8"
                           Grid.ColumnSpan="2"
+                          Background="{StaticResource BaconitAccentColorLevel2Brush}"
                           Tapped="TrendingSubredditsHeader_Tapped">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
@@ -324,7 +326,7 @@
                     <Grid x:Name="ui_accountHeaderGrid"
                           Grid.Row="10"
                           Grid.ColumnSpan="2"
-                          Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                          Background="{StaticResource BaconitAccentColorLevel1Brush}"
                           Tapped="AccountHeader_Tapped">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
