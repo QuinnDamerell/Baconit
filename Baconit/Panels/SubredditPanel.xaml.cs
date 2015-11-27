@@ -166,7 +166,7 @@ namespace Baconit.Panels
             SetPosts(0, m_collector.GetCurrentPosts(), true);
 
             // Setup the UI with the name.
-            ui_subredditName.Text = $"/r/{m_subreddit.DisplayName}";
+            ui_subredditName.Text = m_subreddit.DisplayName.ToUpper();
         }
 
         #endregion

@@ -16,18 +16,20 @@
 
         <!--  Subreddit Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Subreddit View Settings" />
+            <TextBlock VerticalAlignment="Bottom"
+                       Text="SUBREDDIT VIEW SETTINGS"
+                       FontWeight="Bold"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="12">
-            <TextBlock Text="Subreddit to show when the app opens." TextWrapping="Wrap" />
+            <TextBlock Text="Subreddit to show when the app opens" TextWrapping="Wrap" />
             <ComboBox x:Name="ui_defaultSubreddit"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSubreddit_SelectionChanged" />
-            <TextBlock Text="Show full post titles in subreddit view." TextWrapping="Wrap" />
+            <TextBlock Text="Show full post titles in subreddit view" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showFullTitles" Toggled="ShowFullTitles_Toggled" />
         </StackPanel>
     </Grid>

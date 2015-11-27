@@ -82,12 +82,12 @@
 
 
         <DataTemplate x:Key="SubredditItemItemDataTemplate">
-            <Grid Margin="0,0,6,15"
+            <Grid Margin="0,8,0,8"
                   Background="Transparent"
                   Holding="Post_Holding"
                   RightTapped="Post_RightTapped">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="45" />
+                    <ColumnDefinition Width="50" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
@@ -101,44 +101,31 @@
                 </FlyoutBase.AttachedFlyout>
 
                 <StackPanel Grid.Column="0"
-                            Margin="0,0,0,0"
                             VerticalAlignment="Top"
                             Orientation="Vertical">
                     <StackPanel Margin="0,0,0,0"
-                                Background="#00000000"
+                                Background="Transparent"
                                 Tapped="UpVote_Tapped">
-                        <StackPanel Width="45"
-                                    Height="35"
+                        <StackPanel Height="35"
                                     Margin="0,5,0,0"
-                                    HorizontalAlignment="Left"
-                                    Orientation="Vertical">
-                            <Polygon HorizontalAlignment="Center"
-                                     Fill="{Binding UpVoteColor}"
-                                     Points="0,15 20,15 10,0" />
-                            <Rectangle Width="8"
-                                       Height="9"
-                                       Margin="0,-1,1,0"
-                                       HorizontalAlignment="Center"
-                                       Fill="{Binding UpVoteColor}" />
+                                    HorizontalAlignment="Center">
+                            <SymbolIcon HorizontalAlignment="Center"
+                                        Symbol="Up"
+                                        Foreground="{Binding UpVoteColor}"/>
                         </StackPanel>
                     </StackPanel>
                     <TextBlock Margin="0,-9,0,0"
                                HorizontalAlignment="Center"
                                Text="{Binding Score}" />
                     <StackPanel Margin="0,-9,0,0"
-                                Background="#00000000"
+                                Background="Transparent"
                                 Tapped="DownVote_Tapped">
                         <StackPanel Height="35"
-                                    Margin="0,8,0,0"
-                                    Orientation="Vertical">
-                            <Rectangle Width="7"
-                                       Height="9"
-                                       Margin="0,6,0,-1"
-                                       HorizontalAlignment="Center"
-                                       Fill="{Binding DownVoteColor}" />
-                            <Polygon HorizontalAlignment="Center"
-                                     Fill="{Binding DownVoteColor}"
-                                     Points="0,0 20,0 10,15" />
+                                    Margin="0,16,0,0">
+                            <FontIcon HorizontalAlignment="Center"
+                                      Glyph=""
+                                        Foreground="{Binding DownVoteColor}"/>
+
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -202,11 +189,9 @@
                 <StackPanel Grid.Column="2"
                             Margin="0,4,0,0"
                             VerticalAlignment="Top"
-                            Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                             Tapped="PostTitle_Tapped"
                             Visibility="{Binding ImageVisibility}">
                     <Image Width="70"
-                           Margin="3,3,3,3"
                            HorizontalAlignment="Right"
                            Source="{Binding Image}" />
                 </StackPanel>
@@ -223,26 +208,30 @@
         </Grid.RowDefinitions>
 
         <!--  Subreddit Header  -->
-        <Grid Grid.Row="0" Background="Transparent">
+        <Grid Grid.Row="0"
+              Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
-                <TextBlock x:Name="ui_subredditName"
-                           Margin="12,12,0,12"
-                           VerticalAlignment="Bottom"
-                           Text="Baconit" />
+            <Grid Background="Transparent"
+                  Tapped="SubredditHeader_Tapped">
+                <TextBlock Margin="12"
+                           VerticalAlignment="Center">
+                    <!-- Hamburger -->
+                    <Run FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                         Text="  "/>
+                    <Run x:Name="ui_subredditName"
+                         Text="BACONIT"
+                         FontWeight="Bold"/>
+                </TextBlock>
             </Grid>
 
 
-            <StackPanel Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Background="Transparent"
-                        Orientation="Horizontal"
-                        Padding="12"
-                        Tapped="Sort_Tapped">
+            <Border Grid.Column="1"
+                    Background="Transparent"
+                    Padding="16,0"
+                    Tapped="Sort_Tapped">
                 <FlyoutBase.AttachedFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
@@ -252,18 +241,19 @@
                         <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
-                <TextBlock Margin="0,0,2,0"
-                           VerticalAlignment="Bottom"
-                           FontSize="12"
-                           Foreground="#989898"
-                           Text="Sort:" />
-                <TextBlock x:Name="ui_sortText"
-                           VerticalAlignment="Bottom"
-                           FontSize="12"
-                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Hot" />
-            </StackPanel>
+
+                <TextBlock Foreground="#A5A5A5"
+                           VerticalAlignment="Center">
+                    <Run x:Name="ui_sortText"
+                         Text="HOT"/>
+                    <!-- Down caret -->
+                    <Run Text="   &#xE0E5;"
+                         FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                         FontSize="12"/>
+                </TextBlock>
+            </Border>
         </Grid>
+        
         <!--  Loading indicator  -->
         <ProgressBar x:Name="ui_progressBar"
                      Grid.Row="0"
@@ -279,7 +269,6 @@
                                             ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
                                             Padding="0,0,12,0"
                                             SelectionChanged="PostList_SelectionChanged">
-
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition IsStaggeringEnabled="True" />

@@ -132,9 +132,11 @@
 
         <!--  Subreddit Header  -->
         <Grid Grid.Row="0"
-              Background="#333333"
+              Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
               Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Search" />
+            <TextBlock VerticalAlignment="Bottom"
+                       Text="SEARCH"
+                       FontWeight="Bold"/>
         </Grid>
 
         <!--  Search Header  -->

@@ -354,7 +354,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave Post" : "Save Post";
+                return IsSaved ? "Unsave post" : "Save post";
             }
         }
 
@@ -366,7 +366,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsHidden ? "Unhide Post" : "Hide Post";
+                return IsHidden ? "Unhide post" : "Hide post";
             }
         }
 
