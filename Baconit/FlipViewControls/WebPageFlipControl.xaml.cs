@@ -98,7 +98,15 @@ namespace Baconit.FlipViewControls
                     m_webView.ContainsFullScreenElementChanged += WebView_ContainsFullScreenElementChanged;
 
                     // Navigate
-                    m_webView.Navigate(new Uri(post.Url, UriKind.Absolute));
+                    try
+                    {
+                        m_webView.Navigate(new Uri(post.Url, UriKind.Absolute));
+                    }
+                    catch(Exception e)
+                    {
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
+                        m_host.ShowError();
+                    }                    
 
                     // Insert this before the full screen button.
                     ui_contentRoot.Children.Insert(0, m_webView);

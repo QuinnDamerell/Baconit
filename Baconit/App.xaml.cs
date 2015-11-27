@@ -93,6 +93,16 @@ namespace Baconit
                 // parameter
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
             }
+            else
+            {
+                // If we have already navigated, we should tell the main page
+                // we are being activated again.
+                if(rootFrame.Content.GetType() == typeof(MainPage))
+                {
+                    MainPage main = (MainPage)rootFrame.Content;
+                    main.OnReActivated(e.Arguments);
+                }
+            }
             // Ensure the current window is active
             Window.Current.Activate();
         }

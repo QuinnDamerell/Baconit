@@ -152,6 +152,9 @@
     <Compile Include="HelperControls\SlidingImages.xaml.cs">
       <DependentUpon>SlidingImages.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperControls\SubredditSideBar.xaml.cs">
+      <DependentUpon>SubredditSideBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\TipPopUp.xaml.cs">
       <DependentUpon>TipPopUp.xaml</DependentUpon>
     </Compile>
@@ -347,6 +350,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="HelperControls\SlidingImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\SubredditSideBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

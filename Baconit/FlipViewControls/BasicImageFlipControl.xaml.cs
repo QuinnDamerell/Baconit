@@ -347,7 +347,7 @@ namespace Baconit.FlipViewControls
 
         private async void SetScrollerZoomFactors(Size imageSize)
         {
-            if (imageSize == null || imageSize.Height == 0 || imageSize.Width == 0)
+            if (imageSize == null || imageSize.Height == 0 || imageSize.Width == 0 || ui_scrollViewer.ActualHeight == 0 || ui_scrollViewer.ActualWidth == 0)
             {
                 return;
             }

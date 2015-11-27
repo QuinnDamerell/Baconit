@@ -48,6 +48,7 @@ namespace Baconit
         public const string NAV_ARGS_FORCE_POST_ID = "Pane.ForcePostId";
         public const string NAV_ARGS_FORCE_COMMENT_ID = "Pane.ForceCommentId";
         public const string NAV_ARGS_SEARCH_QUERY = "Pane.SearchQuery";
+        public const string NAV_ARGS_SEARCH_SUBREDDIT_NAME = "Pane.SearchSubredditName";
 
         /// <summary>
         /// Fired when the screen mode changes

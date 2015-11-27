@@ -47,7 +47,14 @@ namespace Baconit.FlipViewControls
             // Check if this is a reddit content post, if so this is us
             if (!String.IsNullOrWhiteSpace(post.Url))
             {
-                return MiscellaneousHelper.TryToFindRedditContentInLink(post.Url) != null;
+                // Check the content
+                RedditContentContainer container = MiscellaneousHelper.TryToFindRedditContentInLink(post.Url);
+
+                // If we got a container and it isn't a web site return it.
+                if(container != null && container.Type != RedditContentType.Website)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -83,6 +90,11 @@ namespace Baconit.FlipViewControls
                     case RedditContentType.Post:
                         headerText = "This post links to a reddit post";
                         minorText = $"Tap anywhere to view it";
+                        break;
+                    case RedditContentType.Website:
+                        // This shouldn't happen
+                        App.BaconMan.MessageMan.DebugDia("Got website back when prepare on reddit content control");
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "GotWebsiteOnPrepareRedditContent");
                         break;
                 }
             }

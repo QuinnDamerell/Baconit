@@ -13,12 +13,14 @@ namespace BaconBackend.Helpers
     {
         Subreddit,
         Post,
-        Comment
+        Comment,
+        Website
     }
 
     public class RedditContentContainer
     {
         public RedditContentType Type;
+        public string Website;
         public string Subreddit;
         public string Post;
         public string Comment;
@@ -183,20 +185,36 @@ namespace BaconBackend.Helpers
                 int subStart = urlLower.IndexOf("r/");
                 subStart += 2;
 
-                // Make sure we don't have a trailing slash.
-                int subEnd = urlLower.Length;
-                if (urlLower.Length > 0 && urlLower[urlLower.Length - 1] == '/')
+                // Try to find the next / after the subreddit if it exists
+                int subEnd = urlLower.IndexOf("/", subStart);
+                if(subEnd == -1)
                 {
-                    subEnd--;
+                    subEnd = urlLower.Length;
                 }
 
                 // Get the name.
                 string displayName = urlLower.Substring(subStart, subEnd - subStart).Trim();
-                containter = new RedditContentContainer()
+
+                // Make sure we don't have trailing arguments other than a /, if we do we should handle this as we content.
+                string trimedLowerUrl = urlLower.TrimEnd();
+                if (trimedLowerUrl.Length - subEnd > 1)
                 {
-                    Type = RedditContentType.Subreddit,
-                    Subreddit = displayName
-                };
+                    // Make a web link for this
+                    containter = new RedditContentContainer()
+                    {
+                        Type = RedditContentType.Website,
+                        Website = $"https://reddit.com/{url}"
+                    };
+                }
+                else
+                {
+                    // We are good, make the subreddit link for this.
+                    containter = new RedditContentContainer()
+                    {
+                        Type = RedditContentType.Subreddit,
+                        Subreddit = displayName
+                    };
+                }
             }
             // Try to find any other reddit link
             else if(urlLower.Contains("reddit.com/"))
@@ -217,8 +235,16 @@ namespace BaconBackend.Helpers
                         containter.Subreddit = urlLower.Substring(startSub, endSub - startSub);
                         containter.Type = RedditContentType.Subreddit;
 
+                        // Special case! If the text after the subreddit is submit or wiki don't do anything special
+                        // If we return null we will just open the website.
+                        if(urlLower.IndexOf("/submit") == endSub || urlLower.IndexOf("/wiki") == endSub || urlLower.IndexOf("/w/") == endSub)
+                        {
+                            containter = null;
+                            urlLower = "";
+                        }
+
                         // See if we have a post
-                        int postStart = url.IndexOf("comments/");
+                        int postStart = urlLower.IndexOf("comments/");
                         if(postStart != -1)
                         {
                             postStart += 9;

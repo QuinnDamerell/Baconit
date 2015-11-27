@@ -66,6 +66,11 @@ namespace Baconit
         /// </summary>
         KeyboardShortcutHelper m_keyboardShortcutHepler;
 
+        /// <summary>
+        /// Used to tell use that we should navigate to a different subreddit than the default.
+        /// </summary>
+        string m_subredditFirstNavOverwrite;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -147,6 +152,12 @@ namespace Baconit
                 defaultDisplayName = "frontpage";
             }
 
+            // Make sure we don't have an overwrite (launched from a secondary tile)
+            if(!String.IsNullOrWhiteSpace(m_subredditFirstNavOverwrite))
+            {
+                defaultDisplayName = m_subredditFirstNavOverwrite;
+            }
+
             // Navigate to the start
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, defaultDisplayName);
@@ -158,6 +169,38 @@ namespace Baconit
 
             // Show review if we should
             CheckShowReviewAndFeedback();
+        }
+
+        /// <summary>
+        /// Fired when the page is navigated to.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter.GetType() == typeof(string) && !String.IsNullOrWhiteSpace((string)e.Parameter))
+            {
+                string argument = (string)e.Parameter;
+                if (argument.StartsWith(TileManager.c_subredditOpenArgument))
+                {
+                    m_subredditFirstNavOverwrite = argument.Substring(TileManager.c_subredditOpenArgument.Length);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by the app when the page is reactivated.
+        /// </summary>
+        /// <param name="arguments"></param>
+        public void OnReActivated(string arguments)
+        {
+            if (arguments != null && arguments.StartsWith(TileManager.c_subredditOpenArgument))
+            {
+                string subredditDisplayName = arguments.Substring(TileManager.c_subredditOpenArgument.Length);
+                RedditContentContainer content = new RedditContentContainer();
+                content.Subreddit = subredditDisplayName;
+                content.Type = RedditContentType.Subreddit;
+                App.BaconMan.ShowGlobalContent(content);
+            }
         }
 
         /// <summary>
@@ -826,12 +869,20 @@ namespace Baconit
         {
             // Validate that the link can't be opened by the subreddit viewer
             RedditContentContainer container = MiscellaneousHelper.TryToFindRedditContentInLink(link);
-            if (container != null)
+
+            // Make sure we got a response and it isn't a website
+            if (container != null && container.Type != RedditContentType.Website)
             {
                 ShowGlobalContent(container);
             }
             else
             {
+                if(container != null && container.Type == RedditContentType.Website)
+                {
+                    // We have a link from the reddit presenter, overwrite the link
+                    link = container.Website;
+                }
+
                 ui_globalContentPresenter.ShowContent(link);
             }
         }

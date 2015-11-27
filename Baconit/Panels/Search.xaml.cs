@@ -78,6 +78,15 @@ namespace Baconit.Panels
                 ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
                 Search_Tapped(null, null);
             }
+            else if (arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME))
+            {
+                // We are opened from the side bar, set the subreddit name and go to post mode.
+                // Set to post mode
+                ui_searchForCombo.SelectedIndex = 3;
+
+                // Fill out the subreddit name
+                ui_postSubreddit.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME];
+            }
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)

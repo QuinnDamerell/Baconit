@@ -38,9 +38,12 @@ namespace Baconit.HelperControls
             VisualStateManager.GoToState(this, "HideLoading", false);
         }
 
-        public void Show()
+        public void Show(bool showLoading = true)
         {
-            ui_progressRing.IsActive = true;
+            // Set the progress ring
+            ui_progressRing.IsActive = showLoading;
+            ui_progressRing.Visibility = showLoading ? Visibility.Visible : Visibility.Collapsed;
+
             // Show it
             VisualStateManager.GoToState(this, "ShowLoading", true);
         }

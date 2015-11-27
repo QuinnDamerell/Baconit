@@ -55,7 +55,7 @@ namespace Baconit.Panels
             ui_postList.OnListEndDetectedEvent += Ui_postList_OnListEndDetectedEvent;
             // Set the threshold so we have time to get stories before they get to the bottom.
             ui_postList.EndOfListDetectionThrehold = 0.70;
-            App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;
+            ui_splitView.PaneClosing += SplitView_PaneClosing;
         }
 
         public async void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
@@ -133,12 +133,6 @@ namespace Baconit.Panels
                 // Make sure we are up to date
                 m_collector.Update();
             }
-
-            if(m_subreddit != null)
-            {
-                // Set the sub status
-                SetSubscribeStatus();
-            }
         }
 
         #region Subreddit Setup
@@ -150,9 +144,6 @@ namespace Baconit.Panels
 
             // Get the sort type
             SetCurrentSort(sortType);
-
-            // Set the sub status
-            SetSubscribeStatus();
 
             // Get the collector and register for updates.
             m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSortType);
@@ -576,81 +567,40 @@ namespace Baconit.Panels
 
         #endregion
 
-        #region Subscribe / UnSub
+        #region Side Bar Logic
 
         /// <summary>
-        /// Sets the sub icon correctly.
-        /// </summary>
-        private void SetSubscribeStatus()
-        {
-            // Make sure the button should be visible.
-            if(m_subreddit != null && (m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage")))
-            {
-                ui_appBarSubButton.Visibility = Visibility.Collapsed;
-                return;
-            }
-            else
-            {
-                ui_appBarSubButton.Visibility = Visibility.Visible;
-            }
-
-            // Set the icon symbol
-            ui_appBarSubButton.SymbolIcon = App.BaconMan.SubredditMan.IsSubredditSubscribedTo(m_subreddit.DisplayName) ? Symbol.Remove : Symbol.Add;
-        }
-
-        /// <summary>
-        /// Fired when a user taps the subreddit sub button
+        /// Fired when a user taps the subreddit side bar button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void AppBarSubButton_OnIconTapped(object sender, EventArgs e)
+        private void AppBarSideBarOpen_OnIconTapped(object sender, EventArgs e)
         {
-            if(!App.BaconMan.UserMan.IsUserSignedIn)
+            // Make sure we have a sub
+            if(m_subreddit == null)
             {
-                App.BaconMan.MessageMan.ShowSigninMessage("subscribe to reddits");
                 return;
             }
 
-            // Check the icon bc that's what the user saw
-            bool subscribe = ui_appBarSubButton.SymbolIcon == Symbol.Add ? true : false;
+            // Set the subreddit
+            ui_subredditSideBar.SetSubreddit(m_host, m_subreddit);
 
-            // If unsub, confirm with the user.
-            if(!subscribe)
-            {
-                bool? response = await App.BaconMan.MessageMan.ShowYesNoMessage("Just Checking", "Are you sure you want to unsubscribe from this subreddit?");
+            // Show the side bar
+            ui_splitView.IsPaneOpen = true;
 
-                if(!response.HasValue || response.Value == false)
-                {
-                    return;
-                }
-            }
-
-            // Update the icon before we actually do the work for user feedback.
-            ui_appBarSubButton.SymbolIcon = subscribe ? Symbol.Remove : Symbol.Add;
-
-            // Make the request
-            bool success = await App.BaconMan.SubredditMan.ChangeSubscriptionStatus(m_subreddit.Id, subscribe);
-
-            if(!success)
-            {
-                App.BaconMan.MessageMan.ShowMessageSimple("Oops", "We can't subscribe or unsubscribe to this subreddit right now. Check your Internet connection.");
-
-                // Fix the icon
-                ui_appBarSubButton.SymbolIcon = subscribe ? Symbol.Add : Symbol.Remove;
-            }
+            // Show the blocking UI
+            ShowFullScreenLoading(false);
         }
 
         /// <summary>
-        /// Fired when the subreddit list changes. We should update the sub status.
+        /// Fired when the subreddit panel is closed.
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void SubredditMan_OnSubredditsUpdated(object sender, OnSubredditsUpdatedArgs e)
+        /// <param name="args"></param>
+        private void SplitView_PaneClosing(SplitView sender, SplitViewPaneClosingEventArgs args)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                SetSubscribeStatus();
-            });
+            // Hide the loading screen.
+            HideFullScreenLoading();
         }
 
         #endregion
@@ -660,7 +610,7 @@ namespace Baconit.Panels
         /// <summary>
         /// Shows a loading overlay if there isn't one already
         /// </summary>
-        private async void ShowFullScreenLoading()
+        private async void ShowFullScreenLoading(bool showLoading = true)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
             {
@@ -677,7 +627,7 @@ namespace Baconit.Panels
                 m_loadingOverlay.OnHideComplete += LoadingOverlay_OnHideComplete;
                 Grid.SetRowSpan(m_loadingOverlay, 5);
                 ui_contentRoot.Children.Add(m_loadingOverlay);
-                m_loadingOverlay.Show();
+                m_loadingOverlay.Show(showLoading);
             });
         }
 

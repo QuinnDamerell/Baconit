@@ -196,6 +196,7 @@
                           MaxHeight="50"
                           HorizontalScrollBarVisibility="Auto"
                           HorizontalScrollMode="Auto"
+                          Style="{StaticResource ScrollViewerStyle}"
                           VerticalScrollBarVisibility="Disabled"
                           VerticalScrollMode="Disabled">
                 <StackPanel Orientation="Horizontal" Padding="0,0,0,6">

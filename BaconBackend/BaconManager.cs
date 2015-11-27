@@ -114,6 +114,11 @@ namespace BaconBackend
         public MessageOfTheDayManager MotdMan { get; }
 
         /// <summary>
+        /// Manages the tiles on the start screen
+        /// </summary>
+        public TileManager TileMan { get; }
+
+        /// <summary>
         /// Holds a connection to the front end, a way for things back here to
         /// interact with the front end.
         /// </summary>
@@ -137,6 +142,7 @@ namespace BaconBackend
             TelemetryMan = new TelemetryManager();
             BackgroundMan = new BackgroundManager(this);
             MotdMan = new MessageOfTheDayManager(this);
+            TileMan = new TileManager(this);
 
             // Don't do this if we are a background task; it will
             // call this when it is ready.

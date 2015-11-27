@@ -49,11 +49,13 @@ namespace Baconit.Panels
         public void OnNavigatingTo()
         {
             ui_imageScrolBackground.BeginAnimation();
+            m_isVisible = true;
         }
 
         public void OnNavigatingFrom()
         {
             ui_imageScrolBackground.StopAnimation();
+            m_isVisible = false;
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)

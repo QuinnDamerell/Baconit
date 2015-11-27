@@ -32,6 +32,7 @@ namespace Baconit.Panels
             m_settingsList.Add("Updating, Lock Screen, and Desktop Images");
             m_settingsList.Add("About");
             m_settingsList.Add("Privacy Policy");
+            m_settingsList.Add("Terms and Conditions");
 
             // Set the list
             ui_settingsList.ItemsSource = m_settingsList;
@@ -74,6 +75,7 @@ namespace Baconit.Panels
                     m_host.Navigate(typeof(AboutSettings), "AboutSettings");
                     break;
                 case 4:
+                case 5:
                     App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");
                     break;
                 default:

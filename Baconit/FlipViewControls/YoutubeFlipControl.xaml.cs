@@ -211,6 +211,19 @@ namespace Baconit.FlipViewControls
                 string urlLower = postUrl.ToLower();
                 if (urlLower.Contains("youtube.com"))
                 {
+                    // Check for an attribution link
+                    int attribution = urlLower.IndexOf("attribution_link?");
+                    if(attribution != -1)
+                    {
+                        // We need to parse out the video id
+                        // looks like this attribution_link?a=bhvqtDGQD6s&amp;u=%2Fwatch%3Fv%3DrK0D1ehO7CA%26feature%3Dshare
+                        int uIndex = urlLower.IndexOf("u=", attribution);
+                        string encodedUrl = postUrl.Substring(uIndex + 2);
+                        postUrl = WebUtility.UrlDecode(encodedUrl);
+                        urlLower = postUrl.ToLower();
+                        // At this point urlLower should be something like "v=jfkldfjl&feature=share"
+                    }
+
                     int beginId = urlLower.IndexOf("v=");
                     int endId = urlLower.IndexOf("&", beginId);
                     if (beginId != -1)

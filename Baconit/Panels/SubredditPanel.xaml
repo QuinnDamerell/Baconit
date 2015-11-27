@@ -12,75 +12,6 @@
 
     <UserControl.Resources>
 
-        <Style x:Key="CustomScrollViewerStyle" TargetType="ScrollViewer">
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="VerticalContentAlignment" Value="Top" />
-            <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
-            <Setter Property="Padding" Value="4" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush">
-                <Setter.Value>
-                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                        <GradientStop Offset="0" Color="#FFA3AEB9" />
-                        <GradientStop Offset="0.375" Color="#FF8399A9" />
-                        <GradientStop Offset="0.375" Color="#FF718597" />
-                        <GradientStop Offset="1" Color="#FF617584" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ScrollViewer">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="2">
-                            <Grid Background="{TemplateBinding Background}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <ScrollContentPresenter x:Name="ScrollContentPresenter"
-                                                        Margin="{TemplateBinding Padding}"
-                                                        ContentTemplate="{TemplateBinding ContentTemplate}" />
-                                <ScrollBar x:Name="VerticalScrollBar"
-                                           Grid.Row="0"
-                                           Grid.Column="1"
-                                           Width="18"
-                                           Margin="0,-1,-1,-1"
-                                           IsTabStop="False"
-                                           Maximum="{TemplateBinding ScrollableHeight}"
-                                           Minimum="0"
-                                           Orientation="Vertical"
-                                           ViewportSize="{TemplateBinding ViewportHeight}"
-                                           Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                                           Value="{TemplateBinding VerticalOffset}" />
-                                <ScrollBar x:Name="HorizontalScrollBar"
-                                           Grid.Row="1"
-                                           Grid.Column="0"
-                                           Height="18"
-                                           Margin="-1,0,-1,-1"
-                                           IsTabStop="False"
-                                           Maximum="{TemplateBinding ScrollableWidth}"
-                                           Minimum="0"
-                                           Orientation="Horizontal"
-                                           ViewportSize="{TemplateBinding ViewportWidth}"
-                                           Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                                           Value="{TemplateBinding HorizontalOffset}" />
-                                <Rectangle Grid.Row="1"
-                                           Grid.Column="1"
-                                           Fill="#FFE9EEF4" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-
         <DataTemplate x:Key="SubredditItemItemDataTemplate">
             <Grid Margin="0,0,6,15"
                   Background="Transparent"
@@ -184,7 +115,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Grid Margin="0,0,8,0"
                               HorizontalAlignment="Left"
-                              Background="{Binding DarkenedAccentColorBrush}"
+                              Background="#107c10"
                               Visibility="{Binding StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
@@ -215,110 +146,120 @@
     </UserControl.Resources>
 
     <!--  This holds all of the UI except the loading overlay  -->
-    <Grid x:Name="ui_contentRoot" Background="#0A0A0A">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
+    <SplitView x:Name="ui_splitView"
+               OpenPaneLength="380"
+               PanePlacement="Right">
+        <SplitView.Content>
+            <Grid x:Name="ui_contentRoot" Background="#0A0A0A">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
 
-        <!--  Subreddit Header  -->
-        <Grid Grid.Row="0" Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-            <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
-                <TextBlock x:Name="ui_subredditName"
-                           Margin="12,12,0,12"
-                           VerticalAlignment="Bottom"
-                           Text="Baconit" />
+                <!--  Subreddit Header  -->
+                <Grid Grid.Row="0" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
+                        <TextBlock x:Name="ui_subredditName"
+                                   Margin="12,12,0,12"
+                                   VerticalAlignment="Bottom"
+                                   Text="Baconit" />
+                    </Grid>
+
+
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="Transparent"
+                                Orientation="Horizontal"
+                                Padding="12"
+                                Tapped="Sort_Tapped">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <TextBlock Margin="0,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="#989898"
+                                   Text="Sort:" />
+                        <TextBlock x:Name="ui_sortText"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="Hot" />
+                    </StackPanel>
+                </Grid>
+                <!--  Loading indicator  -->
+                <ProgressBar x:Name="ui_progressBar"
+                             Grid.Row="0"
+                             VerticalAlignment="Bottom"
+                             Background="Transparent" />
+
+                <!--  Posts list  -->
+                <helperControl:EndDetectingListView x:Name="ui_postList"
+                                                    Grid.Row="1"
+                                                    Background="#0A0A0A"
+                                                    IsTapEnabled="False"
+                                                    ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                    ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
+                                                    Padding="0,0,8,0"
+                                                    SelectionChanged="PostList_SelectionChanged"
+                                                    Style="{StaticResource ListViewStyle}">
+
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection>
+                            <EntranceThemeTransition IsStaggeringEnabled="True" />
+                            <AddDeleteThemeTransition />
+                        </TransitionCollection>
+                    </ListView.ItemContainerTransitions>
+                </helperControl:EndDetectingListView>
+
+                <!--  There are not post here text  -->
+                <TextBlock x:Name="ui_noPostText"
+                           Grid.Row="1"
+                           Margin="12,0,12,12"
+                           Foreground="#999999"
+                           Text="There are no posts here."
+                           Visibility="Collapsed" />
+
+                <!--  Custom App bar  -->
+                <Grid Grid.Row="2"
+                      Background="#1F1F1F"
+                      Padding="4">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <helperControl:CircleIconButton Grid.Column="0"
+                                                        OnIconTapped="Refresh_Click"
+                                                        SymbolIcon="Refresh" />
+                        <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
+                                                        Grid.Column="1"
+                                                        OnIconTapped="AppBarSideBarOpen_OnIconTapped"
+                                                        SymbolIcon="DockRight" />
+                        <helperControl:CircleIconButton Grid.Column="2"
+                                                        IconImageSource="ms-appx:///Assets/FlipView/MenuIcon.png"
+                                                        OnIconTapped="MenuButton_Click" />
+                    </Grid>
+                </Grid>
             </Grid>
+        </SplitView.Content>
 
-
-            <StackPanel Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Background="Transparent"
-                        Orientation="Horizontal"
-                        Padding="12"
-                        Tapped="Sort_Tapped">
-                <FlyoutBase.AttachedFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
-                        <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
-                        <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
-                        <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
-                        <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
-                    </MenuFlyout>
-                </FlyoutBase.AttachedFlyout>
-                <TextBlock Margin="0,0,2,0"
-                           VerticalAlignment="Bottom"
-                           FontSize="12"
-                           Foreground="#989898"
-                           Text="Sort:" />
-                <TextBlock x:Name="ui_sortText"
-                           VerticalAlignment="Bottom"
-                           FontSize="12"
-                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Hot" />
-            </StackPanel>
-        </Grid>
-        <!--  Loading indicator  -->
-        <ProgressBar x:Name="ui_progressBar"
-                     Grid.Row="0"
-                     VerticalAlignment="Bottom"
-                     Background="Transparent" />
-
-        <!--  Posts list  -->
-        <helperControl:EndDetectingListView x:Name="ui_postList"
-                                            Grid.Row="1"
-                                            Background="#0A0A0A"
-                                            IsTapEnabled="False"
-                                            ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                                            ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
-                                            Padding="0,0,8,0"
-                                            SelectionChanged="PostList_SelectionChanged"
-                                            Style="{StaticResource ListViewStyle}">
-
-            <ListView.ItemContainerTransitions>
-                <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" />
-                    <AddDeleteThemeTransition />
-                </TransitionCollection>
-            </ListView.ItemContainerTransitions>
-        </helperControl:EndDetectingListView>
-
-        <!--  There are not post here text  -->
-        <TextBlock x:Name="ui_noPostText"
-                   Grid.Row="1"
-                   Margin="12,0,12,12"
-                   Foreground="#999999"
-                   Text="There are no posts here."
-                   Visibility="Collapsed" />
-
-        <!--  Custom App bar  -->
-        <Grid Grid.Row="2"
-              Background="#1F1F1F"
-              Padding="4">
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <helperControl:CircleIconButton Grid.Column="0"
-                                                OnIconTapped="Refresh_Click"
-                                                SymbolIcon="Refresh" />
-                <helperControl:CircleIconButton x:Name="ui_appBarSubButton"
-                                                Grid.Column="1"
-                                                OnIconTapped="AppBarSubButton_OnIconTapped"
-                                                SymbolIcon="Add" />
-                <helperControl:CircleIconButton Grid.Column="2"
-                                                IconImageSource="ms-appx:///Assets/FlipView/MenuIcon.png"
-                                                OnIconTapped="MenuButton_Click" />
-            </Grid>
-        </Grid>
-    </Grid>
+        <SplitView.Pane>
+            <helperControl:SubredditSideBar x:Name="ui_subredditSideBar" />
+        </SplitView.Pane>
+    </SplitView>
 </UserControl>
