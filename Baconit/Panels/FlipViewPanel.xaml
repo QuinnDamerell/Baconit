@@ -110,6 +110,8 @@
                                 <MenuFlyoutItem Click="SaveImage_Click"
                                                 Text="Save Image"
                                                 Visibility="{Binding ShowSaveImageMenu}" />
+                                <MenuFlyoutSeparator />
+                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go To Subreddit" />                                
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                     </helperControls:CircleIconButton>

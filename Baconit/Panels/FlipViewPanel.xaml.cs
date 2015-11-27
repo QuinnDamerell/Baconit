@@ -574,6 +574,20 @@ namespace Baconit.Panels
             Post post = (sender as FrameworkElement).DataContext as Post;
         }
 
+        /// <summary>
+        /// Fired when the user tapps the go to subreddit button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GoToSubreddit_Click(object sender, RoutedEventArgs e)
+        {
+            // Navigate to the subreddit.
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, post.Subreddit);
+            m_host.Navigate(typeof(SubredditPanel), post.Subreddit + SortTypes.Hot, args);
+        }
+
         #endregion
 
         #region Flippping Logic
