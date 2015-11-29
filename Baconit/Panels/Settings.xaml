@@ -16,10 +16,12 @@
 
         <!--  Subreddit Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Settings" />
+            <TextBlock VerticalAlignment="Bottom"
+                       Text="SETTINGS"
+                       FontWeight="Bold"/>
         </StackPanel>
 
         <ListView x:Name="ui_settingsList"

@@ -69,10 +69,12 @@
 
         <!--  Message Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Message Inbox" />
+            <TextBlock VerticalAlignment="Bottom"
+                       Text="MESSAGE INBOX"
+                       FontWeight="Bold"/>
         </StackPanel>
 
         <!--  The main message list  -->

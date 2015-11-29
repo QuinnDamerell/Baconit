@@ -27,11 +27,11 @@ namespace Baconit.Panels
             this.InitializeComponent();
 
             // Add the settings to the list
-            m_settingsList.Add("Subreddit View");
-            m_settingsList.Add("Flip View");
-            m_settingsList.Add("Updating, Lock Screen, and Desktop Images");
+            m_settingsList.Add("Subreddit view");
+            m_settingsList.Add("Flip view");
+            m_settingsList.Add("Updating, lock screen and desktop images");
             m_settingsList.Add("About");
-            m_settingsList.Add("Privacy Policy");
+            m_settingsList.Add("Privacy policy");
 
             // Set the list
             ui_settingsList.ItemsSource = m_settingsList;
