@@ -134,7 +134,9 @@
         <Grid Grid.Row="0"
               Background="#333333"
               Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Search" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="SEARCH" />
         </Grid>
 
         <!--  Search Header  -->

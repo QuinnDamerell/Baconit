@@ -36,7 +36,7 @@
                             VerticalAlignment="Top"
                             Orientation="Vertical">
                     <StackPanel Margin="0,0,0,0"
-                                Background="#00000000"
+                                Background="Transparent"
                                 Tapped="UpVote_Tapped">
                         <StackPanel Width="45"
                                     Height="35"
@@ -57,7 +57,7 @@
                                HorizontalAlignment="Center"
                                Text="{Binding Score}" />
                     <StackPanel Margin="0,-9,0,0"
-                                Background="#00000000"
+                                Background="Transparent"
                                 Tapped="DownVote_Tapped">
                         <StackPanel Height="35"
                                     Margin="0,8,0,0"
@@ -137,7 +137,7 @@
                             Tapped="PostTitle_Tapped"
                             Visibility="{Binding ImageVisibility}">
                     <Image Width="70"
-                           Margin="3,3,3,3"
+                           Margin="2"
                            HorizontalAlignment="Right"
                            Source="{Binding Image}" />
                 </StackPanel>

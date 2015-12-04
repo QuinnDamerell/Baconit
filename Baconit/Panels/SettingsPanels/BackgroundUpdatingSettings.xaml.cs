@@ -98,9 +98,6 @@ namespace Baconit.Panels.SettingsPanels
             ui_imageFrequency.ItemsSource = m_updateFrequencys;
             ui_imageFrequency.SelectedIndex = FrequencySettingToListIndex(App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency);
 
-            ui_lastSuccessfulUpdate.Text = "Last Successful Update: " + (App.BaconMan.BackgroundMan.LastSuccessfulUpdate.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastSuccessfulUpdate.ToString("g"));
-            ui_lastAttemptedUpdate.Text = "Last Attempted Update: " + (App.BaconMan.BackgroundMan.LastAttemptedUpdate.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastAttemptedUpdate.ToString("g"));
-
             m_ingoreUpdates = false;
 
             // Setup the listener
