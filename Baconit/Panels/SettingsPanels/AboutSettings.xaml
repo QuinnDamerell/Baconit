@@ -19,7 +19,9 @@
                     Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="About" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="ABOUT" />
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -61,14 +63,14 @@
 
             <TextBlock Grid.Row="1"
                        Margin="12"
-                       Text="Baconit is THE BEST open source reddit client on Windows. Baconit was originally written in 2010 for Windows Phone 7.5 by Quinn Damerell. It remained a closed sourced Silverlight app until the launch of Windows 10. At that point Quinn rewrote the entire app from the ground up on the new Universal App platform, enabling it to run on all Windows devices. It was released and opened sourced on to the world on November 13, 2015. Many thanks to all who have contributed."
+                       Text="Baconit is an open source reddit client on Windows. Baconit was originally written in 2010 for Windows Phone 7.5 by Quinn Damerell. It remained a closed sourced Silverlight app until the launch of Windows 10. At that point Quinn rewrote the app from the ground up on the new Universal App platform enabling Baconit to run on all Windows devices. The new app was released and opened sourced on to the world on November 13, 2015. Many thanks to all who have contributed."
                        TextWrapping="Wrap" />
 
             <Grid Grid.Row="2"
                   Margin="12"
                   Background="Transparent"
                   Tapped="RateAndReview_Tapped">
-                <TextBlock Text="Rate and Review" />
+                <TextBlock Text="Rate and review" />
             </Grid>
 
             <Grid Grid.Row="3"
@@ -82,14 +84,14 @@
                   Margin="12"
                   Background="Transparent"
                   Tapped="OpenBaconitSub_Tapped">
-                <TextBlock Text="Baconit's Subreddit" />
+                <TextBlock Text="Baconit's subreddit" />
             </Grid>
 
             <Grid Grid.Row="5"
                   Margin="12"
                   Background="Transparent"
                   Tapped="Website_Tapped">
-                <TextBlock Text="Baconit's Website" />
+                <TextBlock Text="Baconit's website" />
             </Grid>
 
             <Grid Grid.Row="6"

@@ -24,15 +24,23 @@ namespace Baconit.FlipViewControls
 {
     public sealed partial class BasicImageFlipControl : UserControl, IFlipViewContentControl
     {
+        const float MAX_ZOOM_FACTOR = 5.0f;
+
         bool m_isDestoryed = false;
         IFlipViewContentHost m_host;
         Image m_image;
         string m_postUrl;
+        float m_minZoomFactor = 1.0f;
+        bool m_ignoreZoomChanges = false;
 
         public BasicImageFlipControl(IFlipViewContentHost host)
         {
             m_host = host;
             this.InitializeComponent();
+            App.BaconMan.OnBackButton += BaconMan_OnBackButton;
+
+            // Set the max zoom for the scroller
+            ui_scrollViewer.MaxZoomFactor = MAX_ZOOM_FACTOR;
         }
 
         /// <summary>
@@ -133,9 +141,10 @@ namespace Baconit.FlipViewControls
                 {
                     // Kill the image
                     m_image.Source = null;
+                    m_image.Loaded -= Image_Loaded;
                     m_image.RightTapped -= ContentRoot_RightTapped;
                     m_image.Holding -= ContentRoot_Holding;
-                    m_image = null;               
+                    m_image = null;
                 }
             }
         }
@@ -169,13 +178,22 @@ namespace Baconit.FlipViewControls
                     }
 
                     // Create a bitmap and set the source
-                    BitmapImage bitImage = new BitmapImage();
-                    bitImage.SetSource(response.ImageStream);
+                    // #todo, initially we can use a bitmap here decoded to the size of the control
+                    // then when the user zooms in we can swap it for a larger image.
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.SetSource(response.ImageStream);
 
                     // Add the image to the UI
                     m_image = new Image();
-                    m_image.Source = bitImage;
-                    ui_contentRoot.Children.Add(m_image);
+
+                    // Add a loaded listener so we can size the image when loaded
+                    m_image.Loaded += Image_Loaded;
+
+                    // Set the image.
+                    m_image.Source = bitmapImage;      
+
+                    // Set the image into the UI.
+                    ui_scrollViewer.Content = m_image;
 
                     // Setup the save image tap
                     m_image.RightTapped += ContentRoot_RightTapped;
@@ -231,6 +249,127 @@ namespace Baconit.FlipViewControls
                 Point p = e.GetPosition(element);
                 flyoutMenu.ShowAt(element, p);
             }
+        }
+
+        #region Full Screen Scroll Logic
+
+        private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            if(m_ignoreZoomChanges)
+            {
+                return;
+            }
+
+            // If the zooms don't match go full screen
+            if(Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) > .001)
+            {
+                m_host.ToggleFullScreen(true);
+            }
+        }
+
+        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (m_ignoreZoomChanges)
+            {
+                return;
+            }
+
+            // If the two zoom factors are close enough, leave full screen.
+            if (Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) < .001)
+            {
+                m_host.ToggleFullScreen(false);
+            }
+        }
+
+        /// <summary>
+        /// Fired when the user presses back
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        {
+            if(e.IsHandled)
+            {
+                return;
+            }
+
+            if(m_host.IsFullScreen())
+            {
+                e.IsHandled = true;
+                ui_scrollViewer.ChangeView(null, null, m_minZoomFactor);
+            }
+        }
+
+        #endregion
+
+        private void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            bool previousIgnoreState = m_ignoreZoomChanges;
+
+            // Ignore zoom changes and update the zoom factors
+            m_ignoreZoomChanges = true;
+
+            SetScrollerZoomFactors();
+
+            m_ignoreZoomChanges = previousIgnoreState;
+        }
+
+        /// <summary>
+        /// When the image is loaded size the actual image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Image_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Ignore zoom changes and update the zoom factors
+            m_ignoreZoomChanges = true;
+
+            SetScrollerZoomFactors();
+
+            m_ignoreZoomChanges = false;
+        }
+
+        private void SetScrollerZoomFactors()
+        {
+            // If we don't have a size yet ignore.
+            if (m_image == null || m_image.ActualHeight == 0 || m_image.ActualWidth == 0)
+            {
+                return;
+            }
+
+            Size imageSize = new Size()
+            {
+                Width = m_image.ActualWidth,
+                Height = m_image.ActualHeight
+            };
+            SetScrollerZoomFactors(imageSize);
+        }
+
+        private async void SetScrollerZoomFactors(Size imageSize)
+        {
+            if (imageSize == null || imageSize.Height == 0 || imageSize.Width == 0 || ui_scrollViewer.ActualHeight == 0 || ui_scrollViewer.ActualWidth == 0)
+            {
+                return;
+            }
+
+            // If we are full screen don't update this.
+            // #todo, we probably should, just not if we are being touched currently.
+            if (m_host.IsFullScreen())
+            {
+                return;
+            }
+
+            // Figure out what the min zoom should be.
+            float vertZoomFactor = (float)(ui_scrollViewer.ActualHeight / imageSize.Height);
+            float horzZoomFactor = (float)(ui_scrollViewer.ActualWidth / imageSize.Width);
+            m_minZoomFactor = Math.Min(vertZoomFactor, horzZoomFactor);
+
+            // Set the zoomer to the min size for the zoom
+            ui_scrollViewer.MinZoomFactor = m_minZoomFactor;
+
+            // Set the zoom size, we need to delay for a bit so it actually applies.
+            await Task.Delay(1);
+            ui_scrollViewer.ChangeView(null, null, m_minZoomFactor, true);
         }
     }
 }

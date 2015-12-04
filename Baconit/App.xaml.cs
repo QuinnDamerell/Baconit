@@ -10,6 +10,8 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,10 +27,20 @@ namespace Baconit
     /// </summary>
     sealed partial class App : Application
     {
+        public const string AccentColorLevel1Resource = "BaconitAccentColorLevel1Brush";
+        public const string AccentColorLevel2Resource = "BaconitAccentColorLevel2Brush";
+        public const string AccentColorLevel3Resource = "BaconitAccentColorLevel3Brush";
+        public const string AccentColorLevel4Resource = "BaconitAccentColorLevel4Brush";
+
         /// <summary>
         /// The main reference in the app to the backend of Baconit
         /// </summary>
         public static BaconManager BaconMan;
+
+        /// <summary>
+        /// Indicates if we have already registered for back.
+        /// </summary>
+        private bool m_hasRegisteredForBack = false;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -54,13 +66,23 @@ namespace Baconit
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            // Grab the accent color and make our custom accent color brushes.
+            Color accentColor = ((SolidColorBrush)Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
+            accentColor.A = 200;
+            Current.Resources[AccentColorLevel1Resource] = new SolidColorBrush(accentColor);
+            accentColor.A = 137;
+            Current.Resources[AccentColorLevel2Resource] = new SolidColorBrush(accentColor);
+            accentColor.A = 75;
+            Current.Resources[AccentColorLevel3Resource] = new SolidColorBrush(accentColor);
+            accentColor.A = 50;
+            Current.Resources[AccentColorLevel4Resource] = new SolidColorBrush(accentColor);
 
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            // Register for back, if we haven't already.
+            if (!m_hasRegisteredForBack)
             {
-                this.DebugSettings.EnableFrameRateCounter = true;
+                m_hasRegisteredForBack = true;
+                SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
             }
-#endif
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -88,6 +110,16 @@ namespace Baconit
                 // configuring the new page by passing required information as a navigation
                 // parameter
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
+            }
+            else
+            {
+                // If we have already navigated, we should tell the main page
+                // we are being activated again.
+                if(rootFrame.Content.GetType() == typeof(MainPage))
+                {
+                    MainPage main = (MainPage)rootFrame.Content;
+                    main.OnReActivated(e.Arguments);
+                }
             }
             // Ensure the current window is active
             Window.Current.Activate();
@@ -123,6 +155,16 @@ namespace Baconit
         private void OnResuming_Fired(object sender, object e)
         {
             BaconMan.OnResuming_Fired(sender, e);
+        }
+
+        /// <summary>
+        /// Invoked when the back button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnBackRequested(object sender, BackRequestedEventArgs e)
+        {
+            BaconMan.OnBackButton_Fired(sender, e);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              d:DesignHeight="800"
              d:DesignWidth="1280"
              mc:Ignorable="d">
@@ -104,12 +105,14 @@
                             <MenuFlyout>
                                 <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
                                 <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
-                                <MenuFlyoutItem Click="SharePost_Click" Text="Share Post" />
-                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy Link" />
-                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy Permalink" />
+                                <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
+                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
+                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
                                 <MenuFlyoutItem Click="SaveImage_Click"
-                                                Text="Save Image"
+                                                Text="Save image"
                                                 Visibility="{Binding ShowSaveImageMenu}" />
+                                <MenuFlyoutSeparator />
+                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                     </helperControls:CircleIconButton>
@@ -148,12 +151,15 @@
                     </Grid.RowDefinitions>
 
                     <!--  The post content control  -->
-                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}" IsVisible="{Binding IsPostVisible}" />
+                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}"
+                                                         IsVisible="{Binding IsPostVisible}"
+                                                         OnToggleFullscreen="FlipViewContentControl_OnToggleFullscreen" />
 
                     <!--  The post header control  -->
                     <ContentControl Grid.Row="2"
                                     HorizontalContentAlignment="Stretch"
-                                    ContentTemplate="{StaticResource FlipViewStoryHeader}" />
+                                    ContentTemplate="{StaticResource FlipViewStoryHeader}"
+                                    Visibility="{Binding IsPostHeaderVisible}" />
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -228,25 +234,29 @@
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Margin="0,0,8,0"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="{Binding Author}" />
+                            <Grid Margin="-2,0,6,0" Background="{Binding AuthorTextBackground}">
+                                <TextBlock Margin="2,0,2,0"
+                                           Foreground="{Binding AuthorTextColor}"
+                                           Text="{Binding Author}" />
+                            </Grid>
                             <TextBlock Grid.Column="1"
-                                       Margin="0,0,8,0"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="{Binding ScoreText}" />
-                            <TextBlock Grid.Column="2"
                                        Margin="0,0,8,0"
                                        Foreground="{Binding FlairBrush}"
                                        Text="{Binding AuthorFlairText}"
                                        Visibility="{Binding ShowFlairText}" />
+                            <TextBlock Grid.Column="2"
+                                       Margin="0,0,8,0"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text="{Binding ScoreText}" />
                             <TextBlock Grid.Column="3"
                                        Margin="0,0,8,0"
                                        Foreground="#999999"
                                        Text="{Binding TimeString}" />
                         </Grid>
 
-                        <helperControls:MarkdownTextBox Grid.Row="1" Markdown="{Binding Body}" />
+                        <universalMarkdown:MarkdownTextBlock Grid.Row="1"
+                                                             Markdown="{Binding Body}"
+                                                             OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                         <!--  Comment buttons  -->
                         <!--  Note we use - margins and postive padding to make the hit box larger  -->
@@ -285,8 +295,8 @@
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Click="CommentSave_Click" Text="{Binding IsSavedMenuText}" />
-                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share Comment" />
-                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy Permalink" />
+                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share comment" />
+                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy permalink" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
                                 <TextBlock FontSize="15"
@@ -336,7 +346,8 @@
                                                              ItemsSource="{Binding Comments}"
                                                              Loaded="EndDetectingListView_Loaded"
                                                              ScrollViewer.VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility}"
-                                                             SelectionChanged="EndDetectingListView_SelectionChanged">
+                                                             SelectionChanged="EndDetectingListView_SelectionChanged"
+                                                             Style="{StaticResource ListViewStyle}">
 
                             <!--  This animates the comments in and out when hidden  -->
                             <ListView.ItemContainerTransitions>

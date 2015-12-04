@@ -22,7 +22,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <AppxPackageDir>C:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
+    <AppxPackageDir>D:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -126,6 +126,9 @@
     <Compile Include="FlipViewControls\WebPageFlipControl.xaml.cs">
       <DependentUpon>WebPageFlipControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlipViewControls\WindowsAppFlipControl.xaml.cs">
+      <DependentUpon>WindowsAppFlipControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FlipViewControls\YoutubeFlipControl.xaml.cs">
       <DependentUpon>YoutubeFlipControl.xaml</DependentUpon>
     </Compile>
@@ -149,9 +152,15 @@
     <Compile Include="HelperControls\RateAndFeedbackPopUp.xaml.cs">
       <DependentUpon>RateAndFeedbackPopUp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperControls\RedditMarkdownVisualHelper.xaml.cs">
+      <DependentUpon>RedditMarkdownVisualHelper.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\SimpleTextButton.cs" />
     <Compile Include="HelperControls\SlidingImages.xaml.cs">
       <DependentUpon>SlidingImages.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HelperControls\SubredditSideBar.xaml.cs">
+      <DependentUpon>SubredditSideBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="HelperControls\TipPopUp.xaml.cs">
       <DependentUpon>TipPopUp.xaml</DependentUpon>
@@ -193,9 +202,6 @@
     <Compile Include="Panels\SettingsPanels\SubredditViewSettings.xaml.cs">
       <DependentUpon>SubredditViewSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="HelperControls\MarkdownTextBox.xaml.cs">
-      <DependentUpon>MarkdownTextBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Panels\FlipViewPanel.xaml.cs">
       <DependentUpon>FlipViewPanel.xaml</DependentUpon>
     </Compile>
@@ -205,6 +211,9 @@
     <Compile Include="Panels\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\SubmitPost.xaml.cs">
+      <DependentUpon>SubmitPost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\WelcomePanel.xaml.cs">
       <DependentUpon>WelcomePanel.xaml</DependentUpon>
     </Compile>
@@ -212,9 +221,6 @@
       <DependentUpon>SubredditPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestControl.xaml.cs">
-      <DependentUpon>TestControl.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -317,6 +323,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="FlipViewControls\WindowsAppFlipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FlipViewControls\YoutubeFlipControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -341,15 +351,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HelperControls\MarkdownTextBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="HelperControls\RateAndFeedbackPopUp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="HelperControls\RedditMarkdownVisualHelper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HelperControls\SlidingImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\SubredditSideBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -409,6 +423,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Panels\SubmitPost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Panels\SubredditPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -416,10 +434,6 @@
     <Page Include="Panels\WelcomePanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="TestControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -438,8 +452,16 @@
       <Project>{c79ac423-5427-4379-ab5b-11f531b5229c}</Project>
       <Name>BaconBackground</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UniversalMarkdown\UniversalMarkdown\UniversalMarkdown.csproj">
+      <Project>{9ffc3b68-696a-4342-a2b8-2eadddef7ff9}</Project>
+      <Name>UniversalMarkdown</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

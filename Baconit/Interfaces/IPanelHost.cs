@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Baconit.Interfaces
 {
@@ -39,5 +40,17 @@ namespace Baconit.Interfaces
         /// </summary>
         /// <param name="show"></param>
         void ToggleMenu(bool show);
+
+        /// <summary>
+        /// Enters or exits full screen mode for the content panel
+        /// </summary>
+        /// <param name="goFullScreen"></param>
+        void ToggleFullScreen(bool goFullScreen);
+
+        /// <summary>
+        /// Sets the color for the status bar.
+        /// </summary>
+        /// <param name=""></param>
+        void SetStatusBarColor(Color color);
     }
 }

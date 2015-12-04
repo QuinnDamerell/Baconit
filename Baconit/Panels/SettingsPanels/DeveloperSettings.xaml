@@ -19,11 +19,13 @@
                     Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Developer Settings" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="DEVELOPER SETTINGS" />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="12">
-            <TextBlock Text="Verbose Debugging. To the average user this will pop up a lot of useless dialog boxes." TextWrapping="Wrap" />
+            <TextBlock Text="Verbose debugging. To the average user this will pop up a lot of useless dialog boxes." TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_debuggingOn" Toggled="DebuggingOn_Toggled" />
         </StackPanel>
     </Grid>

@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="Baconit.HelperControls.SubredditSideBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
+             d:DesignHeight="800"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <!--  A scroller to hold all of the content  -->
+    <ScrollViewer x:Name="ui_contentRoot"
+                  Style="{StaticResource ScrollViewerStyle}"
+                  VerticalScrollBarVisibility="Hidden">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel x:Name="ui_titleHeaderContainer">
+                <!--  Title block  -->
+                <TextBlock x:Name="ui_titleTextBlock"
+                           Margin="12,12,12,0"
+                           FontSize="24"
+                           Text="Baconit" />
+
+                <!--  Subcount block  -->
+                <TextBlock x:Name="ui_subscribersTextBlock"
+                           Grid.Row="1"
+                           Margin="12,0,12,12"
+                           FontSize="16"
+                           FontWeight="Light"
+                           Text="73,000 subscribers" />
+            </StackPanel>
+
+            <!--  Sub and pin buttons  -->
+            <StackPanel x:Name="ui_buttonContainer" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="ui_subscribeButton"
+                            Margin="12,24,0,12"
+                            HorizontalAlignment="Stretch"
+                            Background="#292929"
+                            Click="SubscribeButton_Click"
+                            Content="subscribe" />
+                    <Button x:Name="ui_pinToStartButton"
+                            Grid.Column="1"
+                            Margin="12,24,12,12"
+                            HorizontalAlignment="Stretch"
+                            Background="#66292929"
+                            Click="PinButton_Click"
+                            Content="pint to start" />
+                </Grid>
+
+                <Button x:Name="ui_searchSubreddit"
+                        Margin="12,12,12,0"
+                        HorizontalAlignment="Stretch"
+                        Background="#66292929"
+                        Click="SearchSubreddit_Click"
+                        Content="search this subreddit" />
+
+                <!--  Submit post  -->
+                <Button x:Name="ui_submitPostButton"
+                        Margin="12,24,12,24"
+                        HorizontalAlignment="Stretch"
+                        Background="#66292929"
+                        Click="SubmitPostButton_Click"
+                        Content="submit a new post" />
+            </StackPanel>
+
+
+            <!--  Subreddit info block  -->
+            <universalMarkdown:MarkdownTextBlock x:Name="ui_markdownTextBox"
+                                                 Grid.Row="4"
+                                                 Margin="12,24,12,24"
+                                                 OnMarkdownLinkTapped="MarkdownTextBox_OnMarkdownLinkTapped" />
+        </Grid>
+    </ScrollViewer>
+</UserControl>

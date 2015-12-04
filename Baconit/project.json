@@ -4,7 +4,7 @@
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "MyToolkit.Extended": "2.5.3"
+    "MyToolkit.Extended": "2.5.8"
   },
   "frameworks": {
     "uap10.0": {}

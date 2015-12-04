@@ -57,8 +57,15 @@ namespace BaconBackend.Managers
 
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                MessageDialog message = new MessageDialog(content, title);
-                await message.ShowAsync();
+                try
+                {
+                    MessageDialog message = new MessageDialog(content, title);
+                    await message.ShowAsync();
+                }
+                catch(Exception e)
+                {
+                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowMessage",e);
+                }
             });
         }
 

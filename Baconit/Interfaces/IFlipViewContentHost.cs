@@ -22,5 +22,24 @@ namespace Baconit.Interfaces
         /// Shows an error
         /// </summary>
         void ShowError();
+
+        /// <summary>
+        /// Tries to enter or exit full screen. Returns if successful.
+        /// </summary>
+        /// <param name="goFullScreen"></param>
+        /// <returns></returns>
+        bool ToggleFullScreen(bool goFullScreen);
+
+        /// <summary>
+        /// Indicates if we are currently full screen or not.
+        /// </summary>
+        /// <returns></returns>
+        bool IsFullScreen();
+
+        /// <summary>
+        /// Indicates if we can go full screen or not.
+        /// </summary>
+        /// <returns></returns>
+        bool CanGoFullScreen { get; }
     }
 }

@@ -134,7 +134,9 @@
         <Grid Grid.Row="0"
               Background="#333333"
               Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Search" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="SEARCH" />
         </Grid>
 
         <!--  Search Header  -->
@@ -159,7 +161,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="ui_searchBox"
                          KeyUp="SearchBox_KeyUp"
-                         PlaceholderText="Search for anything; subreddits, users, post, etc." />
+                         PlaceholderText="Search for anything; subreddits, users, post, etc."
+                         Style="{StaticResource AlwaysWhiteTextBoxStyle}" />
                 <Grid Grid.Column="1"
                       Width="35"
                       Margin="4,0,0,0"
@@ -196,6 +199,7 @@
                           MaxHeight="50"
                           HorizontalScrollBarVisibility="Auto"
                           HorizontalScrollMode="Auto"
+                          Style="{StaticResource ScrollViewerStyle}"
                           VerticalScrollBarVisibility="Disabled"
                           VerticalScrollMode="Disabled">
                 <StackPanel Orientation="Horizontal" Padding="0,0,0,6">
@@ -285,7 +289,8 @@
                       Grid.ColumnSpan="2"
                       ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                       ItemTemplate="{StaticResource SearchResultListItem}"
-                      SelectionChanged="SearchResults_SelectionChanged">
+                      SelectionChanged="SearchResults_SelectionChanged"
+                      Style="{StaticResource ListViewStyle}">
 
                 <!--  This animates the search results in  -->
                 <ListView.ItemContainerTransitions>

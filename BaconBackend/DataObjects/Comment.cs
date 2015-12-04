@@ -90,6 +90,7 @@ namespace BaconBackend.DataObjects
         private static Color s_colorGray = Color.FromArgb(255, 153, 153, 153);
         private static SolidColorBrush s_transparentBrush = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
         private static SolidColorBrush s_veryLightAccentBrush = null;
+        private static SolidColorBrush s_opAuthorBackground = null;
         private static SolidColorBrush s_accentBrush = null;
         private static SolidColorBrush s_brightAccentColor = null;
 
@@ -129,6 +130,21 @@ namespace BaconBackend.DataObjects
                 s_veryLightAccentBrush = new SolidColorBrush(accentColor);
             }
             return s_veryLightAccentBrush;
+        }
+
+        private static SolidColorBrush GetOpAuthorBackground()
+        {
+            // Not thread safe, but that's ok
+            if (s_opAuthorBackground == null)
+            {
+                Color accent = GetAccentBrush().Color;
+                int colorAdd = 25;
+                accent.B = (byte)Math.Max(0, accent.B - colorAdd);
+                accent.R = (byte)Math.Max(0, accent.R - colorAdd);
+                accent.G = (byte)Math.Max(0, accent.G - colorAdd);
+                s_opAuthorBackground = new SolidColorBrush(accent);
+            }
+            return s_opAuthorBackground;
         }
 
         [JsonIgnore]
@@ -260,6 +276,39 @@ namespace BaconBackend.DataObjects
             }
         }
 
+
+        [JsonIgnore]
+        public SolidColorBrush AuthorTextBackground
+        {
+            get
+            {
+                if (IsCommentFromOp)
+                {
+                    return GetOpAuthorBackground();
+                }
+                else
+                {
+                    return s_transparentBrush;
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public SolidColorBrush AuthorTextColor
+        {
+            get
+            {
+                if (IsCommentFromOp)
+                {
+                    return new SolidColorBrush(Color.FromArgb(255,255,255,255));
+                }
+                else
+                {
+                    return GetAccentBrush();
+                }
+            }
+        }
+
         [JsonIgnore]
         public Visibility ShowFullCommentVis
         {
@@ -303,6 +352,22 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         bool m_showFullComment = true;
+
+        [JsonIgnore]
+        public bool IsCommentFromOp
+        {
+            get
+            {
+                return m_isCommentFromOp;
+            }
+            set
+            {
+                m_isCommentFromOp = value;
+                NotifyPropertyChanged(nameof(AuthorTextBackground));
+            }
+        }
+        [JsonIgnore]
+        bool m_isCommentFromOp = false;
 
         [JsonIgnore]
         public string CollapsedCommentCount

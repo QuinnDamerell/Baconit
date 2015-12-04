@@ -9,7 +9,7 @@
              mc:Ignorable="d">
 
     <Grid Background="#191919">
-        <ScrollViewer>
+        <ScrollViewer Style="{StaticResource ScrollViewerStyle}">
             <Grid x:Name="ui_contentRoot" Margin="12" />
         </ScrollViewer>
     </Grid>

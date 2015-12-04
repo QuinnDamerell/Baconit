@@ -64,10 +64,18 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <ProgressRing x:Name="ui_progressRing"
-                      Width="40"
-                      Height="40"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <ProgressRing x:Name="ui_progressRing"
+                          Width="40"
+                          Height="40"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center" />
+            <TextBlock x:Name="ui_loadingText"
+                       Margin="24"
+                       Text="Loading..." />
+        </StackPanel>
+
+
     </Grid>
 </UserControl>

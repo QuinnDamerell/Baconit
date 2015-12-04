@@ -19,13 +19,15 @@
                     Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Updating and Lock Screen Images" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="UPDATING AND LOCK SCREEN IMAGES" />
         </StackPanel>
 
         <ScrollViewer Grid.Row="1">
             <StackPanel Grid.Row="1" Margin="12">
                 <TextBlock Margin="0,0,0,12"
-                           Text="These settings allows Baconit to automatically update your lock screen image and desktop wallpaper from images on any subreddit. On a mobile device, the desktop wallpaper is the image behind your tiles. These settings don't roam so you can set them per device."
+                           Text="These settings allow Baconit to automatically update your lock screen image and desktop wallpaper from images on any subreddit. On a mobile device, the desktop wallpaper is the image behind your tiles. These settings don't roam so you can set them per device."
                            TextWrapping="Wrap" />
 
                 <TextBlock Margin="0,0,0,12"
@@ -36,38 +38,27 @@
                 <TextBlock Text="Allow Baconit to update my lock screen image." TextWrapping="Wrap" />
                 <ToggleSwitch x:Name="ui_enableLockScreen" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Allow Baconit to update my desktop wallpaper."
+                           Text="Allow Baconit to update my desktop wallpaper"
                            TextWrapping="Wrap" />
                 <ToggleSwitch x:Name="ui_enableDesktop" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Subreddit to source images from for lock screen."
+                           Text="Subreddit to source images from for lock screen"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_lockScreenSource"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Subreddit to source images from for desktop wallpaper."
+                           Text="Subreddit to source images from for desktop wallpaper"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_desktopSource"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Image update frequency."
+                           Text="Image update frequency"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_imageFrequency"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
-
-                <TextBlock x:Name="ui_lastAttemptedUpdate"
-                           Margin="0,12,0,0"
-                           Foreground="#BBFFFFFF"
-                           Text="Last Attempted Update:"
-                           TextWrapping="Wrap" />
-                <TextBlock x:Name="ui_lastSuccessfulUpdate"
-                           Margin="0,12,0,0"
-                           Foreground="#BBFFFFFF"
-                           Text="Last Successful Update:"
-                           TextWrapping="Wrap" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

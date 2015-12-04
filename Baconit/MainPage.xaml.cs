@@ -66,6 +66,11 @@ namespace Baconit
         /// </summary>
         KeyboardShortcutHelper m_keyboardShortcutHepler;
 
+        /// <summary>
+        /// Used to tell use that we should navigate to a different subreddit than the default.
+        /// </summary>
+        string m_subredditFirstNavOverwrite;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -92,22 +97,9 @@ namespace Baconit
             // Create the panel manager
             m_panelManager = new PanelManager(this, (IPanel)panel);
             ui_contentRoot.Children.Add(m_panelManager);
-            m_panelManager.OnGoBack += PanelManager_OnGoBack;
+            App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
-            // Add transparency to the account header, this will make it darker
-            Color accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 200;
-            ui_accountHeaderGrid.Background = new SolidColorBrush(accentColor);
 
-            // Add some transparency to the subreddit header also.
-            accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 137;
-            ui_trendingSubredditsHeader.Background = new SolidColorBrush(accentColor);
-
-            // Add some transparency to the search header also.
-            accentColor = (ui_accountHeaderGrid.Background as SolidColorBrush).Color;
-            accentColor.A = 75;
-            ui_searchHeader.Background = new SolidColorBrush(accentColor);
 
             // Sub to callbacks
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditUpdate;
@@ -147,6 +139,12 @@ namespace Baconit
                 defaultDisplayName = "frontpage";
             }
 
+            // Make sure we don't have an overwrite (launched from a secondary tile)
+            if(!String.IsNullOrWhiteSpace(m_subredditFirstNavOverwrite))
+            {
+                defaultDisplayName = m_subredditFirstNavOverwrite;
+            }
+
             // Navigate to the start
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, defaultDisplayName);
@@ -158,6 +156,38 @@ namespace Baconit
 
             // Show review if we should
             CheckShowReviewAndFeedback();
+        }
+
+        /// <summary>
+        /// Fired when the page is navigated to.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter.GetType() == typeof(string) && !String.IsNullOrWhiteSpace((string)e.Parameter))
+            {
+                string argument = (string)e.Parameter;
+                if (argument.StartsWith(TileManager.c_subredditOpenArgument))
+                {
+                    m_subredditFirstNavOverwrite = argument.Substring(TileManager.c_subredditOpenArgument.Length);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by the app when the page is reactivated.
+        /// </summary>
+        /// <param name="arguments"></param>
+        public void OnReActivated(string arguments)
+        {
+            if (arguments != null && arguments.StartsWith(TileManager.c_subredditOpenArgument))
+            {
+                string subredditDisplayName = arguments.Substring(TileManager.c_subredditOpenArgument.Length);
+                RedditContentContainer content = new RedditContentContainer();
+                content.Subreddit = subredditDisplayName;
+                content.Type = RedditContentType.Subreddit;
+                App.BaconMan.ShowGlobalContent(content);
+            }
         }
 
         /// <summary>
@@ -565,9 +595,9 @@ namespace Baconit
 
             // If we don't have a query hide the box
             if (String.IsNullOrWhiteSpace(query))
-            {            
+            {
                 VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
-                return;                
+                return;
             }
 
             // Get the subreddits
@@ -701,7 +731,7 @@ namespace Baconit
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
             m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
-        }    
+        }
 
         #endregion
 
@@ -804,14 +834,14 @@ namespace Baconit
         #region IBackendActionListener
 
         /// <summary>
-        /// Fired when the user tapped go back. 
+        /// Fired when the user tapped go back.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PanelManager_OnGoBack(object sender, OnGoBackArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
             // If the presenter is open close it and mark the back handled.
-            if(ui_globalContentPresenter.State != GlobalContentStates.Idle)
+            if (ui_globalContentPresenter.State != GlobalContentStates.Idle)
             {
                 ui_globalContentPresenter.Close();
                 e.IsHandled = true;
@@ -826,12 +856,20 @@ namespace Baconit
         {
             // Validate that the link can't be opened by the subreddit viewer
             RedditContentContainer container = MiscellaneousHelper.TryToFindRedditContentInLink(link);
-            if (container != null)
+
+            // Make sure we got a response and it isn't a website
+            if (container != null && container.Type != RedditContentType.Website)
             {
                 ShowGlobalContent(container);
             }
             else
             {
+                if(container != null && container.Type == RedditContentType.Website)
+                {
+                    // We have a link from the reddit presenter, overwrite the link
+                    link = container.Website;
+                }
+
                 ui_globalContentPresenter.ShowContent(link);
             }
         }
@@ -912,6 +950,14 @@ namespace Baconit
         {
             // Navigate
             m_panelManager.Navigate(typeof(LoginPanel), "LoginPanel");
+        }
+
+        /// <summary>
+        /// Called by the action listener when we should nav back
+        /// </summary>
+        public bool NavigateBack()
+        {
+            return m_panelManager.GoBack();
         }
 
         #endregion

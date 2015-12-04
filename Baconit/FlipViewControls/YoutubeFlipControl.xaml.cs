@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System.Display;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -38,6 +39,11 @@ namespace Baconit.FlipViewControls
         /// Holds a ref to the media element that is playing.
         /// </summary>
         MediaElement m_youTubeVideo;
+
+        /// <summary>
+        /// Holds the request to not sleep the computer while a video is playing.
+        /// </summary>
+        DisplayRequest m_displayRequest;
 
         public YoutubeFlipControl(IFlipViewContentHost host)
         {
@@ -125,6 +131,7 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void MediaElement_CurrentStateChanged(object sender, RoutedEventArgs e)
         {
+            // Check to hide the loading.
             if (m_youTubeVideo.CurrentState != MediaElementState.Opening)
             {
                 // When we get to the state paused hide loading.
@@ -133,6 +140,25 @@ namespace Baconit.FlipViewControls
                     m_hasHiddenLoading = true;
                     m_host.HideLoading();
                     ui_storyContentRoot.Begin();
+                }
+            }
+
+            // If we are playing request for the screen not to turn off.
+            if (m_youTubeVideo.CurrentState == MediaElementState.Playing)
+            {
+                if(m_displayRequest == null)
+                {
+                    m_displayRequest = new DisplayRequest();
+                    m_displayRequest.RequestActive();
+                }
+            }
+            else
+            {
+                // If anything else happens and we have a current request remove it.
+                if(m_displayRequest != null)
+                {
+                    m_displayRequest.RequestRelease();
+                    m_displayRequest = null;
                 }
             }
         }
@@ -185,6 +211,19 @@ namespace Baconit.FlipViewControls
                 string urlLower = postUrl.ToLower();
                 if (urlLower.Contains("youtube.com"))
                 {
+                    // Check for an attribution link
+                    int attribution = urlLower.IndexOf("attribution_link?");
+                    if(attribution != -1)
+                    {
+                        // We need to parse out the video id
+                        // looks like this attribution_link?a=bhvqtDGQD6s&amp;u=%2Fwatch%3Fv%3DrK0D1ehO7CA%26feature%3Dshare
+                        int uIndex = urlLower.IndexOf("u=", attribution);
+                        string encodedUrl = postUrl.Substring(uIndex + 2);
+                        postUrl = WebUtility.UrlDecode(encodedUrl);
+                        urlLower = postUrl.ToLower();
+                        // At this point urlLower should be something like "v=jfkldfjl&feature=share"
+                    }
+
                     int beginId = urlLower.IndexOf("v=");
                     int endId = urlLower.IndexOf("&", beginId);
                     if (beginId != -1)

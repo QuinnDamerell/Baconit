@@ -1,14 +1,24 @@
-﻿<UserControl
-    x:Class="Baconit.FlipViewControls.WebPageFlipControl"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Baconit.FlipViewControls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+﻿<UserControl x:Class="Baconit.FlipViewControls.WebPageFlipControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.FlipViewControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#191919">
+        <Border x:Name="ui_fullScreenHolder"
+                Margin="24"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Background="#BB000000"
+                CornerRadius="2"
+                Tapped="FullScreenHolder_Tapped">
+            <ContentPresenter Width="40" Height="40">
+                <SymbolIcon x:Name="ui_fullScreenIcon" Symbol="FullScreen" />
+            </ContentPresenter>
+        </Border>
     </Grid>
 </UserControl>

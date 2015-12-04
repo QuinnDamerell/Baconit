@@ -223,5 +223,10 @@ namespace Baconit.Panels
             ui_progressBar.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             ui_progressBar.IsActive = show;
         }
+
+        private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            App.BaconMan.ShowGlobalContent(e.Link);
+        }
     }
 }

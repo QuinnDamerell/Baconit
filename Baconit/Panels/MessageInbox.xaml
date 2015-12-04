@@ -5,6 +5,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              RequestedTheme="Dark"
              d:DesignHeight="700"
              d:DesignWidth="400"
@@ -37,7 +38,9 @@
                                Text="{Binding HeaderSecond}" />
                 </Grid>
 
-                <helperControls:MarkdownTextBox Grid.Row="1" Markdown="{Binding Body}" />
+                <universalMarkdown:MarkdownTextBlock Grid.Row="1"
+                                                     Markdown="{Binding Body}"
+                                                     OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                 <!--  Message buttons  -->
                 <!--  Note we use - margins and postive padding to make the hit box larger  -->
@@ -72,7 +75,9 @@
                     Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
-            <TextBlock VerticalAlignment="Bottom" Text="Message Inbox" />
+            <TextBlock VerticalAlignment="Bottom"
+                       FontWeight="Bold"
+                       Text="MESSAGE INBOX" />
         </StackPanel>
 
         <!--  The main message list  -->
@@ -80,7 +85,8 @@
                   Grid.Row="1"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   ItemTemplate="{StaticResource MessageListItem}"
-                  SelectionChanged="MessageList_SelectionChanged">
+                  SelectionChanged="MessageList_SelectionChanged"
+                  Style="{StaticResource ListViewStyle}">
 
             <!--  This animates the messages in  -->
             <ListView.ItemContainerTransitions>

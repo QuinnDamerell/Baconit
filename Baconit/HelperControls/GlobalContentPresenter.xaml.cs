@@ -69,6 +69,9 @@ namespace Baconit.HelperControls
             // Create the content control
             m_contentControl = new FlipViewContentControl();
 
+            // Disable full screen
+            m_contentControl.CanGoFullScreen = false;
+
             // This isn't great, but for now mock a post
             Post post = new Post() { Url = link, Id = "quinn" };
 

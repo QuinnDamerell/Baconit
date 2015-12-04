@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="Baconit.HelperControls.RedditMarkdownVisualHelper"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.HelperControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid>
+        <ScrollViewer Style="{StaticResource ScrollViewerStyle}"
+                      VerticalScrollBarVisibility="Disabled"
+                      VerticalScrollMode="Disabled" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Width="40"
+                    Height="40"
+                    Margin="0,0,4,0"
+                    Click="Bold_Click"
+                    Content="B"
+                    FontWeight="Bold" />
+            <Button Grid.Column="1"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="Italic_Click"
+                    Content="I"
+                    FontStyle="Italic" />
+            <Button Grid.Column="2"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="Link_Click"
+                    Content="&#xE167;"
+                    FontFamily="Segoe UI Symbol" />
+            <Button Grid.Column="3"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="Quote_Click"
+                    Content="&quot;" />
+            <Button Grid.Column="4"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="Code_Click"
+                    Content="&lt;&gt;" />
+            <Button Grid.Column="5"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="List_Click"
+                    Content="&#xE14C;"
+                    FontFamily="Segoe UI Symbol" />
+            <Button Grid.Column="6"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="NumberedList_Click"
+                    Content="1." />
+            <Button Grid.Column="7"
+                    Width="40"
+                    Height="40"
+                    Margin="4,0,4,0"
+                    Click="NewLine_Click"
+                    Content="&#x21B5;"
+                    FontFamily="Segoe UI Symbol" />
+        </Grid>
+    </Grid>
+</UserControl>
