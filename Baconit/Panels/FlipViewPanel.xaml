@@ -105,14 +105,14 @@
                             <MenuFlyout>
                                 <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
                                 <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
-                                <MenuFlyoutItem Click="SharePost_Click" Text="Share Post" />
-                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy Link" />
-                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy Permalink" />
+                                <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
+                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
+                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
                                 <MenuFlyoutItem Click="SaveImage_Click"
-                                                Text="Save Image"
+                                                Text="Save image"
                                                 Visibility="{Binding ShowSaveImageMenu}" />
                                 <MenuFlyoutSeparator />
-                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go To Subreddit" />
+                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                     </helperControls:CircleIconButton>
@@ -295,8 +295,8 @@
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Click="CommentSave_Click" Text="{Binding IsSavedMenuText}" />
-                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share Comment" />
-                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy Permalink" />
+                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share comment" />
+                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy permalink" />
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
                                 <TextBlock FontSize="15"
