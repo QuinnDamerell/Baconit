@@ -1019,5 +1019,20 @@ namespace Baconit
         }
 
         #endregion
+
+        /// <summary>
+        /// Fired when the splitview panel is resized.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SplitView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Important! The open panel size becomes the min width of the entire split view!
+            // Since there is no max panel size we must do it ourselves. Set the max to be 320, but if the
+            // view is smaller make it smaller. Note we have to have the -10 on the size or it will prevent
+            // resizing when we hit the actualwidth.
+            double panelSize = ui_splitView.ActualWidth - 10 < 320 ? ui_splitView.ActualWidth - 10 : 320;
+            ui_splitView.OpenPaneLength = panelSize;
+        }
     }
 }

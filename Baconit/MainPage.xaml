@@ -63,7 +63,8 @@
 
         <SplitView x:Name="ui_splitView"
                    PaneBackground="#1F1F1F"
-                   PaneClosed="SplitView_PaneClosed">
+                   PaneClosed="SplitView_PaneClosed"
+                   SizeChanged="SplitView_SizeChanged">
             <SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
