@@ -147,8 +147,8 @@
 
     <!--  This holds all of the UI except the loading overlay  -->
     <SplitView x:Name="ui_splitView"
-               OpenPaneLength="380"
-               PanePlacement="Right">
+               PanePlacement="Right"
+               SizeChanged="SplitView_SizeChanged">
         <SplitView.Content>
             <Grid x:Name="ui_contentRoot" Background="#0A0A0A">
                 <Grid.RowDefinitions>

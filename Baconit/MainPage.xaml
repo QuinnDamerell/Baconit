@@ -63,7 +63,8 @@
 
         <SplitView x:Name="ui_splitView"
                    PaneBackground="#1F1F1F"
-                   PaneClosed="SplitView_PaneClosed">
+                   PaneClosed="SplitView_PaneClosed"
+                   SizeChanged="SplitView_SizeChanged">
             <SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -372,9 +373,10 @@
                         </StackPanel>
                         <StackPanel x:Name="ui_accountHeaderMailBox"
                                     Grid.Column="2"
-                                    Margin="12,0"
                                     VerticalAlignment="Center"
+                                    Background="Transparent"
                                     Orientation="Horizontal"
+                                    Padding="11"
                                     Tapped="InboxGrid_Tapped"
                                     Visibility="Collapsed">
                             <TextBlock x:Name="ui_inboxCountTextBlock" VerticalAlignment="Center" />

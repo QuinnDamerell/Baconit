@@ -38,7 +38,7 @@ namespace Baconit.FlipViewControls
         static public bool CanHandlePost(Post post)
         {
             string urlLower = post.Url.ToLower();
-            if(urlLower.Contains("microsoft.com") && urlLower.Contains("/store/apps/"))
+            if(urlLower.Contains("microsoft.com") && (urlLower.Contains("/store/apps/") || urlLower.Contains("/store/games/")))
             {
                 return true;
             }
