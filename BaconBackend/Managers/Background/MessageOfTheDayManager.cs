@@ -31,7 +31,7 @@ namespace BaconBackend.Managers
 
             // Check if we should update
             TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdate;
-            //if(timeSinceLastUpdate.TotalHours > c_minHoursBetweenCheck)
+            if(timeSinceLastUpdate.TotalHours > c_minHoursBetweenCheck)
             {
                 // Get the new message
                 MessageOfTheDay newMotd = await GetNewMessage();
@@ -40,7 +40,7 @@ namespace BaconBackend.Managers
                 if(newMotd != null)
                 {
                     // Check for an update
-                    //if(LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
+                    if(LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
                     {
                         // Get the current package version.
                         PackageVersion curVer = Package.Current.Id.Version;
