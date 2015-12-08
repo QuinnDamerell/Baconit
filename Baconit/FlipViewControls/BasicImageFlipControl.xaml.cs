@@ -364,6 +364,13 @@ namespace Baconit.FlipViewControls
             float horzZoomFactor = (float)(ui_scrollViewer.ActualWidth / imageSize.Width);
             m_minZoomFactor = Math.Min(vertZoomFactor, horzZoomFactor);
 
+            // Do a check to make sure the zoom level is ok.
+            if(m_minZoomFactor < 0.1)
+            {                
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, $"minZoomTooSmall{m_minZoomFactor}:{vertZoomFactor},{horzZoomFactor};{ui_scrollViewer.ActualHeight};{ui_scrollViewer.ActualWidth};{imageSize.Height};{imageSize.Width}");
+                m_minZoomFactor = 0.1f;
+            }
+
             // Set the zoomer to the min size for the zoom
             ui_scrollViewer.MinZoomFactor = m_minZoomFactor;
 

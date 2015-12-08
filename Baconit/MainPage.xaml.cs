@@ -131,7 +131,7 @@ namespace Baconit
             // Request an update if needed
             App.BaconMan.SubredditMan.Update();
             App.BaconMan.UserMan.UpdateUser();
-
+            
             // Get the default subreddit.
             string defaultDisplayName = App.BaconMan.UiSettingsMan.SubredditList_DefaultSubredditDisplayName;
             if (String.IsNullOrWhiteSpace(defaultDisplayName))
@@ -251,42 +251,56 @@ namespace Baconit
         /// <param name="newSubreddits"></param>
         private void UpdateSubredditList(List<Subreddit> newSubreddits)
         {
-            int insertCount = 0;
-            for (int newListCount = 0; newListCount < newSubreddits.Count; newListCount++)
+            try
             {
-                Subreddit newSubreddit = newSubreddits[newListCount];
+                int insertCount = 0;
+                for (int newListCount = 0; newListCount < newSubreddits.Count; newListCount++)
+                {
+                    Subreddit newSubreddit = newSubreddits[newListCount];
 
-                // Set some UI properties.
-                newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
-                newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
+                    // Set some UI properties.
+                    newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
+                    newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
 
-                // If the two are the same, just update them.
-                if (m_subreddits.Count > insertCount && m_subreddits[insertCount].Id.Equals(newSubreddit.Id))
-                {
-                    // If they are the same just update it
-                    m_subreddits[insertCount] = newSubreddit;
+                    // If the two are the same, just update them.
+                    if (m_subreddits.Count > insertCount && m_subreddits[insertCount].Id.Equals(newSubreddit.Id))
+                    {
+                        // If they are the same just update it
+                        m_subreddits[insertCount] = newSubreddit;
+                    }
+                    // (subreddit insert) If the next element in the new list is the same as the current element in the old list, insert.
+                    else if (m_subreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(m_subreddits[insertCount].Id))
+                    {
+                        m_subreddits.Insert(insertCount, newSubreddit);
+                    }
+                    // (subreddit remove) If the current element in the new list is the same as the next element in the old list.
+                    else if (m_subreddits.Count > insertCount + 1 && newSubreddits.Count > newListCount && newSubreddits[newListCount].Id.Equals(m_subreddits[insertCount + 1].Id))
+                    {
+                        m_subreddits.RemoveAt(insertCount);
+                    }
+                    // If the old list is still larger than the new list, replace
+                    else if (m_subreddits.Count > insertCount)
+                    {
+                        m_subreddits[insertCount] = newSubreddit;
+                    }
+                    // Or just add.
+                    else
+                    {
+                        m_subreddits.Add(newSubreddit);
+                    }
+                    insertCount++;
                 }
-                // (subreddit insert) If the next element in the new list is the same as the current element in the old list, insert.
-                else if(m_subreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(m_subreddits[insertCount].Id))
+
+                // Remove any extra subreddits
+                while(m_subreddits.Count > newSubreddits.Count)
                 {
-                    m_subreddits.Insert(insertCount, newSubreddit);
+                    m_subreddits.RemoveAt(m_subreddits.Count - 1);
                 }
-                // (subreddit remove) If the current element in the new list is the same as the next element in the old list.
-                else if (m_subreddits.Count > insertCount + 1 && newSubreddits.Count > newListCount && newSubreddits[newListCount].Id.Equals(m_subreddits[insertCount + 1].Id))
-                {
-                    m_subreddits.RemoveAt(insertCount);
-                }
-                // If the old list is still larger than the new list, replace
-                else if(m_subreddits.Count > insertCount)
-                {
-                    m_subreddits[insertCount] = newSubreddit;
-                }
-                // Or just add.
-                else
-                {
-                    m_subreddits.Add(newSubreddit);
-                }
-                insertCount++;
+            }
+            catch(Exception e)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "UpdateSubredditListFailed", e);
+                App.BaconMan.MessageMan.DebugDia("UpdateSubredditListFailed", e);
             }
         }
 

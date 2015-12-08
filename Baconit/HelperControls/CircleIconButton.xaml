@@ -98,19 +98,34 @@
                 <ScaleTransform x:Name="ui_iconScaleTrans" />
             </Grid.RenderTransform>
 
+            <!--  Background  -->
             <Ellipse x:Name="ui_buttonEllipse"
                      Width="30"
                      Height="30"
                      Fill="#444444" />
-            <Viewbox Width="16" Height="16">
+
+            <!--  Symbol Icon  -->
+            <Viewbox Width="16"
+                     Height="16"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center">
                 <SymbolIcon x:Name="ui_symbolTextBlock"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Foreground="#989898" />
             </Viewbox>
-            <Image x:Name="ui_symbolImage"
-                   Width="21"
-                   Height="21" />
+
+            <!--  Font Icon  -->
+            <Viewbox Width="16"
+                     Height="16"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center">
+                <FontIcon x:Name="ui_fontIcon"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                          Foreground="#989898" />
+            </Viewbox>
 
             <!--  Vote Icon  -->
             <Grid x:Name="ui_voteIconGrid"

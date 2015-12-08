@@ -251,7 +251,7 @@
                                                         OnIconTapped="AppBarSideBarOpen_OnIconTapped"
                                                         SymbolIcon="DockRight" />
                         <helperControl:CircleIconButton Grid.Column="2"
-                                                        IconImageSource="ms-appx:///Assets/FlipView/MenuIcon.png"
+                                                        FontIconGlyph="&#xE700;"
                                                         OnIconTapped="MenuButton_Click" />
                     </Grid>
                 </Grid>

@@ -46,12 +46,18 @@ namespace Baconit.HelperControls
         {
             // Show it
             VisualStateManager.GoToState(this, "ShowDialog", true);
+
+            // Sub to back button callbacks
+            App.BaconMan.OnBackButton += BaconMan_OnBackButton;
         }
 
         private void Close_OnIconTapped(object sender, EventArgs e)
         {
             // Hide it
             VisualStateManager.GoToState(this, "HideDialog", true);
+
+            // UnSub to back button callbacks
+            App.BaconMan.OnBackButton -= BaconMan_OnBackButton;
         }
 
         /// <summary>
@@ -64,9 +70,51 @@ namespace Baconit.HelperControls
             m_onHideComplete.Raise(this, new EventArgs());
         }
 
-        private void MarkdownText_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        /// <summary>
+        /// Fired when the back button is pressed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
-            App.BaconMan.ShowGlobalContent(e.Link);
+            if(e.IsHandled)
+            {
+                return;
+            }
+
+            // Close the dialog
+            Close_OnIconTapped(null, null);
+
+            // Mark as handled.
+            e.IsHandled = true;
+        }
+
+        private void MarkdownText_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {            
+            try
+            {
+                // See if what we have is a reddit link
+                RedditContentContainer redditContent = MiscellaneousHelper.TryToFindRedditContentInLink(e.Link);
+
+                if(redditContent != null && redditContent.Type != RedditContentType.Website)
+                {
+                    // If we are opening a reddit link show the content and hide hide the message.
+                    App.BaconMan.ShowGlobalContent(redditContent);
+
+                    // Hide the box
+                    Close_OnIconTapped(null, null);
+                }
+                else
+                {
+                    // If we have a link show it but don't close the message.
+                    App.BaconMan.ShowGlobalContent(e.Link);
+                }                
+            }
+            catch (Exception ex)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "MOTDLinkFailedToOpen", ex);
+                App.BaconMan.MessageMan.DebugDia("MOTDLinkFailedToOpen", ex);
+            }
         }
     }
 }
