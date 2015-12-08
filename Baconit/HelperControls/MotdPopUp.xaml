@@ -10,7 +10,6 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#BB000000">
-
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DialogVis">
@@ -105,24 +104,29 @@
               VerticalAlignment="Center"
               RenderTransformOrigin=".5,.5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid.RenderTransform>
                 <ScaleTransform x:Name="ui_contentScale" />
             </Grid.RenderTransform>
-            <Grid Background="#333333">
-                <StackPanel>
+            <ScrollViewer Background="#333333" Style="{StaticResource ScrollViewerStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
                     <TextBlock x:Name="ui_titleText"
                                Margin="12,12,12,12"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Style="{ThemeResource TitleTextBlockStyle}"
                                Text="Title! Welcome Developer!" />
                     <universalMarkdown:MarkdownTextBlock x:Name="ui_markdownText"
+                                                         Grid.Row="1"
                                                          Margin="12,12,12,24"
                                                          OnMarkdownLinkTapped="MarkdownText_OnMarkdownLinkTapped" />
-                </StackPanel>
-            </Grid>
+                </Grid>
+            </ScrollViewer>
             <local:CircleIconButton Grid.Row="1"
                                     Margin="12"
                                     OnIconTapped="Close_OnIconTapped"

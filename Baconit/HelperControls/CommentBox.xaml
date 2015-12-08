@@ -223,7 +223,7 @@
 
                 <local:CircleIconButton Grid.Column="2"
                                         Margin="-3"
-                                        IconImageSource="ms-appx:///Assets/FlipView/UpCarret.png"
+                                        FontIconGlyph="&#xE0E5;"
                                         OnIconTapped="ToggleLivePreview_OnIconTapped"
                                         RenderTransformOrigin=".5,.5">
                     <local:CircleIconButton.RenderTransform>

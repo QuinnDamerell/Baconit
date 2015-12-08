@@ -119,7 +119,7 @@
 
                     <!--  Menu Icon  -->
                     <helperControls:CircleIconButton Grid.Column="5"
-                                                     IconImageSource="ms-appx:///Assets/FlipView/MenuIcon.png"
+                                                     FontIconGlyph="&#xE700;"
                                                      OnIconTapped="MenuPost_Tapped"
                                                      Visibility="{Binding FlipViewMenuButton}" />
                 </Grid>

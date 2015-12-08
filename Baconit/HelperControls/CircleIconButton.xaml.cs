@@ -74,33 +74,33 @@ namespace Baconit.HelperControls
 
         #endregion
 
-        #region Icon Image
+        #region Font Icon Glyph
 
         /// <summary>
-        /// This it how we get the symbol text from the xmal binding.
+        /// This it how we get the font glyph from the xmal binding.
         /// </summary>
-        public string IconImageSource
+        public string FontIconGlyph
         {
-            get { return (string)GetValue(IconImageSourceProperty); }
-            set { SetValue(IconImageSourceProperty, value); }
+            get { return (string)GetValue(FontIconGlyphProperty); }
+            set { SetValue(FontIconGlyphProperty, value); }
         }
 
-        public static readonly DependencyProperty IconImageSourceProperty =
+        public static readonly DependencyProperty FontIconGlyphProperty =
             DependencyProperty.Register(
-                "IconImageSource",                     // The name of the DependencyProperty
-                typeof(string),                   // The type of the DependencyProperty
+                "FontIconGlyph",                     // The name of the DependencyProperty
+                typeof(Symbol),                   // The type of the DependencyProperty
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnIconImageSourceChangedStatic)
+                    "",                      // The default value of the DependencyProperty
+                    new PropertyChangedCallback(OnFontIconGlyphChangedStatic)
                 ));
 
-        private static void OnIconImageSourceChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnFontIconGlyphChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CircleIconButton;
             if (instance != null)
             {
-                instance.OnSymbolIconSourceChanged(e.NewValue.GetType() == typeof(string) ? (string)e.NewValue : "");
+                instance.OnFontIconGlyphChanged((string)e.NewValue);
             }
         }
 
@@ -219,15 +219,15 @@ namespace Baconit.HelperControls
             }
         }
 
-        private void OnSymbolIconSourceChanged(string newText)
+        private void OnFontIconGlyphChanged(string newGlyph)
         {
             ClearIcon();
 
-            bool isShowing = !String.IsNullOrWhiteSpace(newText);
+            bool isShowing = !String.IsNullOrWhiteSpace(newGlyph);
             if (isShowing)
             {
-                ui_symbolImage.Visibility = Visibility.Visible;
-                ui_symbolImage.Source = new BitmapImage(new Uri(newText, UriKind.Absolute));
+                ui_fontIcon.Visibility = Visibility.Visible;
+                ui_fontIcon.Glyph = newGlyph;
             }
         }
 
@@ -235,8 +235,8 @@ namespace Baconit.HelperControls
         {
             ui_voteIconGrid.Visibility = Visibility.Collapsed;
             ui_symbolTextBlock.Visibility = Visibility.Collapsed;
-            ui_symbolImage.Visibility = Visibility.Collapsed;
-            ui_symbolImage.Source = null;
+            ui_fontIcon.Visibility = Visibility.Collapsed;
+            ui_fontIcon.Glyph = "";
         }
 
         private void Icon_Tapped(object sender, TappedRoutedEventArgs e)
