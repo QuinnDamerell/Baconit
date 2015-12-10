@@ -76,9 +76,9 @@ namespace BaconBackend.Managers
             {
                 if (!m_developer_Debug.HasValue)
                 {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("Developer_Debug"))
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_Debug"))
                     {
-                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("Developer_Debug");
+                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_Debug");
                     }
                     else
                     {
@@ -90,10 +90,38 @@ namespace BaconBackend.Managers
             set
             {
                 m_developer_Debug = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("Developer_Debug", m_developer_Debug.Value);
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_Debug", m_developer_Debug.Value);
             }
         }
         private bool? m_developer_Debug = null;
+
+        /// <summary>
+        /// If the app will prevent crashing and report any fatal errors.
+        /// </summary>
+        public bool Developer_StopFatalCrashesAndReport
+        {
+            get
+            {
+                if (!m_developer_StopFatalCrashesAndReport.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_StopFatalCrashesAndReport"))
+                    {
+                        m_developer_StopFatalCrashesAndReport = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_StopFatalCrashesAndReport");
+                    }
+                    else
+                    {
+                        m_developer_StopFatalCrashesAndReport = false;
+                    }
+                }
+                return m_developer_StopFatalCrashesAndReport.Value;
+            }
+            set
+            {
+                m_developer_StopFatalCrashesAndReport = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_StopFatalCrashesAndReport", m_developer_StopFatalCrashesAndReport.Value);
+            }
+        }
+        private bool? m_developer_StopFatalCrashesAndReport = null;
 
         #endregion
 

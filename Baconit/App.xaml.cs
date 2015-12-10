@@ -179,6 +179,13 @@ namespace Baconit
             {
                 Debugger.Break();
             }
+
+            if (App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport)
+            {
+                // Warning this will report the error but leave us in a very bad state. Only use this for debugging.
+                e.Handled = true;
+                BaconMan.MessageMan.ShowMessageSimple("Fatal Crash", "The app tried to crash. Message (" + e.Message + ")\n\n Exception Msg (" + e.Exception.Message + ")");
+            }
         }
     }
 }

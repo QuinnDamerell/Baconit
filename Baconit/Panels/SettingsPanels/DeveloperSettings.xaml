@@ -27,6 +27,10 @@
         <StackPanel Grid.Row="1" Margin="12">
             <TextBlock Text="Verbose debugging. To the average user this will pop up a lot of useless dialog boxes." TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_debuggingOn" Toggled="DebuggingOn_Toggled" />
+            <TextBlock Margin="0,12,0,0"
+                       Text="Don't let fatal exceptions kill the app, report the exception instead of crashing. (this will leave your app in an unstable state)"
+                       TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_preventAppCrashes" Toggled="PreventAppCrashes_Toggled" />
         </StackPanel>
     </Grid>
 </UserControl>

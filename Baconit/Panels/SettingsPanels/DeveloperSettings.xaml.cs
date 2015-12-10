@@ -48,6 +48,7 @@ namespace Baconit.Panels.SettingsPanels
             m_takeAction = false;
             App.BaconMan.TelemetryMan.ReportEvent(this, "DevSettingsOpened");
             ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.Developer_Debug;
+            ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport;
             m_takeAction = true;
         }
 
@@ -58,6 +59,15 @@ namespace Baconit.Panels.SettingsPanels
                 return;
             }
             App.BaconMan.UiSettingsMan.Developer_Debug = ui_debuggingOn.IsOn;
+        }
+
+        private void PreventAppCrashes_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!m_takeAction)
+            {
+                return;
+            }
+            App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = ui_preventAppCrashes.IsOn;
         }
     }
 }
