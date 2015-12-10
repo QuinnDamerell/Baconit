@@ -121,6 +121,7 @@ namespace Baconit
                     main.OnReActivated(e.Arguments);
                 }
             }
+
             // Ensure the current window is active
             Window.Current.Activate();
         }

@@ -59,6 +59,17 @@
                 <ComboBox x:Name="ui_imageFrequency"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
+
+                <TextBlock x:Name="ui_lastUpdate"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="Last Update:"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="ui_currentSystemUpdateStatus"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="System State:"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

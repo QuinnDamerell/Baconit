@@ -58,7 +58,7 @@ namespace Baconit.Panels
 
         public void OnNavigatingFrom()
         {
-            // Ignore for now
+
         }
 
         public void OnNavigatingTo()
@@ -214,6 +214,12 @@ namespace Baconit.Panels
 
             // Make sure the page Id is unique
             m_panelHost.Navigate(typeof(FlipViewPanel), message.Subreddit + SortTypes.Hot + postId + message.Id, args);
+
+            // Also if it is unread set it to read
+            if (message.IsNew)
+            {
+                MarkAsRead_Tapped(sender, e);
+            }
         }
 
         #endregion

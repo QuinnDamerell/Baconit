@@ -198,12 +198,6 @@ namespace Baconit.FlipViewControls
                     // Setup the save image tap
                     m_image.RightTapped += ContentRoot_RightTapped;
                     m_image.Holding += ContentRoot_Holding;
-
-                    // Hide the loading screen
-                    m_host.HideLoading();
-
-                    // Show the image
-                    ui_storyContentRoot.Begin();
                 }
             });
         }
@@ -327,6 +321,12 @@ namespace Baconit.FlipViewControls
             SetScrollerZoomFactors();
 
             m_ignoreZoomChanges = false;
+
+            // Hide the loading screen
+            m_host.HideLoading();
+
+            // Show the image
+            ui_storyContentRoot.Begin();            
         }
 
         private void SetScrollerZoomFactors()

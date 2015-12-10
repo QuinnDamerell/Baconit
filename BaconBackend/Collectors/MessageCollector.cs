@@ -20,6 +20,9 @@ namespace BaconBackend.Collectors
 
             // Set up the list helper
             InitListHelper("/message/inbox/.json");
+
+            // Sub ourselves to the on updated event.
+            OnCollectionUpdated += MessageCollector_OnCollectionUpdated;
         }
 
         /// <summary>
@@ -101,21 +104,6 @@ namespace BaconBackend.Collectors
                     {
                         throw new Exception("Failed to set message status! The response indicated a failure");
                     }
-
-                    // Check to see if there are any unread messages
-                    List<Message> messages = GetCurrentPostsInternal();
-                    bool foundUnread = false;
-                    foreach(Message searchMessage in messages)
-                    {
-                        if(searchMessage.IsNew)
-                        {
-                            foundUnread = true;
-                            break;
-                        }
-                    }
-
-                    // Update user man to the UI won't reflect incorrectly.
-                    m_baconMan.UserMan.ToggleHasMessages(foundUnread);
                 }
                 catch (Exception ex)
                 {
@@ -151,5 +139,36 @@ namespace BaconBackend.Collectors
         }
 
         #endregion
+
+        /// <summary>
+        /// Fired when the collection is updated. We need to update the background notification manager and the sidebar UI.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MessageCollector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Message> e)
+        {
+            // Check to see if there are any unread messages
+            int unreadCount = 0;
+            List<Message> messages = GetCurrentPostsInternal();            
+            foreach (Message searchMessage in messages)
+            {
+                if (searchMessage.IsNew)
+                {
+                    unreadCount++;
+                }
+            }
+
+            if(messages.Count != 0)
+            {
+                // Update the UI
+                m_baconMan.UserMan.UpdateUnReadMessageCount(unreadCount);
+
+                // Update the notifications in the background
+                Task.Run(() =>
+                {
+                    m_baconMan.BackgroundMan.MessageUpdaterMan.UpdateNotifications(messages);
+                });
+            }
+        }
     }
 }

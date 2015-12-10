@@ -21,7 +21,7 @@ namespace BaconBackend.Managers
             m_baconMan = baconMan;
         }
 
-        public async void CheckForUpdates()
+        public async Task CheckForUpdates()
         {
             // Don't check from the background
             if(m_baconMan.IsBackgroundTask)

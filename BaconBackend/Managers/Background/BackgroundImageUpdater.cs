@@ -1,5 +1,6 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
+using BaconBackend.Helpers;
 using BaconBackend.Interfaces;
 using Microsoft.ApplicationInsights.DataContracts;
 using System;
@@ -16,6 +17,16 @@ namespace BaconBackend.Managers.Background
 {
     public class BackgroundImageUpdater
     {
+        /// <summary>
+        /// Indicates which update a type should do.
+        /// </summary>
+        private enum UpdateTypes
+        {
+            Both,
+            LockScreen,
+            Desktop
+        }
+
         ///
         /// Const Vars
         ///
@@ -29,14 +40,10 @@ namespace BaconBackend.Managers.Background
         private BaconManager m_baconMan;
         private StorageFolder m_lockScreenImageCacheFolder = null;
         private StorageFolder m_desktopImageCacheFolder = null;
+        private bool m_isRunning = false;
 
-        //
-        // Used for the updater. It really sucks but due to they way we block the thread for background
-        // updating we can't use lambdas due to the weak events, so some of the work must be done with
-        // events to sync everything.
-        //
-        bool m_isRunning = false;
-        AutoResetEvent m_autoReset = new AutoResetEvent(false);
+        private RefCountedDeferral m_lockScreenRefDeferral = null;
+        private RefCountedDeferral m_desktopRefDeferral = null;
 
         public BackgroundImageUpdater(BaconManager baconMan)
         {
@@ -44,10 +51,10 @@ namespace BaconBackend.Managers.Background
         }
 
         /// <summary>
-        /// THREAD BLOCKING: Kicks off an update of the images, this will block the current thread.
+        /// Kicks off an update of the images.
         /// </summary>
         /// <param name="force"></param>
-        public bool RunUpdate(bool force = false)
+        public async Task RunUpdate(RefCountedDeferral refDeferral, bool force = false)
         {
             if ((IsDeskopEnabled || IsLockScreenEnabled) && UserProfilePersonalizationSettings.IsSupported())
             {
@@ -59,31 +66,23 @@ namespace BaconBackend.Managers.Background
                     {
                         if(m_isRunning)
                         {
-                            return false;
+                            return;
                         }
                         m_isRunning = true;
                     }
 
                     // Do the updates
-                    bool success = ActuallyDoTheUpdate(force);
-                    if (success)
-                    {
-                        // Set the new update time
-                        LastImageUpdate = DateTime.Now;
-                    }
-                    return success;
+                    await KickOffUpdate(force, refDeferral);
                 }
             }
-            return true;
         }
 
         /// <summary>
-        /// THREAD BLOCKING: Actually does the update, this will block the current thread.
+        /// Actually does the update
         /// </summary>
-        private bool ActuallyDoTheUpdate(bool force)
+        private async Task KickOffUpdate(bool force, RefCountedDeferral refDeferral)
         {
             m_baconMan.TelemetryMan.ReportLog(this, "Updater updating.");
-            bool wasSuccessfull = true;
             try
             {
                 // Figure out if we need to do a full update
@@ -99,228 +98,179 @@ namespace BaconBackend.Managers.Background
                     {
                         m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
 
-                        // We are doing a full update, grab new stories for lock screen
-                        List<Post> posts = GetSubredditStories(LockScreenSubredditName);
+                        // Make a deferral scope object so we can do our work without being killed.
+                        // Note! We need release this object or it will hang the app around forever!
+                        m_lockScreenRefDeferral = refDeferral;
+                        m_lockScreenRefDeferral.AddRef();
 
-                        // Check we successfully got new posts
-                        if (posts != null)
-                        {
-                            m_baconMan.TelemetryMan.ReportLog(this, "Lock screen post retrieved, getting images", SeverityLevel.Verbose);
-
-                            // If so, get the images for the posts
-                            if (GetImagesFromPosts(posts, true))
-                            {
-                                LastFullUpdate = DateTime.Now;
-                                // Set the index high so it will roll over.
-                                CurrentLockScreenRotationIndex = 99;
-                            }
-                            else
-                            {
-                                m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen update failed, we failed to get images", SeverityLevel.Error);
-                                wasSuccessfull = false;
-                            }
-                        }
-                        else
-                        {
-                            m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen update failed, we have no posts", SeverityLevel.Error);
-                            wasSuccessfull = false;
-                        }
+                        // Kick off the update, this will happen async.
+                        GetSubredditStories(LockScreenSubredditName, UpdateTypes.LockScreen);
                     }
 
                     if(IsDeskopEnabled)
                     {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
+                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose); 
+                                        
                         // Shortcut: If lock screen in enabled and it is the same subreddit just share the same cache. If not,
                         // get the desktop images
                         if (IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
                         {
-                            // Set the desktop rotation to 1 so we offset lock screen
-                            CurrentDesktopRotationIndex = 1;
                             m_baconMan.TelemetryMan.ReportLog(this, "Desktop same sub as lockscreen, skipping image update.", SeverityLevel.Verbose);
                         }
                         else
                         {
                             m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image", SeverityLevel.Verbose);
 
-                            // We are doing a full update, grab new stories for desktop
-                            List<Post> posts = GetSubredditStories(DesktopSubredditName);
+                            // Make a deferral scope object so we can do our work without being killed.
+                            // Note! We need release this object or it will hang the app around forever!
+                            m_desktopRefDeferral = refDeferral;
+                            m_desktopRefDeferral.AddRef();
 
-                            // Check we successfully got new posts
-                            if (posts != null)
-                            {
-                                m_baconMan.TelemetryMan.ReportLog(this, "Desktop posts retrieved, getting images", SeverityLevel.Verbose);
-
-                                // If so, get the images for the posts
-                                if (GetImagesFromPosts(posts, false))
-                                {
-                                    // Set the index high so it will roll over.
-                                    LastFullUpdate = DateTime.Now;
-                                    CurrentDesktopRotationIndex = 99;
-                                }
-                                else
-                                {
-                                    m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image failed, we failed to get images", SeverityLevel.Error);
-                                    wasSuccessfull = false;
-                                }
-                            }
-                            else
-                            {
-                                m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image failed, we failed to get posts", SeverityLevel.Error);
-                                wasSuccessfull = false;
-                            }
+                            // Kick off the update, this will happen async.
+                            GetSubredditStories(DesktopSubredditName, UpdateTypes.Desktop);                           
                         }
                     }
                 }
-
-                m_baconMan.TelemetryMan.ReportLog(this, "Image gathering done or skipped, moving on to setting.");
-
-                // Now update the images
-                using (AutoResetEvent aEvent = new AutoResetEvent(false))
+                // Else full update
+                else
                 {
-                    Task.Run(async () =>
+                    m_baconMan.TelemetryMan.ReportLog(this, "No need for a full update, just rotating.");
+
+                    // If we aren't doing a full update just rotate the images.
+                    await DoImageRotation(UpdateTypes.Both);
+
+                    // Stop the running state
+                    lock (this)
                     {
-                        try
-                        {
-                            // Update the lock screen image
-                            IReadOnlyList<StorageFile> lockScreenFiles = null;
-                            if (IsLockScreenEnabled)
-                            {
-                                lockScreenFiles = await GetCurrentCacheImages(true);
-
-                                m_baconMan.TelemetryMan.ReportLog(this, "Current lockscreen images in cache :"+lockScreenFiles.Count);
-
-                                if (lockScreenFiles.Count != 0)
-                                {
-                                    // Update the index
-                                    CurrentLockScreenRotationIndex++;
-                                    if (CurrentLockScreenRotationIndex > lockScreenFiles.Count)
-                                    {
-                                        CurrentLockScreenRotationIndex = 0;
-                                    }
-
-                                    m_baconMan.TelemetryMan.ReportLog(this, "Current lockscreen index used to set image :" + CurrentLockScreenRotationIndex);
-
-                                    // Set the image
-                                    bool localResult = await SetBackgroundImage(true, lockScreenFiles[CurrentLockScreenRotationIndex]);
-
-                                    if (!localResult)
-                                    {
-                                        m_baconMan.TelemetryMan.ReportLog(this, "Lockscreen image update failed", SeverityLevel.Error);
-                                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "LockscreenImageUpdateFailed");
-                                    }
-                                    else
-                                    {
-                                        m_baconMan.TelemetryMan.ReportLog(this, "Lockscreen image update success");
-                                    }
-
-                                    // Only set the result if we were already successful
-                                    if(wasSuccessfull)
-                                    {
-                                        wasSuccessfull = localResult;
-                                    }
-                                }
-                                else
-                                {
-                                    wasSuccessfull = false;
-                                }
-                            }
-
-                            // Update the desktop
-                            if (IsDeskopEnabled)
-                            {
-                                // If the lock screen and desktop are the same subreddit use the same files.
-                                IReadOnlyList<StorageFile> desktopFiles;
-                                if (IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
-                                {
-                                    desktopFiles = lockScreenFiles;
-                                }
-                                else
-                                {
-                                    desktopFiles = await GetCurrentCacheImages(false);
-                                }
-
-                                m_baconMan.TelemetryMan.ReportLog(this, "Current desktop images in cache :" + lockScreenFiles.Count);
-
-                                if (desktopFiles != null && desktopFiles.Count != 0)
-                                {
-                                    // Update the index
-                                    CurrentDesktopRotationIndex++;
-                                    if (CurrentDesktopRotationIndex > desktopFiles.Count)
-                                    {
-                                        CurrentDesktopRotationIndex = 0;
-                                    }
-
-                                    m_baconMan.TelemetryMan.ReportLog(this, "Current desktop index used to set image :" + CurrentDesktopRotationIndex);
-
-                                    // Set the image
-                                    bool localResult = await SetBackgroundImage(false, desktopFiles[CurrentDesktopRotationIndex]);
-
-                                    if (!localResult)
-                                    {
-                                        m_baconMan.TelemetryMan.ReportLog(this, "Desktop image update failed", SeverityLevel.Error);
-                                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "DesktopImageUpdateFailed");
-                                    }
-                                    else
-                                    {
-                                        m_baconMan.TelemetryMan.ReportLog(this, "Desktop image update success");
-                                    }
-
-                                    // Only set the result if we were already successful
-                                    if (wasSuccessfull)
-                                    {
-                                        wasSuccessfull = localResult;
-                                    }
-                                }
-                                else
-                                {
-                                    wasSuccessfull = false;
-                                }
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
-                            m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to set background image",e);
-                            wasSuccessfull = false;
-                        }
-
-                        // Set that we are done!
-                        aEvent.Set();
-                    });
-                    // Wait for the image setting to finish
-                    aEvent.WaitOne();
+                        m_isRunning = false;
+                    }
                 }
             }
             catch(Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
                 m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to set background image", e);
-                wasSuccessfull = false;
             }
-
-            // Stop the running state
-            lock(this)
-            {
-                m_isRunning = false;
-            }
-
-            return wasSuccessfull;
         }
+
+        #region Image Rotation
+
+        /// <summary>
+        /// Assuming there are images, this does the rotation of the lock screen images.
+        /// </summary>
+        /// <returns></returns>
+        private async Task DoImageRotation(UpdateTypes type)
+        {
+            try
+            {
+                bool wasSuccess = false;
+                if(type == UpdateTypes.LockScreen)
+                {
+                    wasSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
+                }
+                else if(type == UpdateTypes.Desktop)
+                {
+                    wasSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
+                }
+                else
+                {
+                    bool firstSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
+                    bool secondSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
+                    wasSuccess = firstSuccess && secondSuccess;
+                }      
+                
+                // If we successfully updated set the time.
+                if(wasSuccess)
+                {
+                    LastImageUpdate = DateTime.Now;
+                }       
+            }
+            catch (Exception e)
+            {
+                m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to set background image", e);
+            }
+        }
+
+        /// <summary>
+        /// Rotate a single image type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private async Task<bool> DoSingleImageRotation(UpdateTypes type)
+        {
+            // Make sure we should do the update.
+            if ((IsLockScreenEnabled && type == UpdateTypes.LockScreen) || (IsDeskopEnabled && type == UpdateTypes.Desktop))
+            {
+                // If the lock screen and desktop are the same subreddit use the same files.
+                UpdateTypes fileCacheType = type;    
+                // If this is a desktop update, and lock is enabled, and they are the same subreddit...
+                if (type == UpdateTypes.Desktop && IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
+                {
+                    // If they are all the same use the lock screen cache for the desktop.
+                    fileCacheType = UpdateTypes.LockScreen;
+                }
+
+                // Get the current files..
+                IReadOnlyList<StorageFile> files = await GetCurrentCacheImages(fileCacheType);
+
+                m_baconMan.TelemetryMan.ReportLog(this, "Current images in cache :" + files.Count);
+
+                if (files != null && files.Count != 0)
+                {
+                    int currentIndex = 0;
+                    if(type == UpdateTypes.LockScreen)
+                    {
+                        // Update the index
+                        CurrentLockScreenRotationIndex++;
+                        if (CurrentLockScreenRotationIndex > files.Count)
+                        {
+                            CurrentLockScreenRotationIndex = 0;
+                        }
+                        currentIndex = CurrentLockScreenRotationIndex;
+                    }
+                    else
+                    {
+                        // Update the index
+                        CurrentDesktopRotationIndex++;
+                        if (CurrentDesktopRotationIndex > files.Count)
+                        {
+                            CurrentDesktopRotationIndex = 0;
+                        }
+                        currentIndex = CurrentDesktopRotationIndex;
+                    }
+
+                    m_baconMan.TelemetryMan.ReportLog(this, "Current index used to set image :" + currentIndex);
+
+                    // Set the image
+                    bool wasSuccess = await SetBackgroundImage(type, files[currentIndex]);
+
+                    if (!wasSuccess)
+                    {
+                        m_baconMan.TelemetryMan.ReportLog(this, "Image update failed", SeverityLevel.Error);
+                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, type == UpdateTypes.LockScreen ? "LockscreenImageUpdateFailed" : "DesktopImageUpdateFailed");
+                    }
+                    else
+                    {
+                        m_baconMan.TelemetryMan.ReportLog(this, "Image update success");
+                    }
+
+                    return wasSuccess;
+                }
+            }
+            return false;
+        }
+
+        #endregion
 
         #region Get Posts
 
-        // Note: This is horrible but we can't really do any better because we can't use lambdas.
-        // These are protected by a lock, so the function should never be called more than once
-        // at the same time.
-        List<Post> m_currentSubredditPosts = null;
-
         /// <summary>
-        /// THREAD BLOCKING this function will get post from a subreddit while blocking
-        /// the calling thread.
+        /// This will kick off the process of getting the stories for a subreddit.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private List<Post> GetSubredditStories(string name)
+        private void GetSubredditStories(string name, UpdateTypes type)
         {
             // Create a fake subreddit, the ID needs to be unique
             Subreddit subreddit = new Subreddit() { Id = DateTime.Now.Ticks.ToString(), DisplayName = name };
@@ -329,151 +279,273 @@ namespace BaconBackend.Managers.Background
             SubredditCollector collector = SubredditCollector.GetCollector(subreddit, m_baconMan);
 
             // Sub to the collector callback
-            collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
-
-            // Reset the event
-            m_autoReset.Reset();
-            m_currentSubredditPosts = null;
+            if(type == UpdateTypes.LockScreen)
+            {
+                collector.OnCollectionUpdated += Collector_OnCollectionUpdatedLockScreen;
+                collector.OnCollectorStateChange += Collector_OnCollectorStateChangeLockScreen;
+            }
+            else
+            {
+                collector.OnCollectionUpdated += Collector_OnCollectionUpdatedDesktop;
+                collector.OnCollectorStateChange += Collector_OnCollectorStateChangeDesktop;
+            }
 
             // Kick off the update
             collector.Update(true);
-
-            // Block until the posts are done or until 10 seconds passes
-            m_autoReset.WaitOne(10000);
-
-            return m_currentSubredditPosts;
         }
 
         /// <summary>
-        /// Used by the get subreddit stories to return posts.
-        /// We can't use a lambda because the weak events don't support it.
+        /// Fired when the collector state changed for the lock screen
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectorStateChangeLockScreen(object sender, OnCollectorStateChangeArgs e)
         {
-            m_currentSubredditPosts = e.ChangedItems;
-            m_autoReset.Set();
+            Collector_OnCollectorStateChange(UpdateTypes.LockScreen, e);
+        }
+
+        /// <summary>
+        /// Fired when the collector state changed for the lock screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Collector_OnCollectorStateChangeDesktop(object sender, OnCollectorStateChangeArgs e)
+        {
+            Collector_OnCollectorStateChange(UpdateTypes.Desktop, e);
+        }
+
+        /// <summary>
+        /// Fired when the collector state changed for the either
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Collector_OnCollectorStateChange(UpdateTypes type, OnCollectorStateChangeArgs e)
+        {
+            if(e.State == CollectorState.Error)
+            {
+                // We had an error. This is the end of the line, kill the deferral
+                ReleaseDeferral(type);
+
+                // And try to set isRunning
+                UnSetIsRunningIfDone();
+            }
+        }
+
+        /// <summary>
+        /// Fired when the stories come in for a type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Collector_OnCollectionUpdatedLockScreen(object sender, OnCollectionUpdatedArgs<Post> e)
+        {
+            Collector_OnCollectionUpdated(UpdateTypes.LockScreen, e);
+        }
+
+        /// <summary>
+        /// Fired when the stories come in for a type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Collector_OnCollectionUpdatedDesktop(object sender, OnCollectionUpdatedArgs<Post> e)
+        {
+            Collector_OnCollectionUpdated(UpdateTypes.Desktop, e);
+        }
+
+        /// <summary>
+        /// Fired when the stories come in for a type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Collector_OnCollectionUpdated(UpdateTypes type, OnCollectionUpdatedArgs<Post> e)
+        {
+            if(e.ChangedItems.Count > 0)
+            {
+                // If we successfully got the post now get the images
+                GetImagesFromPosts(e.ChangedItems, type);
+            }
         }
 
         #endregion
 
         #region Get Images
 
-        // Note: This is horrible but we can't really do any better because we can't use lambdas.
-        // These are protected by a lock, so the function should never be called more than once
-        // at the same time.
-        int m_reqeustCount = 0;
-        int m_imageReturnCount = 0;
-        int m_imageDoneCount = 0;
-        bool m_isCurrentImageRequestLockScreen = false;
+        /// <summary>
+        /// Used to lock the get images process
+        /// </summary>
         object m_getImageLock = new object();
 
+        int m_desktopRequestCount = 0;
+        int m_desktopDoneCount = 0;
+        int m_lockScreenRequestCount = 0;
+        int m_lockScreenDoneCount = 0;
+
         /// <summary>
-        /// THREAD BLOCKING Given a list of post this gets the images and puts them into file cache.
+        /// Given a list of post this gets the images and puts them into file cache.
         /// </summary>
         /// <param name="posts"></param>
         /// <param name="isLockScreen"></param>
         /// <returns></returns>
-        private bool GetImagesFromPosts(List<Post> posts, bool isLockScreen)
+        private async void GetImagesFromPosts(List<Post> posts, UpdateTypes type)
         {
             // First, remove all of the existing images
-            using (AutoResetEvent aEvent = new AutoResetEvent(false))
+            try
             {
-                Task.Run(async () => { await DeleteAllCacheImages(isLockScreen); aEvent.Set(); });
-                aEvent.WaitOne();
+                await DeleteAllCacheImages(type);
+            }
+            catch(Exception e)
+            {
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToDeleteCacheImages", e);
             }
 
-            // Reset the wait event
-            m_autoReset.Reset();
+            // Setup the vars
+            if(type == UpdateTypes.LockScreen)
+            {
+                m_lockScreenRequestCount = 0;
+                m_lockScreenDoneCount = 0;
+            }
+            else
+            {
+                m_desktopRequestCount = 0;
+                m_desktopDoneCount = 0;
+            }
 
-            // Setup vars
-            m_reqeustCount = 0;
-            m_imageReturnCount = 0;
-            m_imageDoneCount = 0;
-            m_isCurrentImageRequestLockScreen = isLockScreen;
-
-            // Make request for the images
+            // Figure out all of the images we need to request.
+            List<Tuple<string, string>> imageRequestList = new List<Tuple<string, string>>();
             foreach (Post post in posts)
             {
                 string imageUrl = ImageManager.GetImageUrl(post.Url);
                 if (!String.IsNullOrWhiteSpace(imageUrl))
                 {
-                    // Make the request
-                    ImageManager.ImageManagerRequest request = new ImageManager.ImageManagerRequest()
-                    {
-                        Url = imageUrl,
-                        ImageId = post.Id
-                    };
-                    request.OnRequestComplete += OnRequestComplete;
-                    m_baconMan.ImageMan.QueueImageRequest(request);
-                    m_reqeustCount++;
+                    imageRequestList.Add(new Tuple<string, string>(imageUrl, post.Id));
                 }
 
-                if(m_reqeustCount > c_maxImageCacheCount)
+                if(imageRequestList.Count > c_maxImageCacheCount)
                 {
                     break;
                 }
             }
 
-            // Wait for all of the images to be downloaded and stored.
-            m_autoReset.WaitOne(10000);
+            // Now set our request counts before we start requesting. We must do this to ensure
+            // the numbers are correct when the request come back.
+            if(type == UpdateTypes.LockScreen)
+            {
+                m_lockScreenRequestCount = imageRequestList.Count;
+            }
+            else
+            {
+                m_desktopRequestCount = imageRequestList.Count;
+            }
 
-            // See if we got all of the requests, then we are successful.
-            return m_imageDoneCount >= (c_maxImageCacheCount - 2);
+            // Now make all of the request.
+            foreach(Tuple<string, string> request in imageRequestList)
+            {
+                // Make the request
+                ImageManager.ImageManagerRequest imageRequst = new ImageManager.ImageManagerRequest()
+                {
+                    Url = request.Item1,
+                    ImageId = request.Item2,
+                    Context = type
+                };
+                imageRequst.OnRequestComplete += OnRequestComplete;
+                m_baconMan.ImageMan.QueueImageRequest(imageRequst);
+            }  
+
+            // If we have nothing to request this is the end of the line for this type.
+            if(imageRequestList.Count == 0)
+            {
+                // And kill the deferral
+                ReleaseDeferral(type);
+
+                // And set us to stopped.
+                UnSetIsRunningIfDone();
+            }
         }
 
+        /// <summary>
+        /// Fired when an image request is done.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="response"></param>
         public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
-            // Remove event
+            // Remove event listener
             ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
             request.OnRequestComplete -= OnRequestComplete;
 
+            UpdateTypes type = (UpdateTypes)response.Request.Context;
+
             // Make sure we were successfully.
-            if (!response.Success)
+            if (response.Success)
             {
-                return;
-            }
-
-            // Get a unique name for this image
-            int imageCount = 0;
-            lock(m_getImageLock)
-            {
-                imageCount = m_imageReturnCount;
-                m_imageReturnCount++;
-            }
-
-            // Get the file name
-            string imageFileName = imageCount + ".jpg";
-
-            try
-            {
-                // Write the file
-                await WriteImageToFile(response.ImageStream, imageFileName, m_isCurrentImageRequestLockScreen);
-            }
-            catch(Exception e)
-            {
-                m_baconMan.MessageMan.DebugDia("Failed to write background image", e);
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to write background image", e);
-            }
-
-            // Add the file to the list
-            lock (m_getImageLock)
-            {
-                // Report we are done
-                m_imageDoneCount++;
-
-                // Check to see if we were last
-                if(m_imageDoneCount == c_maxImageCacheCount)
+                try
                 {
-                    m_autoReset.Set();
+                    // Write the file
+                    await WriteImageToFile(response.ImageStream, type);
                 }
+                catch (Exception e)
+                {
+                    m_baconMan.MessageMan.DebugDia("Failed to write background image", e);
+                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to write background image", e);
+                }
+            }
+
+            // Indicate that this image is done.
+            bool isDone = false;
+            lock (m_getImageLock)
+            {                
+                if(type == UpdateTypes.LockScreen)
+                {
+                    m_lockScreenDoneCount++;
+                    isDone = m_lockScreenDoneCount >= m_lockScreenRequestCount;
+                }
+                else
+                {
+                    m_desktopDoneCount++;
+                    isDone = m_desktopDoneCount >= m_desktopRequestCount;
+                }
+            }
+
+            // if we are done done then tell the images to rotate and clean up.
+            if(isDone)
+            {
+                // Set this high so we roll over.
+                if(type == UpdateTypes.LockScreen)
+                {
+                    CurrentLockScreenRotationIndex = 99;
+                }
+                else
+                {
+                    CurrentDesktopRotationIndex = 99;
+                }
+
+                // Do the rotate
+                await DoImageRotation(type);
+
+                // If this is a lock screen update this might also be a desktop update. This happens when the lock screen and desktop
+                // share the same subreddit, they share the same images.
+                if (type == UpdateTypes.LockScreen && IsDeskopEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
+                {
+                    // Off set the two so they don't show the same image
+                    CurrentDesktopRotationIndex = 1;
+
+                    // We also need to update the desktop.
+                    await DoImageRotation(UpdateTypes.Desktop);
+                }
+
+                // We are done, set the last update time
+                LastFullUpdate = DateTime.Now;
+
+                // And kill the deferral
+                ReleaseDeferral(type);
+
+                // And set us to stopped.
+                UnSetIsRunningIfDone(); 
             }
         }
 
-        private async Task DeleteAllCacheImages(bool isLockScreen)
+        private async Task DeleteAllCacheImages(UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(isLockScreen);
+            StorageFolder localFolder = await GetImageCacheFolder(type);
             IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
             foreach (StorageFile file in files)
             {
@@ -481,10 +553,10 @@ namespace BaconBackend.Managers.Background
             }
         }
 
-        private async Task WriteImageToFile(InMemoryRandomAccessStream stream, string fileName, bool isLockScreen)
+        private async Task WriteImageToFile(InMemoryRandomAccessStream stream, UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(isLockScreen);
-            StorageFile file = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            StorageFolder localFolder = await GetImageCacheFolder(type);
+            StorageFile file = await localFolder.CreateFileAsync("cachedImage.jpg", CreationCollisionOption.GenerateUniqueName);
 
             using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
@@ -495,22 +567,63 @@ namespace BaconBackend.Managers.Background
         #endregion
 
         /// <summary>
+        /// Turns off is running if both the desktop and locks screens are done updating.
+        /// </summary>
+        private void UnSetIsRunningIfDone()
+        {
+            lock(this)
+            {
+                if(m_lockScreenRefDeferral == null && m_desktopRefDeferral == null)
+                {
+                    m_isRunning = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Release the deferral for a type if it is held
+        /// </summary>
+        /// <param name="type"></param>
+        private void ReleaseDeferral(UpdateTypes type)
+        {
+            lock(this)
+            {
+                if (type == UpdateTypes.LockScreen)
+                {
+                    if (m_lockScreenRefDeferral != null)
+                    {
+                        m_lockScreenRefDeferral.ReleaseRef();
+                    }
+                    m_lockScreenRefDeferral = null;
+                }
+                else
+                {
+                    if (m_desktopRefDeferral != null)
+                    {
+                        m_desktopRefDeferral.ReleaseRef();
+                    }
+                    m_desktopRefDeferral = null;
+                }
+            }  
+        }
+
+        /// <summary>
         /// Returns the current contents of the cache folder
         /// </summary>
         /// <returns></returns>
-        private async Task<IReadOnlyList<StorageFile>> GetCurrentCacheImages(bool isLockScreen)
+        private async Task<IReadOnlyList<StorageFile>> GetCurrentCacheImages(UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(isLockScreen);
-            return  await localFolder.GetFilesAsync();
+            StorageFolder localFolder = await GetImageCacheFolder(type);
+            return await localFolder.GetFilesAsync();
         }
 
         /// <summary>
         /// Returns the image cache folder for desktop images
         /// </summary>
         /// <returns></returns>
-        private async Task<StorageFolder> GetImageCacheFolder(bool isForLockScreen)
+        private async Task<StorageFolder> GetImageCacheFolder(UpdateTypes type)
         {
-            if(isForLockScreen)
+            if(type == UpdateTypes.LockScreen)
             {
                 if (m_lockScreenImageCacheFolder == null)
                 {
@@ -532,7 +645,7 @@ namespace BaconBackend.Managers.Background
         /// Returns the current contents of the cache folder
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> SetBackgroundImage(bool isLockScreen, StorageFile file)
+        private async Task<bool> SetBackgroundImage(UpdateTypes type, StorageFile file)
         {
             bool wasSuccess = false;
             // Make sure we can do it
@@ -540,7 +653,7 @@ namespace BaconBackend.Managers.Background
             {
                 // Try to set the image
                 UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
-                if (isLockScreen)
+                if (type == UpdateTypes.LockScreen)
                 {
                     wasSuccess = await profileSettings.TrySetLockScreenImageAsync(file);
                 }

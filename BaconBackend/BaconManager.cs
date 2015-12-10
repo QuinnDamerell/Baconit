@@ -9,6 +9,8 @@ using Windows.ApplicationModel;
 using BaconBackend.Interfaces;
 using BaconBackend.Helpers;
 using Windows.UI.Core;
+using Windows.ApplicationModel.Background;
+using System.Threading;
 
 namespace BaconBackend
 {
@@ -16,6 +18,11 @@ namespace BaconBackend
     public class OnBackButtonArgs : EventArgs
     {
         public bool IsHandled = false;
+    }
+
+    public class OnSuspendingArgs : EventArgs
+    {
+        public RefCountedDeferral RefDeferral;
     }
 
     public class BaconManager
@@ -31,12 +38,12 @@ namespace BaconBackend
         /// <summary>
         /// Fired when the app is suspending
         /// </summary>
-        public event EventHandler<EventArgs> OnSuspending
+        public event EventHandler<OnSuspendingArgs> OnSuspending
         {
             add { m_onSuspending.Add(value); }
             remove { m_onSuspending.Remove(value); }
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onSuspending = new SmartWeakEvent<EventHandler<EventArgs>>();
+        SmartWeakEvent<EventHandler<OnSuspendingArgs>> m_onSuspending = new SmartWeakEvent<EventHandler<OnSuspendingArgs>>();
 
         /// <summary>
         /// Fired when the app is resuming
@@ -165,8 +172,38 @@ namespace BaconBackend
         /// <param name="e"></param>
         public void OnSuspending_Fired(object sender, SuspendingEventArgs e)
         {
+            // Setup a ref deferral for everyone to hold. We also need to setup a clean up action to save the setting
+            // when the deferral is done.
+            RefCountedDeferral refDeferral = new RefCountedDeferral(e.SuspendingOperation.GetDeferral(), () =>
+            {
+                // We need to flush the settings here just before we complete the deferal. We need to block this function
+                // until the settings are flushed.
+                using (AutoResetEvent are = new AutoResetEvent(false))
+                {
+                    Task.Run(async () =>
+                    {
+                        // Flush out the local settings
+                        await SettingsMan.FlushLocalSettings();
+                        are.Set();
+                    });
+                    are.WaitOne();
+                }
+            });
+
+            // Add a ref to cover anyone down this call stack.
+            refDeferral.AddRef();
+
+            // Make the 
+            OnSuspendingArgs args = new OnSuspendingArgs()
+            {
+                RefDeferral = refDeferral
+            };
+
             // Fire the event
-            m_onSuspending.Raise(this, new EventArgs());
+            m_onSuspending.Raise(this, args);
+
+            // Release our ref to the deferral
+            refDeferral.ReleaseRef();
         }
 
         /// <summary>
@@ -209,19 +246,15 @@ namespace BaconBackend
         /// <summary>
         /// Used to fire off and update if one is needed.
         /// </summary>
-        public void FireOffUpdate(bool runAsync = true)
+        public void FireOffUpdate()
         {
-            if (runAsync)
+            // Fire off an update on a background thread.
+            Task.Run(async () =>
             {
-                Task.Run(() =>
-                {
-                    BackgroundMan.RunUpdate();
-                });
-            }
-            else
-            {
-                BackgroundMan.RunUpdate();
-            }
+                // Call update on background man and give him a null deferral
+                // since this won't be called from the background.
+                await BackgroundMan.RunUpdate(new RefCountedDeferral(null));
+            });            
         }
 
         #region Global Back to Front Actions

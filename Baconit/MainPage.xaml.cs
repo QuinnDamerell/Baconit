@@ -99,8 +99,6 @@ namespace Baconit
             ui_contentRoot.Children.Add(m_panelManager);
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
-
-
             // Sub to callbacks
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditUpdate;
             App.BaconMan.UserMan.OnUserUpdated += UserMan_OnUserUpdated;
@@ -114,7 +112,7 @@ namespace Baconit
 
             // Setup the keyboard shortcut helper and sub.
             m_keyboardShortcutHepler = new KeyboardShortcutHelper();
-            m_keyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
+            m_keyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation; 
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using BaconBackend.Helpers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace Baconit.Panels.SettingsPanels
             // Ignore
         }
 
-        public void OnNavigatingFrom()
+        public async void OnNavigatingFrom()
         {
             // Update the settings
             App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency = FrequencyListIndexToSettings(ui_imageFrequency.SelectedIndex);
@@ -75,14 +76,14 @@ namespace Baconit.Panels.SettingsPanels
                 m_hasChanges = false;
 
                 // Make sure the updater is enabled
-                App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
+                await App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
 
                 // On a background thread kick off an update. This call will block so it has to be done in
                 // the background.
-                Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    // Force a update.
-                    App.BaconMan.BackgroundMan.ImageUpdaterMan.RunUpdate(true);
+                    // Force a update, give it a null deferral since this isn't a background task.
+                    await App.BaconMan.BackgroundMan.ImageUpdaterMan.RunUpdate(new RefCountedDeferral(null), true);
                 });
             }         
         }
@@ -99,6 +100,10 @@ namespace Baconit.Panels.SettingsPanels
             ui_imageFrequency.SelectedIndex = FrequencySettingToListIndex(App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency);
 
             m_ingoreUpdates = false;
+
+            // Set our status
+            ui_lastUpdate.Text = "Last Update: " + (App.BaconMan.BackgroundMan.LastUpdateTime.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastUpdateTime.ToString("g"));
+            ui_currentSystemUpdateStatus.Text = "System State: " + (App.BaconMan.BackgroundMan.LastSystemBackgroundUpdateStatus != 3 ? "Allowed" : "Denied");
 
             // Setup the listener
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;

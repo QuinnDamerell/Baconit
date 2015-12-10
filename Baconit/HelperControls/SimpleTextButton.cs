@@ -58,6 +58,9 @@ namespace Baconit.HelperControls
 
         private void SimpleTextButton_Loaded(object sender, RoutedEventArgs e)
         {
+            // Unregister for loaded events so we don't do this many times.
+            Loaded -= SimpleTextButton_Loaded;
+
             // First, try to get the main root grid.
             List<DependencyObject> uiElements = new List<DependencyObject>();
             UiControlHelpers<Grid>.RecursivelyFindElement(this, ref uiElements);

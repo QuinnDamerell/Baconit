@@ -190,6 +190,9 @@
     <Compile Include="Panels\SettingsPanels\AboutSettings.xaml.cs">
       <DependentUpon>AboutSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\SettingsPanels\BackgroundMessageUpdatingSettings.xaml.cs">
+      <DependentUpon>BackgroundMessageUpdatingSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml.cs">
       <DependentUpon>BackgroundUpdatingSettings.xaml</DependentUpon>
     </Compile>
@@ -233,6 +236,10 @@
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-150.png" />
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-200.png" />
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-400.png" />
+    <Content Include="Assets\AppAssets\BandIcons\BandImage24.png" />
+    <Content Include="Assets\AppAssets\BandIcons\BandImage46.png" />
+    <Content Include="Assets\AppAssets\IconicTiles\Iconic144.png" />
+    <Content Include="Assets\AppAssets\IconicTiles\Iconic200.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-100.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-125.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-150.png" />
@@ -407,6 +414,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Panels\SettingsPanels\BackgroundMessageUpdatingSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -462,6 +473,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

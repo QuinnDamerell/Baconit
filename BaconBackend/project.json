@@ -3,8 +3,10 @@
     "Microsoft.ApplicationInsights": "1.2.3",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.0",
+    "Microsoft.Band": "1.3.10929",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "Newtonsoft.Json": "7.0.1",
+    "NotificationsExtensions.Win10": "10586.0.0",
     "WriteableBitmapEx": "1.5.0"
   },
   "frameworks": {
