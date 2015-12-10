@@ -852,6 +852,11 @@ namespace Baconit
         /// <param name="e"></param>
         private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
+            if(e.IsHandled)
+            {
+                return;
+            }
+
             // If the presenter is open close it and mark the back handled.
             if (ui_globalContentPresenter.State != GlobalContentStates.Idle)
             {

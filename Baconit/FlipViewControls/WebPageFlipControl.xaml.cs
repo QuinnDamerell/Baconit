@@ -205,6 +205,11 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
+            if(e.IsHandled)
+            {
+                return;
+            }
+
             // Kill it if we are.
             e.IsHandled = ToggleFullScreen(false);
         }

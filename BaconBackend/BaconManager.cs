@@ -163,6 +163,10 @@ namespace BaconBackend
             {
                 FireOffUpdate();
             }
+
+            // Setup the in between invoke handler for the onBackButton event. This will allow us to stop
+            // calling the handlers when one returns true.
+            m_onBackButton.SetInBetweenInvokesAction(new Func<EventArgs, bool>(InBetweenInvokeHandlerForOnBackButton));
         }
 
         /// <summary>
@@ -241,6 +245,17 @@ namespace BaconBackend
             // Tell the UI to go back. Technically it could just listen to the event
             // and check the handled var, but this ensures it is always last.
             e.Handled = m_backendActionListener.NavigateBack();
+        }
+
+        /// <summary>
+        /// This is called between invokes of m_onBackButton while it is being raised to each
+        /// listener. If a listener sets e.IsHandled to true we should stop asking more people.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private bool InBetweenInvokeHandlerForOnBackButton(EventArgs e)
+        {
+            return !((OnBackButtonArgs)e).IsHandled;
         }
 
         /// <summary>
