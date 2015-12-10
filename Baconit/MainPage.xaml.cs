@@ -26,6 +26,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -410,6 +411,12 @@ namespace Baconit
 
         public void CloseTrendingSubredditsPanelIfOpen()
         {
+            // Stop the animation if it is playing
+            if (ui_storySubredditsPanel.GetCurrentState() == ClockState.Active)
+            {
+                ui_storySubredditsPanel.Stop();
+            }
+
             if (ui_trendingSubredditsPanel.MaxHeight != 0)
             {
                 ToggleTrendingSubredditsPanel();
@@ -418,7 +425,13 @@ namespace Baconit
 
         private void CloseAccoutPanelIfOpen()
         {
-            if(ui_accountGrid.MaxHeight != 0)
+            // Stop the animation if it is playing
+            if (ui_storyAccountGrid.GetCurrentState() == ClockState.Active)
+            {
+                ui_storyAccountGrid.Stop();
+            }
+
+            if (ui_accountGrid.MaxHeight != 0)
             {
                 ToggleAccountPanel();
             }
