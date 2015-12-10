@@ -141,11 +141,9 @@ namespace BaconBackend.Managers
             // Run the image update if needed
             await ImageUpdaterMan.RunUpdate(refDefferal);
 
-            // Run the message update if this is a background task
-            if (m_baconMan.IsBackgroundTask)
-            {
-                MessageUpdaterMan.RunUpdate(refDefferal);
-            }
+            // Run the message update if needed.
+            MessageUpdaterMan.RunUpdate(refDefferal);
+            
         }
 
         #region Vars
