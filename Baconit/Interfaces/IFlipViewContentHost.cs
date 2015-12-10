@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BaconBackend.DataObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,12 @@ namespace Baconit.Interfaces
         /// Shows an error
         /// </summary>
         void ShowError();
+
+        /// <summary>
+        /// If the control fails to load fallback to the browser.
+        /// </summary>
+        /// <param name="post"></param>
+        void FallbackToWebBrowser(Post post);
 
         /// <summary>
         /// Tries to enter or exit full screen. Returns if successful.

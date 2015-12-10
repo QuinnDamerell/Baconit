@@ -29,7 +29,7 @@ namespace Baconit.FlipViewControls
         bool m_isDestoryed = false;
         IFlipViewContentHost m_host;
         Image m_image;
-        string m_postUrl;
+        Post m_post;
         float m_minZoomFactor = 1.0f;
         bool m_ignoreZoomChanges = false;
 
@@ -74,7 +74,7 @@ namespace Baconit.FlipViewControls
             ui_contentRoot.Opacity = 0;
 
             // Grab the post URL
-            m_postUrl = post.Url;
+            m_post = post;
 
             // Do the rest of the work on a background thread.
             Task.Run(async () =>
@@ -90,7 +90,7 @@ namespace Baconit.FlipViewControls
                     // Jump back to the UI thread
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        m_host.ShowError();
+                        m_host.FallbackToWebBrowser(post);
                     });
 
                     return;
@@ -129,8 +129,8 @@ namespace Baconit.FlipViewControls
                 // Set the flag
                 m_isDestoryed = true;
 
-                // Kill the URL
-                m_postUrl = null;
+                // Kill the post
+                m_post = null;
 
                 // Remove the image from the UI
                 ui_contentRoot.Children.Clear();
@@ -165,7 +165,7 @@ namespace Baconit.FlipViewControls
                 if (!response.Success)
                 {
                     App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "BasicImageControlNoImageUrl");
-                    m_host.ShowError();
+                    m_host.FallbackToWebBrowser(m_post);
                     return;
                 }
 
@@ -209,9 +209,9 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
-            if(!String.IsNullOrWhiteSpace(m_postUrl))
+            if(!String.IsNullOrWhiteSpace(m_post.Url))
             {
-                App.BaconMan.ImageMan.SaveImageLocally(m_postUrl);
+                App.BaconMan.ImageMan.SaveImageLocally(m_post.Url);
             }
         }
 

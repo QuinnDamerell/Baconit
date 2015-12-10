@@ -31,6 +31,11 @@ namespace Baconit.FlipViewControls
         IFlipViewContentHost m_host;
 
         /// <summary>
+        /// The currently displayed post.
+        /// </summary>
+        Post m_post;
+
+        /// <summary>
         /// Indicates if we have hidden loading yet
         /// </summary>
         bool m_hasHiddenLoading = false;
@@ -58,7 +63,7 @@ namespace Baconit.FlipViewControls
         /// <returns></returns>
         static public bool CanHandlePost(Post post)
         {
-            // Note! We can't do the full Uri get because it relays on an internet request and
+            // Note! We can't do the full Uri get because it relays on an Internet request and
             // we can't lose the time for this quick check. If we can get the youtube id assume we are good.
 
             // See if we can get a link
@@ -74,6 +79,8 @@ namespace Baconit.FlipViewControls
             // So the loading UI
             m_host.ShowLoading();
 
+            m_post = post;
+
             // Since this can be costly kick it off to a background thread so we don't do work
             // as we are animating.
             Task.Run(async () =>
@@ -86,7 +93,8 @@ namespace Baconit.FlipViewControls
                 {
                     if (youTubeUri == null)
                     {
-                        m_host.ShowError();
+                        // If we failed fallback to the browser.
+                        m_host.FallbackToWebBrowser(m_post);
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
                         return;
                     }
@@ -122,6 +130,7 @@ namespace Baconit.FlipViewControls
                 m_youTubeVideo.Source = null;
             }
             m_youTubeVideo = null;
+            m_post = null;
         }
 
         /// <summary>

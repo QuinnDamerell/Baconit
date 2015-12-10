@@ -268,6 +268,31 @@ namespace Baconit.FlipViewControls
             ui_contentRoot.Children.Add((UserControl)m_control);
         }
 
+        /// <summary>
+        /// Called when a post fails to load, we should fallback to the browser.
+        /// </summary>
+        /// <param name="post"></param>
+        public void FallbackToWebBrowser(Post post)
+        {
+            // Show loading
+            ShowLoading();
+
+            // Delete what we have
+            DeleteCurrentControl();
+
+            // Reset the post
+            m_currentPost = post;
+
+            // Make a web control
+            m_control = new WebPageFlipControl(this);
+
+            // Setup the control
+            m_control.OnPrepareContent(post);
+
+            // Add the control to the UI
+            ui_contentRoot.Children.Add((UserControl)m_control);
+        }
+
         #endregion
 
         #region IsVisible Logic
@@ -383,7 +408,7 @@ namespace Baconit.FlipViewControls
         public void ShowNsfwIfNeeded(Post post)
         {
             // If the post is over 18, and it hasn't been lowered, and we don't have block off, and we won't have per subreddit on and the subreddit has been lowered
-            if(post.IsOver18 &&
+            if(post != null && post.IsOver18 &&
                !s_previousLoweredNsfwBlocks.ContainsKey(post.Id) &&
                     (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always ||
                         (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit &&
