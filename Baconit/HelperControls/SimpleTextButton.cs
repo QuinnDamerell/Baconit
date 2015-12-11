@@ -88,9 +88,11 @@ namespace Baconit.HelperControls
             // If the desired text already exists set it
             if(m_currentButtonText != null)
             {
-                ui_buttonText.Text = m_currentButtonText;
-                ui_buttonText.Foreground = new SolidColorBrush(m_normalTextColor);
+                ui_buttonText.Text = m_currentButtonText;                
             }
+
+            // Set the normal text color
+            ui_buttonText.Foreground = new SolidColorBrush(m_normalTextColor);
 
             // Grab the current accent color
             m_accentColor = ((SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;

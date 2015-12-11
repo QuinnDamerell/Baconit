@@ -63,14 +63,14 @@ namespace Baconit.Panels
 
         public void OnNavigatingTo()
         {
-            // Ask the collector to update, this will be ignored
-            // if it is too recent.
-            m_collector.Update();
+            // Ask the collector to update
+            m_collector.Update(true);
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore for now
+            // Ask the collector to update
+            m_collector.Update(true);
         }
 
         #region Collector callbacks

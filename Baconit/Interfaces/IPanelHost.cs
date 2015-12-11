@@ -15,6 +15,11 @@ namespace Baconit.Interfaces
         event EventHandler<OnScreenModeChangedArgs> OnScreenModeChanged;
 
         /// <summary>
+        /// Fire when navigation is complete
+        /// </summary>
+        event EventHandler<EventArgs> OnNavigationComplete;
+
+        /// <summary>
         /// Returns the current screen mode
         /// </summary>
         /// <returns></returns>

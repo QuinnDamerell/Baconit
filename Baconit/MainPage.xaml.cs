@@ -4,6 +4,7 @@ using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Interfaces;
 using BaconBackend.Managers;
+using BaconBackend.Managers.Background;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
 using Baconit.Panels;
@@ -68,9 +69,14 @@ namespace Baconit
         KeyboardShortcutHelper m_keyboardShortcutHepler;
 
         /// <summary>
-        /// Used to tell use that we should navigate to a different subreddit than the default.
+        /// Used to tell us that we should navigate to a different subreddit than the default.
         /// </summary>
         string m_subredditFirstNavOverwrite;
+
+        /// <summary>
+        /// Used to tell the app to navigate to the message inbox on launch.
+        /// </summary>
+        bool m_hadDeferredInboxNavigate = false;
 
         public MainPage()
         {
@@ -114,6 +120,9 @@ namespace Baconit
             // Setup the keyboard shortcut helper and sub.
             m_keyboardShortcutHepler = new KeyboardShortcutHelper();
             m_keyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
+            m_keyboardShortcutHepler.OnGoBackActivation += KeyboardShortcutHepler_OnGoBackActivation;
+
+            m_panelManager.OnNavigationComplete += PanelManager_OnNavigationComplete;
         }
 
         /// <summary>
@@ -170,6 +179,25 @@ namespace Baconit
                 {
                     m_subredditFirstNavOverwrite = argument.Substring(TileManager.c_subredditOpenArgument.Length);
                 }
+                else if(argument.StartsWith(BackgroundMessageUpdater.c_messageInboxOpenArgument))
+                {
+                    m_hadDeferredInboxNavigate = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fired whenever the panel manager is done navigating. We use this to fire the deferred inbox navigate
+        /// if we have one.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PanelManager_OnNavigationComplete(object sender, EventArgs e)
+        {
+            if (m_hadDeferredInboxNavigate)
+            {
+                m_hadDeferredInboxNavigate = false;
+                m_panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             }
         }
 
@@ -186,6 +214,10 @@ namespace Baconit
                 content.Subreddit = subredditDisplayName;
                 content.Type = RedditContentType.Subreddit;
                 App.BaconMan.ShowGlobalContent(content);
+            }
+            else if(arguments != null && arguments.StartsWith(BackgroundMessageUpdater.c_messageInboxOpenArgument))
+            {
+                m_panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             }
         }
 
@@ -1063,6 +1095,17 @@ namespace Baconit
             // resizing when we hit the actualwidth.
             double panelSize = ui_splitView.ActualWidth - 10 < 320 ? ui_splitView.ActualWidth - 10 : 320;
             ui_splitView.OpenPaneLength = panelSize;
+        }
+
+        /// <summary>
+        /// Fired when the keyboard shortcut for go back is fired (escape)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardShortcutHepler_OnGoBackActivation(object sender, EventArgs e)
+        {
+            bool isHandled = false;
+            App.BaconMan.OnBackButton_Fired(ref isHandled);
         }
     }
 }

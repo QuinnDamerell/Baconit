@@ -229,7 +229,7 @@ namespace BaconBackend
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnBackButton_Fired(object sender, BackRequestedEventArgs e)
+        public void OnBackButton_Fired(ref bool isHandled)
         {
             // Fire the event.
             OnBackButtonArgs args = new OnBackButtonArgs();
@@ -238,13 +238,13 @@ namespace BaconBackend
             // If someone handled it don't navigate back
             if(args.IsHandled)
             {
-                e.Handled = true;
+                isHandled = true;
                 return;
             }
 
             // Tell the UI to go back. Technically it could just listen to the event
             // and check the handled var, but this ensures it is always last.
-            e.Handled = m_backendActionListener.NavigateBack();
+            isHandled = m_backendActionListener.NavigateBack();
         }
 
         /// <summary>

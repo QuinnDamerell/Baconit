@@ -16,7 +16,7 @@ namespace BaconBackend.Managers.Background
 {
     public class BackgroundMessageUpdater
     {
-        public const string c_messageInboxOpenArgument = "goToInbox?";
+        public const string c_messageInboxOpenArgument = "goToInbox";
 
         BaconManager m_baconMan;
         MessageCollector m_collector;
@@ -204,6 +204,9 @@ namespace BaconBackend.Managers.Background
                     ToastContent toastContent = new ToastContent();
                     toastContent.Visual = visual;
                     toastContent.Launch = c_messageInboxOpenArgument;
+                    toastContent.ActivationType = ToastActivationType.Foreground;
+                    toastContent.Duration = ToastDuration.Short;
+
                     var toast = new ToastNotification(toastContent.GetXml());
                     toast.Tag = newNote.Item3;
 
