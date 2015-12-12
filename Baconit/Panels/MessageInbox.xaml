@@ -71,14 +71,30 @@
         </Grid.RowDefinitions>
 
         <!--  Message Header  -->
-        <StackPanel Grid.Row="0"
-                    Background="#333333"
-                    Orientation="Horizontal"
-                    Padding="12">
+        <Grid Grid.Row="0"
+              Background="#333333"
+              Padding="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
                        Text="MESSAGE INBOX" />
-        </StackPanel>
+            <Button Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Background="#333333"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Click="Refresh_Click">
+                <Button.Content>
+                    <Viewbox Width="15">
+                        <SymbolIcon Symbol="Refresh" />
+                    </Viewbox>
+                </Button.Content>
+            </Button>
+        </Grid>
 
         <!--  The main message list  -->
         <ListView x:Name="ui_messageList"
@@ -98,12 +114,18 @@
         </ListView>
 
         <!--  The main progress bar  -->
-        <ProgressRing x:Name="ui_progressBar"
+        <ProgressRing x:Name="ui_progressRing"
                       Grid.Row="1"
                       Width="40"
                       Height="40"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" />
+
+        <!--  The progress bar used when we have a list loaded  -->
+        <ProgressBar x:Name="ui_progressBar"
+                     Grid.Row="1"
+                     VerticalAlignment="Top"
+                     Background="Transparent" />
 
         <helperControls:CommentBox x:Name="ui_replyBox"
                                    Grid.Row="2"

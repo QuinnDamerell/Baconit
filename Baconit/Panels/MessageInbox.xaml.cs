@@ -106,6 +106,7 @@ namespace Baconit.Panels
                             {
                                 // If the message is the same just update the UI vars
                                 m_messageList[insertIndex].Body = message.Body;
+                                m_messageList[insertIndex].IsNew = message.IsNew;
                             }
                             else
                             {
@@ -226,13 +227,42 @@ namespace Baconit.Panels
 
         public void ToggleProgressBar(bool show)
         {
-            ui_progressBar.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            ui_progressBar.IsActive = show;
+            if(show)
+            {
+                if (m_messageList.Count == 0)
+                {
+                    ui_progressRing.Visibility = Visibility.Visible;
+                    ui_progressRing.IsActive = true;
+                }
+                else
+                {
+                    ui_progressBar.Visibility = Visibility.Visible;
+                    ui_progressBar.IsIndeterminate = true;
+                }
+            }
+            else
+            {
+                ui_progressRing.Visibility = Visibility.Collapsed;
+                ui_progressBar.Visibility = Visibility.Collapsed;
+                ui_progressRing.IsActive = false;
+                ui_progressBar.IsIndeterminate = false;
+            }
         }
 
         private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
+        }
+
+        /// <summary>
+        /// Fired when the refresh button is tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            // Ask the collector to update
+            m_collector.Update(true);
         }
     }
 }
