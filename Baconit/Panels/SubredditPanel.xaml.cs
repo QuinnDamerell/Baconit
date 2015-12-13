@@ -117,12 +117,24 @@ namespace Baconit.Panels
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore for now
+            m_isVisible = true;
+
+            if (m_collector != null)
+            {
+                // Make sure we are up to date
+                m_collector.Update();
+            }
+
+            // Resume the snow if it was going
+            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
         }
 
         public void OnNavigatingFrom()
         {
             m_isVisible = false;
+
+            // Stop the snow if going
+            ui_letItSnow.AllOfTheSnowIsNowBlackSlushPlsSuspendIt();
         }
 
         public void OnNavigatingTo()
@@ -134,6 +146,9 @@ namespace Baconit.Panels
                 // Make sure we are up to date
                 m_collector.Update();
             }
+
+            // Resume the snow if it was going
+            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
         }
 
         #region Subreddit Setup
@@ -698,6 +713,9 @@ namespace Baconit.Panels
         {
             // Kick off an update.
             m_collector.Update(true);
+
+            // Why not.
+            ui_letItSnow.MakeItSnow();
         }
 
         /// <summary>

@@ -146,6 +146,9 @@
       <DependentUpon>GlobalContentPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="HelperControls\KeyboardShortcutHelper.cs" />
+    <Compile Include="HelperControls\LetItSnow.xaml.cs">
+      <DependentUpon>LetItSnow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\LoadingOverlay.xaml.cs">
       <DependentUpon>LoadingOverlay.xaml</DependentUpon>
     </Compile>
@@ -351,6 +354,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="HelperControls\GlobalContentPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\LetItSnow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
