@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BaconBackend.Collectors;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -135,6 +136,25 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         bool m_isHidden;
+
+        /// <summary>
+        /// Represents the current comment sort type for this post
+        /// </summary>
+        [JsonIgnore]
+        public CommentSortTypes CommentSortType
+        {
+            get
+            {
+                return m_commentSortType;
+            }
+            set
+            {
+                m_commentSortType = value;
+                NotifyPropertyChanged(nameof(CommentCurrentSortTypeString));
+            }
+        }
+        [JsonIgnore]
+        CommentSortTypes m_commentSortType = CommentSortTypes.Best;
 
         //
         // UI Vars
@@ -364,6 +384,33 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         int m_titleMaxLines = 2;
+
+        /// <summary>
+        /// Sets text for comment sort
+        /// </summary>
+        [JsonIgnore]
+        public string CommentCurrentSortTypeString
+        {
+            get
+            {
+                switch(CommentSortType)
+                {
+                    default:
+                    case CommentSortTypes.Best:
+                        return "Best";
+                    case CommentSortTypes.Controversial:
+                        return "Controversial";
+                    case CommentSortTypes.New:
+                        return "New";
+                    case CommentSortTypes.Old:
+                        return "Old";
+                    case CommentSortTypes.QA:
+                        return "Q&A";
+                    case CommentSortTypes.Top:
+                        return "Top";
+                }
+            }
+        }
 
         /// <summary>
         /// Sets text for a context menu item

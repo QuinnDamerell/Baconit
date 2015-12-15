@@ -918,6 +918,14 @@ namespace Baconit.Panels
             {
                 screenSize -= (int)ui_commmentBox.ActualHeight;
             }
+
+            if(ui_flipView.SelectedIndex != -1 && m_postsLists[ui_flipView.SelectedIndex].FlipViewShowEntireThreadMessage == Visibility.Visible)
+            {
+                screenSize += 40;
+            }
+
+            screenSize += 40;
+
             return screenSize;
         }
 
@@ -1294,6 +1302,115 @@ namespace Baconit.Panels
 
         #endregion
 
+        #region Full Screen Logic
+
+        /// <summary>
+        /// Fired when the control wants to go full screen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FlipViewContentControl_OnToggleFullscreen(object sender, FlipViewContentControl.OnToggleFullScreenEventArgs e)
+        {
+            // Get the post
+            Post post = ((Post)((FrameworkElement)sender).DataContext);
+
+            // Hide or show the header
+            // #todo, animate this
+            post.IsPostHeaderVisible = e.GoFullScreen ? Visibility.Collapsed : Visibility.Visible;
+
+            // #todo scroll comments to the top so they aren't visible?
+        }
+
+        #endregion
+
+        #region Comment Sort
+
+        /// <summary>
+        /// Fired when either comment sort is tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenMenuFlyout_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSortTapped");
+        }
+
+        /// <summary>
+        /// Fired when a user taps a new sort type for comments.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommentSortMenu_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post
+            Post post = (Post)((FrameworkElement)sender).DataContext;
+
+            // Update sort type
+            MenuFlyoutItem item = sender as MenuFlyoutItem;
+            post.CommentSortType = GetCommentSortFromString(item.Text);
+
+            FlipViewPostCommentManager commentManager = FindCommentManager(post.Id);
+            commentManager.ChangeCommentSort();
+
+
+
+
+            //lock (m_commentManagers)
+            //{
+            //    // Find the current comment manager
+            //    FlipViewPostCommentManager commentManager = null;
+            //    foreach (FlipViewPostCommentManager searchManager in m_commentManagers)
+            //    {
+            //        if (searchManager.Post.Id.Equals(post.Id))
+            //        {
+            //            commentManager = searchManager;
+            //            break;
+            //        }
+            //    }
+
+            //    if(commentManager == null)
+            //    {
+            //        return;
+            //    }
+
+            //    // Delete it
+            //    m_commentManagers.Remove(commentManager);
+            //    commentManager.PrepareForDeletion();
+            //    commentManager = null;
+
+            //    // Make a new manager
+            //    PreFetchPostComments(ref post, true, false);
+            //}
+        }
+
+        private CommentSortTypes GetCommentSortFromString(string typeString)
+        {
+            typeString = typeString.ToLower();
+            switch(typeString)
+            {
+                case "best":
+                default:
+                    return CommentSortTypes.Best;
+                case "controversial":
+                    return CommentSortTypes.Controversial;
+                case "new":
+                    return CommentSortTypes.New;
+                case "old":
+                    return CommentSortTypes.Old;
+                case "q&a":
+                    return CommentSortTypes.QA;
+                case "top":
+                    return CommentSortTypes.Top;
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Sets the post content. For now all we give the flip view control is the URL
         /// and it must figure out the rest on it's own.
@@ -1325,25 +1442,10 @@ namespace Baconit.Panels
             SetHeaderSizes();
         }
 
-        #region Full Screen Logic
 
-        /// <summary>
-        /// Fired when the control wants to go full screen.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FlipViewContentControl_OnToggleFullscreen(object sender, FlipViewContentControl.OnToggleFullScreenEventArgs e)
-        {
-            // Get the post
-            Post post = ((Post)((FrameworkElement)sender).DataContext);
 
-            // Hide or show the header
-            // #todo, animate this
-            post.IsPostHeaderVisible = e.GoFullScreen ? Visibility.Collapsed : Visibility.Visible;
 
-            // #todo scroll comments to the top so they aren't visible?
-        }
 
-        #endregion
+   
     }
 }

@@ -12,31 +12,6 @@ using Windows.UI.Xaml.Media;
 
 namespace BaconBackend.Collectors
 {
-    public enum PostVoteAction
-    {
-        UpVote,
-        DownVote,
-    }
-
-    public enum SortTypes
-    {
-        Hot,
-        New,
-        Rising,
-        Controversial,
-        Top
-    }
-
-    public enum SortTimeTypes
-    {
-        Hour,
-        Day,
-        Week,
-        Month,
-        Year,
-        AllTime
-    }
-
     public class SubredditCollector : Collector<Post>
     {
         /// <summary>

@@ -48,6 +48,53 @@ namespace BaconBackend.Collectors
         public List<T> ChangedItems;
     }
 
+    /// <summary>
+    /// Possible vote actions.
+    /// </summary>
+    public enum PostVoteAction
+    {
+        UpVote,
+        DownVote,
+    }
+
+    /// <summary>
+    /// Types of sort
+    /// </summary>
+    public enum SortTypes
+    {
+        Hot,
+        New,
+        Rising,
+        Controversial,
+        Top
+    }
+
+    /// <summary>
+    /// Types of sort for comments
+    /// </summary>
+    public enum CommentSortTypes
+    {
+        Best,
+        New,
+        Top,
+        Controversial,
+        Old,
+        QA
+    }
+
+    /// <summary>
+    /// Types of sort times.
+    /// </summary>
+    public enum SortTimeTypes
+    {
+        Hour,
+        Day,
+        Week,
+        Month,
+        Year,
+        AllTime
+    }
+
     public abstract class Collector<T>
     {
         /// <summary>

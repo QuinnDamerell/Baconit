@@ -115,6 +115,54 @@ namespace Baconit.Panels
         }
 
         /// <summary>
+        /// Fired when the comment sort is changed.
+        /// </summary>
+        public void ChangeCommentSort()
+        {
+            // Kill the current collector
+            if (m_commentCollector != null)
+            {
+                m_commentCollector.OnCollectionUpdated -= CommentCollector_OnCollectionUpdated;
+                m_commentCollector.OnCollectorStateChange -= CommentCollector_OnCollectorStateChange;
+            }
+            m_commentCollector = null;
+
+            // Make a new one
+            // Do this in a background thread
+            Task.Run(() =>
+            {
+                // Get the comment collector, if we don't want to show a subset don't give it the target comment
+                m_commentCollector = CommentCollector.GetCollector(m_post, App.BaconMan, null);
+
+                // Sub to collection callbacks for the comments.
+                m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
+                m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
+
+                ///// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #todo finish!!!!!!!
+
+                // Request a few comments so we will fill the screen.
+                // If the user scrolls we will get more later.
+                // To fix a bug where reddit doesn't give us the same
+                // comments the first time as the next, we will
+                // #bug #todo because of the "can't ask for more" bug we will
+                // just ask for all of the comments here.
+                if (!m_commentCollector.Update(true, 150))
+                {
+                    // If update returns false it isn't going to update because it has a cache. So just show the
+                    // cache.
+                    OnCollectionUpdatedArgs<Comment> args = new OnCollectionUpdatedArgs<Comment>()
+                    {
+                        ChangedItems = m_commentCollector.GetCurrentPosts(),
+                        IsFreshUpdate = true,
+                        IsInsert = false,
+                        StartingPosition = 0
+                    };
+                    CommentCollector_OnCollectionUpdated(null, args);
+                }
+            });
+        }
+
+        /// <summary>
         /// Called when we need more posts because we are scrolling down.
         /// </summary>
         public async void RequestMorePosts()

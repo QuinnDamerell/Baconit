@@ -34,7 +34,7 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public static CommentCollector GetCollector(Post post, BaconManager baconMan, string forceComment = null)
         {
-            string uniqueId = post.Id + (String.IsNullOrWhiteSpace(forceComment) ? String.Empty : forceComment);
+            string uniqueId = post.Id + (String.IsNullOrWhiteSpace(forceComment) ? String.Empty : forceComment) + post.CommentSortType;
             CommentCollectorContext context = new CommentCollectorContext() { forceComment = forceComment, post = post };
             return (CommentCollector)Collector<Comment>.GetCollector(typeof(CommentCollector), uniqueId, context, baconMan);
         }
@@ -68,7 +68,8 @@ namespace BaconBackend.Collectors
             {
                 // Get the post url
                 postUrl = $"/r/{context.post.Subreddit}/comments/{context.post.Id}.json";
-                optionalParams = "sort=confidence";
+
+                optionalParams = $"sort={ConvertSortToUrl(m_post.CommentSortType)}";
             }
 
             // Make the helper, we need to ask it to make a fake root and not to take the
@@ -377,5 +378,24 @@ namespace BaconBackend.Collectors
             comments = null;
         }
 
+        private string ConvertSortToUrl(CommentSortTypes types)
+        {
+            switch (types)
+            {
+                default:
+                case CommentSortTypes.Best:
+                    return "confidence";
+                case CommentSortTypes.Controversial:
+                    return "controversial";
+                case CommentSortTypes.New:
+                    return "new";
+                case CommentSortTypes.Old:
+                    return "old";
+                case CommentSortTypes.QA:
+                    return "qa";
+                case CommentSortTypes.Top:
+                    return "top";
+            }
+        }
     }
 }
