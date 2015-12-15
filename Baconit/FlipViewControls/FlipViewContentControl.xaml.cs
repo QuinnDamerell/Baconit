@@ -197,8 +197,18 @@ namespace Baconit.FlipViewControls
             if (flipPost != null)
             {
                 m_currentPost = flipPost;
-                ShowNsfwIfNeeded(flipPost);
-                CreateNewControl(flipPost);
+
+                if (App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction)
+                {
+                    // The normal case, load the content now.
+                    ShowNsfwIfNeeded(flipPost);
+                    CreateNewControl(flipPost);
+                }
+                else
+                {
+                    // The user don't want us to load content without them tapping the screen.
+                    VisualStateManager.GoToState(this, "ShowDontPreloadBlock", true);
+                }             
             }
         }
 
@@ -500,6 +510,31 @@ namespace Baconit.FlipViewControls
         public bool IsFullScreen()
         {
             return m_isFullScreen;
+        }
+
+        #endregion
+
+        #region Dont Prelaod Logic
+
+        /// <summary>
+        /// Fried when the user taps the option to show the post.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DontPreloadBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Post currentPost = m_currentPost;
+            if (currentPost == null)
+            {
+                return;
+            }
+
+            // Show the post.
+            ShowNsfwIfNeeded(currentPost);
+            CreateNewControl(currentPost);
+
+            // Hide the block
+            VisualStateManager.GoToState(this, "HideDontPreloadBlock", true);
         }
 
         #endregion

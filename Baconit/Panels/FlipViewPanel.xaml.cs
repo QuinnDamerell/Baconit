@@ -34,9 +34,6 @@ namespace Baconit.Panels
 {
     public sealed partial class FlipViewPanel : UserControl, IPanel
     {
-        private const int CACHE_BACK_COUNT = 0;
-        private const int CACHE_FORWARD_COUNT = 1;
-
         //
         // Private Vars
         //
@@ -665,8 +662,13 @@ namespace Baconit.Panels
             // Lock the list
             lock(m_postsLists)
             {
-                int minContentLoad = ui_flipView.SelectedIndex - CACHE_BACK_COUNT;
-                int maxContentLoad = ui_flipView.SelectedIndex + CACHE_FORWARD_COUNT;
+                // Get the min and max number of posts to load.
+                int minContentLoad = ui_flipView.SelectedIndex;
+                int maxContentLoad = ui_flipView.SelectedIndex;
+                if(App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
+                {
+                    maxContentLoad++;
+                }
 
                 for (int i = 0; i < m_postsLists.Count; i++)
                 {

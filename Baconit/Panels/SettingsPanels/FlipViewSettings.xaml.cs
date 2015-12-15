@@ -49,6 +49,8 @@ namespace Baconit.Panels.SettingsPanels
             ui_preLoadComments.IsOn = App.BaconMan.UiSettingsMan.FlipView_PreloadComments;
             ui_showHelpTips.IsOn = App.BaconMan.UiSettingsMan.FlipView_ShowCommentScrollTip;
             ui_flipViewNsfwType.SelectedIndex = (int)App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType;
+            ui_disablePostLoad.IsOn = !App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction;
+            ui_preloadPost.IsOn = App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent;
 
             m_takeChangeAction = true;
         }
@@ -81,6 +83,26 @@ namespace Baconit.Panels.SettingsPanels
             }
 
             App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType = (NsfwBlockType)ui_flipViewNsfwType.SelectedIndex;
+        }
+
+        private void PreloadPost_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!m_takeChangeAction)
+            {
+                return;
+            }
+
+            App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent = ui_preloadPost.IsOn;
+        }
+
+        private void DisablePostLoad_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!m_takeChangeAction)
+            {
+                return;
+            }
+
+            App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction = !ui_disablePostLoad.IsOn;
         }
     }
 }

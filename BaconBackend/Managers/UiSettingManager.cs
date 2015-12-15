@@ -282,6 +282,62 @@ namespace BaconBackend.Managers
         private bool? m_flipView_PreloadComments = null;
 
         /// <summary>
+        /// If the user wants us to load post content before they tap the screen.
+        /// </summary>
+        public bool FlipView_LoadPostContentWithoutAction
+        {
+            get
+            {
+                if (!m_flipView_LoadPostContentWithoutAction.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_LoadPostContentWithoutAction"))
+                    {
+                        m_flipView_LoadPostContentWithoutAction = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_LoadPostContentWithoutAction");
+                    }
+                    else
+                    {
+                        m_flipView_LoadPostContentWithoutAction = true;
+                    }
+                }
+                return m_flipView_LoadPostContentWithoutAction.Value;
+            }
+            set
+            {
+                m_flipView_LoadPostContentWithoutAction = value;
+                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_LoadPostContentWithoutAction", m_flipView_LoadPostContentWithoutAction.Value);
+            }
+        }
+        private bool? m_flipView_LoadPostContentWithoutAction = null;
+
+        /// <summary>
+        /// If the user wants us to prelaod future flip view content.
+        /// </summary>
+        public bool FlipView_PreloadFutureContent
+        {
+            get
+            {
+                if (!m_flipView_PreloadFutureContent.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadFutureContent"))
+                    {
+                        m_flipView_PreloadFutureContent = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadFutureContent");
+                    }
+                    else
+                    {
+                        m_flipView_PreloadFutureContent = true;
+                    }
+                }
+                return m_flipView_PreloadFutureContent.Value;
+            }
+            set
+            {
+                m_flipView_PreloadFutureContent = value;
+                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_PreloadFutureContent", m_flipView_PreloadFutureContent.Value);
+            }
+        }
+        private bool? m_flipView_PreloadFutureContent = null;
+
+        /// <summary>
         /// If we should show the user the comment tip or not.
         /// </summary>
         public bool FlipView_ShowCommentScrollTip

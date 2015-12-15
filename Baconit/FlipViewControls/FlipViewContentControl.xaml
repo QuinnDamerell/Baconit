@@ -58,6 +58,54 @@
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
+
+            <VisualStateGroup x:Name="DontPreloadBlock">
+                <VisualState x:Name="HideDontPreloadBlock">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="1.0"
+                                         Storyboard.TargetName="ui_dontPreloadBlock"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="0.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseIn" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_dontPreloadBlock"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.2">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="ShowDontPreloadBlock">
+                    <Storyboard>
+                        <DoubleAnimation Duration="00:00:00.2"
+                                         From="0.0"
+                                         Storyboard.TargetName="ui_dontPreloadBlock"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1.0">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_dontPreloadBlock"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Visible</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
         <!--  Holds the main content  -->
@@ -104,7 +152,10 @@
             <StackPanel HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
                         Orientation="Vertical">
-                <ProgressRing x:Name="ui_progressRing" Background="Transparent" Height="40" Width="40" />
+                <ProgressRing x:Name="ui_progressRing"
+                              Width="40"
+                              Height="40"
+                              Background="Transparent" />
                 <TextBlock x:Name="ui_progressText"
                            Margin="0,12,0,0"
                            HorizontalAlignment="Center"
@@ -135,6 +186,28 @@
                            FontSize="16"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                            Text="Tap anywhere to view" />
+            </Grid>
+        </Grid>
+
+        <!--  Don't Preload Block  -->
+        <Grid x:Name="ui_dontPreloadBlock"
+              Background="#191919"
+              Tapped="DontPreloadBlock_Tapped"
+              Visibility="Collapsed">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Margin="0,0,0,8"
+                           HorizontalAlignment="Center"
+                           FontSize="24"
+                           Text="Tap anywhere to load content" />
+                <TextBlock Grid.Row="1"
+                           HorizontalAlignment="Center"
+                           FontSize="16"
+                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                           Text="You can change this behavior in the settings" />
             </Grid>
         </Grid>
     </Grid>

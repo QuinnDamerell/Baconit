@@ -25,10 +25,21 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="12">
+            <TextBlock Text="Wait to load post content until tapped." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_disablePostLoad"
+                          Margin="0,0,0,8"
+                          Toggled="DisablePostLoad_Toggled" />
+
+            <TextBlock Text="Preload future post content." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_preloadPost"
+                          Margin="0,0,0,8"
+                          Toggled="PreloadPost_Toggled" />
+
             <TextBlock Text="Preload comments for the current post." TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_preLoadComments"
                           Margin="0,0,0,8"
                           Toggled="PreLoadComments_Toggled" />
+
             <TextBlock Text="Show UI help tips" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showHelpTips"
                           Margin="0,0,0,8"

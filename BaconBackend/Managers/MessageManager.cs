@@ -23,9 +23,23 @@ namespace BaconBackend.Managers
             ShowMessaage(content, title);
         }
 
-        public void ShowRedditDownMessage()
+        public async void ShowRedditDownMessage()
         {
-            ShowMessaage("It looks like reddit is down right now, go outside for a while and try again in a few minutes.", "Reddit is Down");
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                try
+                {
+                    bool? showStatus = await ShowYesNoMessage("Reddit is Down", "It looks like reddit is down right now. Go outside for a while and try again in a few minutes.", "Check Reddit's Status", "Go Outside");
+                    if(showStatus.HasValue && showStatus.Value)
+                    {
+                        m_baconMan.ShowGlobalContent("http://www.redditstatus.com/");
+                    }
+                }
+                catch (Exception e)
+                {
+                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowMessage", e);
+                }
+            });
         }
 
         public async void ShowSigninMessage(string toDoWhat)
