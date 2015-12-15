@@ -156,7 +156,7 @@ namespace Baconit
             // Navigate to the start
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, defaultDisplayName);
-            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot, args);
+            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
             m_panelManager.Navigate(typeof(WelcomePanel), "WelcomePanel");
 
             // Update the trending subreddits
@@ -787,7 +787,7 @@ namespace Baconit
         {
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
-            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
+            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot, SortTimeTypes.Week), args);
         }
 
         #endregion
@@ -948,20 +948,20 @@ namespace Baconit
                 case RedditContentType.Subreddit:
                     Dictionary<string, object> args = new Dictionary<string, object>();
                     args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
-                    m_panelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot, args);
+                    m_panelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
                     break;
                 case RedditContentType.Post:
                     Dictionary<string, object> postArgs = new Dictionary<string, object>();
                     postArgs.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
                     postArgs.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, container.Post);
-                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + container.Post, postArgs);
+                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post, postArgs);
                     break;
                 case RedditContentType.Comment:
                     Dictionary<string, object> commentArgs = new Dictionary<string, object>();
                     commentArgs.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, container.Post);
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, container.Comment);
-                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + container.Post + container.Comment, commentArgs);
+                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post + container.Comment, commentArgs);
                     break;
             }
         }

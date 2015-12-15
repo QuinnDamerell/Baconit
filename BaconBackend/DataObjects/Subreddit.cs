@@ -98,9 +98,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        public string GetNavigationUniqueId(SortTypes type)
+        public string GetNavigationUniqueId(SortTypes type, SortTimeTypes sortType)
         {
-            return DisplayName + type;
+            return DisplayName + type + sortType;
         }
     }
 }

@@ -9,6 +9,8 @@ using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
+    public class ServiceDownException : Exception { }
+
     public class NetworkManager
     {
         BaconManager m_baconMan;
@@ -80,6 +82,13 @@ namespace BaconBackend.Managers
                 message.Headers["Authorization"] = authHeader;
             }
             HttpResponseMessage response = await request.SendRequestAsync(message);
+            if(response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable || 
+                response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
+                response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
+                response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
+            {
+                throw new ServiceDownException();
+            }
             return await response.Content.ReadAsStringAsync();
         }
 
@@ -111,6 +120,13 @@ namespace BaconBackend.Managers
 
             // Send the request
             HttpResponseMessage response = await request.SendRequestAsync(message);
+            if (response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable ||
+              response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
+              response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
+              response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
+            { 
+                throw new ServiceDownException();
+            }
             return await response.Content.ReadAsStringAsync();
         }
 

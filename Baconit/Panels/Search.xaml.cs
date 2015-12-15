@@ -672,7 +672,7 @@ namespace Baconit.Panels
                     Dictionary<string, object> args = new Dictionary<string, object>();
                     // Send the display name.
                     args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName);
-                    m_panelManager.Navigate(typeof(SubredditPanel), subreddit.DisplayName + SortTypes.Hot, args);
+                    m_panelManager.Navigate(typeof(SubredditPanel), subreddit.DisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
                 }
                 else if(tappedResult.ResultType == SearchResultTypes.Post)
                 {
@@ -683,7 +683,7 @@ namespace Baconit.Panels
                     args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, post.Subreddit);
                     args.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, post.Id);
                     // Make sure the page id is unique
-                    m_panelManager.Navigate(typeof(FlipViewPanel), post.Subreddit + SortTypes.Hot + post.Id, args);
+                    m_panelManager.Navigate(typeof(FlipViewPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week + post.Id, args);
                 }
 
                 // #todo user

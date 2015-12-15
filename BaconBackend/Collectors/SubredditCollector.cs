@@ -27,6 +27,16 @@ namespace BaconBackend.Collectors
         Top
     }
 
+    public enum SortTimeTypes
+    {
+        Hour,
+        Day,
+        Week,
+        Month,
+        Year,
+        AllTime
+    }
+
     public class SubredditCollector : Collector<Post>
     {
         /// <summary>
@@ -36,6 +46,7 @@ namespace BaconBackend.Collectors
         {
             public Subreddit subreddit;
             public SortTypes sortType;
+            public SortTimeTypes sortTimeType;
             public string forcePostId;
         }
 
@@ -44,11 +55,11 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="subreddit"></param>
         /// <returns></returns>
-        public static SubredditCollector GetCollector(Subreddit subreddit, BaconManager baconMan, SortTypes sort = SortTypes.Hot, string forcePostId = null)
+        public static SubredditCollector GetCollector(Subreddit subreddit, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week, string forcePostId = null)
         {
-            SubredditContainer container = new SubredditContainer() { subreddit = subreddit, sortType = sort, forcePostId = forcePostId };
+            SubredditContainer container = new SubredditContainer() { subreddit = subreddit, sortType = sort, forcePostId = forcePostId, sortTimeType = sortTime };
             // Make the uniqueId. If we have a force post add that also so we don't get an existing collector with the real subreddit.
-            string uniqueId = subreddit.Id + sort + (String.IsNullOrWhiteSpace(forcePostId) ? String.Empty : forcePostId);
+            string uniqueId = subreddit.Id + sort + sortTime + (String.IsNullOrWhiteSpace(forcePostId) ? String.Empty : forcePostId);
             return (SubredditCollector)Collector<Post>.GetCollector(typeof(SubredditCollector), uniqueId, container, baconMan);
         }
 
@@ -57,6 +68,7 @@ namespace BaconBackend.Collectors
         //
         Subreddit m_subreddit = null;
         SortTypes m_sortType = SortTypes.Hot;
+        SortTimeTypes m_sortTimeType = SortTimeTypes.Week;
         BaconManager m_baconMan;
 
         public SubredditCollector(SubredditContainer subredditContainer, BaconManager baconMan)
@@ -65,7 +77,35 @@ namespace BaconBackend.Collectors
             // Set the vars
             m_subreddit = subredditContainer.subreddit;
             m_sortType = subredditContainer.sortType;
+            m_sortTimeType = subredditContainer.sortTimeType;
             m_baconMan = baconMan;
+
+            // If we are doing a top sort setup the sort time
+            string optionalSortTime = String.Empty;
+            if(m_sortType == SortTypes.Top)
+            {
+                switch(m_sortTimeType)
+                {
+                    case SortTimeTypes.AllTime:
+                        optionalSortTime = "sort=top&t=all";
+                        break;
+                    case SortTimeTypes.Day:
+                        optionalSortTime = "sort=top&t=day";
+                        break;
+                    case SortTimeTypes.Hour:
+                        optionalSortTime = "sort=top&t=hour";
+                        break;
+                    case SortTimeTypes.Month:
+                        optionalSortTime = "sort=top&t=month";
+                        break;
+                    case SortTimeTypes.Week:
+                        optionalSortTime = "sort=top&t=week";
+                        break;
+                    case SortTimeTypes.Year:
+                        optionalSortTime = "sort=top&t=year";
+                        break;
+                }
+            }
 
             string subredditUrl = "";
             bool hasEmptyRoot = false;
@@ -93,7 +133,7 @@ namespace BaconBackend.Collectors
                 subredditUrl = $"/r/{m_subreddit.DisplayName}/{SortTypeToString(m_sortType)}/.json";
             }
 
-            InitListHelper(subredditUrl, hasEmptyRoot, true);
+            InitListHelper(subredditUrl, hasEmptyRoot, true, optionalSortTime);
         }
 
         /// <summary>

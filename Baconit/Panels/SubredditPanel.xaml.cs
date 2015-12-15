@@ -39,6 +39,7 @@ namespace Baconit.Panels
         IPanelHost m_host;
         ObservableCollection<Post> m_postsLists = new ObservableCollection<Post>();
         SortTypes m_currentSortType;
+        SortTimeTypes m_currentSortTimeType;
         LoadingOverlay m_loadingOverlay = null;
 
         public SubredditPanel()
@@ -110,9 +111,10 @@ namespace Baconit.Panels
 
             // Get the sort type
             SortTypes sortType = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT) ? (SortTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT] : SortTypes.Hot;
+            SortTimeTypes postSortTime = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME) ? (SortTimeTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME] : SortTimeTypes.Week;
 
             // Do the rest of the setup
-            SetupPage(subreddit, sortType);
+            SetupPage(subreddit, sortType, postSortTime);
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
@@ -153,7 +155,7 @@ namespace Baconit.Panels
 
         #region Subreddit Setup
 
-        public void SetupPage(Subreddit subreddit, SortTypes sortType)
+        public void SetupPage(Subreddit subreddit, SortTypes sortType, SortTimeTypes sortTimeType)
         {
             // Capture the subreddit
             m_subreddit = subreddit;
@@ -161,8 +163,11 @@ namespace Baconit.Panels
             // Get the sort type
             SetCurrentSort(sortType);
 
+            // Set the time sort
+            SetCurrentTimeSort(sortTimeType);
+
             // Get the collector and register for updates.
-            m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSortType);
+            m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSortType, m_currentSortTimeType);
             m_collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
             m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
@@ -195,7 +200,14 @@ namespace Baconit.Panels
             // If we had an error show a message.
             if (m_isVisible && args.State == CollectorState.Error)
             {
-                App.BaconMan.MessageMan.ShowMessageSimple("That's Not Right", "We can't update this subreddit right now, check your internet connection.");
+                if(args.ErrorState == CollectorErrorState.ServiceDown)
+                {
+                    App.BaconMan.MessageMan.ShowRedditDownMessage();
+                }
+                else
+                {
+                    App.BaconMan.MessageMan.ShowMessageSimple("That's Not Right", "We can't update this subreddit right now, check your Internet connection.");
+                }
             }
 
             // Show no posts if nothing was loaded
@@ -416,8 +428,9 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, m_subreddit.DisplayName);
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, m_currentSortType);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME, m_currentSortTimeType);
             args.Add(PanelManager.NAV_ARGS_POST_ID, post.Id);
-            m_host.Navigate(typeof(FlipViewPanel), m_subreddit.DisplayName + m_currentSortType, args);
+            m_host.Navigate(typeof(FlipViewPanel), m_subreddit.DisplayName + m_currentSortType + m_currentSortTimeType, args);
         }
 
         private void Post_Holding(object sender, HoldingRoutedEventArgs e)
@@ -536,7 +549,8 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, m_subreddit.DisplayName);
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, newType);
-            m_host.Navigate(typeof(SubredditPanel), m_subreddit.GetNavigationUniqueId(newType), args);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME, m_currentSortTimeType);
+            m_host.Navigate(typeof(SubredditPanel), m_subreddit.GetNavigationUniqueId(newType, m_currentSortTimeType), args);
         }
 
         private SortTypes GetSortFromString(string sort)
@@ -577,6 +591,99 @@ namespace Baconit.Panels
                     break;
                 case SortTypes.Top:
                     ui_sortText.Text = "Top";
+                    break;
+            }
+
+            // Show or hide the time sort if it is top or not.
+            ui_timeSortHolder.Visibility = m_currentSortType == SortTypes.Top ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        #endregion
+
+        #region Subreddit Time Sort
+
+        /// <summary>
+        /// Fired when the user taps the sort time text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortTime_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FrameworkElement element = sender as FrameworkElement;
+            if (element != null)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+        }
+
+        /// <summary>
+        /// Fired when a sort menu item is tapped.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortTimeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the new sort time
+            MenuFlyoutItem item = sender as MenuFlyoutItem;
+            SortTimeTypes newType = GetTimeSortFromString(item.Text);
+
+            // Don't do anything if we already are.
+            if (newType == m_currentSortTimeType)
+            {
+                return;
+            }
+
+            // Navigate to the new page
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, m_subreddit.DisplayName);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, m_currentSortType);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME, newType);
+            m_host.Navigate(typeof(SubredditPanel), m_subreddit.GetNavigationUniqueId(m_currentSortType, newType), args);
+        }
+
+        private SortTimeTypes GetTimeSortFromString(string timeSort)
+        {
+            string text = timeSort.ToLower();
+            switch (text)
+            {
+                case "all time":
+                    return SortTimeTypes.AllTime;
+                case "past day":
+                    return SortTimeTypes.Day;
+                case "past hour":
+                    return SortTimeTypes.Hour;
+                case "past month":
+                    return SortTimeTypes.Month;
+                default:
+                case "past week":
+                    return SortTimeTypes.Week;
+                case "past year":
+                    return SortTimeTypes.Year;
+            }
+        }
+
+        private void SetCurrentTimeSort(SortTimeTypes type)
+        {
+            m_currentSortTimeType = type;
+            switch (type)
+            {
+                case SortTimeTypes.AllTime:
+                    ui_sortTimeText.Text = "All Time";
+                    break;
+                case SortTimeTypes.Day:
+                    ui_sortTimeText.Text = "Past Day";
+                    break;
+                case SortTimeTypes.Hour:
+                    ui_sortTimeText.Text = "Past Hour";
+                    break;
+                case SortTimeTypes.Month:
+                    ui_sortTimeText.Text = "Past Month";
+                    break;
+                case SortTimeTypes.Week:
+                    ui_sortTimeText.Text = "Past Week";
+                    break;
+                case SortTimeTypes.Year:
+                    ui_sortTimeText.Text = "Past Year";
                     break;
             }
         }

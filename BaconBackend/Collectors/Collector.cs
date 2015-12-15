@@ -20,11 +20,21 @@ namespace BaconBackend.Collectors
     }
 
     /// <summary>
+    /// Defines the possible error states of the collector
+    /// </summary>
+    public enum CollectorErrorState
+    {
+        Unknown,
+        ServiceDown,
+    }
+
+    /// <summary>
     /// The args class for the OnCollectorStateChange event.
     /// </summary>
     public class OnCollectorStateChangeArgs : EventArgs
     {
         public CollectorState State;
+        public CollectorErrorState ErrorState = CollectorErrorState.Unknown;
     }
 
     /// <summary>
@@ -98,6 +108,11 @@ namespace BaconBackend.Collectors
             get { return m_state; }
         }
 
+        public CollectorErrorState ErrorState
+        {
+            get { return m_errorState; }
+        }
+
         //
         // Abstract Functions
         //
@@ -119,6 +134,7 @@ namespace BaconBackend.Collectors
         //
 
         CollectorState m_state = CollectorState.Idle;
+        CollectorErrorState m_errorState = CollectorErrorState.Unknown;
         RedditListHelper<T> m_listHelper;
         BaconManager m_baconMan;
         string m_uniqueId;
@@ -217,6 +233,7 @@ namespace BaconBackend.Collectors
                     lock (m_listHelper)
                     {
                         m_state = CollectorState.Error;
+                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -276,6 +293,7 @@ namespace BaconBackend.Collectors
                     lock (m_listHelper)
                     {
                         m_state = CollectorState.Error;
+                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -346,7 +364,7 @@ namespace BaconBackend.Collectors
         {
             try
             {
-                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state });
+                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state, ErrorState = m_errorState });
             }
             catch (Exception e)
             {

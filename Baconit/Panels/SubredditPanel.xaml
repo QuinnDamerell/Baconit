@@ -153,7 +153,7 @@
             <Grid Background="#0A0A0A">
                 <helperControl:LetItSnow x:Name="ui_letItSnow" />
 
-                <Grid x:Name="ui_contentRoot" >
+                <Grid x:Name="ui_contentRoot">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
@@ -165,6 +165,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
                         <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
                             <TextBlock x:Name="ui_subredditName"
@@ -173,7 +174,7 @@
                                        Text="Baconit" />
                         </Grid>
 
-
+                        <!--  Sort Menu  -->
                         <StackPanel Grid.Column="1"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"
@@ -200,6 +201,37 @@
                                        FontSize="12"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Hot" />
+                        </StackPanel>
+
+                        <!--  Top Sort Time  -->
+                        <StackPanel x:Name="ui_timeSortHolder"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Background="Transparent"
+                                    Orientation="Horizontal"
+                                    Padding="0,12,12,12"
+                                    Tapped="SortTime_Tapped">
+                            <FlyoutBase.AttachedFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" />
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" />
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" />
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" />
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" />
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" />
+                                </MenuFlyout>
+                            </FlyoutBase.AttachedFlyout>
+                            <TextBlock Margin="0,0,2,0"
+                                       VerticalAlignment="Bottom"
+                                       FontSize="12"
+                                       Foreground="#989898"
+                                       Text="Time:" />
+                            <TextBlock x:Name="ui_sortTimeText"
+                                       VerticalAlignment="Bottom"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text="Past Week" />
                         </StackPanel>
                     </Grid>
                     <!--  Loading indicator  -->

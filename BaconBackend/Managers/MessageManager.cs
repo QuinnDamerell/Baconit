@@ -23,6 +23,11 @@ namespace BaconBackend.Managers
             ShowMessaage(content, title);
         }
 
+        public void ShowRedditDownMessage()
+        {
+            ShowMessaage("It looks like reddit is down right now, go outside for a while and try again in a few minutes.", "Reddit is Down");
+        }
+
         public async void ShowSigninMessage(string toDoWhat)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>

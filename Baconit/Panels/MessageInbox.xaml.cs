@@ -81,6 +81,11 @@ namespace Baconit.Panels
             {
                 // Show or hide the progress bar
                 ToggleProgressBar(e.State == CollectorState.Updating);
+
+                if(e.State == CollectorState.Error && e.ErrorState == CollectorErrorState.ServiceDown)
+                {
+                    App.BaconMan.MessageMan.ShowRedditDownMessage();
+                }
             });
         }
 
@@ -214,7 +219,7 @@ namespace Baconit.Panels
             args.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, message.Id);
 
             // Make sure the page Id is unique
-            m_panelHost.Navigate(typeof(FlipViewPanel), message.Subreddit + SortTypes.Hot + postId + message.Id, args);
+            m_panelHost.Navigate(typeof(FlipViewPanel), message.Subreddit + SortTypes.Hot + SortTimeTypes.Week + postId + message.Id, args);
 
             // Also if it is unread set it to read
             if (message.IsNew)

@@ -45,6 +45,7 @@ namespace Baconit
         /// </summary>
         public const string NAV_ARGS_SUBREDDIT_NAME = "Pane.SubredditName";
         public const string NAV_ARGS_SUBREDDIT_SORT = "Pane.SubredditSort";
+        public const string NAV_ARGS_SUBREDDIT_SORT_TIME = "Pane.SubredditSortTime";
         public const string NAV_ARGS_POST_ID = "Pane.PostId";
         public const string NAV_ARGS_FORCE_POST_ID = "Pane.ForcePostId";
         public const string NAV_ARGS_FORCE_COMMENT_ID = "Pane.ForceCommentId";

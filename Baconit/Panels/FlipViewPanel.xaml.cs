@@ -52,6 +52,11 @@ namespace Baconit.Panels
         SortTypes m_currentSort;
 
         /// <summary>
+        /// The current sort time for this flip view instance
+        /// </summary>
+        SortTimeTypes m_currentSortTime;
+
+        /// <summary>
         /// The collector backing this flip view
         /// </summary>
         SubredditCollector m_collector;
@@ -185,6 +190,9 @@ namespace Baconit.Panels
                 // Get the current sort
                 m_currentSort = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT) ? (SortTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT] : SortTypes.Hot;
 
+                // Get the current sort time
+                m_currentSortTime = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME) ? (SortTimeTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME] : SortTimeTypes.Week;
+
                 // Try to get the target post id
                 if (arguments.ContainsKey(PanelManager.NAV_ARGS_POST_ID))
                 {
@@ -210,7 +218,7 @@ namespace Baconit.Panels
                 }
 
                 // Get the collector and register for updates.
-                m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, forcePostId);
+                m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
                 m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
                 // Kick off an update of the subreddits if needed.
@@ -605,7 +613,7 @@ namespace Baconit.Panels
             Post post = (sender as FrameworkElement).DataContext as Post;
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, post.Subreddit);
-            m_host.Navigate(typeof(SubredditPanel), post.Subreddit + SortTypes.Hot, args);
+            m_host.Navigate(typeof(SubredditPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
         }
 
         #endregion
