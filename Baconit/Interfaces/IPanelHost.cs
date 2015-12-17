@@ -53,9 +53,12 @@ namespace Baconit.Interfaces
         void ToggleFullScreen(bool goFullScreen);
 
         /// <summary>
-        /// Sets the color for the status bar.
+        /// Sets the stats bar if one exists
         /// </summary>
-        /// <param name=""></param>
-        void SetStatusBarColor(Color color);
+        /// <param name="color"></param>
+        /// <param name="opacity"></param>
+        /// <param name="disableOcclusion"></param>
+        /// <returns></returns>
+        Task<double> SetStatusBar(Color? color = null, double opacity = 1);
     }
 }

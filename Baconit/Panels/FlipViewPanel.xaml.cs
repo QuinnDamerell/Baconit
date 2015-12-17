@@ -239,7 +239,8 @@ namespace Baconit.Panels
 
         public void OnNavigatingTo()
         {
-            // Ignore for now
+            // Set the task bar color
+            m_host.SetStatusBar(Color.FromArgb(255, 25, 25, 25));
         }
 
         public void OnNavigatingFrom()
@@ -254,6 +255,9 @@ namespace Baconit.Panels
         /// <param name="arguments">The argumetns passed when navigate was called</param>
         public async void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
+            // Do this logic here.
+            OnNavigatingTo();
+
             if(!arguments.ContainsKey(PanelManager.NAV_ARGS_POST_ID))
             {
                 return;
@@ -938,6 +942,12 @@ namespace Baconit.Panels
             if (ui_commmentBox.IsOpen)
             {
                 screenSize -= (int)ui_commmentBox.ActualHeight;
+            }
+
+            // If post is null back out here.
+            if(post == null)
+            {
+                return screenSize;
             }
 
             // If we are showing the show all comments header add the height of that so it won't be on the screen by default

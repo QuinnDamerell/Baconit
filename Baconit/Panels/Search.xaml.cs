@@ -97,6 +97,8 @@ namespace Baconit.Panels
                 ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
                 Search_Tapped(null, null);
             }
+
+            OnNavigateToInternal();
         }
 
         public void OnNavigatingTo()
@@ -106,6 +108,17 @@ namespace Baconit.Panels
             {
                 ui_searchBox.Focus(FocusState.Programmatic);
             }
+
+            OnNavigateToInternal();
+        }
+
+        private async void OnNavigateToInternal()
+        {
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_panelManager.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
 
         public void OnNavigatingFrom()

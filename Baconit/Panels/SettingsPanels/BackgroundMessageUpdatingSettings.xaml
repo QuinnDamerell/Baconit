@@ -10,7 +10,7 @@
              mc:Ignorable="d">
 
     <Grid>
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="ui_contentRoot" Background="#333333">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
@@ -26,7 +26,7 @@
                            Text="BACKGROUND INBOX UPDATING" />
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1">
+            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                 <StackPanel Grid.Row="1" Margin="12">
                     <TextBlock Margin="0,0,0,12"
                                Text="These settings allow Baconit to automatically check for new inbox messages while the app isn't open. If new messages are found you will be notified in the notification center."

@@ -119,16 +119,7 @@ namespace Baconit.Panels
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            m_isVisible = true;
-
-            if (m_collector != null)
-            {
-                // Make sure we are up to date
-                m_collector.Update();
-            }
-
-            // Resume the snow if it was going
-            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
+            OnNavigatingTo();
         }
 
         public void OnNavigatingFrom()
@@ -151,6 +142,9 @@ namespace Baconit.Panels
 
             // Resume the snow if it was going
             ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
+
+            // Set the task bar color
+            m_host.SetStatusBar(Color.FromArgb(255,10,10,10));
         }
 
         #region Subreddit Setup

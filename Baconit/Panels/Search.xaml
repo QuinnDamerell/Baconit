@@ -54,7 +54,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="ui_contentRoot" Background="#333333">
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="PostFilterAnimations">
@@ -131,16 +131,14 @@
         </Grid.RowDefinitions>
 
         <!--  Subreddit Header  -->
-        <Grid Grid.Row="0"
-              Background="#333333"
-              Padding="12">
+        <Grid Grid.Row="0" Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
                        Text="SEARCH" />
         </Grid>
 
         <!--  Search Header  -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -287,6 +285,7 @@
             <ListView x:Name="ui_searchResults"
                       Grid.Row="3"
                       Grid.ColumnSpan="2"
+                      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                       ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                       ItemTemplate="{StaticResource SearchResultListItem}"
                       SelectionChanged="SearchResults_SelectionChanged"

@@ -31,6 +31,7 @@ namespace Baconit.Panels.SettingsPanels
         List<string> m_subredditNameList = new List<string> { "earthporn" };
         bool m_ingoreUpdates = false;
         bool m_hasChanges = true;
+        IPanelHost m_host;
 
         public BackgroundUpdatingSettings()
         {
@@ -44,7 +45,7 @@ namespace Baconit.Panels.SettingsPanels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            // Ignore
+            m_host = host;
         }
 
         public async void OnNavigatingFrom()
@@ -88,8 +89,14 @@ namespace Baconit.Panels.SettingsPanels
             }         
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
+
             m_ingoreUpdates = true;
 
             // Setup the UI

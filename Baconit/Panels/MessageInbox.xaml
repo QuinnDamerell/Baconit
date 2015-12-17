@@ -63,7 +63,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Background="#191919">
+    <Grid x:Name="ui_contentRoot" Background="#333333">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -71,9 +71,7 @@
         </Grid.RowDefinitions>
 
         <!--  Message Header  -->
-        <Grid Grid.Row="0"
-              Background="#333333"
-              Padding="12">
+        <Grid Grid.Row="0" Padding="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
@@ -99,6 +97,7 @@
         <!--  The main message list  -->
         <ListView x:Name="ui_messageList"
                   Grid.Row="1"
+                  Background="#191919"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   ItemTemplate="{StaticResource MessageListItem}"
                   SelectionChanged="MessageList_SelectionChanged"

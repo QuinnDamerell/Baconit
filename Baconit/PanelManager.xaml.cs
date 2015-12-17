@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -916,15 +918,23 @@ namespace Baconit
         /// Sets the status bar color for mobile.
         /// </summary>
         /// <param name="color"></param>
-        public async void SetStatusBarColor(Color color)
-        {
-            // #todo this doesn't seem to work...
+        public async Task<double> SetStatusBar(Color? color = null, double opacity = 1)
+        { 
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-                var statusbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
-                await statusbar.ShowAsync();
-                statusbar.BackgroundColor = color;
+                StatusBar statusbar = StatusBar.GetForCurrentView();
+                if (statusbar != null)
+                {
+                    if (color.HasValue)
+                    {
+                        statusbar.BackgroundColor = color.Value;
+                    }                                      
+                    statusbar.BackgroundOpacity = opacity;
+                    await statusbar.ShowAsync();
+                    return statusbar.OccludedRect.Height;
+                }          
             }
+            return -1;
         }
     }
 }

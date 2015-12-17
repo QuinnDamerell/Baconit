@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -61,16 +62,21 @@ namespace Baconit.Panels
 
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
             // Ask the collector to update
             m_collector.Update(true);
+
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_panelHost.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ask the collector to update
-            m_collector.Update(true);
+            OnNavigatingTo();
         }
 
         #region Collector callbacks

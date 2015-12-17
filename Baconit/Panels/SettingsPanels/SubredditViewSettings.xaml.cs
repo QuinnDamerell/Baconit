@@ -22,6 +22,7 @@ namespace Baconit.Panels.SettingsPanels
     public sealed partial class SubredditViewSettings : UserControl, IPanel
     {
         bool m_takeChangeAction = false;
+        IPanelHost m_host;
 
         public SubredditViewSettings()
         {
@@ -31,7 +32,7 @@ namespace Baconit.Panels.SettingsPanels
         
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            // Ignore
+            m_host = host;
         }
 
         public void OnNavigatingFrom()
@@ -41,11 +42,17 @@ namespace Baconit.Panels.SettingsPanels
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore
+            OnNavigatingTo();
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
+
             m_takeChangeAction = false;
 
             ui_showFullTitles.IsOn = App.BaconMan.UiSettingsMan.SubredditList_ShowFullTitles;

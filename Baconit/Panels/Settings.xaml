@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="ui_contentRoot" Background="#333333">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -16,7 +16,6 @@
 
         <!--  Subreddit Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
@@ -26,9 +25,9 @@
 
         <ListView x:Name="ui_settingsList"
                   Grid.Row="1"
-                  Margin="12"
                   Background="#000000"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                  Padding="12"
                   SelectionChanged="SettingsList_SelectionChanged"
                   Style="{StaticResource ListViewStyle}" />
     </Grid>

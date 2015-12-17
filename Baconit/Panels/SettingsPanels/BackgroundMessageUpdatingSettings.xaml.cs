@@ -24,6 +24,7 @@ namespace Baconit.Panels.SettingsPanels
     {
         bool m_hasChanges = false;
         bool m_ignoreUpdates = false;
+        IPanelHost m_host;
 
         public BackgroundMessageUpdatingSettings()
         {
@@ -32,14 +33,22 @@ namespace Baconit.Panels.SettingsPanels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
+            m_host = host;
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
+            OnNavigatingTo();
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
+
             m_ignoreUpdates = true;
 
             ui_enableBackgroundMessages.IsOn = App.BaconMan.BackgroundMan.MessageUpdaterMan.IsEnabled;
