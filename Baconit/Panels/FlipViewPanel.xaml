@@ -14,131 +14,149 @@
     <UserControl.Resources>
 
         <DataTemplate x:Key="FlipViewStoryHeader">
-            <!--  Story Header Block  -->
-            <Grid Background="#333333" Loaded="FlipViewStoryHeader_Loaded">
+            <Grid Loaded="FlipViewStoryHeader_Loaded">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <!--  Story title  -->
-                <TextBlock Margin="8,8,8,2"
-                           HorizontalAlignment="Center"
-                           Text="{Binding Title}"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap" />
 
-                <!--  Story subtext  -->
-                <Grid Grid.Row="1"
-                      Margin="8,2,8,2"
-                      HorizontalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
+                <!--  Story Header Block  -->
+                <Grid Background="#333333" Visibility="{Binding FlipviewHeaderVisibility}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Margin="0,0,6,0"
-                               VerticalAlignment="Center"
-                               Foreground="#939393"
-                               Text="{Binding Author}"
-                               TextTrimming="WordEllipsis" />
-                    <TextBlock Grid.Column="1"
-                               VerticalAlignment="Center"
-                               Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                               Text="{Binding FlipViewSecondary}"
-                               TextTrimming="WordEllipsis" />
-                    <Grid Grid.Column="2"
-                          Margin="6,0,0,0"
-                          HorizontalAlignment="Left"
-                          Background="{Binding DarkenedAccentColorBrush}"
-                          Visibility="{Binding FlairVisibility}">
-                        <TextBlock Margin="6,2,6,2"
-                                   Foreground="#DDFFFFFF"
-                                   Text="{Binding LinkFlairText}" />
+                    <!--  Story title  -->
+                    <TextBlock Margin="8,8,8,2"
+                               HorizontalAlignment="Center"
+                               Text="{Binding Title}"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap" />
+
+                    <!--  Story subtext  -->
+                    <Grid Grid.Row="1"
+                          Margin="8,2,8,2"
+                          HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Margin="0,0,6,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="#939393"
+                                   Text="{Binding Author}"
+                                   TextTrimming="WordEllipsis" />
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding FlipViewSecondary}"
+                                   TextTrimming="WordEllipsis" />
+                        <Grid Grid.Column="2"
+                              Margin="6,0,0,0"
+                              HorizontalAlignment="Left"
+                              Background="{Binding DarkenedAccentColorBrush}"
+                              Visibility="{Binding FlairVisibility}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="#DDFFFFFF"
+                                       Text="{Binding LinkFlairText}" />
+                        </Grid>
+                    </Grid>
+
+                    <!--  Action icons  -->
+                    <Grid Grid.Row="2"
+                          Margin="8,2,8,2"
+                          HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Up Vote Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="0"
+                                                         OnIconTapped="UpVote_Tapped"
+                                                         VoteBrush="{Binding UpVoteColor}"
+                                                         VoteStatus="Up" />
+
+                        <!--  Down Vote Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="1"
+                                                         OnIconTapped="DownVote_Tapped"
+                                                         VoteBrush="{Binding DownVoteColor}"
+                                                         VoteStatus="Down" />
+
+                        <!--  Comment Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="2"
+                                                         OnIconTapped="PostCommentOn_OnIconTapped"
+                                                         SymbolIcon="Message" />
+
+                        <!--  Open to browser Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="3"
+                                                         OnIconTapped="OpenBrowser_Tapped"
+                                                         SymbolIcon="Globe" />
+
+                        <!--  More Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="4"
+                                                         OnIconTapped="More_Tapped"
+                                                         SymbolIcon="More">
+                            <FlyoutBase.AttachedFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
+                                    <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
+                                    <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
+                                    <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
+                                    <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
+                                    <MenuFlyoutItem Click="SaveImage_Click"
+                                                    Text="Save image"
+                                                    Visibility="{Binding ShowSaveImageMenu}" />
+                                    <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
+                                </MenuFlyout>
+                            </FlyoutBase.AttachedFlyout>
+                        </helperControls:CircleIconButton>
+
+                        <!--  Menu Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="5"
+                                                         FontIconGlyph="&#xE700;"
+                                                         OnIconTapped="MenuPost_Tapped"
+                                                         Visibility="{Binding FlipViewMenuButton}" />
                     </Grid>
                 </Grid>
 
-                <!--  Action icons  -->
-                <Grid Grid.Row="2"
-                      Margin="8,2,8,2"
-                      HorizontalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <!--  Up Vote Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="0"
-                                                     OnIconTapped="UpVote_Tapped"
-                                                     VoteBrush="{Binding UpVoteColor}"
-                                                     VoteStatus="Up" />
-
-                    <!--  Down Vote Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="1"
-                                                     OnIconTapped="DownVote_Tapped"
-                                                     VoteBrush="{Binding DownVoteColor}"
-                                                     VoteStatus="Down" />
-
-                    <!--  Comment Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="2"
-                                                     OnIconTapped="PostCommentOn_OnIconTapped"
-                                                     SymbolIcon="Message" />
-
-                    <!--  Open to browser Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="3"
-                                                     OnIconTapped="OpenBrowser_Tapped"
-                                                     SymbolIcon="Globe" />
-
-                    <!--  More Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="4"
-                                                     OnIconTapped="More_Tapped"
-                                                     SymbolIcon="More">
-                        <FlyoutBase.AttachedFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Click="SavePost_Click" Text="{Binding IsSavedMenuText}" />
-                                <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
-                                <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
-                                <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
-                                <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
-                                <MenuFlyoutItem Click="SaveImage_Click"
-                                                Text="Save image"
-                                                Visibility="{Binding ShowSaveImageMenu}" />
-                                <MenuFlyoutSeparator />
-                                <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
-                            </MenuFlyout>
-                        </FlyoutBase.AttachedFlyout>
-                    </helperControls:CircleIconButton>
-
-                    <!--  Menu Icon  -->
-                    <helperControls:CircleIconButton Grid.Column="5"
-                                                     FontIconGlyph="&#xE700;"
-                                                     OnIconTapped="MenuPost_Tapped"
-                                                     Visibility="{Binding FlipViewMenuButton}" />
-                </Grid>
-
-                <!--  Note if this height changes it must be updated in GetCurrentScrollArea!!!  -->
-                <Grid Grid.Row="3"
+                <!--  Note if this height changes it must be updated in c_hiddenCommentHeaderHeight  -->
+                <Grid Grid.Row="1"
                       Height="36"
                       Background="#282828">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
+                    <ProgressBar Grid.ColumnSpan="5"
+                                 Margin="0,0,0,2"
+                                 VerticalAlignment="Bottom"
+                                 Background="Transparent"
+                                 IsIndeterminate="{Binding FlipViewShowLoadingMoreComments}"
+                                 Visibility="{Binding FlipViewShowLoadingMoreCommentsVis}" />
+
+                    <!--  Sort Header  -->
                     <StackPanel Grid.Column="1"
-                                Margin="0,0,12,0"
+                                Height="36"
                                 VerticalAlignment="Center"
-                                Background="Transparent"
                                 Orientation="Horizontal"
+                                Padding="12,0,12,0"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
@@ -150,16 +168,83 @@
                                 <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Q&amp;A" />
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
-                        <TextBlock Margin="0,0,2,0"
+                        <TextBlock Margin="0,0,4,0"
+                                   VerticalAlignment="Center"
                                    Foreground="#989898"
                                    Text="Sort:" />
-                        <TextBlock Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{Binding CommentCurrentSortTypeString}" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding CommentCurrentSortTypeString}" />
                     </StackPanel>
+
+                    <!--  Comment Count Header  -->
+                    <StackPanel Grid.Column="2"
+                                Height="36"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal"
+                                Padding="12,0,12,0"
+                                Tapped="OpenMenuFlyout_Tapped">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="50" />
+                                <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="150" />
+                                <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="200" />
+                                <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="300" />
+                                <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="500" />
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <TextBlock Margin="0,0,4,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="#989898"
+                                   Text="Count:" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding CurrentCommentShowingCount}" />
+                    </StackPanel>
+
+                    <!--  Refresh  -->
+                    <Button Grid.Column="3"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            Click="CommentRefresh_Click"
+                            Padding="12,0,12,0">
+                        <Button.Content>
+                            <Viewbox Width="13" VerticalAlignment="Center">
+                                <SymbolIcon Symbol="Refresh" />
+                            </Viewbox>
+                        </Button.Content>
+                    </Button>
+
+                    <!--  Header Toggle  -->
+                    <Button Grid.Column="4"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            Click="PostHeaderToggle_Click"
+                            Padding="12,0,24,0">
+                        <Button.Content>
+                            <TextBlock RenderTransformOrigin="0.5,0.5">
+                                <Run FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                     FontSize="12"
+                                     Text="&#xE0E5;" />
+                                <TextBlock.RenderTransform>
+                                    <RotateTransform Angle="{Binding HeaderCollpaseToggleAngle}" />
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Button.Content>
+
+
+                    </Button>
                 </Grid>
 
                 <!--  Show all comments header  -->
-                <!--  Note if this height changes it must be updated in GetCurrentScrollArea!!!  -->
-                <Grid Grid.Row="4"
+                <!--  Note if this height changes it must be updated in c_hiddenShowAllCommentsHeight!!!  -->
+                <Grid Grid.Row="2"
                       Height="36"
                       Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                       Tapped="ViewEntireThread_Tapped"
@@ -193,8 +278,7 @@
                     <!--  The post header control  -->
                     <ContentControl Grid.Row="2"
                                     HorizontalContentAlignment="Stretch"
-                                    ContentTemplate="{StaticResource FlipViewStoryHeader}"
-                                    Visibility="{Binding IsPostHeaderVisible}" />
+                                    ContentTemplate="{StaticResource FlipViewStoryHeader}" />
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -394,18 +478,10 @@
                         </helperControls:EndDetectingListView>
 
                         <!--  The sticky header for flip view  -->
-                        <Grid VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-
-                            <ContentControl HorizontalContentAlignment="Stretch"
-                                            ContentTemplate="{StaticResource FlipViewStoryHeader}"
-                                            Visibility="{Binding FlipViewStickyHeaderVis}" />
-                        </Grid>
-
-
+                        <ContentControl VerticalAlignment="Top"
+                                        HorizontalContentAlignment="Stretch"
+                                        ContentTemplate="{StaticResource FlipViewStoryHeader}"
+                                        Visibility="{Binding FlipViewStickyHeaderVis}" />
                     </Grid>
                 </DataTemplate>
             </FlipView.ItemTemplate>
