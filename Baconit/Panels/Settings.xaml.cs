@@ -29,8 +29,8 @@ namespace Baconit.Panels
             // Add the settings to the list
             m_settingsList.Add("Flip view");
             m_settingsList.Add("Subreddit view");
-            m_settingsList.Add("Background inbox updating");
-            m_settingsList.Add("Lock screen and desktop wallpaper updating");
+            m_settingsList.Add("Inbox & Band updating");
+            m_settingsList.Add("Lock screen & desktop wallpaper updating");
             m_settingsList.Add("Terms and conditions");
             m_settingsList.Add("Privacy policy");
             m_settingsList.Add("About");

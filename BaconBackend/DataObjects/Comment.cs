@@ -188,7 +188,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave Comment" : "Save Comment";
+                return IsSaved ? "Unsave comment" : "Save comment";
             }
         }
 
