@@ -48,23 +48,10 @@
                     <ComboBox x:Name="ui_messageNotificationType"
                               Margin="0,8,0,8"
                               SelectedIndex="0"
-                              SelectionChanged="MessageNotificationType_SelectionChanged">
+                              SelectionChanged="MessageNotificationType_SelectionChanged" MinWidth="150">
                         <ComboBoxItem>Show each message</ComboBoxItem>
                         <ComboBoxItem>Show one total unread count</ComboBoxItem>
                     </ComboBox>
-
-
-                    <TextBlock Margin="0,12,0,0"
-                               Text="Sync my inbox to my Microsoft Band"
-                               TextWrapping="Wrap" />
-                    <TextBlock x:Name="ui_noBandConnected"
-                               Margin="0,6,0,0"
-                               Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                               Text="Band not connected"
-                               TextWrapping="Wrap" />
-                    <ToggleSwitch x:Name="ui_syncToBand"
-                                  IsEnabled="False"
-                                  Toggled="SyncToBand_Toggled" />
                 </StackPanel>
             </ScrollViewer>
         </Grid>

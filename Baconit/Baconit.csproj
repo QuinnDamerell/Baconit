@@ -22,7 +22,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <AppxPackageDir>D:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -117,6 +117,9 @@
     <Compile Include="FlipViewControls\GifImageFliplControl.xaml.cs">
       <DependentUpon>GifImageFliplControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlipViewControls\CommentSpoilerFlipControl.xaml.cs">
+      <DependentUpon>CommentSpoilerFlipControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FlipViewControls\RedditMarkdownFlipControl.xaml.cs">
       <DependentUpon>RedditMarkdownFlipControl.xaml</DependentUpon>
     </Compile>
@@ -204,6 +207,9 @@
     </Compile>
     <Compile Include="Panels\SettingsPanels\FlipViewSettings.xaml.cs">
       <DependentUpon>FlipViewSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\MicrosoftBandSettings.xaml.cs">
+      <DependentUpon>MicrosoftBandSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Panels\SettingsPanels\SubredditViewSettings.xaml.cs">
       <DependentUpon>SubredditViewSettings.xaml</DependentUpon>
@@ -321,6 +327,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FlipViewControls\CommentSpoilerFlipControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="FlipViewControls\RedditMarkdownFlipControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -434,6 +444,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\SettingsPanels\FlipViewSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\MicrosoftBandSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

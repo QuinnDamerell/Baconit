@@ -262,6 +262,10 @@ namespace Baconit.FlipViewControls
             {
                 m_control = new RedditContentFlipControl(this);
             }
+            else if(CommnetSpoilerFlipControl.CanHandlePost(flipPost))
+            {
+                m_control = new CommnetSpoilerFlipControl(this);
+            }
             else if (WindowsAppFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new WindowsAppFlipControl(this);

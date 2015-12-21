@@ -45,18 +45,21 @@
                            Text="Subreddit to source images from for lock screen"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_lockScreenSource"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Subreddit to source images from for desktop wallpaper"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_desktopSource"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Image update frequency"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_imageFrequency"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
 

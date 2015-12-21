@@ -104,8 +104,14 @@
                                                          OnIconTapped="OpenBrowser_Tapped"
                                                          SymbolIcon="Globe" />
 
-                        <!--  More Icon  -->
+                        <!--  Menu Icon  -->
                         <helperControls:CircleIconButton Grid.Column="4"
+                                                         FontIconGlyph="&#xE700;"
+                                                         OnIconTapped="MenuPost_Tapped"
+                                                         Visibility="{Binding FlipViewMenuButton}" />
+
+                        <!--  More Icon  -->
+                        <helperControls:CircleIconButton Grid.Column="5"
                                                          OnIconTapped="More_Tapped"
                                                          SymbolIcon="More">
                             <FlyoutBase.AttachedFlyout>
@@ -123,12 +129,6 @@
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
                         </helperControls:CircleIconButton>
-
-                        <!--  Menu Icon  -->
-                        <helperControls:CircleIconButton Grid.Column="5"
-                                                         FontIconGlyph="&#xE700;"
-                                                         OnIconTapped="MenuPost_Tapped"
-                                                         Visibility="{Binding FlipViewMenuButton}" />
                     </Grid>
                 </Grid>
 

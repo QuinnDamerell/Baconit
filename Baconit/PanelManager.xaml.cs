@@ -934,7 +934,7 @@ namespace Baconit
                     return statusbar.OccludedRect.Height;
                 }          
             }
-            return -1;
+            return 0;
         }
     }
 }

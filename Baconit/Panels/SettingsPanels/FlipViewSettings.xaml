@@ -48,7 +48,7 @@
             <TextBlock Margin="0,0,0,8"
                        Text="NSFW screen blocking strategy"
                        TextWrapping="Wrap" />
-            <ComboBox x:Name="ui_flipViewNsfwType" SelectionChanged="FlipViewNsfwType_SelectionChanged">
+            <ComboBox x:Name="ui_flipViewNsfwType" SelectionChanged="FlipViewNsfwType_SelectionChanged" MinWidth="150">
                 <ComboBoxItem>Always</ComboBoxItem>
                 <ComboBoxItem>Disable per subreddit; resets when the app is closed</ComboBoxItem>
                 <ComboBoxItem>Never</ComboBoxItem>

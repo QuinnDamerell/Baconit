@@ -30,7 +30,7 @@
             <TextBlock Text="Subreddit to show when the app opens" TextWrapping="Wrap" />
             <ComboBox x:Name="ui_defaultSubreddit"
                       Margin="0,8,12,18"
-                      SelectionChanged="DefaultSubreddit_SelectionChanged" />
+                      SelectionChanged="DefaultSubreddit_SelectionChanged" MinWidth="150" />
             <TextBlock Text="Show full post titles in subreddit view" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showFullTitles" Toggled="ShowFullTitles_Toggled" />
         </StackPanel>

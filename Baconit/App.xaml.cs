@@ -10,8 +10,10 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -147,6 +149,11 @@ namespace Baconit
                     main.OnReActivated(arguments);
                 }
             }
+
+            // We have to get the screen res before we call activate or it will be wrong and include the system tray.
+            var bounds = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            BaconMan.BackgroundMan.ImageUpdaterMan.LastKnownScreenResoultion = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
             // Ensure the current window is active
             Window.Current.Activate();

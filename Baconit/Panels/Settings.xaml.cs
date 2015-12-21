@@ -29,7 +29,8 @@ namespace Baconit.Panels
             // Add the settings to the list
             m_settingsList.Add("Flip view");
             m_settingsList.Add("Subreddit view");
-            m_settingsList.Add("Inbox & Band updating");
+            m_settingsList.Add("Microsoft Band");
+            m_settingsList.Add("Inbox background updating");
             m_settingsList.Add("Lock screen & desktop wallpaper updating");
             m_settingsList.Add("Terms and conditions");
             m_settingsList.Add("Privacy policy");
@@ -72,18 +73,21 @@ namespace Baconit.Panels
                     break;
                 case 1:
                     m_host.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
-                    break;               
+                    break;
                 case 2:
+                    m_host.Navigate(typeof(MicrosoftBandSettings), "MicrosoftBandSettings");
+                    break;          
+                case 3:
                     m_host.Navigate(typeof(BackgroundMessageUpdatingSettings), "BackgroundMessageUpdating");
                     break;
-                case 3:
+                case 4:
                     m_host.Navigate(typeof(BackgroundUpdatingSettings), "BackgroundUpdatingSettings");
                     break;                
-                case 4:
                 case 5:
+                case 6:
                     App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");
                     break;
-                case 6:
+                case 7:
                     m_host.Navigate(typeof(AboutSettings), "AboutSettings");
                     break;
                 default:

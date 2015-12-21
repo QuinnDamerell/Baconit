@@ -280,10 +280,10 @@
                                                             OnIconTapped="Refresh_Click"
                                                             SymbolIcon="Refresh" />
                             <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
-                                                            Grid.Column="1"
+                                                            Grid.Column="2"
                                                             OnIconTapped="AppBarSideBarOpen_OnIconTapped"
                                                             SymbolIcon="DockRight" />
-                            <helperControl:CircleIconButton Grid.Column="2"
+                            <helperControl:CircleIconButton Grid.Column="1"
                                                             FontIconGlyph="&#xE700;"
                                                             OnIconTapped="MenuButton_Click" />
                         </Grid>
