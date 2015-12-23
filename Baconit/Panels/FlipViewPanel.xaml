@@ -125,6 +125,7 @@
                                                     Text="Save image"
                                                     Visibility="{Binding ShowSaveImageMenu}" />
                                     <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
                                     <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
@@ -157,6 +158,7 @@
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal"
                                 Padding="12,0,12,0"
+                                Background="Transparent"                                
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
@@ -175,6 +177,12 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CommentCurrentSortTypeString}" />
+                        <TextBlock Margin="2,1,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="10"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
                     </StackPanel>
 
                     <!--  Comment Count Header  -->
@@ -183,6 +191,7 @@
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal"
                                 Padding="12,0,12,0"
+                                Background="Transparent"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
@@ -200,6 +209,12 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CurrentCommentShowingCount}" />
+                        <TextBlock Margin="2,1,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="10"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
                     </StackPanel>
 
                     <!--  Refresh  -->
@@ -237,8 +252,6 @@
                                 </TextBlock.RenderTransform>
                             </TextBlock>
                         </Button.Content>
-
-
                     </Button>
                 </Grid>
 
@@ -406,6 +419,14 @@
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
                                            Text="reply" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentUser_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="user" />
                             </Grid>
                             <Grid Margin="-4,-4,-4,-13"
                                   Background="#01000000"

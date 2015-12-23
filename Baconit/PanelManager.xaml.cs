@@ -54,6 +54,7 @@ namespace Baconit
         public const string NAV_ARGS_SEARCH_QUERY = "Pane.SearchQuery";
         public const string NAV_ARGS_SEARCH_SUBREDDIT_NAME = "Pane.SearchSubredditName";
         public const string NAV_ARGS_SUBMIT_POST_SUBREDDIT = "Pane.SubmitPostSubreddit";
+        public const string NAV_ARGS_USER_NAME = "Pane.UserName";
 
         /// <summary>
         /// Fired when the screen mode changes

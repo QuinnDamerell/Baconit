@@ -86,7 +86,7 @@ namespace Baconit.Panels
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Show or hide the progress bar
-                ToggleProgressBar(e.State == CollectorState.Updating);
+                ToggleProgressBar(e.State == CollectorState.Updating || e.State == CollectorState.Extending);
 
                 if(e.State == CollectorState.Error && e.ErrorState == CollectorErrorState.ServiceDown)
                 {

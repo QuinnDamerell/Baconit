@@ -16,6 +16,7 @@ namespace BaconBackend.Collectors
         Idle,
         Updating,
         Extending,
+        FullyExtended,
         Error
     }
 
@@ -35,6 +36,7 @@ namespace BaconBackend.Collectors
     {
         public CollectorState State;
         public CollectorErrorState ErrorState = CollectorErrorState.Unknown;
+        public int NewPostCount = 0;
     }
 
     /// <summary>
@@ -270,7 +272,8 @@ namespace BaconBackend.Collectors
                     {
                         m_state = CollectorState.Idle;
                     }
-                    FireStateChanged();
+
+                    FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
@@ -299,7 +302,7 @@ namespace BaconBackend.Collectors
             // we need to indicate to them they should remove the rest of the posts that are old.
             lock (m_listHelper)
             {
-                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending)
+                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending || m_state == CollectorState.FullyExtended)
                 {
                     return;
                 }
@@ -328,9 +331,17 @@ namespace BaconBackend.Collectors
                     // Update the state
                     lock (m_listHelper)
                     {
-                        m_state = CollectorState.Idle;
+                        if (posts.Count == 0)
+                        {
+                            // If we don't get anything back we are fully extended.
+                            m_state = CollectorState.FullyExtended;
+                        }
+                        else
+                        {
+                            m_state = CollectorState.Idle;
+                        }
                     }
-                    FireStateChanged();
+                    FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
@@ -407,11 +418,11 @@ namespace BaconBackend.Collectors
         /// <summary>
         /// Fire the state changed event.
         /// </summary>
-        protected void FireStateChanged()
+        protected void FireStateChanged(int newPostCount = 0)
         {
             try
             {
-                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state, ErrorState = m_errorState });
+                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state, ErrorState = m_errorState, NewPostCount = newPostCount });
             }
             catch (Exception e)
             {

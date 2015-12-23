@@ -268,7 +268,7 @@ namespace Baconit.Panels
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (e.State == CollectorState.Idle || e.State == CollectorState.Error)
+                if (e.State == CollectorState.Idle || e.State == CollectorState.Error || e.State == CollectorState.FullyExtended)
                 {
                     HideProgressBar(SearchResultTypes.Subreddit);
                 }
@@ -409,7 +409,7 @@ namespace Baconit.Panels
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (e.State == CollectorState.Idle || e.State == CollectorState.Error)
+                if (e.State == CollectorState.Idle || e.State == CollectorState.Error || e.State == CollectorState.FullyExtended)
                 {
                     HideProgressBar(SearchResultTypes.Post);
                 }
@@ -534,8 +534,7 @@ namespace Baconit.Panels
         }
 
         #endregion
-
-
+        
         #region User Search Logic
 
         /// <summary>
@@ -592,6 +591,7 @@ namespace Baconit.Panels
                         ResultType = SearchResultTypes.User,
                         MajorText = userResult.Name,
                         MinorText = $"link karma {userResult.LinkKarma}; comment karma {userResult.CommentKarma}",
+                        DataContext = userResult
                     };
                     if (userResult.IsGold)
                     {
@@ -698,8 +698,15 @@ namespace Baconit.Panels
                     // Make sure the page id is unique
                     m_panelManager.Navigate(typeof(FlipViewPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week + post.Id, args);
                 }
+                else if(tappedResult.ResultType == SearchResultTypes.User)
+                {
+                    User user = (User)tappedResult.DataContext;
 
-                // #todo user
+                    // Navigate to the user
+                    Dictionary<string, object> args = new Dictionary<string, object>();
+                    args.Add(PanelManager.NAV_ARGS_USER_NAME, user.Name);
+                    m_panelManager.Navigate(typeof(UserProfile), user.Name, args);
+                }
             }
 
             // Reset the list

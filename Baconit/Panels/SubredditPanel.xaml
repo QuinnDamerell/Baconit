@@ -28,6 +28,8 @@
                         <MenuFlyoutItem Click="HidePost_Click" Text="{Binding IsHiddenMenuText}" />
                         <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
                         <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" />
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
 

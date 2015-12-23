@@ -25,8 +25,8 @@ namespace BaconBackend.DataObjects
         /// <summary>
         /// The creation time of the account
         /// </summary>
-        [JsonProperty(PropertyName = "created")]
-        public string Created { get; set; }
+        [JsonProperty(PropertyName = "created_utc")]
+        public double CreatedUtc { get; set; }
 
         /// <summary>
         /// Indicates if the user has mail

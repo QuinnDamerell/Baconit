@@ -246,7 +246,7 @@ namespace Baconit.Panels
         private async void CommentCollector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
         {
             // #todo handle when there are no more
-            if(e.State == CollectorState.Idle)
+            if(e.State == CollectorState.Idle || e.State == CollectorState.FullyExtended)
             {
                 // When we are idle hide the loading message.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>

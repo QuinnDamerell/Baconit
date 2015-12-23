@@ -21,7 +21,7 @@
     <PackageCertificateThumbprint>D8B187A1D3023C4B338007386C6493BE9719A075</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
     <AppxPackageDir>C:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
   </PropertyGroup>
@@ -225,6 +225,9 @@
     </Compile>
     <Compile Include="Panels\SubmitPost.xaml.cs">
       <DependentUpon>SubmitPost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\UserProfile.xaml.cs">
+      <DependentUpon>UserProfile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Panels\WelcomePanel.xaml.cs">
       <DependentUpon>WelcomePanel.xaml</DependentUpon>
@@ -462,6 +465,10 @@
     <Page Include="Panels\SubredditPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\UserProfile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\WelcomePanel.xaml">
       <Generator>MSBuild:Compile</Generator>

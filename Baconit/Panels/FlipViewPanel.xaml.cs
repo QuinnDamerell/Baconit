@@ -59,7 +59,7 @@ namespace Baconit.Panels
         /// <summary>
         /// The collector backing this flip view
         /// </summary>
-        SubredditCollector m_collector;
+        PostCollector m_collector;
 
         /// <summary>
         /// A reference to the main panel host.
@@ -223,7 +223,7 @@ namespace Baconit.Panels
                 }
 
                 // Get the collector and register for updates.
-                m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
+                m_collector = PostCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
                 m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
                 // Kick off an update of the subreddits if needed.
@@ -623,6 +623,22 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, post.Subreddit);
             m_host.Navigate(typeof(SubredditPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "GoToSubredditFlipView");
+        }
+
+        /// <summary>
+        /// Fired when the user taps the go to user button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GoToUser_Click(object sender, RoutedEventArgs e)
+        {
+            // Navigate to the user.
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
+            m_host.Navigate(typeof(UserProfile), post.Author, args);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFlipView");
         }
 
         #endregion
@@ -1080,6 +1096,21 @@ namespace Baconit.Panels
             ui_commmentBox.ShowBox(post, "t1_" +comment.Id);
         }
 
+        private void CommentUser_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // Animate the text
+            AnimateText((FrameworkElement)sender);
+
+            // Get the comment
+            Comment comment = (sender as FrameworkElement).DataContext as Comment;
+
+            // Navigate to the user
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
+            m_host.Navigate(typeof(UserProfile), comment.Author, args);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFromComment");
+        }
+
         private void CommentMore_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Animate the text
@@ -1507,6 +1538,11 @@ namespace Baconit.Panels
         private void ui_contentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             SetHeaderSizes();
+        }
+
+        private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
     }
 }

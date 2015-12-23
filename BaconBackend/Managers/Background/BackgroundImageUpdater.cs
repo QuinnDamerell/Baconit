@@ -314,7 +314,7 @@ namespace BaconBackend.Managers.Background
             Subreddit subreddit = new Subreddit() { Id = DateTime.Now.Ticks.ToString(), DisplayName = name };
 
             // Get the collector for the subreddit
-            SubredditCollector collector = SubredditCollector.GetCollector(subreddit, m_baconMan);
+            PostCollector collector = PostCollector.GetCollector(subreddit, m_baconMan);
 
             // Sub to the collector callback
             if(type == UpdateTypes.LockScreen)

@@ -100,7 +100,7 @@
     <Compile Include="Collectors\MessageCollector.cs" />
     <Compile Include="Collectors\SearchPostCollector.cs" />
     <Compile Include="Collectors\SearchSubredditCollector.cs" />
-    <Compile Include="Collectors\SubredditCollector.cs" />
+    <Compile Include="Collectors\PostCollector.cs" />
     <Compile Include="DataObjects\Comment.cs" />
     <Compile Include="DataObjects\Message.cs" />
     <Compile Include="DataObjects\MessageOfTheDay.cs" />
