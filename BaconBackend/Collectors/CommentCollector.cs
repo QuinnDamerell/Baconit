@@ -286,31 +286,28 @@ namespace BaconBackend.Collectors
             }
 
             // Update the like status
-            if (action == PostVoteAction.UpVote)
+            bool likesAction = action == PostVoteAction.UpVote;
+            int voteMultiplier = action == PostVoteAction.UpVote ? 1 : -1;
+            if(collectionComment.Likes.HasValue)
             {
-                if (collectionComment.Likes.HasValue && collectionComment.Likes.Value)
+                if(collectionComment.Likes.Value == likesAction)
                 {
+                    // duplicate vote would undo the action
                     collectionComment.Likes = null;
-                    collectionComment.Score--;
+                    collectionComment.Score -= voteMultipler;
                 }
                 else
                 {
-                    collectionComment.Likes = true;
-                    collectionComment.Score++;
+                    // opposite vote, takes into account previous vote
+                    collectionComment.Likes = likesAction;
+                    collectionComment.Score += 2 * voteMultiplier
                 }
             }
             else
             {
-                if (collectionComment.Likes.HasValue && !collectionComment.Likes.Value)
-                {
-                    collectionComment.Likes = null;
-                    collectionComment.Score++;
-                }
-                else
-                {
-                    collectionComment.Likes = false;
-                    collectionComment.Score--;
-                }
+                // first vote
+                collectionComment.Likes = likesAction;
+                collectionComment.Score += voteMultiplier;
             }
 
             // Fire off that a update happened.
