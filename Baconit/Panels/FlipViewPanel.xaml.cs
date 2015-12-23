@@ -830,6 +830,9 @@ namespace Baconit.Panels
 
             // Now make a new one without using the subset
             PreFetchPostComments(ref post, true, false);
+
+            // Update the header sizes to fix the UI
+            SetHeaderSizes();
         }
 
         /// <summary>

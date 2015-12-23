@@ -296,7 +296,8 @@ namespace BaconBackend.Managers.Background
                     return wasSuccess;
                 }
             }
-            return false;
+            // Return true if we are disabled
+            return true;
         }
 
         #endregion

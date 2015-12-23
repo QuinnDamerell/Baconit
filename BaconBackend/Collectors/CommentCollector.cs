@@ -202,6 +202,9 @@ namespace BaconBackend.Collectors
 
                 // Fire the updated event to show on the UI.
                 FireCollectionUpdated(listLength + 1, new List<Comment> { comment }, false, false);
+
+                // Fire the collection state changed
+                FireStateChanged(1);
             }
             else
             {
@@ -213,6 +216,9 @@ namespace BaconBackend.Collectors
 
                 // Fire the updated event to show on the UI.
                 FireCollectionUpdated(insertedPos, new List<Comment> { comment }, false, true);
+
+                // Fire collection state changed
+                FireStateChanged(1);
             }
         }
 

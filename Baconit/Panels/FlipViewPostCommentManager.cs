@@ -251,8 +251,18 @@ namespace Baconit.Panels
                 // When we are idle hide the loading message.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    m_post.ShowCommentLoadingMessage = Visibility.Collapsed;
-                    m_post.FlipViewShowLoadingMoreComments = false;
+                    // Check if we have any comments
+                    if(e.NewPostCount == 0 && m_post.Comments.Count == 0)
+                    {
+                        m_post.ShowCommentLoadingMessage = Visibility.Visible;
+                        m_post.ShowCommentsErrorMessage = "No Comments";
+                        m_post.FlipViewShowLoadingMoreComments = false;
+                    }
+                    else
+                    {
+                        m_post.ShowCommentLoadingMessage = Visibility.Collapsed;
+                        m_post.FlipViewShowLoadingMoreComments = false;
+                    }               
                 });
             }
             else if(e.State == CollectorState.Error)
