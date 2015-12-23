@@ -102,7 +102,7 @@
         <Grid MaxWidth="500"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
-              RenderTransformOrigin=".5,.5">
+              RenderTransformOrigin=".5,.5" Margin="12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />

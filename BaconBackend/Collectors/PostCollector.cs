@@ -428,17 +428,27 @@ namespace BaconBackend.Collectors
         override protected void ApplyCommonFormatting(ref List<Post> posts)
         {
             bool isFrontPage = m_subreddit != null && (m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage"));
+            bool showSubreddit = isFrontPage || m_subreddit == null;
 
             foreach(Post post in posts)
             {
                 // Set the first line
                 DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 DateTime postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
-                post.SubTextLine1 = TimeToTextHelper.TimeElapseToText(postTime) + $" ago by {post.Author}";
+
+                // if this is going to a subreddit add the user, if this is going to a user add the domain
+                if(m_subreddit != null)
+                {
+                    post.SubTextLine1 = TimeToTextHelper.TimeElapseToText(postTime) + $" ago by {post.Author}";
+                }
+                else
+                {
+                    post.SubTextLine1 = TimeToTextHelper.TimeElapseToText(postTime) + $" ago to {post.Domain}";
+                }
 
                 // Set the second line
                 post.SubTextLine2PartOne = post.NumComments + (post.NumComments == 1 ? " comment " : " comments ");
-                post.SubTextLine2PartTwo = (isFrontPage ? post.Subreddit.ToLower() : post.Domain);
+                post.SubTextLine2PartTwo = (showSubreddit ? post.Subreddit.ToLower() : post.Domain);
 
                 // Set the second line for flipview
                 post.FlipViewSecondary = $"r/{post.Subreddit.ToLower()}";
@@ -449,12 +459,6 @@ namespace BaconBackend.Collectors
                 if (!String.IsNullOrEmpty(post.Selftext))
                 {
                     post.Selftext = WebUtility.HtmlDecode(post.Selftext);
-                }
-
-                // Don't show link flair on the front page
-                if(isFrontPage)
-                {
-                    post.LinkFlairText = "";
                 }
 
                 // Set the title size

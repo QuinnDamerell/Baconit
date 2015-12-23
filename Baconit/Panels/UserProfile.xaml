@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <DataTemplate x:Key="PostItemDataTemplate">
             <Grid>
-                <StackPanel Margin="0,12,6,12"
+                <StackPanel Margin="0,12,6,0"
                             HorizontalAlignment="Stretch"
                             Background="Transparent"
                             Orientation="Vertical">

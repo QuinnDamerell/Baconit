@@ -203,6 +203,12 @@
                                        FontSize="12"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Hot" />
+                            <TextBlock Margin="2,1,0,0"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                       FontSize="9"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text=" &#xE0E5;" />
                         </StackPanel>
 
                         <!--  Top Sort Time  -->
@@ -234,6 +240,12 @@
                                        FontSize="12"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Past Week" />
+                            <TextBlock Margin="2,1,0,0"
+                                       VerticalAlignment="Center"
+                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                       FontSize="9"
+                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                       Text=" &#xE0E5;" />
                         </StackPanel>
                     </Grid>
                     <!--  Loading indicator  -->
@@ -281,13 +293,13 @@
                             <helperControl:CircleIconButton Grid.Column="0"
                                                             OnIconTapped="Refresh_Click"
                                                             SymbolIcon="Refresh" />
+                            <helperControl:CircleIconButton Grid.Column="1"
+                                                            FontIconGlyph="&#xE700;"
+                                                            OnIconTapped="MenuButton_Click" />
                             <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
                                                             Grid.Column="2"
                                                             OnIconTapped="AppBarSideBarOpen_OnIconTapped"
                                                             SymbolIcon="DockRight" />
-                            <helperControl:CircleIconButton Grid.Column="1"
-                                                            FontIconGlyph="&#xE700;"
-                                                            OnIconTapped="MenuButton_Click" />
                         </Grid>
                     </Grid>
                 </Grid>
