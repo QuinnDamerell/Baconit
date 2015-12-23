@@ -97,7 +97,7 @@ namespace BaconBackend.Collectors
                     postData.Add(new KeyValuePair<string, string>("id", collectionMessage.GetFullName()));
 
                     // Make the call
-                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequest(request, postData);
+                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString(request, postData);
 
                     // Do some super simple validation
                     if (str != "{}")

@@ -306,7 +306,7 @@ namespace BaconBackend.Collectors
                     postData.Add(new KeyValuePair<string, string>("dir", voteDir));
 
                     // Make the call
-                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequest("api/vote", postData);
+                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString("api/vote", postData);
 
                     // Do some super simple validation
                     if(str != "{}")

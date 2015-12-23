@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Web.Http;
 
 namespace Baconit.FlipViewControls
 {
@@ -283,7 +284,8 @@ namespace Baconit.FlipViewControls
             try
             {
                 // Make the call
-                string jsonReponse = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+                IHttpContent response = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+                string jsonReponse = await response.ReadAsStringAsync();
 
                 // Parse the data
                 GfyCatDataContainer gfyData = JsonConvert.DeserializeObject<GfyCatDataContainer>(jsonReponse);
