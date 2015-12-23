@@ -251,7 +251,7 @@ namespace BaconBackend.Managers.Background
                     {
                         // Update the index
                         CurrentLockScreenRotationIndex++;
-                        if (CurrentLockScreenRotationIndex > files.Count)
+                        if (CurrentLockScreenRotationIndex >= files.Count)
                         {
                             CurrentLockScreenRotationIndex = 0;
                         }
@@ -261,7 +261,7 @@ namespace BaconBackend.Managers.Background
                     {
                         // Update the index
                         CurrentBandRotationIndex++;
-                        if (CurrentBandRotationIndex > files.Count)
+                        if (CurrentBandRotationIndex >= files.Count)
                         {
                             CurrentBandRotationIndex = 0;
                         }
@@ -271,7 +271,7 @@ namespace BaconBackend.Managers.Background
                     {
                         // Update the index
                         CurrentDesktopRotationIndex++;
-                        if (CurrentDesktopRotationIndex > files.Count)
+                        if (CurrentDesktopRotationIndex >= files.Count)
                         {
                             CurrentDesktopRotationIndex = 0;
                         }

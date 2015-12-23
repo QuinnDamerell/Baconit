@@ -277,7 +277,7 @@ namespace BaconBackend.Collectors
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Subreddit update failed", e);
+                    m_baconMan.MessageMan.DebugDia("Collector failed to update id:"+ m_uniqueId, e);
 
                     // Update the state
                     lock (m_listHelper)
