@@ -79,7 +79,7 @@ namespace Baconit
             VisualStateManager.GoToState(this, "HideQuichSeachResults", false);
 
             // Set ourselves as the backend action listener
-            App.BaconMan.SetBackendActionListner(this);
+            App.BaconMan.SetBackendActionListener(this);
 
             // Set the title bar color
             ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);

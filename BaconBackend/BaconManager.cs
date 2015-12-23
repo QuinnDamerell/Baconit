@@ -12,12 +12,20 @@ using Windows.UI.Core;
 
 namespace BaconBackend
 {
-    // Used for the on back event
+    /// <summary>
+    /// Provides data for BaconManager's OnBackButton event.
+    /// </summary>
     public class OnBackButtonArgs : EventArgs
     {
+        /// <summary>
+        /// If the back button press has been handled already.
+        /// </summary>
         public bool IsHandled = false;
     }
 
+    /// <summary>
+    /// A background object that manages all things reddit.
+    /// </summary>
     public class BaconManager
     {
         /// <summary>
@@ -129,7 +137,10 @@ namespace BaconBackend
         /// </summary>
         private IBackendActionListener m_backendActionListener;
 
-
+        /// <summary>
+        /// Create a new BaconManager.
+        /// </summary>
+        /// <param name="isBackgroundTask">If this Manager should be run in the background.</param>
         public BaconManager(bool isBackgroundTask)
         {
             // Set background task flag
@@ -186,8 +197,8 @@ namespace BaconBackend
         /// <summary>
         /// Called by the app when the back button is pressed
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Back button navigation event data.</param>
         public void OnBackButton_Fired(object sender, BackRequestedEventArgs e)
         {
             // Fire the event.
@@ -208,6 +219,7 @@ namespace BaconBackend
 
         /// <summary>
         /// Used to fire off and update if one is needed.
+        /// <param name="runAsync">If the update should run asynchronously.</param>
         /// </summary>
         public void FireOffUpdate(bool runAsync = true)
         {
@@ -229,18 +241,18 @@ namespace BaconBackend
         /// <summary>
         /// Gives us a reference to the backend action listener
         /// </summary>
-        /// <param name="actionListener"></param>
-        public void SetBackendActionListner(IBackendActionListener actionListener)
+        /// <param name="actionListener">Backend action listener</param>
+        public void SetBackendActionListener(IBackendActionListener actionListener)
         {
             m_backendActionListener = actionListener;
         }
 
         /// <summary>
-        /// Shows any link globally. This will intelligently handle the link, it handle anything flip view can
-        /// as well as subreddits.
+        /// Tries to show any link globally. This will intelligently handle the link;
+        /// it can handle anything flip view can, as well as subreddits.
         /// </summary>
-        /// <param name="link"></param>
-        /// <returns></returns>
+        /// <param name="link">URL to show.</param>
+        /// <returns>If the link was successfully shown.</returns>
         public bool ShowGlobalContent(string link)
         {
             if(m_backendActionListener == null)
@@ -253,11 +265,11 @@ namespace BaconBackend
         }
 
         /// <summary>
-        /// Shows any link globally. This will intelligently handle the link, it handle anything flip view can
+        /// Tries to show any link globally. This will intelligently handle the link, it handle anything flip view can
         /// as well as subreddits.
         /// </summary>
-        /// <param name="link"></param>
-        /// <returns></returns>
+        /// <param name="container">Content to be shown.</param>
+        /// <returns>If the content was successfully shown.</returns>
         public bool ShowGlobalContent(RedditContentContainer container)
         {
             if (m_backendActionListener == null)
@@ -270,11 +282,11 @@ namespace BaconBackend
         }
 
         /// <summary>
-        /// Shows the message of they day dialog with a title and markdown content
+        /// Try to show the message of they day dialog with a title and markdown content
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="contentMarkdown"></param>
-        /// <returns></returns>
+        /// <param name="title">Message of the day's title.</param>
+        /// <param name="contentMarkdown">Markdown of the Message of the day's body.</param>
+        /// <returns>If the Message of the day was successfully shown.</returns>
         public bool ShowMessageOfTheDay(string title, string contentMarkdown)
         {
             if (m_backendActionListener == null)
@@ -287,9 +299,9 @@ namespace BaconBackend
         }
 
         /// <summary>
-        /// Tells the Ui to navigate to login.
+        /// Try to navigate the application to a login form.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the login form was successfully shown.</returns>
         public bool NavigateToLogin()
         {
             if (m_backendActionListener == null)

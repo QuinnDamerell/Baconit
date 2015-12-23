@@ -12,29 +12,60 @@ using Windows.UI.Xaml.Media;
 
 namespace BaconBackend.DataObjects
 {
+    /// <summary>
+    /// A comment on a post. May or may not be a comment on another comment.
+    /// A comment has a score, which is the total number of upvotes - total number of downvotes.
+    /// </summary>
     public class Comment : INotifyPropertyChanged
     {
+        /// <summary>
+        /// The comment's unique ID. Prefixed with "t1_", this 
+        /// is the comment's fullname.
+        /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
+        /// <summary>
+        /// The username of the user who wrote this comment.
+        /// </summary>
         [JsonProperty(PropertyName = "author")]
         public string Author { get; set; }
 
+        /// <summary>
+        /// The comment's body text, in Markdown.
+        /// </summary>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
 
+        /// <summary>
+        /// The tree of comments replied to this one.
+        /// </summary>
         [JsonProperty(PropertyName = "replies")]
         public RootElement<Comment> Replies { get; set; }
 
+        /// <summary>
+        /// Unix timestamp of the time this comment was posted.
+        /// Or, the number of seconds that have passed since
+        /// January 1, 1970 UTC until this comment was posted.
+        /// </summary>
         [JsonProperty(PropertyName = "created_utc")]
         public double CreatedUtc { get; set; }
 
+        /// <summary>
+        /// The fullname of the post this comment is on.
+        /// </summary>
         [JsonProperty(PropertyName = "link_id")]
         public string LinkId { get; set; }
 
+        /// <summary>
+        /// The flair text of the comment's author.
+        /// </summary>
         [JsonProperty(PropertyName = "author_flair_text")]
         public string AuthorFlairText { get; set; }
-
+        
+        /// <summary>
+        /// The comment's score: total upvotes - total downvotes.
+        /// </summary>
         [JsonProperty(PropertyName = "score")]
         public int Score
         {
@@ -51,6 +82,11 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         int m_score = 0;
 
+        /// <summary>
+        /// true: the logged-in user upvoted the comment.
+        /// false: the logged-in user downvoted the comment.
+        /// null: the logged-in user has neither upvoted nor downvoted the comment.
+        /// </summary>
         [JsonProperty(PropertyName = "likes")]
         public bool? Likes
         {
@@ -68,6 +104,9 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool? m_likes = null;
 
+        /// <summary>
+        /// If the logged-in user saved the comment.
+        /// </summary>
         [JsonProperty(PropertyName = "saved")]
         public bool IsSaved
         {
@@ -147,6 +186,10 @@ namespace BaconBackend.DataObjects
             return s_opAuthorBackground;
         }
 
+        /// <summary>
+        /// If this comment should be highlighted in the current UI,
+        /// e.g. if it's the target of a link followed from elsewhere in the app.
+        /// </summary>
         [JsonIgnore]
         public bool IsHighlighted
         {
@@ -162,13 +205,22 @@ namespace BaconBackend.DataObjects
         }
         bool m_isHighlighted = false;
 
-
+        /// <summary>
+        /// Text representing the elapsed time since this comment was made.
+        /// </summary>
         [JsonIgnore]
         public string TimeString { get; set; }
 
+        /// <summary>
+        /// The number of comments above this one in the comment tree.
+        /// </summary>
         [JsonIgnore]
         public int CommentDepth { get; set; }
 
+        /// <summary>
+        /// The thickness that should precede this comment,
+        /// to represent its depth.
+        /// </summary>
         [JsonIgnore]
         public Thickness CommentMargin
         {
@@ -192,6 +244,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The color this comment's left bar should be in the UI.
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush CommentBorderColor
         {
@@ -219,6 +274,10 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The color this comment's downvote button should be in the UI.
+        /// It is accented if and only if the user has downvoted this comment.
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush DownVoteColor
         {
@@ -235,6 +294,10 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The color this comment's upvote button should be in the UI.
+        /// It is accented if and only if the user has upvoted this comment.
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush UpVoteColor
         {
@@ -250,6 +313,11 @@ namespace BaconBackend.DataObjects
                 }
             }
         }
+
+        /// <summary>
+        /// The color this comment's background should be in the UI.
+        /// It is accented if and only if the comment is highlighted.
+        /// </summary>
 
         [JsonIgnore]
         public SolidColorBrush CommentBackgroundColor
@@ -267,6 +335,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// Unused?
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush FlairBrush
         {
@@ -276,7 +347,10 @@ namespace BaconBackend.DataObjects
             }
         }
 
-
+        /// <summary>
+        /// The highlight color of the comment author's name in the UI.
+        /// It is accented only if the comment is written by the author of the post it is on.
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush AuthorTextBackground
         {
@@ -293,6 +367,10 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The text color of the comment author's name in the UI.
+        /// It is accented only if the comment is written by the author of the post it is on.
+        /// </summary>
         [JsonIgnore]
         public SolidColorBrush AuthorTextColor
         {
@@ -309,6 +387,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The visibility of this comment uncollapsed.
+        /// </summary>
         [JsonIgnore]
         public Visibility ShowFullCommentVis
         {
@@ -318,6 +399,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The visibility of this comment as collapsed.
+        /// </summary>
         [JsonIgnore]
         public Visibility ShowCollapsedCommentVis
         {
@@ -327,6 +411,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// The visibility of the comment author's flair.
+        /// </summary>
         [JsonIgnore]
         public Visibility ShowFlairText
         {
@@ -336,6 +423,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
+        /// <summary>
+        /// Whether the comment should be uncollapsed.
+        /// </summary>
         [JsonIgnore]
         public bool ShowFullComment
         {
@@ -353,6 +443,9 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool m_showFullComment = true;
 
+        /// <summary>
+        /// Whether the comment is written by the author of the post it is on.
+        /// </summary>
         [JsonIgnore]
         public bool IsCommentFromOp
         {
@@ -369,6 +462,10 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool m_isCommentFromOp = false;
 
+        /// <summary>
+        /// Text representing the additional comments that are children to this one.
+        /// This should always be a plus sign (+) followed by an integer.
+        /// </summary>
         [JsonIgnore]
         public string CollapsedCommentCount
         {
@@ -385,6 +482,9 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         string m_collapsedCommentCount = "";
 
+        /// <summary>
+        /// Text to represent this comment's current score.
+        /// </summary>
         [JsonIgnore]
         public string ScoreText
         {
@@ -394,14 +494,16 @@ namespace BaconBackend.DataObjects
             }
         }
 
-
+        /// <summary>
+        /// Construct a new empty comment.
+        /// </summary>
         public Comment()
         { }
 
         /// <summary>
-        /// Copy constructor
+        /// Construct a new comment with the same content as a given comment.
         /// </summary>
-        /// <param name="copyComment"></param>
+        /// <param name="copyComment">Comment to copy.</param>
         public Comment(Comment copyComment)
         {
             Id = copyComment.Id;
@@ -410,8 +512,15 @@ namespace BaconBackend.DataObjects
             CommentDepth = copyComment.CommentDepth;
         }
 
-        // UI property changed handler
+        /// <summary>
+        /// UI property changed handler that's called when a property of this comment is changed.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Called to indicate a property of this object has changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the changed property.</param>
         protected void NotifyPropertyChanged(String propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
