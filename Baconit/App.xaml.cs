@@ -10,8 +10,10 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -60,22 +62,53 @@ namespace Baconit
         }
 
         /// <summary>
+        /// Fired when the app is opened from a toast message.
+        /// </summary>
+        /// <param name="args"></param>
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
+
+            if (args is ToastNotificationActivatedEventArgs)
+            {
+                ToastNotificationActivatedEventArgs toastArgs = (ToastNotificationActivatedEventArgs)args;
+                SetupAndALaunchApp(toastArgs.Argument);
+            }
+            else
+            {
+                SetupAndALaunchApp("");
+            }
+        }
+
+        /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            SetupAndALaunchApp(e.Arguments);
+        }
+
+        /// <summary>
+        /// Does the work necessary to setup and launch the app.
+        /// </summary>
+        /// <param name="arguments"></param>
+        private void SetupAndALaunchApp(string arguments)
+        {
             // Grab the accent color and make our custom accent color brushes.
-            Color accentColor = ((SolidColorBrush)Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
-            accentColor.A = 200;
-            Current.Resources[AccentColorLevel1Resource] = new SolidColorBrush(accentColor);
-            accentColor.A = 137;
-            Current.Resources[AccentColorLevel2Resource] = new SolidColorBrush(accentColor);
-            accentColor.A = 75;
-            Current.Resources[AccentColorLevel3Resource] = new SolidColorBrush(accentColor);
-            accentColor.A = 50;
-            Current.Resources[AccentColorLevel4Resource] = new SolidColorBrush(accentColor);
+            if (!Current.Resources.ContainsKey(AccentColorLevel1Resource))
+            {
+                Color accentColor = ((SolidColorBrush)Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
+                accentColor.A = 200;
+                Current.Resources[AccentColorLevel1Resource] = new SolidColorBrush(accentColor);
+                accentColor.A = 137;
+                Current.Resources[AccentColorLevel2Resource] = new SolidColorBrush(accentColor);
+                accentColor.A = 75;
+                Current.Resources[AccentColorLevel3Resource] = new SolidColorBrush(accentColor);
+                accentColor.A = 50;
+                Current.Resources[AccentColorLevel4Resource] = new SolidColorBrush(accentColor);
+            }
 
             // Register for back, if we haven't already.
             if (!m_hasRegisteredForBack)
@@ -95,11 +128,6 @@ namespace Baconit
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
@@ -109,18 +137,24 @@ namespace Baconit
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                rootFrame.Navigate(typeof(MainPage), arguments);
             }
             else
             {
                 // If we have already navigated, we should tell the main page
                 // we are being activated again.
-                if(rootFrame.Content.GetType() == typeof(MainPage))
+                if (rootFrame.Content.GetType() == typeof(MainPage))
                 {
                     MainPage main = (MainPage)rootFrame.Content;
-                    main.OnReActivated(e.Arguments);
+                    main.OnReActivated(arguments);
                 }
             }
+
+            // We have to get the screen res before we call activate or it will be wrong and include the system tray.
+            var bounds = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            BaconMan.BackgroundMan.ImageUpdaterMan.LastKnownScreenResoultion = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
+
             // Ensure the current window is active
             Window.Current.Activate();
         }
@@ -164,7 +198,9 @@ namespace Baconit
         /// <param name="e"></param>
         private void OnBackRequested(object sender, BackRequestedEventArgs e)
         {
-            BaconMan.OnBackButton_Fired(sender, e);
+            bool isHandled = false;
+            BaconMan.OnBackButton_Fired(ref isHandled);
+            e.Handled = isHandled;
         }
 
         /// <summary>
@@ -177,6 +213,13 @@ namespace Baconit
             if (Debugger.IsAttached)
             {
                 Debugger.Break();
+            }
+
+            if (App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport)
+            {
+                // Warning this will report the error but leave us in a very bad state. Only use this for debugging.
+                e.Handled = true;
+                BaconMan.MessageMan.ShowMessageSimple("Fatal Crash", "The app tried to crash. Message (" + e.Message + ")\n\n Exception Msg (" + e.Exception.Message + ")");
             }
         }
     }

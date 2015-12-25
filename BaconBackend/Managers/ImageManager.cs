@@ -38,6 +38,11 @@ namespace BaconBackend.Managers
             public string ImageId = "";
 
             /// <summary>
+            /// A consumer provided context that can be anything they want it to be.
+            /// </summary>
+            public object Context;
+
+            /// <summary>
             /// Fired when the image is ready.
             /// </summary>
             public event EventHandler<ImageManagerResponseEventArgs> OnRequestComplete

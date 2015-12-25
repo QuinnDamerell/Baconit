@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
@@ -117,10 +118,10 @@ namespace BaconBackend.Managers
                 string lastUserName = CurrentUser == null ? "" : CurrentUser.Name;
 
                 // Make the web call
-                string resonse = await m_baconMan.NetworkMan.MakeRedditGetRequest("/api/v1/me/.json");
+                IHttpContent resonse = await m_baconMan.NetworkMan.MakeRedditGetRequest("/api/v1/me/.json");
 
                 // Parse the user
-                User user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(resonse);
+                User user = await m_baconMan.NetworkMan.DeseralizeObject<User>(resonse);
 
                 // Set the new user
                 CurrentUser = user;
@@ -143,9 +144,14 @@ namespace BaconBackend.Managers
             };
         }
 
-        public void ToggleHasMessages(bool hasMessages)
+        public void UpdateUnReadMessageCount(int unreadMessages)
         {
-            CurrentUser.HasMail = hasMessages;
+            // Update
+            CurrentUser.HasMail = unreadMessages != 0;
+            CurrentUser.InboxCount = unreadMessages;
+            // Force a save
+            CurrentUser = CurrentUser;
+            // Fire the callback
             FireOnUserUpdated(UserCallbackAction.Updated);
         }
 

@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="ui_contentRoot" Background="#333333">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -24,11 +24,22 @@
                        Text="FLIP VIEW SETTINGS" />
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Margin="12">
+        <StackPanel Grid.Row="1" Padding="12" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <TextBlock Text="Wait to load post content until tapped." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_disablePostLoad"
+                          Margin="0,0,0,8"
+                          Toggled="DisablePostLoad_Toggled" />
+
+            <TextBlock Text="Preload future post content." TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_preloadPost"
+                          Margin="0,0,0,8"
+                          Toggled="PreloadPost_Toggled" />
+
             <TextBlock Text="Preload comments for the current post." TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_preLoadComments"
                           Margin="0,0,0,8"
                           Toggled="PreLoadComments_Toggled" />
+
             <TextBlock Text="Show UI help tips" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showHelpTips"
                           Margin="0,0,0,8"
@@ -37,7 +48,7 @@
             <TextBlock Margin="0,0,0,8"
                        Text="NSFW screen blocking strategy"
                        TextWrapping="Wrap" />
-            <ComboBox x:Name="ui_flipViewNsfwType" SelectionChanged="FlipViewNsfwType_SelectionChanged">
+            <ComboBox x:Name="ui_flipViewNsfwType" SelectionChanged="FlipViewNsfwType_SelectionChanged" MinWidth="150">
                 <ComboBoxItem>Always</ComboBoxItem>
                 <ComboBoxItem>Disable per subreddit; resets when the app is closed</ComboBoxItem>
                 <ComboBoxItem>Never</ComboBoxItem>

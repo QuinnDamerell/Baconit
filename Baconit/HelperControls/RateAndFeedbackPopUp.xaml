@@ -125,30 +125,26 @@
             <Grid.RenderTransform>
                 <ScaleTransform x:Name="ui_contentScale" />
             </Grid.RenderTransform>
-            <Grid Background="#333333">
+            <Grid Margin="12" Background="#333333">
                 <StackPanel>
                     <TextBlock Margin="12,12,12,12"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Style="{ThemeResource TitleTextBlockStyle}"
-                               Text="Spread the ❤" />
+                               Text="Share the ❤" />
                     <TextBlock Margin="12,12,12,0"
-                               Text="Numerous people have spilled countless hours into this free app just for you. What do you say, want to leave us a review? We would really appreciate it. "
+                               Text="We love hearing your feedback so we can continue to make Baconit even better. Please consider showing your support by taking a few seconds to leave us a review in the store."
                                TextWrapping="Wrap" />
                     <Button Margin="12"
                             HorizontalAlignment="Stretch"
                             Click="Review_Clicked"
-                            Content="Leave A Review" />
+                            Content="leave a review" />
                     <TextBlock Margin="12,12,12,0"
-                               Text="Or are we missing something you love? Let us know on our subreddit, and we will work on adding it just for you. Submit a new idea or vote on ideas from others."
+                               Text="Or are we missing a something you love? Tell us on our subreddit and we will work on adding it just for you. Submit a new idea or vote on ideas from others."
                                TextWrapping="Wrap" />
-                    <Button Margin="12,12,12,12"
+                    <Button Margin="12,12,12,24"
                             HorizontalAlignment="Stretch"
                             Click="Feedback_Clicked"
-                            Content="Visit the Subreddit" />
-                    <TextBlock Margin="12,12,12,24"
-                               Foreground="#999999"
-                               Text="These links can always be found in the setting at a later time."
-                               TextWrapping="Wrap" />
+                            Content="visit the subreddit" />
                 </StackPanel>
             </Grid>
 

@@ -197,8 +197,18 @@ namespace Baconit.FlipViewControls
             if (flipPost != null)
             {
                 m_currentPost = flipPost;
-                ShowNsfwIfNeeded(flipPost);
-                CreateNewControl(flipPost);
+
+                if (App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction)
+                {
+                    // The normal case, load the content now.
+                    ShowNsfwIfNeeded(flipPost);
+                    CreateNewControl(flipPost);
+                }
+                else
+                {
+                    // The user don't want us to load content without them tapping the screen.
+                    VisualStateManager.GoToState(this, "ShowDontPreloadBlock", true);
+                }             
             }
         }
 
@@ -252,6 +262,10 @@ namespace Baconit.FlipViewControls
             {
                 m_control = new RedditContentFlipControl(this);
             }
+            else if(CommnetSpoilerFlipControl.CanHandlePost(flipPost))
+            {
+                m_control = new CommnetSpoilerFlipControl(this);
+            }
             else if (WindowsAppFlipControl.CanHandlePost(flipPost))
             {
                 m_control = new WindowsAppFlipControl(this);
@@ -263,6 +277,31 @@ namespace Baconit.FlipViewControls
 
             // Setup the control
             m_control.OnPrepareContent(flipPost);
+
+            // Add the control to the UI
+            ui_contentRoot.Children.Add((UserControl)m_control);
+        }
+
+        /// <summary>
+        /// Called when a post fails to load, we should fallback to the browser.
+        /// </summary>
+        /// <param name="post"></param>
+        public void FallbackToWebBrowser(Post post)
+        {
+            // Show loading
+            ShowLoading();
+
+            // Delete what we have
+            DeleteCurrentControl();
+
+            // Reset the post
+            m_currentPost = post;
+
+            // Make a web control
+            m_control = new WebPageFlipControl(this);
+
+            // Setup the control
+            m_control.OnPrepareContent(post);
 
             // Add the control to the UI
             ui_contentRoot.Children.Add((UserControl)m_control);
@@ -383,7 +422,7 @@ namespace Baconit.FlipViewControls
         public void ShowNsfwIfNeeded(Post post)
         {
             // If the post is over 18, and it hasn't been lowered, and we don't have block off, and we won't have per subreddit on and the subreddit has been lowered
-            if(post.IsOver18 &&
+            if(post != null && post.IsOver18 &&
                !s_previousLoweredNsfwBlocks.ContainsKey(post.Id) &&
                     (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always ||
                         (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit &&
@@ -475,6 +514,31 @@ namespace Baconit.FlipViewControls
         public bool IsFullScreen()
         {
             return m_isFullScreen;
+        }
+
+        #endregion
+
+        #region Dont Prelaod Logic
+
+        /// <summary>
+        /// Fried when the user taps the option to show the post.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DontPreloadBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            Post currentPost = m_currentPost;
+            if (currentPost == null)
+            {
+                return;
+            }
+
+            // Show the post.
+            ShowNsfwIfNeeded(currentPost);
+            CreateNewControl(currentPost);
+
+            // Hide the block
+            VisualStateManager.GoToState(this, "HideDontPreloadBlock", true);
         }
 
         #endregion

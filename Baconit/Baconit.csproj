@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Baconit</RootNamespace>
     <AssemblyName>Baconit</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
+    <DefaultLanguage>en-us</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
@@ -117,6 +117,9 @@
     <Compile Include="FlipViewControls\GifImageFliplControl.xaml.cs">
       <DependentUpon>GifImageFliplControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlipViewControls\CommentSpoilerFlipControl.xaml.cs">
+      <DependentUpon>CommentSpoilerFlipControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FlipViewControls\RedditMarkdownFlipControl.xaml.cs">
       <DependentUpon>RedditMarkdownFlipControl.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,9 @@
       <DependentUpon>GlobalContentPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="HelperControls\KeyboardShortcutHelper.cs" />
+    <Compile Include="HelperControls\LetItSnow.xaml.cs">
+      <DependentUpon>LetItSnow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\LoadingOverlay.xaml.cs">
       <DependentUpon>LoadingOverlay.xaml</DependentUpon>
     </Compile>
@@ -190,6 +196,9 @@
     <Compile Include="Panels\SettingsPanels\AboutSettings.xaml.cs">
       <DependentUpon>AboutSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\SettingsPanels\BackgroundMessageUpdatingSettings.xaml.cs">
+      <DependentUpon>BackgroundMessageUpdatingSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml.cs">
       <DependentUpon>BackgroundUpdatingSettings.xaml</DependentUpon>
     </Compile>
@@ -198,6 +207,9 @@
     </Compile>
     <Compile Include="Panels\SettingsPanels\FlipViewSettings.xaml.cs">
       <DependentUpon>FlipViewSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\SettingsPanels\MicrosoftBandSettings.xaml.cs">
+      <DependentUpon>MicrosoftBandSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Panels\SettingsPanels\SubredditViewSettings.xaml.cs">
       <DependentUpon>SubredditViewSettings.xaml</DependentUpon>
@@ -213,6 +225,9 @@
     </Compile>
     <Compile Include="Panels\SubmitPost.xaml.cs">
       <DependentUpon>SubmitPost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\UserProfile.xaml.cs">
+      <DependentUpon>UserProfile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Panels\WelcomePanel.xaml.cs">
       <DependentUpon>WelcomePanel.xaml</DependentUpon>
@@ -233,6 +248,10 @@
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-150.png" />
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-200.png" />
     <Content Include="Assets\AppAssets\BadgeLogo\96.scale-400.png" />
+    <Content Include="Assets\AppAssets\BandIcons\BandImage24.png" />
+    <Content Include="Assets\AppAssets\BandIcons\BandImage46.png" />
+    <Content Include="Assets\AppAssets\IconicTiles\Iconic144.png" />
+    <Content Include="Assets\AppAssets\IconicTiles\Iconic200.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-100.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-125.png" />
     <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-150.png" />
@@ -311,6 +330,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FlipViewControls\CommentSpoilerFlipControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="FlipViewControls\RedditMarkdownFlipControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -344,6 +367,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="HelperControls\GlobalContentPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HelperControls\LetItSnow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -407,6 +434,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Panels\SettingsPanels\BackgroundMessageUpdatingSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -416,6 +447,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\SettingsPanels\FlipViewSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\MicrosoftBandSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -430,6 +465,10 @@
     <Page Include="Panels\SubredditPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\UserProfile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\WelcomePanel.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -462,6 +501,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

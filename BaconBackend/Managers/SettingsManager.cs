@@ -29,8 +29,8 @@ namespace BaconBackend.Managers
             // We can't do this from a background task
             if (!baconMan.IsBackgroundTask)
             {
-                // Register for suspend callbacks.
-                Application.Current.Suspending += App_Suspending;
+                // Register for resuming callbacks.
+                m_baconMan.OnResuming += BaconMan_OnResuming;
             }
         }
 
@@ -140,39 +140,38 @@ namespace BaconBackend.Managers
                 m_localSettings = new Dictionary<string, object>();
             }
 
-            //Signal we are ready
+            // Signal we are ready
             m_localSettingsReady.Set();
         }
 
-        private async void App_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        /// <summary>
+        /// Fired when the app is resuming.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BaconMan_OnResuming(object sender, EventArgs e)
         {
-            // Grab the deferral
-            var deferral = e.SuspendingOperation.GetDeferral();
+            // When we resume read the settings again to pick up anything from the updater
+            InitLocalSettings();
+        }
 
-            // Write the settings.
+        public async Task FlushLocalSettings()
+        {
             try
             {
-                await FlushLocalSettings();
+                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                StorageFile file = await folder.CreateFileAsync(LOCAL_SETTINGS_FILE, CreationCollisionOption.OpenIfExists);
+
+                // Serialize the Json
+                string json = JsonConvert.SerializeObject(m_localSettings);
+
+                // Write to the file
+                await Windows.Storage.FileIO.WriteTextAsync(file, json);
             }
             catch (Exception ex)
             {
                 m_baconMan.MessageMan.DebugDia("Failed to write settings", ex);
-            }
-
-            // Set that we are done.
-            deferral.Complete();
-        }
-
-        private async Task FlushLocalSettings()
-        {
-            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            StorageFile file = await folder.CreateFileAsync(LOCAL_SETTINGS_FILE, CreationCollisionOption.OpenIfExists);
-
-            // Serialize the Json
-            string json = JsonConvert.SerializeObject(m_localSettings);
-
-            // Write to the file
-            await Windows.Storage.FileIO.WriteTextAsync(file, json);
+            }      
         }
     }
 }

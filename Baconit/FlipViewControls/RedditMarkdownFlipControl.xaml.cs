@@ -17,6 +17,8 @@ using BaconBackend.DataObjects;
 using Baconit.HelperControls;
 using BaconBackend.Helpers;
 using UniversalMarkdown;
+using Windows.UI.Core;
+using System.Threading.Tasks;
 
 namespace Baconit.FlipViewControls
 {
@@ -47,13 +49,17 @@ namespace Baconit.FlipViewControls
         /// Called when we should show the content
         /// </summary>
         /// <param name="post"></param>
-        public void OnPrepareContent(Post post)
+        public async void OnPrepareContent(Post post)
         {
-            m_markdownBlock = new MarkdownTextBlock();
-            m_markdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
-            m_markdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
-            m_markdownBlock.Markdown = post.Selftext;
-            ui_contentRoot.Children.Add(m_markdownBlock);            
+            // Since some of this can be costly, delay the work load until we aren't animating.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                m_markdownBlock = new MarkdownTextBlock();
+                m_markdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
+                m_markdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
+                m_markdownBlock.Markdown = post.Selftext;                
+                ui_contentRoot.Children.Add(m_markdownBlock);
+            });     
         }
 
         /// <summary>

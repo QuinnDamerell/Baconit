@@ -84,18 +84,63 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(m_appUrl))
             {
-                // Show our loading overlay
-                ui_loadingOverlay.Show(true);
+                // Try to parse out the app id if we can, loading the webpage can take a long
+                // time so we want to avoid it if possible
+                bool successfullyParsedAppId = false;
+                try
+                {
+                    // We are looking to parse 9nblggh58t2h out of something like this
+                    // https://www.microsoft.com/en-us/store/apps/device-diagnostics-hub/9nblggh58t2h?cid=appraisin
+                    // or this
+                    // https://www.microsoft.com/store/apps/9wzdncrfhw68
+                    //
+                    // Note the /apps/ changes also
 
-                // If we have a link open it in our hidden webview, this will cause the store
-                // to redirect us.
-                m_hiddenWebView = new WebView(WebViewExecutionMode.SeparateThread);
-                m_hiddenWebView.Navigate(new Uri(m_appUrl, UriKind.Absolute));
-                m_hiddenWebView.NavigationCompleted += HiddenWebView_NavigationCompleted;
+                    // Find the last / this should be just before the app id.
+                    int appIdStart = m_appUrl.LastIndexOf('/') + 1;
+
+                    // Make sure we found one.
+                    if(appIdStart != 0)
+                    {
+                        // Find the ending, look for a ? if there is one.
+                        int appIdEnd = m_appUrl.IndexOf('?', appIdStart);
+                        if (appIdEnd == -1)
+                        {
+                            appIdEnd = m_appUrl.Length;
+                        }
+
+                        // Get the app id
+                        string appId = m_appUrl.Substring(appIdStart, appIdEnd - appIdStart);
+
+                        // Do a quick sanity check
+                        if (appId.Length > 4)
+                        {
+                            successfullyParsedAppId = await Windows.System.Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?ProductId={appId}"));
+                        }
+                    }                
+                }
+                catch(Exception ex)
+                {
+                    App.BaconMan.MessageMan.DebugDia("failed to parse app id", ex);
+                    App.BaconMan.TelemetryMan.ReportEvent(this, "FailedToParseAppId");
+                }
+
+                // If we failed use the web browser
+                if(!successfullyParsedAppId)
+                {                
+                    // Show our loading overlay
+                    ui_loadingOverlay.Show(true);
+
+                    // If we have a link open it in our hidden webview, this will cause the store
+                    // to redirect us.
+                    m_hiddenWebView = new WebView(WebViewExecutionMode.SeparateThread);
+                    m_hiddenWebView.Navigate(new Uri(m_appUrl, UriKind.Absolute));
+                    m_hiddenWebView.NavigationCompleted += HiddenWebView_NavigationCompleted;
+                }
             }
         }
 

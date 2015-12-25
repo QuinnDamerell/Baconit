@@ -64,6 +64,12 @@ namespace BaconBackend.DataObjects
         public string AuthorFlairText { get; set; }
         
         /// <summary>
+        /// The subreddit the post this comment is on is in.
+        /// </summary>
+        [JsonProperty(PropertyName = "subreddit")]
+        public string Subreddit { get; set; }
+
+        /// <summary>
         /// The comment's score: total upvotes - total downvotes.
         /// </summary>
         [JsonProperty(PropertyName = "score")]
@@ -240,7 +246,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave Comment" : "Save Comment";
+                return IsSaved ? "Unsave comment" : "Save comment";
             }
         }
 

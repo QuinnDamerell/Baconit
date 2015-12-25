@@ -59,7 +59,7 @@ namespace BaconBackend.Helpers
                     return $"{(int)elapsed.TotalHours} hours";
                 }
             }
-            else
+            else if(elapsed.TotalDays < 365)
             {
                 if (elapsed.TotalDays < 2)
                 {
@@ -68,6 +68,19 @@ namespace BaconBackend.Helpers
                 else
                 {
                     return $"{(int)elapsed.TotalDays} days";
+                }
+            }
+            else
+            {
+                double years = elapsed.TotalDays / 365;
+                years = Math.Round(years, 1);
+                if(years == 1)
+                {
+                    return $"{years} year";
+                }
+                else
+                {
+                    return $"{years} years";
                 }
             }
         }

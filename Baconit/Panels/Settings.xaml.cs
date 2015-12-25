@@ -27,11 +27,13 @@ namespace Baconit.Panels
             this.InitializeComponent();
 
             // Add the settings to the list
-            m_settingsList.Add("Subreddit view");
             m_settingsList.Add("Flip view");
-            m_settingsList.Add("Updating, lock screen, and desktop images");            
-            m_settingsList.Add("Privacy policy");
+            m_settingsList.Add("Subreddit view");
+            m_settingsList.Add("Microsoft Band");
+            m_settingsList.Add("Inbox background updating");
+            m_settingsList.Add("Lock screen & desktop wallpaper updating");
             m_settingsList.Add("Terms and conditions");
+            m_settingsList.Add("Privacy policy");
             m_settingsList.Add("About");
 
             // Set the list
@@ -48,14 +50,18 @@ namespace Baconit.Panels
             // Ignore
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
-            // Ignore
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore
+            OnNavigatingTo();
         }
 
         private void SettingsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -63,19 +69,25 @@ namespace Baconit.Panels
             switch (ui_settingsList.SelectedIndex)
             {
                 case 0:
-                    m_host.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
-                    break;
-                case 1:
                     m_host.Navigate(typeof(FlipViewSettings), "FlipViewSettings");
                     break;
+                case 1:
+                    m_host.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
+                    break;
                 case 2:
+                    m_host.Navigate(typeof(MicrosoftBandSettings), "MicrosoftBandSettings");
+                    break;          
+                case 3:
+                    m_host.Navigate(typeof(BackgroundMessageUpdatingSettings), "BackgroundMessageUpdating");
+                    break;
+                case 4:
                     m_host.Navigate(typeof(BackgroundUpdatingSettings), "BackgroundUpdatingSettings");
                     break;                
-                case 3:
-                case 4:
+                case 5:
+                case 6:
                     App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");
                     break;
-                case 5:
+                case 7:
                     m_host.Navigate(typeof(AboutSettings), "AboutSettings");
                     break;
                 default:

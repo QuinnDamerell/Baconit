@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -58,19 +59,24 @@ namespace Baconit.Panels
 
         public void OnNavigatingFrom()
         {
-            // Ignore for now
+
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
-            // Ask the collector to update, this will be ignored
-            // if it is too recent.
-            m_collector.Update();
+            // Ask the collector to update
+            m_collector.Update(true);
+
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_panelHost.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
-            // Ignore for now
+            OnNavigatingTo();
         }
 
         #region Collector callbacks
@@ -80,7 +86,12 @@ namespace Baconit.Panels
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Show or hide the progress bar
-                ToggleProgressBar(e.State == CollectorState.Updating);
+                ToggleProgressBar(e.State == CollectorState.Updating || e.State == CollectorState.Extending);
+
+                if(e.State == CollectorState.Error && e.ErrorState == CollectorErrorState.ServiceDown)
+                {
+                    App.BaconMan.MessageMan.ShowRedditDownMessage();
+                }
             });
         }
 
@@ -106,6 +117,7 @@ namespace Baconit.Panels
                             {
                                 // If the message is the same just update the UI vars
                                 m_messageList[insertIndex].Body = message.Body;
+                                m_messageList[insertIndex].IsNew = message.IsNew;
                             }
                             else
                             {
@@ -213,20 +225,55 @@ namespace Baconit.Panels
             args.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, message.Id);
 
             // Make sure the page Id is unique
-            m_panelHost.Navigate(typeof(FlipViewPanel), message.Subreddit + SortTypes.Hot + postId + message.Id, args);
+            m_panelHost.Navigate(typeof(FlipViewPanel), message.Subreddit + SortTypes.Hot + SortTimeTypes.Week + postId + message.Id, args);
+
+            // Also if it is unread set it to read
+            if (message.IsNew)
+            {
+                MarkAsRead_Tapped(sender, e);
+            }
         }
 
         #endregion
 
         public void ToggleProgressBar(bool show)
         {
-            ui_progressBar.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            ui_progressBar.IsActive = show;
+            if(show)
+            {
+                if (m_messageList.Count == 0)
+                {
+                    ui_progressRing.Visibility = Visibility.Visible;
+                    ui_progressRing.IsActive = true;
+                }
+                else
+                {
+                    ui_progressBar.Visibility = Visibility.Visible;
+                    ui_progressBar.IsIndeterminate = true;
+                }
+            }
+            else
+            {
+                ui_progressRing.Visibility = Visibility.Collapsed;
+                ui_progressBar.Visibility = Visibility.Collapsed;
+                ui_progressRing.IsActive = false;
+                ui_progressBar.IsIndeterminate = false;
+            }
         }
 
         private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
+        }
+
+        /// <summary>
+        /// Fired when the refresh button is tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            // Ask the collector to update
+            m_collector.Update(true);
         }
     }
 }

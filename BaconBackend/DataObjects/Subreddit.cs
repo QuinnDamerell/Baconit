@@ -103,10 +103,11 @@ namespace BaconBackend.DataObjects
         /// Generate an identifier for this subreddit with a particular sorting.
         /// </summary>
         /// <param name="type">The sorting this identifier should uniquely identify.</param>
+        /// <param name="sortType">How recent a post could have been posted to be included in the sorting.</param>
         /// <returns>An ID that uniquely identifies a subreddit and a sorting.</returns>
-        public string GetNavigationUniqueId(SortTypes type)
+        public string GetNavigationUniqueId(SortTypes type, SortTimeTypes sortType)
         {
-            return DisplayName + type;
+            return DisplayName + type + sortType;
         }
     }
 }

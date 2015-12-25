@@ -4,6 +4,7 @@ using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Interfaces;
 using BaconBackend.Managers;
+using BaconBackend.Managers.Background;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
 using Baconit.Panels;
@@ -26,6 +27,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -67,9 +69,14 @@ namespace Baconit
         KeyboardShortcutHelper m_keyboardShortcutHepler;
 
         /// <summary>
-        /// Used to tell use that we should navigate to a different subreddit than the default.
+        /// Used to tell us that we should navigate to a different subreddit than the default.
         /// </summary>
         string m_subredditFirstNavOverwrite;
+
+        /// <summary>
+        /// Used to tell the app to navigate to the message inbox on launch.
+        /// </summary>
+        bool m_hadDeferredInboxNavigate = false;
 
         public MainPage()
         {
@@ -99,8 +106,6 @@ namespace Baconit
             ui_contentRoot.Children.Add(m_panelManager);
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
-
-
             // Sub to callbacks
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditUpdate;
             App.BaconMan.UserMan.OnUserUpdated += UserMan_OnUserUpdated;
@@ -115,6 +120,9 @@ namespace Baconit
             // Setup the keyboard shortcut helper and sub.
             m_keyboardShortcutHepler = new KeyboardShortcutHelper();
             m_keyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
+            m_keyboardShortcutHepler.OnGoBackActivation += KeyboardShortcutHepler_OnGoBackActivation;
+
+            m_panelManager.OnNavigationComplete += PanelManager_OnNavigationComplete;
         }
 
         /// <summary>
@@ -148,7 +156,7 @@ namespace Baconit
             // Navigate to the start
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, defaultDisplayName);
-            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot, args);
+            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
             m_panelManager.Navigate(typeof(WelcomePanel), "WelcomePanel");
 
             // Update the trending subreddits
@@ -171,6 +179,25 @@ namespace Baconit
                 {
                     m_subredditFirstNavOverwrite = argument.Substring(TileManager.c_subredditOpenArgument.Length);
                 }
+                else if(argument.StartsWith(BackgroundMessageUpdater.c_messageInboxOpenArgument))
+                {
+                    m_hadDeferredInboxNavigate = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fired whenever the panel manager is done navigating. We use this to fire the deferred inbox navigate
+        /// if we have one.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PanelManager_OnNavigationComplete(object sender, EventArgs e)
+        {
+            if (m_hadDeferredInboxNavigate)
+            {
+                m_hadDeferredInboxNavigate = false;
+                m_panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             }
         }
 
@@ -187,6 +214,10 @@ namespace Baconit
                 content.Subreddit = subredditDisplayName;
                 content.Type = RedditContentType.Subreddit;
                 App.BaconMan.ShowGlobalContent(content);
+            }
+            else if(arguments != null && arguments.StartsWith(BackgroundMessageUpdater.c_messageInboxOpenArgument))
+            {
+                m_panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             }
         }
 
@@ -412,6 +443,12 @@ namespace Baconit
 
         public void CloseTrendingSubredditsPanelIfOpen()
         {
+            // Stop the animation if it is playing
+            if (ui_storySubredditsPanel.GetCurrentState() == ClockState.Active)
+            {
+                ui_storySubredditsPanel.Stop();
+            }
+
             if (ui_trendingSubredditsPanel.MaxHeight != 0)
             {
                 ToggleTrendingSubredditsPanel();
@@ -420,7 +457,13 @@ namespace Baconit
 
         private void CloseAccoutPanelIfOpen()
         {
-            if(ui_accountGrid.MaxHeight != 0)
+            // Stop the animation if it is playing
+            if (ui_storyAccountGrid.GetCurrentState() == ClockState.Active)
+            {
+                ui_storyAccountGrid.Stop();
+            }
+
+            if (ui_accountGrid.MaxHeight != 0)
             {
                 ToggleAccountPanel();
             }
@@ -744,7 +787,7 @@ namespace Baconit
         {
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
-            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot), args);
+            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot, SortTimeTypes.Week), args);
         }
 
         #endregion
@@ -854,6 +897,11 @@ namespace Baconit
         /// <param name="e"></param>
         private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
+            if(e.IsHandled)
+            {
+                return;
+            }
+
             // If the presenter is open close it and mark the back handled.
             if (ui_globalContentPresenter.State != GlobalContentStates.Idle)
             {
@@ -900,20 +948,20 @@ namespace Baconit
                 case RedditContentType.Subreddit:
                     Dictionary<string, object> args = new Dictionary<string, object>();
                     args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
-                    m_panelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot, args);
+                    m_panelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
                     break;
                 case RedditContentType.Post:
                     Dictionary<string, object> postArgs = new Dictionary<string, object>();
                     postArgs.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
                     postArgs.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, container.Post);
-                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + container.Post, postArgs);
+                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post, postArgs);
                     break;
                 case RedditContentType.Comment:
                     Dictionary<string, object> commentArgs = new Dictionary<string, object>();
                     commentArgs.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, container.Subreddit);
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, container.Post);
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, container.Comment);
-                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + container.Post + container.Comment, commentArgs);
+                    m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post + container.Comment, commentArgs);
                     break;
             }
         }
@@ -1047,6 +1095,17 @@ namespace Baconit
             // resizing when we hit the actualwidth.
             double panelSize = ui_splitView.ActualWidth - 10 < 320 ? ui_splitView.ActualWidth - 10 : 320;
             ui_splitView.OpenPaneLength = panelSize;
+        }
+
+        /// <summary>
+        /// Fired when the keyboard shortcut for go back is fired (escape)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardShortcutHepler_OnGoBackActivation(object sender, EventArgs e)
+        {
+            bool isHandled = false;
+            App.BaconMan.OnBackButton_Fired(ref isHandled);
         }
     }
 }

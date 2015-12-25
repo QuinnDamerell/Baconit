@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -45,12 +47,14 @@ namespace Baconit
         /// </summary>
         public const string NAV_ARGS_SUBREDDIT_NAME = "Pane.SubredditName";
         public const string NAV_ARGS_SUBREDDIT_SORT = "Pane.SubredditSort";
+        public const string NAV_ARGS_SUBREDDIT_SORT_TIME = "Pane.SubredditSortTime";
         public const string NAV_ARGS_POST_ID = "Pane.PostId";
         public const string NAV_ARGS_FORCE_POST_ID = "Pane.ForcePostId";
         public const string NAV_ARGS_FORCE_COMMENT_ID = "Pane.ForceCommentId";
         public const string NAV_ARGS_SEARCH_QUERY = "Pane.SearchQuery";
         public const string NAV_ARGS_SEARCH_SUBREDDIT_NAME = "Pane.SearchSubredditName";
         public const string NAV_ARGS_SUBMIT_POST_SUBREDDIT = "Pane.SubmitPostSubreddit";
+        public const string NAV_ARGS_USER_NAME = "Pane.UserName";
 
         /// <summary>
         /// Fired when the screen mode changes
@@ -61,6 +65,16 @@ namespace Baconit
             remove { m_onScreenModeChanged.Remove(value); }
         }
         SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>> m_onScreenModeChanged = new SmartWeakEvent<EventHandler<OnScreenModeChangedArgs>>();
+
+        /// <summary>
+        /// Fired when the navigation is complete
+        /// </summary>
+        public event EventHandler<EventArgs> OnNavigationComplete
+        {
+            add { m_onNavigationComplete.Add(value); }
+            remove { m_onNavigationComplete.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onNavigationComplete = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         //
         // Private Vars
@@ -480,6 +494,7 @@ namespace Baconit
         {
             PanelType newPanelType = PanelType.None;
             IPanel newPanel = null;
+            bool fireNavCompleteAndReturn = false;
 
             // Grab a lock
             lock (m_panelStack)
@@ -489,7 +504,7 @@ namespace Baconit
                 {
                     return;
                 }
-                if (m_state == State.FadingIn)
+                else if (m_state == State.FadingIn)
                 {
                     // We are done with the fade in, go back to idle
                     m_state = State.Idle;
@@ -497,66 +512,82 @@ namespace Baconit
                     // Update the back button
                     UpdateBackButton();
 
+                    fireNavCompleteAndReturn = true;
+
                     // If we are pending a screen change do it now.
-                    if(m_deferedScreenUpdate.HasValue)
+                    if (m_deferedScreenUpdate.HasValue)
                     {
                         ExecuteOnScreenSizeChagnedLogic(m_deferedScreenUpdate.Value);
                         m_deferedScreenUpdate = null;
                     }
-                    return;
-                }
-
-                if(m_screenMode == ScreenMode.Single)
-                {
-                    // If we are in single mode we want to animate in whatever is on the top of the stack
-                    newPanel = m_panelStack.Last().Panel;
                 }
                 else
                 {
-                    // If we are in split mode we want to animate in whatever is the most recent panel for this space.
-                    // First figure out what content space this came from
-                    PanelType animationPanelType = (sender as DoubleAnimation).Equals(ui_animSubList) ? PanelType.SubredditList : PanelType.ContentPanel;
+                    // State.FadingOut
 
-                    // Now find the most recent panel for content space.
-                    foreach (StackItem item in m_panelStack.Reverse<StackItem>())
+                    if (m_screenMode == ScreenMode.Single)
                     {
-                        IPanel panel = item.Panel;
-                        // If the are both subreddit panels or both not, we found the panel.
-                        if (GetPanelType(panel) == animationPanelType)
+                        // If we are in single mode we want to animate in whatever is on the top of the stack
+                        newPanel = m_panelStack.Last().Panel;
+                    }
+                    else
+                    {
+                        // If we are in split mode we want to animate in whatever is the most recent panel for this space.
+                        // First figure out what content space this came from
+                        PanelType animationPanelType = (sender as DoubleAnimation).Equals(ui_animSubList) ? PanelType.SubredditList : PanelType.ContentPanel;
+
+                        // Now find the most recent panel for content space.
+                        foreach (StackItem item in m_panelStack.Reverse<StackItem>())
                         {
-                            newPanel = panel;
-                            break;
+                            IPanel panel = item.Panel;
+                            // If the are both subreddit panels or both not, we found the panel.
+                            if (GetPanelType(panel) == animationPanelType)
+                            {
+                                newPanel = panel;
+                                break;
+                            }
+                        }
+
+                        // If newPanel type is null we don't have anything and we should clean up and leave.
+                        if (newPanel == null)
+                        {
+                            // Set the state
+                            m_state = State.Idle;
+
+                            // Get the root
+                            Grid paneRoot = animationPanelType == PanelType.ContentPanel ? ui_contentRoot : ui_subListRoot;
+                            paneRoot.Children.Clear();
+
+                            // Update the back button
+                            UpdateBackButton();
+
+                            fireNavCompleteAndReturn = true;
                         }
                     }
 
-                    // If newPanel type is null we don't have anything and we should clean up and leave.
-                    if (newPanel == null)
+                    if (!fireNavCompleteAndReturn)
                     {
-                        // Set the state
-                        m_state = State.Idle;
+                        // Get the panel state of the top panel, this is the one we want to animate back in
+                        newPanelType = GetPanelType(newPanel);
 
-                        // Get the root
-                        Grid paneRoot = animationPanelType == PanelType.ContentPanel ? ui_contentRoot : ui_subListRoot;
-                        paneRoot.Children.Clear();
+                        // Get the correct root
+                        Grid root = newPanelType == PanelType.ContentPanel ? ui_contentRoot : ui_subListRoot;
 
-                        // Update the back button
-                        UpdateBackButton();
-                        return;
+                        // Take clear the current panel
+                        root.Children.Clear();
+                        root.Children.Add((UserControl)newPanel);
+
+                        // Update the panel sizes
+                        UpdatePanelSizes();
                     }
-                }
+                }               
+            }
 
-                // Get the panel state of the top panel, this is the one we want to animate back in
-                newPanelType = GetPanelType(newPanel);
-
-                // Get the correct root
-                Grid root = newPanelType == PanelType.ContentPanel ? ui_contentRoot : ui_subListRoot;
-
-                // Take clear the current panel
-                root.Children.Clear();
-                root.Children.Add((UserControl)newPanel);
-
-                // Update the panel sizes
-                UpdatePanelSizes();
+            // Do this if needed and get out of here.
+            if(fireNavCompleteAndReturn)
+            {
+                FireOnNavigateComplete();
+                return;
             }
 
             // Inform the panel we are navigating to it.
@@ -835,6 +866,22 @@ namespace Baconit
         }
 
         /// <summary>
+        /// Fires OnNavigationComplete
+        /// </summary>
+        /// <param name="panel"></param>
+        private void FireOnNavigateComplete()
+        {
+            try
+            {
+                m_onNavigationComplete.Raise(this, new EventArgs());
+            }
+            catch (Exception e)
+            {
+                App.BaconMan.MessageMan.DebugDia("OnNavigationComplete failed!", e);
+            }
+        }
+
+        /// <summary>
         /// Fires OnNavigateFrom for the panel
         /// </summary>
         /// <param name="panel"></param>
@@ -872,15 +919,23 @@ namespace Baconit
         /// Sets the status bar color for mobile.
         /// </summary>
         /// <param name="color"></param>
-        public async void SetStatusBarColor(Color color)
-        {
-            // #todo this doesn't seem to work...
+        public async Task<double> SetStatusBar(Color? color = null, double opacity = 1)
+        { 
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-                var statusbar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
-                await statusbar.ShowAsync();
-                statusbar.BackgroundColor = color;
+                StatusBar statusbar = StatusBar.GetForCurrentView();
+                if (statusbar != null)
+                {
+                    if (color.HasValue)
+                    {
+                        statusbar.BackgroundColor = color.Value;
+                    }                                      
+                    statusbar.BackgroundOpacity = opacity;
+                    await statusbar.ShowAsync();
+                    return statusbar.OccludedRect.Height;
+                }          
             }
+            return 0;
         }
     }
 }

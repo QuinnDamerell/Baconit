@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
@@ -21,7 +22,7 @@ namespace BaconBackend.Managers
             m_baconMan = baconMan;
         }
 
-        public async void CheckForUpdates()
+        public async Task CheckForUpdates()
         {
             // Don't check from the background
             if(m_baconMan.IsBackgroundTask)
@@ -84,7 +85,8 @@ namespace BaconBackend.Managers
             try
             {
                 // Make the request
-                string jsonResponse = await m_baconMan.NetworkMan.MakeGetRequest(c_motdUrl);
+                IHttpContent response = await m_baconMan.NetworkMan.MakeGetRequest(c_motdUrl);
+                string jsonResponse = await response.ReadAsStringAsync();
 
                 // Try to parse it
                 return JsonConvert.DeserializeObject<MessageOfTheDay>(jsonResponse);

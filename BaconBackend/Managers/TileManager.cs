@@ -1,9 +1,11 @@
 ﻿using BaconBackend.DataObjects;
+using NotificationsExtensions.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
 
 namespace BaconBackend.Managers
@@ -91,6 +93,36 @@ namespace BaconBackend.Managers
 
             // We failed
             return false;
+        }
+
+        /// <summary>
+        /// Makes sure the main app tile is an icon tile type
+        /// </summary>
+        public void EnsureMainTileIsIconic()
+        {
+            TileContent content = new TileContent()
+            {
+                Visual = new TileVisual()
+                {
+                    TileSmall = new TileBinding()
+                    {
+                        Content = new TileBindingContentIconic()
+                        {
+                            Icon = new TileImageSource("ms-appx:///Assets/AppAssets/IconicTiles/Iconic144.png"),
+                        }
+                    },
+                    TileMedium = new TileBinding()
+                    {
+                        Content = new TileBindingContentIconic()
+                        {
+                            Icon = new TileImageSource("ms-appx:///Assets/AppAssets/IconicTiles/Iconic200.png"),
+                        }
+                    }
+                }
+            };
+
+            // Update the tile
+            TileUpdateManager.CreateTileUpdaterForApplication().Update(new TileNotification(content.GetXml()));
         }
     }
 }

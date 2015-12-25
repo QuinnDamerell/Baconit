@@ -100,7 +100,7 @@
     <Compile Include="Collectors\MessageCollector.cs" />
     <Compile Include="Collectors\SearchPostCollector.cs" />
     <Compile Include="Collectors\SearchSubredditCollector.cs" />
-    <Compile Include="Collectors\SubredditCollector.cs" />
+    <Compile Include="Collectors\PostCollector.cs" />
     <Compile Include="DataObjects\Comment.cs" />
     <Compile Include="DataObjects\Message.cs" />
     <Compile Include="DataObjects\MessageOfTheDay.cs" />
@@ -112,13 +112,16 @@
     <Compile Include="Helpers\HashList.cs" />
     <Compile Include="Helpers\MiscellaneousHelper.cs" />
     <Compile Include="Helpers\RedditListHelper.cs" />
+    <Compile Include="Helpers\RefCountedDeferral.cs" />
     <Compile Include="Helpers\SmartWeakEvent.cs" />
     <Compile Include="Helpers\TimeToTextHelper.cs" />
     <Compile Include="Helpers\TrendingSubredditsHelper.cs" />
     <Compile Include="Interfaces\IBackendActionListener.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\BackgroundManager.cs" />
+    <Compile Include="Managers\Background\BackgroundBandManager.cs" />
     <Compile Include="Managers\Background\BackgroundImageUpdater.cs" />
+    <Compile Include="Managers\Background\BackgroundMessageUpdater.cs" />
     <Compile Include="Managers\CacheManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
     <Compile Include="Managers\MessageManager.cs" />

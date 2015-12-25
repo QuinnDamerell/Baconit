@@ -1,0 +1,360 @@
+﻿<UserControl x:Class="Baconit.Panels.UserProfile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="PostItemDataTemplate">
+            <Grid>
+                <StackPanel Margin="0,12,6,0"
+                            HorizontalAlignment="Stretch"
+                            Background="Transparent"
+                            Orientation="Vertical">
+                    <Grid>
+                        <TextBlock Margin="0,0,10,0"
+                                   HorizontalAlignment="Left"
+                                   Foreground="{Binding TitleTextBrush}"
+                                   MaxLines="{Binding TitleMaxLines}"
+                                   Text="{Binding Title}"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                    <StackPanel>
+                        <TextBlock Margin="0,0,10,0"
+                                   HorizontalAlignment="Left"
+                                   Foreground="#939393"
+                                   Text="{Binding SubTextLine1}"
+                                   TextTrimming="WordEllipsis" />
+                        <StackPanel Margin="0,0,10,0"
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal">
+                            <TextBlock Height="27"
+                                       Margin="{Binding NewCommentMargin}"
+                                       Foreground="{Binding NewCommentColor}"
+                                       Text="{Binding NewCommentText}" />
+                            <StackPanel Height="27" Orientation="Horizontal">
+                                <TextBlock Margin="0,0,4,0"
+                                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                           Text="{Binding SubTextLine2PartOne}"
+                                           TextTrimming="WordEllipsis" />
+                                <TextBlock Margin="0"
+                                           Foreground="{Binding DarkenedAccentColorBrush}"
+                                           Text="{Binding SubTextLine2PartTwo}"
+                                           TextTrimming="WordEllipsis" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Margin="0,0,8,0"
+                              HorizontalAlignment="Left"
+                              Background="#107c10"
+                              Visibility="{Binding StickyVisibility}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="#DDFFFFFF"
+                                       Text="Sticky" />
+                        </Grid>
+                        <Grid HorizontalAlignment="Left"
+                              Background="{Binding DarkenedAccentColorBrush}"
+                              Visibility="{Binding FlairVisibility}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="#DDFFFFFF"
+                                       Text="{Binding LinkFlairText}" />
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CommentItemDataTemplate">
+            <Border Margin="0,12,0,12"
+                    VerticalAlignment="Stretch"
+                    Background="{Binding CommentBackgroundColor}"
+                    BorderBrush="{Binding CommentBorderColor}"
+                    BorderThickness="2,0,0,0"
+                    Padding="6,0,15,0">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="0,-3,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Margin="0,0,6,2">
+                            <TextBlock Foreground="{Binding AuthorTextColor}" Text="{Binding Subreddit}" />
+                        </Grid>
+                        <TextBlock Grid.Column="1"
+                                   Margin="0,0,8,0"
+                                   Foreground="{Binding FlairBrush}"
+                                   Text="{Binding AuthorFlairText}"
+                                   Visibility="{Binding ShowFlairText}" />
+                        <TextBlock Grid.Column="2"
+                                   Margin="0,0,8,0"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="{Binding ScoreText}" />
+                        <TextBlock Grid.Column="3"
+                                   Margin="0,0,8,0"
+                                   Foreground="#999999"
+                                   Text="{Binding TimeString}" />
+                    </Grid>
+
+                    <universalMarkdown:MarkdownTextBlock Grid.Row="1"
+                                                         Markdown="{Binding Body}"
+                                                         OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
+
+                    <Grid Grid.Row="2"
+                          Margin="-4,-4,-4,-13"
+                          Background="Transparent"
+                          Padding="4,6,14,13">
+                        <TextBlock FontSize="15"
+                                   Foreground="#999999"
+                                   Text="view in context" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+
+    <Grid x:Name="ui_contentRoot" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="113*" />
+            <RowDefinition Height="187*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.RowSpan="2" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  User header page  -->
+            <StackPanel x:Name="ui_titleHeaderContainer" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+                <!--  Name block  -->
+                <TextBlock x:Name="ui_userName"
+                           Margin="12,12,12,0"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Text=" " />
+
+                <!--  Stats row  -->
+                <StackPanel Orientation="Horizontal">
+                    <!--  Gold indicator  -->
+                    <Grid x:Name="ui_goldHolder"
+                          Margin="12,9,0,9"
+                          Background="#BD9631"
+                          Visibility="Collapsed">
+                        <TextBlock Margin="6,3"
+                                   VerticalAlignment="Center"
+                                   Text="Gold" />
+                    </Grid>
+
+                    <!--  Cake day indicator  -->
+                    <Grid x:Name="ui_cakeDayHolder"
+                          Margin="12,9,0,9"
+                          Background="#107c10"
+                          Visibility="Collapsed">
+                        <TextBlock Margin="6,3"
+                                   VerticalAlignment="Center"
+                                   Text="Cake Day!" />
+                    </Grid>
+
+                    <!--  account age  -->
+                    <Viewbox Width="15" Margin="12,12,6,12">
+                        <SymbolIcon Symbol="Contact" />
+                    </Viewbox>
+                    <TextBlock x:Name="ui_accountAgeText"
+                               VerticalAlignment="Center"
+                               Text="0 days old" />
+
+                    <!--  link karma  -->
+                    <Viewbox Width="15" Margin="16,12,6,12">
+                        <SymbolIcon Symbol="Link" />
+                    </Viewbox>
+                    <TextBlock x:Name="ui_linkKarmaText"
+                               VerticalAlignment="Center"
+                               Text="0" />
+
+                    <!--  comment karma  -->
+                    <Viewbox Width="15" Margin="16,12,6,12">
+                        <SymbolIcon Symbol="Comment" />
+                    </Viewbox>
+                    <TextBlock x:Name="ui_commentKarmaText"
+                               VerticalAlignment="Center"
+                               Text="0" />
+                </StackPanel>
+            </StackPanel>
+
+            <Grid Grid.Row="1" Background="#191919">
+                <Pivot>
+                    <PivotItem Header="SUBMITTED">
+                        <Grid>
+                            <!--  Posts list  -->
+                            <helperControls:EndDetectingListView x:Name="ui_postList"
+                                                                 EndOfListDetectionThrehold="0.7"
+                                                                 IsTapEnabled="False"
+                                                                 ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                                 ItemTemplate="{StaticResource PostItemDataTemplate}"
+                                                                 OnListEndDetectedEvent="PostList_OnListEndDetectedEvent"
+                                                                 Padding="0,0,8,0"
+                                                                 SelectionChanged="PostList_SelectionChanged"
+                                                                 Style="{StaticResource ListViewStyle}">
+
+                                <helperControls:EndDetectingListView.HeaderTemplate>
+                                    <DataTemplate>
+                                        <!--  Sort Header  -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Background="Transparent"
+                                                    Orientation="Horizontal"
+                                                    Padding="0,6,12,6"
+                                                    Tapped="PostSort_Tapped">
+                                            <TextBlock Margin="0,0,4,0"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="#989898"
+                                                       Text="Sort:" />
+                                            <TextBlock x:Name="ui_postSortText"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                                       Text="New">
+                                                <FlyoutBase.AttachedFlyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="New" />
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Best" />
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Top" />
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Controversial" />
+                                                    </MenuFlyout>
+                                                </FlyoutBase.AttachedFlyout>
+                                            </TextBlock>
+                                            <TextBlock Margin="3,2,0,0"
+                                                       VerticalAlignment="Center"
+                                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                       FontSize="10"
+                                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                                       Text=" &#xE0E5;" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </helperControls:EndDetectingListView.HeaderTemplate>
+                                <ListView.ItemContainerTransitions>
+                                    <TransitionCollection>
+                                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                        <AddDeleteThemeTransition />
+                                    </TransitionCollection>
+                                </ListView.ItemContainerTransitions>
+                            </helperControls:EndDetectingListView>
+
+                            <!--  Show no posts  -->
+                            <TextBlock x:Name="ui_postNoPostsText"
+                                       Margin="0,12,0,0"
+                                       Text="No Submitted Posts"
+                                       Visibility="Collapsed" />
+
+                            <!--  Progress Ring for Loading  -->
+                            <ProgressRing x:Name="ui_postLoadingRing"
+                                          Width="40"
+                                          Height="40"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+
+                            <!--  Progress bar for loading with a list  -->
+                            <ProgressBar x:Name="ui_postLoadingBar"
+                                         VerticalAlignment="Top"
+                                         Background="Transparent" />
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem Header="COMMENTS">
+                        <Grid>
+                            <!--  Comment list  -->
+                            <helperControls:EndDetectingListView x:Name="ui_commentList"
+                                                                 EndOfListDetectionThrehold="0.7"
+                                                                 IsTapEnabled="False"
+                                                                 ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                                 ItemTemplate="{StaticResource CommentItemDataTemplate}"
+                                                                 OnListEndDetectedEvent="CommentList_OnListEndDetectedEvent"
+                                                                 Padding="0,0,8,0"
+                                                                 SelectionChanged="CommentList_SelectionChanged"
+                                                                 Style="{StaticResource ListViewStyle}">
+
+                                <helperControls:EndDetectingListView.HeaderTemplate>
+                                    <DataTemplate>
+                                        <!--  Sort Header  -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Background="Transparent"
+                                                    Orientation="Horizontal"
+                                                    Padding="0,6,12,6"
+                                                    Tapped="CommentSort_Tapped">
+                                            <TextBlock Margin="0,0,4,0"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="#989898"
+                                                       Text="Sort:" />
+                                            <TextBlock x:Name="ui_commentSortText"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                                       Text="New">
+                                                <FlyoutBase.AttachedFlyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="New" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Best" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Top" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Controversial" />
+                                                    </MenuFlyout>
+                                                </FlyoutBase.AttachedFlyout>
+                                            </TextBlock>
+                                            <TextBlock Margin="3,2,0,0"
+                                                       VerticalAlignment="Center"
+                                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                       FontSize="10"
+                                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                                       Text=" &#xE0E5;" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </helperControls:EndDetectingListView.HeaderTemplate>
+
+                                <ListView.ItemContainerTransitions>
+                                    <TransitionCollection>
+                                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                        <AddDeleteThemeTransition />
+                                    </TransitionCollection>
+                                </ListView.ItemContainerTransitions>
+                            </helperControls:EndDetectingListView>
+
+                            <!--  Show no comments  -->
+                            <TextBlock x:Name="ui_commentNoPostsText"
+                                       Margin="0,12,0,0"
+                                       Text="No Submitted Comments"
+                                       Visibility="Collapsed" />
+
+                            <!--  Progress Ring for Loading  -->
+                            <ProgressRing x:Name="ui_commentLoadingRing"
+                                          Width="40"
+                                          Height="40"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+
+                            <!--  Progress bar for loading with a list  -->
+                            <ProgressBar x:Name="ui_commentLoadingBar"
+                                         VerticalAlignment="Top"
+                                         Background="Transparent" />
+                        </Grid>
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+        </Grid>
+
+        <helperControls:LoadingOverlay x:Name="ui_loadingOverlay" Grid.RowSpan="2" />
+    </Grid>
+</UserControl>

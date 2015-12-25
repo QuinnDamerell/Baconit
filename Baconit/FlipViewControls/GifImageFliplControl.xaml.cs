@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Web.Http;
 
 namespace Baconit.FlipViewControls
 {
@@ -53,7 +54,7 @@ namespace Baconit.FlipViewControls
         /// Called when the flip view consent should shown.
         /// </summary>
         /// <param name="url"></param>
-        public async void OnPrepareContent(Post post)
+        public void OnPrepareContent(Post post)
         {
             m_shouldBePlaying = false;
             m_loadingHidden = false;
@@ -61,42 +62,47 @@ namespace Baconit.FlipViewControls
             // Show loading
             m_host.ShowLoading();
 
-            // Try to get the imgur url
-            string gifUrl = GetImgurUrl(post.Url);
-
-            // If that failed try to get a url from GfyCat
-            if(gifUrl.Equals(String.Empty))
+            // Run the rest on a background thread.
+            Task.Run(async () =>
             {
-                // We have to get it from gyfcat
-                gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(post.Url));
-            }
+                // Try to get the imgur url
+                string gifUrl = GetImgurUrl(post.Url);
 
-            // If we didn't get anything something went wrong.
-            if(gifUrl.Equals(String.Empty))
-            {
-                m_host.ShowError();
-                return;
-            }
-
-            // Since some of this can be costly, delay the work load until we aren't animating.
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-            {
-                // Make sure we aren't destroyed.
-                if(m_isDestoryed)
+                // If that failed try to get a url from GfyCat
+                if (gifUrl.Equals(String.Empty))
                 {
-                    return;
-                }
+                    // We have to get it from gyfcat
+                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(post.Url));
+                }               
 
-                // Create the media element
-                m_gifVideo = new MediaElement();
-                m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
-                m_gifVideo.Tapped += OnVideoTapped;
-                m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
-                m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
-                m_gifVideo.Play();
-                m_gifVideo.IsLooping = true;
-                ui_contentRoot.Children.Add(m_gifVideo);
-            });
+                // Since some of this can be costly, delay the work load until we aren't animating.
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                {
+                    // Make sure we aren't destroyed.
+                    if (m_isDestoryed)
+                    {
+                        return;
+                    }
+
+                    // If we didn't get anything something went wrong.
+                    if (String.IsNullOrWhiteSpace(gifUrl))
+                    {
+                        m_host.FallbackToWebBrowser(post);
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowGifAfterConfirm");
+                        return;
+                    }
+
+                    // Create the media element
+                    m_gifVideo = new MediaElement();
+                    m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    m_gifVideo.Tapped += OnVideoTapped;
+                    m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
+                    m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
+                    m_gifVideo.Play();
+                    m_gifVideo.IsLooping = true;
+                    ui_contentRoot.Children.Add(m_gifVideo);
+                });
+            });    
         }
 
         /// <summary>
@@ -278,7 +284,8 @@ namespace Baconit.FlipViewControls
             try
             {
                 // Make the call
-                string jsonReponse = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+                IHttpContent response = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+                string jsonReponse = await response.ReadAsStringAsync();
 
                 // Parse the data
                 GfyCatDataContainer gfyData = JsonConvert.DeserializeObject<GfyCatDataContainer>(jsonReponse);

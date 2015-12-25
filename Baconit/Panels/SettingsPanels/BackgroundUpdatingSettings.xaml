@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="ui_contentRoot" Background="#333333">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -24,7 +24,7 @@
                        Text="UPDATING AND LOCK SCREEN IMAGES" />
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
             <StackPanel Grid.Row="1" Margin="12">
                 <TextBlock Margin="0,0,0,12"
                            Text="These settings allow Baconit to automatically update your lock screen image and desktop wallpaper from images on any subreddit. On a mobile device, the desktop wallpaper is the image behind your tiles. These settings don't roam so you can set them per device."
@@ -45,20 +45,34 @@
                            Text="Subreddit to source images from for lock screen"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_lockScreenSource"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Subreddit to source images from for desktop wallpaper"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_desktopSource"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Image update frequency"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_imageFrequency"
+                          MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
+
+                <TextBlock x:Name="ui_lastUpdate"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="Last Update:"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="ui_currentSystemUpdateStatus"
+                           Margin="0,12,0,0"
+                           Foreground="#BBFFFFFF"
+                           Text="System State:"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

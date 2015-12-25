@@ -58,6 +58,9 @@ namespace Baconit.HelperControls
 
         private void SimpleTextButton_Loaded(object sender, RoutedEventArgs e)
         {
+            // Unregister for loaded events so we don't do this many times.
+            Loaded -= SimpleTextButton_Loaded;
+
             // First, try to get the main root grid.
             List<DependencyObject> uiElements = new List<DependencyObject>();
             UiControlHelpers<Grid>.RecursivelyFindElement(this, ref uiElements);
@@ -85,9 +88,11 @@ namespace Baconit.HelperControls
             // If the desired text already exists set it
             if(m_currentButtonText != null)
             {
-                ui_buttonText.Text = m_currentButtonText;
-                ui_buttonText.Foreground = new SolidColorBrush(m_normalTextColor);
+                ui_buttonText.Text = m_currentButtonText;                
             }
+
+            // Set the normal text color
+            ui_buttonText.Foreground = new SolidColorBrush(m_normalTextColor);
 
             // Grab the current accent color
             m_accentColor = ((SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;

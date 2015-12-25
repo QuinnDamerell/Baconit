@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using BaconBackend.Helpers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace Baconit.Panels.SettingsPanels
         List<string> m_subredditNameList = new List<string> { "earthporn" };
         bool m_ingoreUpdates = false;
         bool m_hasChanges = true;
+        IPanelHost m_host;
 
         public BackgroundUpdatingSettings()
         {
@@ -43,10 +45,10 @@ namespace Baconit.Panels.SettingsPanels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            // Ignore
+            m_host = host;
         }
 
-        public void OnNavigatingFrom()
+        public async void OnNavigatingFrom()
         {
             // Update the settings
             App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency = FrequencyListIndexToSettings(ui_imageFrequency.SelectedIndex);
@@ -75,20 +77,26 @@ namespace Baconit.Panels.SettingsPanels
                 m_hasChanges = false;
 
                 // Make sure the updater is enabled
-                App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
+                await App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
 
                 // On a background thread kick off an update. This call will block so it has to be done in
                 // the background.
-                Task.Run(() =>
+                await Task.Run(async () =>
                 {
-                    // Force a update.
-                    App.BaconMan.BackgroundMan.ImageUpdaterMan.RunUpdate(true);
+                    // Force a update, give it a null deferral since this isn't a background task.
+                    await App.BaconMan.BackgroundMan.ImageUpdaterMan.RunUpdate(new RefCountedDeferral(null), true);
                 });
             }         
         }
 
-        public void OnNavigatingTo()
+        public async void OnNavigatingTo()
         {
+            // Set the status bar color and get the size returned. If it is not 0 use that to move the
+            // color of the page into the status bar.
+            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
+            ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
+
             m_ingoreUpdates = true;
 
             // Setup the UI
@@ -99,6 +107,10 @@ namespace Baconit.Panels.SettingsPanels
             ui_imageFrequency.SelectedIndex = FrequencySettingToListIndex(App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency);
 
             m_ingoreUpdates = false;
+
+            // Set our status
+            ui_lastUpdate.Text = "Last Update: " + (App.BaconMan.BackgroundMan.LastUpdateTime.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastUpdateTime.ToString("g"));
+            ui_currentSystemUpdateStatus.Text = "System State: " + (App.BaconMan.BackgroundMan.LastSystemBackgroundUpdateStatus != 3 ? "Allowed" : "Denied");
 
             // Setup the listener
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;

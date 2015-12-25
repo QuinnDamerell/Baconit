@@ -168,7 +168,7 @@ namespace BaconBackend.Helpers
                 postData.Add(new KeyValuePair<string, string>("text", comment));
 
                 // Make the call
-                returnString = await baconMan.NetworkMan.MakeRedditPostRequest("api/comment", postData);
+                returnString = await baconMan.NetworkMan.MakeRedditPostRequestAsString("api/comment", postData);
             }
             catch (Exception e)
             {
@@ -188,7 +188,7 @@ namespace BaconBackend.Helpers
             try
             {
                 // Make the call
-                string jsonResponse = await baconMan.NetworkMan.MakeRedditGetRequest($"user/{userName}/about/.json");
+                string jsonResponse = await baconMan.NetworkMan.MakeRedditGetRequestAsString($"user/{userName}/about/.json");
 
                 // Try to parse out the user
                 int dataPos = jsonResponse.IndexOf("\"data\":");
@@ -245,7 +245,7 @@ namespace BaconBackend.Helpers
                 }
 
                 // Make the call
-                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequest(url, data);
+                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequestAsString(url, data);
 
                 if(jsonResponse.Contains("{}"))
                 {
@@ -294,7 +294,7 @@ namespace BaconBackend.Helpers
                 data.Add(new KeyValuePair<string, string>("title", title));
 
                 // Make the call
-                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequest("/api/submit/", data);
+                string jsonResponse = await baconMan.NetworkMan.MakeRedditPostRequestAsString("/api/submit/", data);
 
                 // Try to see if we can find the word redirect and if we can find the subreddit url
                 string responseLower = jsonResponse.ToLower();

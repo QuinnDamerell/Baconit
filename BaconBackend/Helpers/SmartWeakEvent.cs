@@ -33,6 +33,8 @@ namespace BaconBackend.Helpers
     /// </summary>
     public sealed class SmartWeakEvent<T> where T : class
     {
+        Func<EventArgs, bool> m_betweenInvokesFunc = null;
+
         struct EventEntry
         {
             public readonly MethodInfo TargetMethod;
@@ -62,6 +64,16 @@ namespace BaconBackend.Helpers
                 throw new ArgumentException("The second delegate parameter must be derived from type 'EventArgs'");
             if (invoke.ReturnType != typeof(void))
                 throw new ArgumentException("The delegate return type must be void.");
+        }
+
+        /// <summary>
+        /// Sets a function to call between invokes of the callback. If the funtion returns true
+        /// the callbacks will continue, if false they will stop.
+        /// </summary>
+        /// <param name="func"></param>
+        public void SetInBetweenInvokesAction(Func<EventArgs, bool> func)
+        {
+            m_betweenInvokesFunc = func;
         }
 
         public void Add(T eh)
@@ -149,6 +161,15 @@ namespace BaconBackend.Helpers
                 else
                 {
                     ee.TargetMethod.Invoke(null, parameters);
+                }
+
+                if(m_betweenInvokesFunc != null)
+                {
+                    // Call the function, if it returns false stop the callbacks.
+                    if(!m_betweenInvokesFunc.Invoke(e))
+                    {
+                        break;
+                    }
                 }
             }
             if (needsCleanup)

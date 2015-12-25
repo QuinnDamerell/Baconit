@@ -22,6 +22,16 @@ namespace Baconit.HelperControls
         }
         SmartWeakEvent<EventHandler<EventArgs>> m_onQuickSearchActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
 
+        /// <summary>
+        /// Fired when a escape key press is detected
+        /// </summary>
+        public event EventHandler<EventArgs> OnGoBackActivation
+        {
+            add { m_onGoBackActivation.Add(value); }
+            remove { m_onGoBackActivation.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<EventArgs>> m_onGoBackActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
+
         // Private Vars
         bool m_isControlKeyDown = false;
 
@@ -66,6 +76,11 @@ namespace Baconit.HelperControls
             if (e.VirtualKey == Windows.System.VirtualKey.Control)
             {
                 m_isControlKeyDown = false;
+            }
+            else if(e.VirtualKey == Windows.System.VirtualKey.Escape)
+            {
+                // If we have an escape key hit fire go back.
+                m_onGoBackActivation.Raise(this, new EventArgs());
             }
         }
     }

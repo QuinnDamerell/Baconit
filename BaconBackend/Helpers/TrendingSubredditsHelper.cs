@@ -38,7 +38,7 @@ namespace BaconBackend.Helpers
         //  Private vars
         //
         BaconManager m_baconMan;
-        SubredditCollector m_collector;
+        PostCollector m_collector;
 
         /// <summary>
         /// Construct a new trending subreddits helper.
@@ -68,7 +68,7 @@ namespace BaconBackend.Helpers
                 };
 
                 // Get the collector
-                m_collector = SubredditCollector.GetCollector(trendingSub, m_baconMan, SortTypes.New);
+                m_collector = PostCollector.GetCollector(trendingSub, m_baconMan, SortTypes.New);
                 m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
                 m_collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
 

@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="Baconit.FlipViewControls.CommnetSpoilerFlipControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Baconit.FlipViewControls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid Background="#191919">
+        <Grid>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock x:Name="ui_textBlock"
+                           Grid.Row="1"
+                           FontSize="15"
+                           Text="Spoiler!"
+                           TextAlignment="Center" TextWrapping="Wrap" Margin="12" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

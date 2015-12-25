@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BaconBackend.Collectors;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -218,6 +219,25 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         bool m_isHidden;
 
+        /// <summary>
+        /// Represents the current comment sort type for this post
+        /// </summary>
+        [JsonIgnore]
+        public CommentSortTypes CommentSortType
+        {
+            get
+            {
+                return m_commentSortType;
+            }
+            set
+            {
+                m_commentSortType = value;
+                NotifyPropertyChanged(nameof(CommentCurrentSortTypeString));
+            }
+        }
+        [JsonIgnore]
+        CommentSortTypes m_commentSortType = CommentSortTypes.Best;
+
         //
         // UI Vars
         //
@@ -331,25 +351,6 @@ namespace BaconBackend.DataObjects
         bool m_isPostVisible = false;
 
         /// <summary>
-        /// Used by flip view to indicate when the post header is visible
-        /// </summary>
-        [JsonIgnore]
-        public Visibility IsPostHeaderVisible
-        {
-            get
-            {
-                return m_isPostHeaderVisible;
-            }
-            set
-            {
-                m_isPostHeaderVisible = value;
-                NotifyPropertyChanged(nameof(IsPostHeaderVisible));
-            }
-        }
-        [JsonIgnore]
-        Visibility m_isPostHeaderVisible = Visibility.Visible;
-
-        /// <summary>
         /// Used by subreddit view to show unread comment count
         /// </summary>
         [JsonIgnore]
@@ -446,6 +447,33 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         int m_titleMaxLines = 2;
+
+        /// <summary>
+        /// Sets text for comment sort
+        /// </summary>
+        [JsonIgnore]
+        public string CommentCurrentSortTypeString
+        {
+            get
+            {
+                switch(CommentSortType)
+                {
+                    default:
+                    case CommentSortTypes.Best:
+                        return "Best";
+                    case CommentSortTypes.Controversial:
+                        return "Controversial";
+                    case CommentSortTypes.New:
+                        return "New";
+                    case CommentSortTypes.Old:
+                        return "Old";
+                    case CommentSortTypes.QA:
+                        return "Q&A";
+                    case CommentSortTypes.Top:
+                        return "Top";
+                }
+            }
+        }
 
         /// <summary>
         /// Sets text for a context menu item
@@ -784,6 +812,97 @@ namespace BaconBackend.DataObjects
         /// </summary>
         [JsonIgnore]
         public double FlipViewHeaderHeight = 0;
+
+        /// <summary>
+        /// Flip view post header visibility
+        /// </summary>
+        [JsonIgnore]
+        public Visibility FlipviewHeaderVisibility
+        {
+            get
+            {
+                return m_flipviewHeaderVisibility;
+            }
+            set
+            {
+                m_flipviewHeaderVisibility = value;
+                NotifyPropertyChanged(nameof(FlipviewHeaderVisibility));
+            }
+        }
+        [JsonIgnore]
+        Visibility m_flipviewHeaderVisibility = Visibility.Visible;
+
+        /// <summary>
+        /// The current angle of the header toggle button
+        /// </summary>
+        [JsonIgnore]
+        public int HeaderCollpaseToggleAngle
+        {
+            get
+            {
+                return m_headerCollpaseToggleAngle;
+            }
+            set
+            {
+                m_headerCollpaseToggleAngle = value;
+                NotifyPropertyChanged(nameof(HeaderCollpaseToggleAngle));
+            }
+        }
+        [JsonIgnore]
+        int m_headerCollpaseToggleAngle = 180;
+
+
+        /// <summary>
+        /// Indicates how many comments we are showing
+        /// </summary>
+        [JsonIgnore]
+        public int CurrentCommentShowingCount
+        {
+            get
+            {
+                return m_currentCommentCount;
+            }
+            set
+            {
+                m_currentCommentCount = value;
+                NotifyPropertyChanged(nameof(CurrentCommentShowingCount));
+            }
+        }
+        [JsonIgnore]
+        int m_currentCommentCount = 150;
+
+        /// <summary>
+        /// Shows or hides the loading more progress bar for comments.
+        /// </summary>
+        [JsonIgnore]
+        public bool FlipViewShowLoadingMoreComments
+        {
+            get
+            {
+                return m_flipViewShowLoadingMoreComments;
+            }
+            set
+            {
+                m_flipViewShowLoadingMoreComments = value;
+                NotifyPropertyChanged(nameof(FlipViewShowLoadingMoreComments));
+                NotifyPropertyChanged(nameof(FlipViewShowLoadingMoreCommentsVis));
+            }
+        }
+        [JsonIgnore]
+        bool m_flipViewShowLoadingMoreComments = false;
+
+        /// <summary>
+        /// Shows or hides the loading more progress bar for comments.
+        /// </summary>
+        [JsonIgnore]
+        public Visibility FlipViewShowLoadingMoreCommentsVis
+        {
+            get
+            {
+                return m_flipViewShowLoadingMoreComments ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
 
         #endregion
 

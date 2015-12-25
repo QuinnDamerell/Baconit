@@ -90,13 +90,8 @@ namespace Baconit.Panels
                 m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
                 m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
 
-                // Request a few comments so we will fill the screen.
-                // If the user scrolls we will get more later.
-                // To fix a bug where reddit doesn't give us the same
-                // comments the first time as the next, we will
-                // #bug #todo because of the "can't ask for more" bug we will
-                // just ask for all of the comments here.
-                if (!m_commentCollector.Update(false, 150))
+                // We have to ask for all the comments here bc we can't extend.
+                if (!m_commentCollector.Update(false, m_post.CurrentCommentShowingCount))
                 {
                     // If update returns false it isn't going to update because it has a cache. So just show the
                     // cache.
@@ -115,14 +110,94 @@ namespace Baconit.Panels
         }
 
         /// <summary>
+        /// Fired when the comment sort is changed.
+        /// </summary>
+        public void ChangeCommentSort()
+        {
+            // Show loading
+            m_post.FlipViewShowLoadingMoreComments = true;
+
+            // Do this in a background thread
+            Task.Run(() =>
+            {
+                // Kill the current collector
+                if (m_commentCollector != null)
+                {
+                    m_commentCollector.OnCollectionUpdated -= CommentCollector_OnCollectionUpdated;
+                    m_commentCollector.OnCollectorStateChange -= CommentCollector_OnCollectorStateChange;
+                }
+                m_commentCollector = null;
+
+                // Get a new collector with the new sort
+                m_commentCollector = CommentCollector.GetCollector(m_post, App.BaconMan);
+
+                // Sub to collection callbacks for the comments.
+                m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
+                m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
+
+                // Force our collector to update.
+                if (!m_commentCollector.Update(true, m_post.CurrentCommentShowingCount))
+                {
+                    // If update returns false it isn't going to update because it has a cache. So just show the
+                    // cache.
+                    OnCollectionUpdatedArgs<Comment> args = new OnCollectionUpdatedArgs<Comment>()
+                    {
+                        ChangedItems = m_commentCollector.GetCurrentPosts(),
+                        IsFreshUpdate = true,
+                        IsInsert = false,
+                        StartingPosition = 0
+                    };
+                    CommentCollector_OnCollectionUpdated(null, args);
+                }
+            });
+        }
+
+
+        /// <summary>
+        /// Updates the showing comment count and refreshes
+        /// </summary>
+        /// <param name="newCount"></param>
+        public async void UpdateShowingCommentCount(int newCount)
+        {
+            // Show loading
+            m_post.FlipViewShowLoadingMoreComments = true;
+
+            // Dispatch to the UI thread so this will happen a bit later to give time for the animations to finish.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                // Update the count
+                m_post.CurrentCommentShowingCount = newCount;
+
+                // Refresh
+                Refresh();
+            });
+        }
+
+
+        /// <summary>
+        /// Kicks off a refresh of the comments.
+        /// </summary>
+        public void Refresh()
+        {
+            // Show loading
+            m_post.FlipViewShowLoadingMoreComments = true;
+
+            // Do this in a background thread
+            Task.Run(() =>
+            {
+                // If we have a collector kick off an update.
+                if (m_commentCollector != null)
+                {
+                    m_commentCollector.Update(true, m_post.CurrentCommentShowingCount);
+                }
+            });
+        }
+
+        /// <summary>
         /// Called when we need more posts because we are scrolling down.
         /// </summary>
         public async void RequestMorePosts()
         {
-            // #todo, for some reason extending doesn't work here because
-            // the comments we get back don't have an after to continue getting them
-            // m_commentCollector.ExtendCollection(50);
-
             bool showLoadingUi = false;
 
             // Call prefetch comments to ensure we have tried to load them. If the user has prefetch comments off
@@ -138,7 +213,7 @@ namespace Baconit.Panels
                 showLoadingUi = m_commentCollector.State == CollectorState.Extending || m_commentCollector.State == CollectorState.Updating;
             }
 
-            // Show the laoding footer if we should.
+            // Show the loading footer if we should.
             if(showLoadingUi)
             {
                 // Dispatch to the UI thread
@@ -171,12 +246,23 @@ namespace Baconit.Panels
         private async void CommentCollector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
         {
             // #todo handle when there are no more
-            if(e.State == CollectorState.Idle)
+            if(e.State == CollectorState.Idle || e.State == CollectorState.FullyExtended)
             {
                 // When we are idle hide the loading message.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    m_post.ShowCommentLoadingMessage = Visibility.Collapsed;
+                    // Check if we have any comments
+                    if(e.NewPostCount == 0 && m_post.Comments.Count == 0)
+                    {
+                        m_post.ShowCommentLoadingMessage = Visibility.Visible;
+                        m_post.ShowCommentsErrorMessage = "No Comments";
+                        m_post.FlipViewShowLoadingMoreComments = false;
+                    }
+                    else
+                    {
+                        m_post.ShowCommentLoadingMessage = Visibility.Collapsed;
+                        m_post.FlipViewShowLoadingMoreComments = false;
+                    }               
                 });
             }
             else if(e.State == CollectorState.Error)
@@ -185,6 +271,7 @@ namespace Baconit.Panels
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     m_post.ShowCommentsErrorMessage = "Error Loading Comments";
+                    m_post.FlipViewShowLoadingMoreComments = false;
                 });
             }
         }
@@ -202,123 +289,175 @@ namespace Baconit.Panels
                 {
                     lock(m_fullCommentList)
                     {
-                        // This is tricky because the comment list in the post is a subset of the main list due to collapse.
-                        // Thus items are missing or moved in that list.
-
-                        // How we will do it is the following. We will make all of actions to the main list. If the operation is
-                        // "add at the end" we will do it to both lists because it is safe no matter what the state of the comment list.
-                        // If we have an insert or replace we will build two lists. Once the main list is updated we will then address updating
-                        // the comment list properly.
-
-                        // This list tracks any inserts we need to do. The key is the parent comment id, the value is the comment to
-                        // be inserted.
-                        List<KeyValuePair<string, Comment>> insertList = new List<KeyValuePair<string, Comment>>();
-
-                        // This list tracks any replaces we need to do. The key is the parent comment id, the value is the comment to
-                        // be inserted.
-                        List<KeyValuePair<string, Comment>> replaceList = new List<KeyValuePair<string, Comment>>();
-
-                        // First update the main list
-                        foreach (Comment comment in e.ChangedItems)
+                        if (e.IsFreshUpdate)
                         {
-                            if(m_targetComment != null && comment.Id.Equals(m_targetComment))
+                            // Reset the full list
+                            m_fullCommentList.Clear();
+
+
+                            // For fresh updates we can just replace everything and expand anything that isn't.
+                            for (int i = 0; i < e.ChangedItems.Count; i++)
                             {
-                                comment.IsHighlighted = true;
+                                Comment newComment = e.ChangedItems[i];
+                                Comment currentComment = i >= m_post.Comments.Count ? null : m_post.Comments[i];
+
+                                if (currentComment == null)
+                                {
+                                    m_post.Comments.Add(newComment);
+                                }
+                                else
+                                {
+                                    if (newComment.Id.Equals(currentComment.Id))
+                                    {
+                                        // Update the comment
+                                        m_post.Comments[i].Author = newComment.Author;
+                                        m_post.Comments[i].Score = newComment.Score;
+                                        m_post.Comments[i].TimeString = newComment.TimeString;
+                                        m_post.Comments[i].CollapsedCommentCount = newComment.CollapsedCommentCount;
+                                        m_post.Comments[i].Body = newComment.Body;
+                                        m_post.Comments[i].Likes = newComment.Likes;
+                                        m_post.Comments[i].ShowFullComment = true;
+                                    }
+                                    else
+                                    {
+                                        // Replace it
+                                        m_post.Comments[i] = newComment;
+                                    }
+                                }
+
+                                // Always add to the full list
+                                m_fullCommentList.Add(newComment);
                             }
 
-                            // Check if this is a add or replace if not an insert
-                            bool isReplace = insertIndex < m_fullCommentList.Count;
-
-                            // If we are inserting just insert it where it should be.
-                            if (e.IsInsert)
+                            // Trim off anything that shouldn't be here anymore
+                            while (m_post.Comments.Count > e.ChangedItems.Count)
                             {
-                                m_fullCommentList.Insert(insertIndex, comment);
-
-                                // Make sure we have a parent, if not use empty string
-                                string parentComment = insertIndex > 0 ? m_fullCommentList[insertIndex - 1].Id : string.Empty;
-                                insertList.Add(new KeyValuePair<string, Comment>(parentComment, comment));
+                                m_post.Comments.RemoveAt(m_post.Comments.Count - 1);
                             }
-                            else if (isReplace)
-                            {
-                                // Grab the id that we are replacing and the comment to replace it.
-                                replaceList.Add(new KeyValuePair<string, Comment>(m_fullCommentList[insertIndex].Id, comment));
-
-                                // Replace the current item
-                                m_fullCommentList[insertIndex] = comment;
-                            }
-                            else
-                            {
-                                // Add it to the end of the main list
-                                m_fullCommentList.Add(comment);
-
-                                // If we are adding it to the end of the main list it is safe to add it to the end of the UI list.
-                                m_post.Comments.Add(comment);
-                            }
-                            insertIndex++;
                         }
-
-                        // Now deal with the insert list.
-                        foreach(KeyValuePair<string, Comment> insertPair in insertList)
+                        else
                         {
-                            // If the key is empty string we are inserting into the head
-                            if(String.IsNullOrWhiteSpace(insertPair.Key))
+                            // This is tricky because the comment list in the post is a subset of the main list due to collapse.
+                            // Thus items are missing or moved in that list.
+
+                            // How we will do it is the following. We will make all of actions to the main list. If the operation is
+                            // "add at the end" we will do it to both lists because it is safe no matter what the state of the comment list.
+                            // If we have an insert or replace we will build two lists. Once the main list is updated we will then address updating
+                            // the comment list properly.
+
+                            // This list tracks any inserts we need to do. The key is the parent comment id, the value is the comment to
+                            // be inserted.
+                            List<KeyValuePair<string, Comment>> insertList = new List<KeyValuePair<string, Comment>>();
+
+                            // This list tracks any replaces we need to do. The key is the parent comment id, the value is the comment to
+                            // be inserted.
+                            List<KeyValuePair<string, Comment>> replaceList = new List<KeyValuePair<string, Comment>>();
+
+                            // First update the main list
+                            foreach (Comment comment in e.ChangedItems)
                             {
-                                m_post.Comments.Insert(0, insertPair.Value);
+                                if (m_targetComment != null && comment.Id.Equals(m_targetComment))
+                                {
+                                    comment.IsHighlighted = true;
+                                }
+
+                                // Check if this is a add or replace if not an insert
+                                bool isReplace = insertIndex < m_fullCommentList.Count;
+
+                                // If we are inserting just insert it where it should be.
+                                if (e.IsInsert)
+                                {
+                                    m_fullCommentList.Insert(insertIndex, comment);
+
+                                    // Make sure we have a parent, if not use empty string
+                                    string parentComment = insertIndex > 0 ? m_fullCommentList[insertIndex - 1].Id : string.Empty;
+                                    insertList.Add(new KeyValuePair<string, Comment>(parentComment, comment));
+                                }
+                                else if (isReplace)
+                                {
+                                    // Grab the id that we are replacing and the comment to replace it.
+                                    replaceList.Add(new KeyValuePair<string, Comment>(m_fullCommentList[insertIndex].Id, comment));
+
+                                    // Replace the current item
+                                    m_fullCommentList[insertIndex] = comment;
+                                }
+                                else
+                                {
+                                    // Add it to the end of the main list
+                                    m_fullCommentList.Add(comment);
+
+                                    // If we are adding it to the end of the main list it is safe to add it to the end of the UI list.
+                                    m_post.Comments.Add(comment);
+                                }
+                                insertIndex++;
                             }
-                            else
+
+                            // Now deal with the insert list.
+                            foreach (KeyValuePair<string, Comment> insertPair in insertList)
                             {
-                                // Try to find the parent comment.
-                                for(int i = 0; i < m_post.Comments.Count; i++)
+                                // If the key is empty string we are inserting into the head
+                                if (String.IsNullOrWhiteSpace(insertPair.Key))
+                                {
+                                    m_post.Comments.Insert(0, insertPair.Value);
+                                }
+                                else
+                                {
+                                    // Try to find the parent comment.
+                                    for (int i = 0; i < m_post.Comments.Count; i++)
+                                    {
+                                        Comment comment = m_post.Comments[i];
+                                        if (comment.Id.Equals(insertPair.Key))
+                                        {
+                                            // We found the parent, it is not collapsed we should insert this comment after it.
+                                            if (comment.ShowFullComment)
+                                            {
+                                                m_post.Comments.Insert(i + 1, insertPair.Value);
+                                            }
+
+                                            // We are done, break out of this parent search.
+                                            break;
+
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Now deal with the replace list.
+                            for (int replaceCount = 0; replaceCount < replaceList.Count; replaceCount++)
+                            {
+                                KeyValuePair<string, Comment> replacePair = replaceList[replaceCount];
+
+                                // Try to find the comment we will replace; Note if is very important that we start at the current replace point
+                                // because this comment might have been added before this count already due to a perviouse replace. In that case
+                                // we don't want to accidentally find that one instead of this one.
+                                for (int i = replaceCount; i < m_post.Comments.Count; i++)
                                 {
                                     Comment comment = m_post.Comments[i];
-                                    if (comment.Id.Equals(insertPair.Key))
+                                    if (comment.Id.Equals(replacePair.Key))
                                     {
-                                        // We found the parent, it is not collapsed we should insert this comment after it.
-                                        if(comment.ShowFullComment)
+                                        // If the id is the same we are updating. If we replace the comment the UI will freak out,
+                                        // so just update the UI values
+                                        if (comment.Id.Equals(replacePair.Value.Id))
                                         {
-                                            m_post.Comments.Insert(i + 1, insertPair.Value);
+                                            m_post.Comments[i].Author = comment.Author;
+                                            m_post.Comments[i].Score = comment.Score;
+                                            m_post.Comments[i].TimeString = comment.TimeString;
+                                            m_post.Comments[i].CollapsedCommentCount = comment.CollapsedCommentCount;
+                                            m_post.Comments[i].Body = comment.Body;
+                                            m_post.Comments[i].Likes = comment.Likes;
+                                        }
+                                        else
+                                        {
+                                            // Replace the comment with this one
+                                            m_post.Comments[i] = replacePair.Value;
                                         }
 
-                                        // We are done, break out of this parent search.
+                                        // We are done, break out of the search for the match.
                                         break;
 
                                     }
                                 }
                             }
-                        }
-
-                        // Now deal with the replace list.
-                        foreach (KeyValuePair<string, Comment> replacePair in replaceList)
-                        {
-                            // Try to find the comment we will replace
-                            for (int i = 0; i < m_post.Comments.Count; i++)
-                            {
-                                Comment comment = m_post.Comments[i];
-                                if (comment.Id.Equals(replacePair.Key))
-                                {
-                                    // If the id is the same we are updating. If we replace the comment the UI will freak out,
-                                    // so just update the UI values
-                                    if (comment.Id.Equals(replacePair.Value.Id))
-                                    {
-                                        m_post.Comments[i].Author = comment.Author;
-                                        m_post.Comments[i].Score = comment.Score;
-                                        m_post.Comments[i].TimeString = comment.TimeString;
-                                        m_post.Comments[i].CollapsedCommentCount = comment.CollapsedCommentCount;
-                                        m_post.Comments[i].Body = comment.Body;
-                                        m_post.Comments[i].Likes = comment.Likes;
-                                    }
-                                    else
-                                    {
-                                        // Replace the comment with this one
-                                        m_post.Comments[i] = replacePair.Value;
-                                    }
-
-                                    // We are done, break out of the search for the match.
-                                    break;
-
-                                }
-                            }
-
                         }
                     }
                 }
@@ -531,7 +670,7 @@ namespace Baconit.Panels
                 }
             }
         }
-
+       
         #endregion
     }
 }

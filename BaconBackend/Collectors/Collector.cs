@@ -26,9 +26,22 @@ namespace BaconBackend.Collectors
         /// </summary>
         Extending,
         /// <summary>
+        /// If there is no more content to extend the collector with.
+        /// </summary>
+        FullyExtended,
+        /// <summary>
         /// If an error occurred in the collector's operation.
         /// </summary>
         Error
+    }
+
+    /// <summary>
+    /// Defines the possible error states of the collector
+    /// </summary>
+    public enum CollectorErrorState
+    {
+        Unknown,
+        ServiceDown,
     }
 
     /// <summary>
@@ -40,6 +53,8 @@ namespace BaconBackend.Collectors
         /// The collector's new state.
         /// </summary>
         public CollectorState State;
+        public CollectorErrorState ErrorState = CollectorErrorState.Unknown;
+        public int NewPostCount = 0;
     }
 
     /// <summary>
@@ -66,9 +81,58 @@ namespace BaconBackend.Collectors
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
+=======
+    /// Possible vote actions.
+    /// </summary>
+    public enum PostVoteAction
+    {
+        UpVote,
+        DownVote,
+    }
+
+    /// <summary>
+    /// Types of sort
+    /// </summary>
+    public enum SortTypes
+    {
+        Hot,
+        New,
+        Rising,
+        Controversial,
+        Top
+    }
+
+    /// <summary>
+    /// Types of sort for comments
+    /// </summary>
+    public enum CommentSortTypes
+    {
+        Best,
+        New,
+        Top,
+        Controversial,
+        Old,
+        QA
+    }
+
+    /// <summary>
+    /// Types of sort times.
+    /// </summary>
+    public enum SortTimeTypes
+    {
+        Hour,
+        Day,
+        Week,
+        Month,
+        Year,
+        AllTime
+    }
+
+>>>>>>> c804eb06e2c4b7fdf5d6e51a4cf8a7bdc3c9b285
     public abstract class Collector<T>
     {
         /// <summary>
@@ -129,6 +193,11 @@ namespace BaconBackend.Collectors
             get { return m_state; }
         }
 
+        public CollectorErrorState ErrorState
+        {
+            get { return m_errorState; }
+        }
+
         //
         // Abstract Functions
         //
@@ -150,6 +219,7 @@ namespace BaconBackend.Collectors
         //
 
         CollectorState m_state = CollectorState.Idle;
+        CollectorErrorState m_errorState = CollectorErrorState.Unknown;
         RedditListHelper<T> m_listHelper;
         BaconManager m_baconMan;
         string m_uniqueId;
@@ -238,16 +308,18 @@ namespace BaconBackend.Collectors
                     {
                         m_state = CollectorState.Idle;
                     }
-                    FireStateChanged();
+
+                    FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Subreddit update failed", e);
+                    m_baconMan.MessageMan.DebugDia("Collector failed to update id:"+ m_uniqueId, e);
 
                     // Update the state
                     lock (m_listHelper)
                     {
                         m_state = CollectorState.Error;
+                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -266,7 +338,7 @@ namespace BaconBackend.Collectors
             // we need to indicate to them they should remove the rest of the posts that are old.
             lock (m_listHelper)
             {
-                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending)
+                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending || m_state == CollectorState.FullyExtended)
                 {
                     return;
                 }
@@ -295,9 +367,17 @@ namespace BaconBackend.Collectors
                     // Update the state
                     lock (m_listHelper)
                     {
-                        m_state = CollectorState.Idle;
+                        if (posts.Count == 0)
+                        {
+                            // If we don't get anything back we are fully extended.
+                            m_state = CollectorState.FullyExtended;
+                        }
+                        else
+                        {
+                            m_state = CollectorState.Idle;
+                        }
                     }
-                    FireStateChanged();
+                    FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
@@ -307,6 +387,7 @@ namespace BaconBackend.Collectors
                     lock (m_listHelper)
                     {
                         m_state = CollectorState.Error;
+                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -373,11 +454,11 @@ namespace BaconBackend.Collectors
         /// <summary>
         /// Fire the state changed event.
         /// </summary>
-        protected void FireStateChanged()
+        protected void FireStateChanged(int newPostCount = 0)
         {
             try
             {
-                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state });
+                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state, ErrorState = m_errorState, NewPostCount = newPostCount });
             }
             catch (Exception e)
             {
