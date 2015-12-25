@@ -16,48 +16,141 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace BaconBackend.Helpers
 {
+    /// <summary>
+    /// The type of content that a link points toward.
+    /// </summary>
     public enum RedditContentType
     {
+        /// <summary>
+        /// A subreddit.
+        /// </summary>
         Subreddit,
+        /// <summary>
+        /// A post within a subreddit.
+        /// </summary>
         Post,
+        /// <summary>
+        /// A comment on a reddit post.
+        /// </summary>
         Comment,
+        /// <summary>
+        /// A URL linking somewhere other than reddit.
+        /// </summary>
         Website
     }
 
+    /// <summary>
+    /// Content that a link posted on reddit links to.
+    /// </summary>
     public class RedditContentContainer
     {
+        /// <summary>
+        /// This content's content type.
+        /// </summary>
         public RedditContentType Type;
+        /// <summary>
+        /// The webpage this content links to, if the type is a website.
+        /// </summary>
         public string Website;
+        /// <summary>
+        /// The subreddit this content links to, if the type is a subreddit.
+        /// </summary>
         public string Subreddit;
+        /// <summary>
+        /// The post this content links to, if the type is a reddit post
+        /// </summary>
         public string Post;
+        /// <summary>
+        /// The comment this content links to, if the type is a reddit comment.
+        /// </summary>
         public string Comment;
     }
 
-    public enum SubmiteNewPostErrors
+    /// <summary>
+    /// Error type that occurs when posting a new reddit post.
+    /// </summary>
+    public enum SubmitNewPostErrors
     {
+        /// <summary>
+        /// No error occurred.
+        /// </summary>
         NONE,
+        /// <summary>
+        /// An unknown error occurred.
+        /// </summary>
         UNKNOWN,
+        /// <summary>
+        /// The request specified an option that doesn't exist.
+        /// </summary>
         INVALID_OPTION,
+        /// <summary>
+        /// A Captcha is required to submit the post, and it was submitted incorrectly.
+        /// </summary>
         BAD_CAPTCHA,
+        /// <summary>
+        /// The URL linked to in the submitted post is invalid.
+        /// </summary>
         BAD_URL,
+        /// <summary>
+        /// The subreddit posted to does not exist.
+        /// </summary>
         SUBREDDIT_NOEXIST,
+        /// <summary>
+        /// The subreddit posted to does not allow the logged in user to make this post.
+        /// </summary>
         SUBREDDIT_NOTALLOWED,
+        /// <summary>
+        /// No subreddit was specified when posting.
+        /// </summary>
         SUBREDDIT_REQUIRED,
+        /// <summary>
+        /// The subreddit posted to does not allow the logged in user to make this self-text post.
+        /// </summary>
         NO_SELFS,
+        /// <summary>
+        /// The subreddit posted to does not allow the logged in user to make this link post.
+        /// </summary>
         NO_LINKS,
+        /// <summary>
+        /// The post attempt timed out, and failed to complete.
+        /// </summary>
         IN_TIMEOUT,
+        /// <summary>
+        /// Reddit disallows the app to post this cpntent, as it has exceeded the reddit API rate limit.
+        /// </summary>
         RATELIMIT,
+        /// <summary>
+        /// The subreddit posted to does not allow links to be posted to the domain this post linked to.
+        /// </summary>
         DOMAIN_BANNED,
+        /// <summary>
+        /// The subreddit posted to does not allow links to be resubmitted, and this post has already been posted.
+        /// </summary>
         ALREADY_SUB
     }
 
+    /// <summary>
+    /// A response from reddit when a new post is submitted.
+    /// </summary>
     public class SubmitNewPostResponse
     {
+        /// <summary>
+        /// Whether the post was successfully posted.
+        /// </summary>
         public bool Success = false;
+        /// <summary>
+        /// A link to the post that was successfully created, or the empty string if no post was created.
+        /// </summary>
         public string NewPostLink = String.Empty;
-        public SubmiteNewPostErrors RedditError = SubmiteNewPostErrors.NONE;
+        /// <summary>
+        /// The error type that occurred when posting, or NONE if no error occurred.
+        /// </summary>
+        public SubmitNewPostErrors RedditError = SubmitNewPostErrors.NONE;
     }
 
+    /// <summary>
+    /// Miscellaneous static helper methods.
+    /// </summary>
     public class MiscellaneousHelper
     {
         /// <summary>
@@ -229,20 +322,20 @@ namespace BaconBackend.Helpers
                 else
                 {
                     // We have a reddit error. Try to figure out what it is.
-                    for(int i = 0; i < Enum.GetNames(typeof(SubmiteNewPostErrors)).Length; i++)
+                    for(int i = 0; i < Enum.GetNames(typeof(SubmitNewPostErrors)).Length; i++)
                     {
-                        string enumName = Enum.GetName(typeof(SubmiteNewPostErrors), i).ToLower(); ;
+                        string enumName = Enum.GetName(typeof(SubmitNewPostErrors), i).ToLower(); ;
                         if (responseLower.Contains(enumName))
                         {
                             baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; error: "+ enumName);
                             baconMan.MessageMan.DebugDia("failed to submit post; error: "+ enumName);
-                            return new SubmitNewPostResponse() { Success = false, RedditError = (SubmiteNewPostErrors)i};
+                            return new SubmitNewPostResponse() { Success = false, RedditError = (SubmitNewPostErrors)i};
                         }
                     }
 
                     baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; unknown reddit error: ");
                     baconMan.MessageMan.DebugDia("failed to submit post; unknown reddit error");
-                    return new SubmitNewPostResponse() { Success = false, RedditError = SubmiteNewPostErrors.UNKNOWN };
+                    return new SubmitNewPostResponse() { Success = false, RedditError = SubmitNewPostErrors.UNKNOWN };
                 }
             }
             catch (Exception e)
@@ -442,6 +535,11 @@ namespace BaconBackend.Helpers
             return nextBreak;
         }
 
+        /// <summary>
+        /// Gets the complementary color of the one given.
+        /// </summary>
+        /// <param name="source">The color to find the complement of.</param>
+        /// <returns>The complement to the input color.</returns>
         public static Color GetComplementaryColor(Color source)
         {
             Color inputColor = source;

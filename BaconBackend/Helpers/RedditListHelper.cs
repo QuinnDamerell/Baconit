@@ -14,9 +14,15 @@ namespace BaconBackend.Helpers
     /// </summary>
     public class Element<Et>
     {
+        /// <summary>
+        /// Reddit item.
+        /// </summary>
         [JsonProperty(PropertyName = "data")]
         public Et Data;
 
+        /// <summary>
+        /// Type prefix of Data's object type.
+        /// </summary>
         [JsonProperty(PropertyName = "kind")]
         public string Kind;
     }
@@ -26,12 +32,22 @@ namespace BaconBackend.Helpers
     /// </summary>
     public class ElementList<Et>
     {
+        /// <summary>
+        /// List of elements.
+        /// </summary>
         [JsonProperty(PropertyName = "children")]
         public List<Element<Et>> Children;
 
+        /// <summary>
+        /// The fullname of the last element in the list, or null if this is the end of the list.
+        /// </summary>
         [JsonProperty(PropertyName = "after")]
         public string After = null;
 
+        /// <summary>
+        /// The fullname of the first element in the list, or null if there are no elements
+        /// earlier in this list.
+        /// </summary>
         [JsonProperty(PropertyName = "before")]
         public string Before = null;
     }
@@ -41,9 +57,15 @@ namespace BaconBackend.Helpers
     /// </summary>
     public class RootElement<Et>
     {
+        /// <summary>
+        /// List of elements.
+        /// </summary>
         [JsonProperty(PropertyName = "data")]
         public ElementList<Et> Data;
 
+        /// <summary>
+        /// Type prefix of the objects in the Data list.
+        /// </summary>
         [JsonProperty(PropertyName = "kind")]
         public string Kind;
     }
@@ -53,6 +75,9 @@ namespace BaconBackend.Helpers
     /// </summary>
     public class ArrayRoot<Et>
     {
+        /// <summary>
+        /// List of all the elements under the root.
+        /// </summary>
         [JsonProperty(PropertyName = "root")]
         public List<RootElement<Et>> Root;
     }
@@ -84,6 +109,15 @@ namespace BaconBackend.Helpers
         /// </summary>
         bool m_takeFirstArrayRoot = false;
 
+        /// <summary>
+        /// Create a new object to help build reddit lists.
+        /// </summary>
+        /// <param name="baseUrl">The URL with the information to populate this list.</param>
+        /// <param name="netMan">An object to help make web requests.</param>
+        /// <param name="isArrayRoot">If the object returned from reddit will have no root element 
+        /// (and will therefore need modification to be correct JSON).</param>
+        /// <param name="takeFirstArrayRoot">If the first child under the root is the one with the data (rather than the second child).</param>
+        /// <param name="optionalGetArgs">Additional GET arguments to send when making the request to populate this list.</param>
         public RedditListHelper(string baseUrl, NetworkManager netMan, bool isArrayRoot = false, bool takeFirstArrayRoot = false, string optionalGetArgs = "")
         {
             m_baseUrl = baseUrl;
@@ -113,7 +147,7 @@ namespace BaconBackend.Helpers
         /// THIS IS NOT THREAD SAFE
         /// </summary>
         /// <param name="bottom">The bottom range, inclusive</param>
-        /// <param name="top">Teh top of the range, exclusive</param>
+        /// <param name="top">The top of the range, exclusive</param>
         /// <returns></returns>
         public async Task<List<Element<T>>> FetchElements(int bottom, int top)
         {
@@ -122,16 +156,16 @@ namespace BaconBackend.Helpers
                 throw new Exception("top can't be larger than bottom!");
             }
 
-            int santyCheckCount = 0;
+            int sanityCheckCount = 0;
             while (true)
             {
                 // See if we now have what they asked for, OR the list has elements but we don't have an after.
                 // (this is the case when we have hit the end of the list)
-                // #bug!?!? At some point I changed the children count in the after check to santyCheckCount == 0, but I can't remember why
+                // #bug!?!? At some point I changed the children count in the after check to sanityCheckCount == 0, but I can't remember why
                 // and it breaks lists that have ends. There is some bug where something doesn't try to refresh or something...
                 if (m_currentElementList.Children.Count >= top
                     || (m_currentElementList.Children.Count != 0 && m_currentElementList.After == null)
-                    || (santyCheckCount > 25))
+                    || (sanityCheckCount > 25))
                 {
                     // Return what they asked for capped at the list size
                     int length = top - bottom;
@@ -189,7 +223,7 @@ namespace BaconBackend.Helpers
                 // Update the before and after
                 m_currentElementList.After = root.Data.After;
                 m_currentElementList.Before = root.Data.Before;
-                santyCheckCount++;
+                sanityCheckCount++;
             }
         }
 
