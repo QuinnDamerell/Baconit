@@ -13,9 +13,21 @@ namespace BaconBackend.Collectors
     /// </summary>
     public enum CollectorState
     {
+        /// <summary>
+        /// If the collector is not doing any operation, and is in a correct state.
+        /// </summary>
         Idle,
+        /// <summary>
+        /// If the collector is requesting updated versions of the data it has.
+        /// </summary>
         Updating,
+        /// <summary>
+        /// If the collector is requesting new information to extend its data.
+        /// </summary>
         Extending,
+        /// <summary>
+        /// If an error occurred in the collector's operation.
+        /// </summary>
         Error
     }
 
@@ -24,6 +36,9 @@ namespace BaconBackend.Collectors
     /// </summary>
     public class OnCollectorStateChangeArgs : EventArgs
     {
+        /// <summary>
+        /// The collector's new state.
+        /// </summary>
         public CollectorState State;
     }
 
@@ -32,12 +47,28 @@ namespace BaconBackend.Collectors
     /// </summary>
     public class OnCollectionUpdatedArgs<T> : EventArgs
     {
+        /// <summary>
+        /// If the information in the collector was just fully updated.
+        /// </summary>
         public bool IsFreshUpdate;
+        /// <summary>
+        /// If the collection was changed by inserting something user created (and not from a web request).
+        /// </summary>
         public bool IsInsert;
+        /// <summary>
+        /// The position of the first updated item in the collector's items.
+        /// </summary>
         public int StartingPosition;
+        /// <summary>
+        /// The list of items in the collector that have changed.
+        /// </summary>
         public List<T> ChangedItems;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class Collector<T>
     {
         /// <summary>

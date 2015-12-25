@@ -8,13 +8,20 @@ using System.Threading.Tasks;
 
 namespace BaconBackend.Helpers
 {
-
+    /// <summary>
+    /// Provides data for the event of having the list of trending subreddits ready.
+    /// </summary>
     public class TrendingSubsReadyEvent : EventArgs
     {
+        /// <summary>
+        /// The list of subreddits found that are trending.
+        /// </summary>
         public List<string> TrendingSubredditsDisplayNames;
     }
 
-
+    /// <summary>
+    /// A helper class to determine which subreddits are trending.
+    /// </summary>
     public class TrendingSubredditsHelper
     {
         /// <summary>
@@ -33,6 +40,10 @@ namespace BaconBackend.Helpers
         BaconManager m_baconMan;
         SubredditCollector m_collector;
 
+        /// <summary>
+        /// Construct a new trending subreddits helper.
+        /// </summary>
+        /// <param name="baconMan">The reddit connection manager used to get the trending subreddits.</param>
         public TrendingSubredditsHelper(BaconManager baconMan)
         {
             m_baconMan = baconMan;
@@ -41,7 +52,6 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Called when we should get the trending subs
         /// </summary>
-        /// <param name="count"></param>
         public void GetTrendingSubreddits()
         {
             // Check to see if we should update.

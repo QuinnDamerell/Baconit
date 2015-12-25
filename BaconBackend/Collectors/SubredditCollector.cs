@@ -215,13 +215,13 @@ namespace BaconBackend.Collectors
                 {
                     // duplicate vote would undo the action
                     collectionPost.Likes = null;
-                    collectionPost.Score -= voteMultipler;
+                    collectionPost.Score -= voteMultiplier;
                 }
                 else
                 {
                     // opposite vote, takes into account previous vote
                     collectionPost.Likes = likesAction;
-                    collectionPost.Score += 2 * voteMultiplier
+                    collectionPost.Score += 2 * voteMultiplier;
                 }
             }
             else

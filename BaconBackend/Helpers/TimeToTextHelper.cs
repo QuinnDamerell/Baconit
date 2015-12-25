@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace BaconBackend.Helpers
 {
+    /// <summary>
+    /// Helper class to convert an absolute time to text that represents 
+    /// elapsed time.
+    /// </summary>
     public class TimeToTextHelper
     {
         /// <summary>
