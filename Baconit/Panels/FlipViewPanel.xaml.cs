@@ -138,9 +138,6 @@ namespace Baconit.Panels
             // when created but it doesn't seem to work. So for now just hide it
             // and when the first person tries to open it we will show it.
             ui_commmentBox.Visibility = Visibility.Collapsed;
-
-            // Set the flipview list item source.
-            ui_flipView.ItemsSource = m_postsLists;
         }
 
         /// <summary>
@@ -439,6 +436,12 @@ namespace Baconit.Panels
 
                         // Add one to the insert index
                         insertIndex++;
+                    }
+
+                    // If the item source hasn't been set yet do it now.
+                    if (ui_flipView.ItemsSource == null)
+                    {
+                        ui_flipView.ItemsSource = m_postsLists;
                     }
 
                     // This is a good place to show the comment tip if we have to since this

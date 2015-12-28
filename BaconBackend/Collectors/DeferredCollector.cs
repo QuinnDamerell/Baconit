@@ -64,7 +64,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="collector"></param>
         /// <param name="preLoadReturnCount"></param>
-        public DeferredCollector(Collector<T> collector, int preLoadReturnCount = 5)
+        public DeferredCollector(Collector<T> collector, int preLoadReturnCount = 10)
         {
             m_preLoadCount = preLoadReturnCount;
             m_collector = collector;
