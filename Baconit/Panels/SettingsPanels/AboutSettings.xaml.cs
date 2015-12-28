@@ -36,7 +36,8 @@ namespace Baconit.Panels.SettingsPanels
 
         public void OnNavigatingFrom()
         {
-            // Ignore
+            // Pause the snow if going
+            ui_letItSnow.AllOfTheSnowIsNowBlackSlushPlsSuspendIt();
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
@@ -58,6 +59,9 @@ namespace Baconit.Panels.SettingsPanels
             ui_buildString.Text = $"Build: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             App.BaconMan.TelemetryMan.ReportEvent(this, "AboutOpened");
+
+            // Resume snow if it was going
+            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
         }
 
         private async void RateAndReview_Tapped(object sender, TappedRoutedEventArgs e)
@@ -99,6 +103,10 @@ namespace Baconit.Panels.SettingsPanels
 
         private void Logo_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            // Start the snow
+            ui_letItSnow.MakeItSnow();
+
+            // Navigate to developer settings
             m_host.Navigate(typeof(DeveloperSettings), "DeveloperSettings");
         }
 

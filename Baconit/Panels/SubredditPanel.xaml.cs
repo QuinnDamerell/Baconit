@@ -125,9 +125,6 @@ namespace Baconit.Panels
         public void OnNavigatingFrom()
         {
             m_isVisible = false;
-
-            // Stop the snow if going
-            ui_letItSnow.AllOfTheSnowIsNowBlackSlushPlsSuspendIt();
         }
 
         public void OnNavigatingTo()
@@ -139,9 +136,6 @@ namespace Baconit.Panels
                 // Make sure we are up to date
                 m_collector.Update();
             }
-
-            // Resume the snow if it was going
-            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
 
             // Set the task bar color
             m_host.SetStatusBar(Color.FromArgb(255,10,10,10));
@@ -490,7 +484,7 @@ namespace Baconit.Panels
 
         private void ViewUser_Click(object sender, RoutedEventArgs e)
         {
-            // Get the post 
+            // Get the post
             Post post = (sender as FrameworkElement).DataContext as Post;
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
@@ -824,9 +818,6 @@ namespace Baconit.Panels
         {
             // Kick off an update.
             m_collector.Update(true);
-
-            // Why not.
-            ui_letItSnow.MakeItSnow();
         }
 
         /// <summary>

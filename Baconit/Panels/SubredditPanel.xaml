@@ -149,158 +149,155 @@
 
     <!--  This holds all of the UI except the loading overlay  -->
     <SplitView x:Name="ui_splitView"
+               Background="#0A0A0A"
                PanePlacement="Right"
                SizeChanged="SplitView_SizeChanged">
         <SplitView.Content>
-            <Grid Background="#0A0A0A">
-                <helperControl:LetItSnow x:Name="ui_letItSnow" />
+            <Grid x:Name="ui_contentRoot">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
 
-                <Grid x:Name="ui_contentRoot">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
+                <!--  Subreddit Header  -->
+                <Grid Grid.Row="0" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
+                        <TextBlock x:Name="ui_subredditName"
+                                   Margin="12,12,0,12"
+                                   VerticalAlignment="Bottom"
+                                   Text="Baconit" />
+                    </Grid>
 
-                    <!--  Subreddit Header  -->
-                    <Grid Grid.Row="0" Background="Transparent">
+                    <!--  Sort Menu  -->
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="Transparent"
+                                Orientation="Horizontal"
+                                Padding="12"
+                                Tapped="Sort_Tapped">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <TextBlock Margin="0,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="#989898"
+                                   Text="Sort:" />
+                        <TextBlock x:Name="ui_sortText"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="Hot" />
+                        <TextBlock Margin="2,1,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="9"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
+                    </StackPanel>
+
+                    <!--  Top Sort Time  -->
+                    <StackPanel x:Name="ui_timeSortHolder"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="Transparent"
+                                Orientation="Horizontal"
+                                Padding="0,12,12,12"
+                                Tapped="SortTime_Tapped">
+                        <FlyoutBase.AttachedFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" />
+                            </MenuFlyout>
+                        </FlyoutBase.AttachedFlyout>
+                        <TextBlock Margin="0,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="#989898"
+                                   Text="Time:" />
+                        <TextBlock x:Name="ui_sortTimeText"
+                                   VerticalAlignment="Bottom"
+                                   FontSize="12"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text="Past Week" />
+                        <TextBlock Margin="2,1,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="9"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
+                    </StackPanel>
+                </Grid>
+                <!--  Loading indicator  -->
+                <ProgressBar x:Name="ui_progressBar"
+                             Grid.Row="0"
+                             VerticalAlignment="Bottom"
+                             Background="Transparent" />
+
+                <!--  Posts list  -->
+                <helperControl:EndDetectingListView x:Name="ui_postList"
+                                                    Grid.Row="1"
+                                                    IsTapEnabled="False"
+                                                    ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                    ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
+                                                    Padding="0,0,8,0"
+                                                    SelectionChanged="PostList_SelectionChanged"
+                                                    Style="{StaticResource ListViewStyle}">
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection>
+                            <EntranceThemeTransition IsStaggeringEnabled="True" />
+                            <AddDeleteThemeTransition />
+                        </TransitionCollection>
+                    </ListView.ItemContainerTransitions>
+                </helperControl:EndDetectingListView>
+
+                <!--  There are not post here text  -->
+                <TextBlock x:Name="ui_noPostText"
+                           Grid.Row="1"
+                           Margin="12,0,12,12"
+                           Foreground="#999999"
+                           Text="There are no posts here."
+                           Visibility="Collapsed" />
+
+                <!--  Custom App bar  -->
+                <Grid Grid.Row="2"
+                      Background="#1F1F1F"
+                      Padding="4">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
-                        <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
-                            <TextBlock x:Name="ui_subredditName"
-                                       Margin="12,12,0,12"
-                                       VerticalAlignment="Bottom"
-                                       Text="Baconit" />
-                        </Grid>
-
-                        <!--  Sort Menu  -->
-                        <StackPanel Grid.Column="1"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Bottom"
-                                    Background="Transparent"
-                                    Orientation="Horizontal"
-                                    Padding="12"
-                                    Tapped="Sort_Tapped">
-                            <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
-                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
-                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
-                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
-                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
-                                </MenuFlyout>
-                            </FlyoutBase.AttachedFlyout>
-                            <TextBlock Margin="0,0,2,0"
-                                       VerticalAlignment="Bottom"
-                                       FontSize="12"
-                                       Foreground="#989898"
-                                       Text="Sort:" />
-                            <TextBlock x:Name="ui_sortText"
-                                       VerticalAlignment="Bottom"
-                                       FontSize="12"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="Hot" />
-                            <TextBlock Margin="2,1,0,0"
-                                       VerticalAlignment="Center"
-                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                       FontSize="9"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text=" &#xE0E5;" />
-                        </StackPanel>
-
-                        <!--  Top Sort Time  -->
-                        <StackPanel x:Name="ui_timeSortHolder"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Bottom"
-                                    Background="Transparent"
-                                    Orientation="Horizontal"
-                                    Padding="0,12,12,12"
-                                    Tapped="SortTime_Tapped">
-                            <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" />
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" />
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" />
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" />
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" />
-                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" />
-                                </MenuFlyout>
-                            </FlyoutBase.AttachedFlyout>
-                            <TextBlock Margin="0,0,2,0"
-                                       VerticalAlignment="Bottom"
-                                       FontSize="12"
-                                       Foreground="#989898"
-                                       Text="Time:" />
-                            <TextBlock x:Name="ui_sortTimeText"
-                                       VerticalAlignment="Bottom"
-                                       FontSize="12"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text="Past Week" />
-                            <TextBlock Margin="2,1,0,0"
-                                       VerticalAlignment="Center"
-                                       FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                       FontSize="9"
-                                       Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                       Text=" &#xE0E5;" />
-                        </StackPanel>
-                    </Grid>
-                    <!--  Loading indicator  -->
-                    <ProgressBar x:Name="ui_progressBar"
-                                 Grid.Row="0"
-                                 VerticalAlignment="Bottom"
-                                 Background="Transparent" />
-
-                    <!--  Posts list  -->
-                    <helperControl:EndDetectingListView x:Name="ui_postList"
-                                                        Grid.Row="1"
-                                                        IsTapEnabled="False"
-                                                        ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                                                        ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
-                                                        Padding="0,0,8,0"
-                                                        SelectionChanged="PostList_SelectionChanged"
-                                                        Style="{StaticResource ListViewStyle}">
-                        <ListView.ItemContainerTransitions>
-                            <TransitionCollection>
-                                <EntranceThemeTransition IsStaggeringEnabled="True" />
-                                <AddDeleteThemeTransition />
-                            </TransitionCollection>
-                        </ListView.ItemContainerTransitions>
-                    </helperControl:EndDetectingListView>
-
-                    <!--  There are not post here text  -->
-                    <TextBlock x:Name="ui_noPostText"
-                               Grid.Row="1"
-                               Margin="12,0,12,12"
-                               Foreground="#999999"
-                               Text="There are no posts here."
-                               Visibility="Collapsed" />
-
-                    <!--  Custom App bar  -->
-                    <Grid Grid.Row="2"
-                          Background="#1F1F1F"
-                          Padding="4">
-                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <helperControl:CircleIconButton Grid.Column="0"
-                                                            OnIconTapped="Refresh_Click"
-                                                            SymbolIcon="Refresh" />
-                            <helperControl:CircleIconButton Grid.Column="1"
-                                                            FontIconGlyph="&#xE700;"
-                                                            OnIconTapped="MenuButton_Click" />
-                            <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
-                                                            Grid.Column="2"
-                                                            OnIconTapped="AppBarSideBarOpen_OnIconTapped"
-                                                            SymbolIcon="DockRight" />
-                        </Grid>
+                        <helperControl:CircleIconButton Grid.Column="0"
+                                                        OnIconTapped="Refresh_Click"
+                                                        SymbolIcon="Refresh" />
+                        <helperControl:CircleIconButton Grid.Column="1"
+                                                        FontIconGlyph="&#xE700;"
+                                                        OnIconTapped="MenuButton_Click" />
+                        <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
+                                                        Grid.Column="2"
+                                                        OnIconTapped="AppBarSideBarOpen_OnIconTapped"
+                                                        SymbolIcon="DockRight" />
                     </Grid>
                 </Grid>
             </Grid>
