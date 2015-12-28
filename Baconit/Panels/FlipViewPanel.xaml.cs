@@ -72,6 +72,11 @@ namespace Baconit.Panels
         ObservableCollection<Post> m_postsLists = new ObservableCollection<Post>();
 
         /// <summary>
+        /// This list holds posts that we defer loaded if we have any.
+        /// </summary>
+        List<Post> m_deferredPostList = new List<Post>();
+
+        /// <summary>
         /// Holds the protip pop up if one exists.
         /// </summary>
         TipPopUp m_commentTipPopUp = null;
@@ -133,6 +138,9 @@ namespace Baconit.Panels
             // when created but it doesn't seem to work. So for now just hide it
             // and when the first person tries to open it we will show it.
             ui_commmentBox.Visibility = Visibility.Collapsed;
+
+            // Set the flipview list item source.
+            ui_flipView.ItemsSource = m_postsLists;
         }
 
         /// <summary>
@@ -333,17 +341,52 @@ namespace Baconit.Panels
         /// <param name="newPosts"></param>
         private async void UpdatePosts(int startingPos, List<Post> newPosts)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 Visibility flipViewMenuVis = m_host.CurrentScreenMode() == ScreenMode.Single ? Visibility.Visible : Visibility.Collapsed;
 
+                bool deferLoadPosts = false;
                 // Grab the list lock
                 lock (m_postsLists)
                 {
-                    // Setup the insert
-                    int insertIndex = startingPos;
+                    // If we are currently in a deferred scenario then we need to handle updates
+                    // differently since the list won't match the list that is expected
+                    if(m_deferredPostList.Count != 0)
+                    {
+                        if (m_postsLists.Count > 0 && newPosts.Count > 0 &&
+                            m_postsLists[0].Id.Equals(newPosts[0].Id))
+                        {
+                            // The current post is updated, so update it.
+                            // We can't replace the time because flip view will freak out
+                            // so just update whatever UI we need to update.
+                            m_postsLists[0].Likes = newPosts[0].Likes;
+                            m_postsLists[0].SubTextLine1 = newPosts[0].SubTextLine1;
+                            m_postsLists[0].SubTextLine2PartOne = newPosts[0].SubTextLine2PartOne;
+                            m_postsLists[0].SubTextLine2PartTwo = newPosts[0].SubTextLine2PartTwo;
+                            m_postsLists[0].Domain = newPosts[0].Domain;
+                            m_postsLists[0].Score = newPosts[0].Score;
+                        }
 
-                    int foundTargetPost = -1;
+                        // We have done all we want to do, leave now.
+                        return;
+                    }
+
+                    // If the list is currently empty we want to only load the first element and defer the rest of the
+                    // elements. If the target post is -1 we load the first element, if not we load it only.
+                    deferLoadPosts = m_postsLists.Count == 0;
+                    string deferTargetPost = m_targetPost;
+                    m_targetPost = null;
+                    if (deferLoadPosts)
+                    {
+                        // If we are doing a defer make sure we have a target
+                        if (String.IsNullOrWhiteSpace(deferTargetPost) && newPosts.Count > 0)
+                        {
+                            deferTargetPost = newPosts[0].Id;
+                        }
+                    }
+
+                    // Now setup the post update
+                    int insertIndex = startingPos;
 
                     // Set up the objects for the UI
                     foreach (Post post in newPosts)
@@ -372,66 +415,112 @@ namespace Baconit.Panels
                         }
                         else
                         {
-                            // Add it to the end
-                            m_postsLists.Add(post);
+                            // If we are deferring posts only add the target
+                            if (deferLoadPosts)
+                            {
+                                if (post.Id.Equals(deferTargetPost))
+                                {
+                                    m_postsLists.Add(post);
+                                }
+
+                                // Add it to the deferred list, also add the deferred post so we know
+                                // where it is in the list.
+                                m_deferredPostList.Add(post);
+                            }
+                            else
+                            {
+                                // Otherwise, just add it.
+                                m_postsLists.Add(post);
+                            }
                         }
 
                         // Set the menu button
                         post.FlipViewMenuButton = flipViewMenuVis;
 
-                        // Check if we are looking for a post
-                        if (foundTargetPost == -1 && !String.IsNullOrWhiteSpace(m_targetPost))
-                        {
-                            // Check if this post is it
-                            if (post.Id.Equals(m_targetPost))
-                            {
-                                // Found it! Cache the index for now, we will set it when the list is done loading.
-                                foundTargetPost = insertIndex;
-                            }
-                        }
+                        // Add one to the insert index
                         insertIndex++;
                     }
 
-                    // If the list isn't set set it now. We want to delay this set so as we add elements into 
-                    // the flipview they don't get virtualized in until we can also set the selected index.
-                    if (ui_flipView.ItemsSource == null)
+                    // This is a good place to show the comment tip if we have to since this
+                    // indicates this is a first load.
+                    if (deferLoadPosts)
                     {
-                        ui_flipView.ItemsSource = m_postsLists;
-                    }                    
-
-                    // Now that we set the list set the target index
-                    if (foundTargetPost != -1)
-                    {
-                        // Note this is very important to be unset here. All selected item changed events on flip view 
-                        // will be ignored until this is empty, so if we set this empty before we set the list (above) the 0
-                        // indexes will fire and set.
-                        lock(m_postsLists)
-                        {
-                            m_targetPost = String.Empty;
-                        }
-
-                        ui_flipView.SelectedIndex = foundTargetPost;
-
-                        if (foundTargetPost == 0)
-                        {
-                            // If this is the first post the content won't be set unless we call selection changed again.
-                            // This is because the flip view index defaults to 0, but we ignored the request because targetpost was not empty.
-                            // Normally the selected index would change and fire the listener and all would be good, but since we didn't change
-                            // the index it won't. So we will just do it manually.
-                            FlipView_SelectionChanged(null, null);
-                        }
-
-                        // This is a good place to show the comment tip if we have to
                         ShowCommentScrollTipIfNeeded();
                     }
-
-               
                 }
 
                 SetHeaderSizes();
 
                 // Hide the loading overlay if it is visible
                 HideFullScreenLoading();
+            });
+        }
+
+        /// <summary>
+        /// If we have deferred post this will add them
+        /// </summary>
+        public async void DoDeferredPostUpdate()
+        {
+            // Check if we have deferred posts
+            bool hasDeferredPosts = false;
+            lock(m_postsLists)
+            {
+                hasDeferredPosts = m_deferredPostList.Count != 0;
+            }
+
+            // If not get out of here
+            if(!hasDeferredPosts)
+            {
+                return;
+            }
+
+            // Otherwise, sleep for a little to let the UI settle down.
+            await Task.Delay(1000);
+
+            // Now kick off a UI thread on low to do the update.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
+            {
+                lock(m_postsLists)
+                {
+                    int insertIndex = 0;
+                    bool addBefore = true;
+                    string deferredPostId = m_postsLists.Count > 0 ? m_postsLists[0].Id : String.Empty;
+
+                    foreach(Post post in m_deferredPostList)
+                    {
+                        // If this is the post dont do anything but indicate we should add after
+                        if(post.Id.Equals(deferredPostId))
+                        {
+                            addBefore = false;
+                        }
+                        else
+                        {
+                            // If we are adding before add it before
+                            if(addBefore)
+                            {
+                                m_postsLists.Insert(insertIndex, post);
+                                insertIndex++;
+                            }
+                            else
+                            {
+                                // If not add it to the end.
+                                m_postsLists.Add(post);
+                            }
+                        }
+                    }
+
+                    // Now clear out the deferred posts
+                    m_deferredPostList.Clear();
+                }
+
+                // Add update the header sizes again
+                SetHeaderSizes();
+
+                // And preload the content for the next post, but again defer this since it is a background task.
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                {
+                    UpdatePanelContent();
+                });
             });
         }
 
@@ -554,7 +643,6 @@ namespace Baconit.Panels
                 dataTransferManager.DataRequested += DataTransferManager_DataRequested;
                 DataTransferManager.ShowShareUI();
                 App.BaconMan.TelemetryMan.ReportEvent(this, "SharePostTapped");
-
             }
         }
 
@@ -657,15 +745,6 @@ namespace Baconit.Panels
                 return;
             }
 
-            lock(m_postsLists)
-            {
-                // Check if we are jumping to a target, if so don't do anything.
-                if(!String.IsNullOrWhiteSpace(m_targetPost))
-                {
-                    return;
-                }
-            }
-
             // Mark the item read.
             m_collector.MarkPostRead((Post)ui_flipView.SelectedItem, ui_flipView.SelectedIndex);
 
@@ -675,12 +754,25 @@ namespace Baconit.Panels
             // Reset the scroll pos
             m_lastKnownScrollOffset = 0;
 
-            // Kick off the panel content update to the UI thread with idle pri to give the UI time to setup.
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            // If the index is 0 we are most likely doing a first load, so we want to
+            // set the panel content instantly so we get the loading UI as fast a possible.
+            if (ui_flipView.SelectedIndex == 0)
             {
                 // Update the posts
                 UpdatePanelContent();
-            });      
+            }
+            else
+            {
+                // Kick off the panel content update to the UI thread with idle pri to give the UI time to setup.
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                {
+                    // Update the posts
+                    UpdatePanelContent();
+                });
+            }
+
+            // Now if we have deferred post add them
+            DoDeferredPostUpdate();
         }
 
         /// <summary>
@@ -690,18 +782,20 @@ namespace Baconit.Panels
         {
             // Create a list we need to set to the UI.
             List<Tuple<Post, bool>> setToUiList = new List<Tuple<Post, bool>>();
+            List<Post> clearList = new List<Post>();
+            bool extendCollection = false;
+
+            // Get the min and max number of posts to load.
+            int minContentLoad = ui_flipView.SelectedIndex;
+            int maxContentLoad = ui_flipView.SelectedIndex;
+            if (App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
+            {
+                maxContentLoad++;
+            }
 
             // Lock the list
-            lock(m_postsLists)
+            lock (m_postsLists)
             {
-                // Get the min and max number of posts to load.
-                int minContentLoad = ui_flipView.SelectedIndex;
-                int maxContentLoad = ui_flipView.SelectedIndex;
-                if(App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
-                {
-                    maxContentLoad++;
-                }
-
                 for (int i = 0; i < m_postsLists.Count; i++)
                 {
                     Post post = m_postsLists[i];
@@ -709,13 +803,13 @@ namespace Baconit.Panels
                     {
                         // Add the post to the list of posts to set. We have to do this outside of the lock
                         // because we might delay while doing it.
-                        setToUiList.Add(new Tuple<Post, bool>(post, ui_flipView.SelectedIndex == i));            
+                        setToUiList.Add(new Tuple<Post, bool>(post, ui_flipView.SelectedIndex == i));
                     }
                     else
                     {
-                        // If we don't want these clear out the values.
-                        ClearPostContent(ref post);
-                        ClearPostComments(ref post);
+                        // Add the post to the list of posts to clear. We have to do this outside of the lock
+                        // because we might delay while doing it.
+                        clearList.Add(post);
                     }
                 }
 
@@ -724,8 +818,14 @@ namespace Baconit.Panels
                 // the count will be wrong.
                 if(m_postsLists.Count > 5 && m_collector.GetCurrentPosts().Count < maxContentLoad + 4)
                 {
-                    m_collector.ExtendCollection(25);
+                    extendCollection = true;
                 }
+            }
+
+            // Extend if we should
+            if(extendCollection)
+            {
+                m_collector.ExtendCollection(25);
             }
 
             // Now that we are out of lock set the items we want to set.
@@ -738,7 +838,7 @@ namespace Baconit.Panels
                 // If this is the first post to load delay for a while to give the UI time to setup.
                 // This will delay setting the next post as well as prefetching the comments for this
                 // current post.
-                if(m_isFirstPostLoad)
+                if (m_isFirstPostLoad)
                 {
                     m_isFirstPostLoad = false;
                     await Task.Delay(500);
@@ -749,6 +849,14 @@ namespace Baconit.Panels
                 {
                     PreFetchPostComments(ref postToSet);
                 }
+            }
+
+            // Now clear everything that should be cleared.
+            foreach(Post post in clearList)
+            {
+                Post refPost = post;
+                ClearPostContent(ref refPost);
+                ClearPostComments(ref refPost);
             }
 
             // Update the header sizes
@@ -925,12 +1033,12 @@ namespace Baconit.Panels
         /// </summary>
         private void SetHeaderSizes()
         {
+            // Get the screen size, account for the comment box if it is open.
+            int currentScrollAera = GetCurrentScrollArea();
+
             // Lock the post list
             lock (m_postsLists)
             {
-                // Get the screen size, account for the comment box if it is open.
-                int currentScrollAera = GetCurrentScrollArea();
-
                 // Set up the objects for the UI
                 foreach (Post post in m_postsLists)
                 {
@@ -1084,6 +1192,7 @@ namespace Baconit.Panels
                     if(searchPost.Id.Equals(lookingForPostId))
                     {
                         post = searchPost;
+                        break;
                     }
                 }
             }

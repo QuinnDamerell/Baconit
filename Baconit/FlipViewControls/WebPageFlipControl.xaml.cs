@@ -106,7 +106,7 @@ namespace Baconit.FlipViewControls
                     {
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
                         m_host.ShowError();
-                    }                    
+                    }
 
                     // Insert this before the full screen button.
                     ui_contentRoot.Children.Insert(0, m_webView);
@@ -138,7 +138,7 @@ namespace Baconit.FlipViewControls
                     m_webView.ContentLoading -= ContentLoading;
 
                     // Clear the webview
-                    m_webView.NavigateToString("");
+                    m_webView.Stop();
                 }
                 m_webView = null;
             }
