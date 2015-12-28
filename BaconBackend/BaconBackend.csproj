@@ -97,6 +97,7 @@
     <Compile Include="BaconManager.cs" />
     <Compile Include="Collectors\Collector.cs" />
     <Compile Include="Collectors\CommentCollector.cs" />
+    <Compile Include="Collectors\DeferredCollector.cs" />
     <Compile Include="Collectors\MessageCollector.cs" />
     <Compile Include="Collectors\SearchPostCollector.cs" />
     <Compile Include="Collectors\SearchSubredditCollector.cs" />

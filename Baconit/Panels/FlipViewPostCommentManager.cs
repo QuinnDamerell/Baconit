@@ -16,7 +16,7 @@ namespace Baconit.Panels
 {
     public class FlipViewPostCommentManager
     {
-        CommentCollector m_commentCollector;
+        DeferredCollector<Comment> m_commentCollector;
 
         /// <summary>
         /// Holds a full list of the comments, even collapsed comments
@@ -83,21 +83,17 @@ namespace Baconit.Panels
             // Do this in a background thread
             Task.Run(() =>
             {
-                // Get the comment collector, if we don't want to show a subset don't give it the target comment
-                m_commentCollector = CommentCollector.GetCollector(m_post, App.BaconMan, m_showThreadSubset ? m_targetComment : null);
-
-                // Sub to collection callbacks for the comments.
-                m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
-                m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
+                // Ensure we have a collector
+                EnsureCollector();
 
                 // We have to ask for all the comments here bc we can't extend.
-                if (!m_commentCollector.Update(false, m_post.CurrentCommentShowingCount))
+                if (!m_commentCollector.PreLoadItems(false, m_post.CurrentCommentShowingCount))
                 {
                     // If update returns false it isn't going to update because it has a cache. So just show the
                     // cache.
                     OnCollectionUpdatedArgs<Comment> args = new OnCollectionUpdatedArgs<Comment>()
                     {
-                        ChangedItems = m_commentCollector.GetCurrentPosts(),
+                        ChangedItems = m_commentCollector.GetCurrentItems(false),
                         IsFreshUpdate = true,
                         IsInsert = false,
                         StartingPosition = 0
@@ -129,20 +125,20 @@ namespace Baconit.Panels
                 m_commentCollector = null;
 
                 // Get a new collector with the new sort
-                m_commentCollector = CommentCollector.GetCollector(m_post, App.BaconMan);
+                m_commentCollector = new DeferredCollector<Comment>(CommentCollector.GetCollector(m_post, App.BaconMan));
 
                 // Sub to collection callbacks for the comments.
                 m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
                 m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
 
                 // Force our collector to update.
-                if (!m_commentCollector.Update(true, m_post.CurrentCommentShowingCount))
+                if (!m_commentCollector.LoadAllItems(true, m_post.CurrentCommentShowingCount))
                 {
                     // If update returns false it isn't going to update because it has a cache. So just show the
                     // cache.
                     OnCollectionUpdatedArgs<Comment> args = new OnCollectionUpdatedArgs<Comment>()
                     {
-                        ChangedItems = m_commentCollector.GetCurrentPosts(),
+                        ChangedItems = m_commentCollector.GetCurrentItems(true),
                         IsFreshUpdate = true,
                         IsInsert = false,
                         StartingPosition = 0
@@ -152,6 +148,21 @@ namespace Baconit.Panels
             });
         }
 
+        /// <summary>
+        /// Ensures a collector exists
+        /// </summary>
+        private void EnsureCollector()
+        {
+            if (m_commentCollector == null)
+            {
+                // Get the comment collector, if we don't want to show a subset don't give it the target comment
+                m_commentCollector = new DeferredCollector<Comment>(CommentCollector.GetCollector(m_post, App.BaconMan, m_showThreadSubset ? m_targetComment : null));
+
+                // Sub to collection callbacks for the comments.
+                m_commentCollector.OnCollectionUpdated += CommentCollector_OnCollectionUpdated;
+                m_commentCollector.OnCollectorStateChange += CommentCollector_OnCollectorStateChange;
+            }
+        }
 
         /// <summary>
         /// Updates the showing comment count and refreshes
@@ -188,7 +199,7 @@ namespace Baconit.Panels
                 // If we have a collector kick off an update.
                 if (m_commentCollector != null)
                 {
-                    m_commentCollector.Update(true, m_post.CurrentCommentShowingCount);
+                    m_commentCollector.LoadAllItems(true, m_post.CurrentCommentShowingCount);
                 }
             });
         }
@@ -198,28 +209,20 @@ namespace Baconit.Panels
         /// </summary>
         public async void RequestMorePosts()
         {
-            bool showLoadingUi = false;
+            // Ensure we have a collector.
+            EnsureCollector();
 
-            // Call prefetch comments to ensure we have tried to load them. If the user has prefetch comments off
-            // they will not be loaded. This call will be ignored if we are already trying.
-            if(PreFetchComments())
-            {
-                // We are fetching comments. Show the loading UI.
-                showLoadingUi = true;
-            }
-            else
-            {
-                // Show the loading IU if we are still updating.
-                showLoadingUi = m_commentCollector.State == CollectorState.Extending || m_commentCollector.State == CollectorState.Updating;
-            }
-
-            // Show the loading footer if we should.
-            if(showLoadingUi)
+            // As the deferred collector to load all items, if we are doing work show loading.
+            if (m_commentCollector.LoadAllItems())
             {
                 // Dispatch to the UI thread
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    m_post.ShowCommentLoadingMessage = Visibility.Visible;
+                    // Only show the loading if the current number of comments is 0
+                    if(m_post.Comments.Count == 0)
+                    {
+                        m_post.ShowCommentLoadingMessage = Visibility.Visible;
+                    }
                 });
             }
         }
@@ -262,7 +265,7 @@ namespace Baconit.Panels
                     {
                         m_post.ShowCommentLoadingMessage = Visibility.Collapsed;
                         m_post.FlipViewShowLoadingMoreComments = false;
-                    }               
+                    }
                 });
             }
             else if(e.State == CollectorState.Error)
@@ -468,12 +471,12 @@ namespace Baconit.Panels
 
         public void UpVote_Tapped(Comment comment)
         {
-            m_commentCollector.ChangeCommentVote(comment, PostVoteAction.UpVote);
+           ((CommentCollector)m_commentCollector.GetCollector()).ChangeCommentVote(comment, PostVoteAction.UpVote);
         }
 
         public void DownVote_Tapped(Comment comment)
         {
-            m_commentCollector.ChangeCommentVote(comment, PostVoteAction.DownVote);
+            ((CommentCollector)m_commentCollector.GetCollector()).ChangeCommentVote(comment, PostVoteAction.DownVote);
         }
 
         public void Share_Tapped(Comment comment)
@@ -670,7 +673,7 @@ namespace Baconit.Panels
                 }
             }
         }
-       
+
         #endregion
     }
 }
