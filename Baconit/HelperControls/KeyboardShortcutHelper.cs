@@ -59,9 +59,13 @@ namespace Baconit.HelperControls
                 // reliably. So this place seems to work better.
                 if (e.VirtualKey == Windows.System.VirtualKey.S)
                 {
-                    // Fire the event
-                    m_onQuickSearchActivation.Raise(this, new EventArgs());
-                    e.Handled = true;
+                    // Disable for mobile, for some reason this can trip with the mobile keyboard.
+                    if (DeviceHelper.CurrentDevice() != DeviceTypes.Mobile)
+                    {
+                        // Fire the event
+                        m_onQuickSearchActivation.Raise(this, new EventArgs());
+                        e.Handled = true;
+                    }
                 }
             }
         }

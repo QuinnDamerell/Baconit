@@ -65,7 +65,7 @@
 
                 <TextBlock Grid.Row="1"
                            Margin="12"
-                           Text="Baconit is an open source reddit client on Windows. Baconit was originally written in 2010 for Windows Phone 7.5 by Quinn Damerell. It remained a closed sourced Silverlight app until the launch of Windows 10. At that point Quinn rewrote the app from the ground up on the new Universal App platform enabling Baconit to run on all Windows devices. The new app was released and opened sourced on to the world on November 13, 2015. Many thanks to all who have contributed."
+                           Text="Baconit is an open source reddit client for Windows 10. Baconit was born in the mind of Quinn Damerell back in 2010 and originally ran on Windows Phone 7.1. The community embraced Baconit and helped it grow to be the highest rated app in the Windows Phone store. In 2015 it was announced that Baconit would be rewritten from the ground up for the new Windows 10 platform and open sourced. The Windows 10 version of Baconit went live November 13th, 2015. Many thanks to all who have contributed."
                            TextWrapping="Wrap" />
 
                 <Grid Grid.Row="2"

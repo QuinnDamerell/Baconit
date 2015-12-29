@@ -62,7 +62,7 @@ namespace BaconBackend.Managers
             if (m_baconMan.UiSettingsMan.Developer_Debug)
             {
                 System.Diagnostics.Debug.WriteLine("Error, " + str + " Message: " + (ex == null ? "" : ex.Message));
-                ShowMessaage("DebugDia: str " + str + " \n\nMessage: " + (ex == null ? "" : ex.Message), "DebugDia");
+                ShowMessaage("DebugDia: str " + str + " \n\nMessage: " + (ex == null ? "" : ex.Message) + "\n\nCall Stack:\n"+(ex== null? "" : ex.StackTrace), "DebugDia");
             }
         }
 

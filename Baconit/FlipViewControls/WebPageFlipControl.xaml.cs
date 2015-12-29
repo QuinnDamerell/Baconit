@@ -130,7 +130,6 @@ namespace Baconit.FlipViewControls
 
                 if (m_webView != null)
                 {
-
                     // Clear handlers
                     m_webView.FrameNavigationCompleted -= NavigationCompleted;
                     m_webView.NavigationFailed -= NavigationFailed;
@@ -139,8 +138,10 @@ namespace Baconit.FlipViewControls
 
                     // Clear the webview
                     m_webView.Stop();
+                    m_webView.NavigateToString("");
                 }
                 m_webView = null;
+                GC.Collect();
             }
 
             // Clear the UI
