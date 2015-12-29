@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace BaconBackend.Helpers
 {
+    /// <summary>
+    /// A length-capped hashtable that is ordered by the time keys were added, earliest first.
+    /// When length-capping must happen, earlier added keys are deleted first.
+    /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class HashList<Key, Value>
     {
@@ -28,6 +32,10 @@ namespace BaconBackend.Helpers
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public int m_maxSize = 0;
 
+        /// <summary>
+        /// Initializes a new, empty hashlist with capped length.
+        /// </summary>
+        /// <param name="maxSize">The maximum number of keys that can be in the hashlist at once.</param>
         public HashList(int maxSize)
         {
             m_dictonary = new Dictionary<Key, Value>();
@@ -36,10 +44,10 @@ namespace BaconBackend.Helpers
         }
 
         /// <summary>
-        /// Returns or set the current value for the given key
+        /// Gets or sets the current value for the given key
         /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
+        /// <param name="i">The key of the value to get or set.</param>
+        /// <returns>The value associated with the specified key. If the specified key is not found, a get operation throws a KeyNotFoundException, and a set operation creates a new element with the specified key.</returns>
         public Value this[Key i]
         {
             get { return m_dictonary[i]; }
@@ -52,8 +60,8 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Adds or updates the new element into the list and hash
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="key">The key of the element to add.</param>
+        /// <param name="value">The value of the element to add. The value can be null for reference types.</param>
         public void Add(Key key, Value value)
         {
             if (!m_dictonary.ContainsKey(key))
@@ -86,7 +94,7 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Removes an item.
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="item">The key of the element to remove.</param>
         public void Remove(Key item)
         {
             m_dictonary.Remove(item);
@@ -96,8 +104,8 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Returns if the collection contains the key.
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        /// <param name="item">The key to locate in the hashtable.</param>
+        /// <returns>If the hashtable contains an element with the specified key.</returns>
         public bool ContainsKey(Key item)
         {
             return m_dictonary.ContainsKey(item);
@@ -106,8 +114,8 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Gets the given position.
         /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
+        /// <param name="pos">The position of the key in the list.</param>
+        /// <returns>The key and value of the item at the specified position.</returns>
         public KeyValuePair<Key, Value> Get(int pos)
         {
             Key item = m_list[pos];

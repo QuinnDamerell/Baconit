@@ -106,7 +106,6 @@
     <Compile Include="DataObjects\Message.cs" />
     <Compile Include="DataObjects\MessageOfTheDay.cs" />
     <Compile Include="DataObjects\Post.cs" />
-    <Compile Include="DataObjects\RedditGenericResponse.cs" />
     <Compile Include="DataObjects\SearchResult.cs" />
     <Compile Include="DataObjects\Subreddit.cs" />
     <Compile Include="DataObjects\User.cs" />

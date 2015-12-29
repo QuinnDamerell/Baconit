@@ -53,7 +53,7 @@ namespace BaconBackend.Managers
                             // Make sure we have been opened enough.
                             if (m_baconMan.UiSettingsMan.AppOpenedCount > newMotd.MinOpenTimes)
                             {
-                                if (!newMotd.isIngore)
+                                if (!newMotd.isIgnore)
                                 {
                                     // Show the message!
                                     // We need to loop because sometimes we can get the message faster than the UI is even ready.
