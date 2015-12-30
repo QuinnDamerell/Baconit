@@ -9,6 +9,8 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.UI.Xaml;
 using System.Threading;
+using System.IO;
+using Windows.Storage.FileProperties;
 
 namespace BaconBackend.Managers
 {
@@ -118,19 +120,28 @@ namespace BaconBackend.Managers
         {
             try
             {
+                // Get the file.
                 StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
                 StorageFile file = await folder.CreateFileAsync(LOCAL_SETTINGS_FILE, CreationCollisionOption.OpenIfExists);
 
-                // Read the file
-                string content = await Windows.Storage.FileIO.ReadTextAsync(file);
-
-                // Deserialize the json
-                if (content != "")
+                // Check the file size
+                BasicProperties fileProps = await file.GetBasicPropertiesAsync();
+                if(fileProps.Size > 0)
                 {
-                    m_localSettings = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                    // Get the input stream and json reader.
+                    // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
+                    IInputStream inputStream = await file.OpenReadAsync();
+                    using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                    using (JsonReader jsonReader = new JsonTextReader(reader))
+                    {
+                        // Parse the settings file into the dictionary.
+                        JsonSerializer serializer = new JsonSerializer();
+                        m_localSettings = await Task.Run(() => serializer.Deserialize<Dictionary<string, object>>(jsonReader));
+                    }
                 }
                 else
                 {
+                    // The file is empty, just make a new dictionary.
                     m_localSettings = new Dictionary<string, object>();
                 }
             }
