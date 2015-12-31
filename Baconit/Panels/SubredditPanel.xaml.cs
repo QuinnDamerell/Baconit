@@ -834,10 +834,5 @@ namespace Baconit.Panels
             double panelSize = ui_splitView.ActualWidth - 10 < 380 ? ui_splitView.ActualWidth - 10 : 380;
             ui_splitView.OpenPaneLength = panelSize;
         }
-
-        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

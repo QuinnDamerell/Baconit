@@ -54,15 +54,24 @@ namespace Baconit
         /// </summary>
         public App()
         {
+            // Setup the exception handler first
+            this.UnhandledException += OnUnhandledException;
+
+            // Now setup the baconman
             BaconMan = new BaconManager(false);
+
+            // Now telemetry
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
+
+            // Init the app
             this.InitializeComponent();
+
+            // Register for events.
             this.Suspending += OnSuspending_Fired;
             this.Resuming += OnResuming_Fired;
-            this.UnhandledException += OnUnhandledException;
         }
 
         /// <summary>

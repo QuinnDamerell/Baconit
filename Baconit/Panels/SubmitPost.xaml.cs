@@ -388,10 +388,9 @@ namespace Baconit.Panels
                 App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", "You can't submit a post with out a title.");
                 return;
             }
-            if (String.IsNullOrWhiteSpace(urlOrMarkdownText))
+            if (String.IsNullOrWhiteSpace(urlOrMarkdownText) && !isSelfText)
             {
-                string type = isSelfText ? "text" : "link";
-                App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", $"You can't submit a post with no {type}.");
+                App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", $"You can't submit a post with no link.");
                 return;
             }
             if(!isSelfText && urlOrMarkdownText.IndexOf(' ') != -1)

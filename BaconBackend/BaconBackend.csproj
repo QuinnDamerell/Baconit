@@ -125,6 +125,7 @@
     <Compile Include="Managers\Background\BackgroundMessageUpdater.cs" />
     <Compile Include="Managers\CacheManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
+    <Compile Include="Managers\MemoryManager.cs" />
     <Compile Include="Managers\MessageManager.cs" />
     <Compile Include="Managers\Background\MessageOfTheDayManager.cs" />
     <Compile Include="Managers\NetworkManager.cs" />

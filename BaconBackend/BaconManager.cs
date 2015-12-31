@@ -142,6 +142,11 @@ namespace BaconBackend
         public DraftManager DraftMan { get; }
 
         /// <summary>
+        /// Used for watching the current app's memory.
+        /// </summary>
+        public MemoryManager MemoryMan { get; }
+
+        /// <summary>
         /// Holds a connection to the front end, a way for things back here to
         /// interact with the front end.
         /// </summary>
@@ -170,6 +175,7 @@ namespace BaconBackend
             MotdMan = new MessageOfTheDayManager(this);
             TileMan = new TileManager(this);
             DraftMan = new DraftManager(this);
+            MemoryMan = new MemoryManager(this);
 
             // Don't do this if we are a background task; it will
             // call this when it is ready.
@@ -361,6 +367,21 @@ namespace BaconBackend
 
             m_backendActionListener.NavigateToLogin();
             return true;
+        }
+
+        /// <summary>
+        /// Reports a new value for the memory usage of the app.
+        /// </summary>
+        /// <param name="currentUsage"></param>
+        /// <param name="maxLimit"></param>
+        public void ReportMemoryUsage(ulong currentUsage, ulong maxLimit)
+        {
+            if (m_backendActionListener == null)
+            {
+                return;
+            }
+
+            m_backendActionListener.ReportMemoryUsage(currentUsage, maxLimit);
         }
 
         #endregion

@@ -428,7 +428,39 @@
 
             <!--  Conent root  -->
             <SplitView.Content>
-                <Grid x:Name="ui_contentRoot" />
+                <Grid>
+                    <Grid x:Name="ui_contentRoot" />
+
+                    <!--  UI for the memory monitor  -->
+                    <StackPanel x:Name="ui_memoryContainer"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="Black"
+                                Orientation="Horizontal"
+                                Visibility="Collapsed">
+
+                        <!--  Holds the bar  -->
+                        <Grid x:Name="ui_memoryBarBackground"
+                              Width="10"
+                              Background="Green">
+                            <Grid x:Name="ui_memoryBarOverlay"
+                                  Width="10"
+                                  VerticalAlignment="Bottom"
+                                  Background="Red" />
+                        </Grid>
+
+                        <!--  Holds the text  -->
+                        <StackPanel Margin="3,0,0,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Background="Black"
+                                    Orientation="Vertical">
+                            <TextBlock x:Name="ui_memoryAppUsage" Foreground="White" />
+                            <TextBlock x:Name="ui_memoryAppLimit" Foreground="White" />
+                            <TextBlock x:Name="ui_memoryAppPercentage" Foreground="White" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </SplitView.Content>
         </SplitView>
 

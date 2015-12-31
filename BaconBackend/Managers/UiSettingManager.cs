@@ -123,6 +123,34 @@ namespace BaconBackend.Managers
         }
         private bool? m_developer_StopFatalCrashesAndReport = null;
 
+        /// <summary>
+        /// Shows a memory overlay for the app.
+        /// </summary>
+        public bool Developer_ShowMemoryOverlay
+        {
+            get
+            {
+                if (!m_developer_ShowMemoryOverlay.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_ShowMemoryOverlay"))
+                    {
+                        m_developer_ShowMemoryOverlay = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_ShowMemoryOverlay");
+                    }
+                    else
+                    {
+                        m_developer_ShowMemoryOverlay = false;
+                    }
+                }
+                return m_developer_ShowMemoryOverlay.Value;
+            }
+            set
+            {
+                m_developer_ShowMemoryOverlay = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_ShowMemoryOverlay", m_developer_ShowMemoryOverlay.Value);
+            }
+        }
+        private bool? m_developer_ShowMemoryOverlay = null;
+
         #endregion
 
         #region MainPage
