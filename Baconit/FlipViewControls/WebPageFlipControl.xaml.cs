@@ -43,6 +43,16 @@ namespace Baconit.FlipViewControls
         /// </summary>
         bool m_isDestroyed = false;
 
+        /// <summary>
+        /// The url of the post we are viewing.
+        /// </summary>
+        string m_postUrl = String.Empty;
+
+        /// <summary>
+        /// Indicate is reading mode is enabled or not.
+        /// </summary>
+        bool m_isReadigModeEnabled = false;
+
         public WebPageFlipControl(IFlipViewContentHost host)
         {
             this.InitializeComponent();
@@ -79,12 +89,15 @@ namespace Baconit.FlipViewControls
             // Since some of this can be costly, delay the work load until we aren't animating.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
-                lock(this)
+                lock (this)
                 {
-                    if(m_isDestroyed)
+                    if (m_isDestroyed)
                     {
                         return;
                     }
+
+                    // Get the post url
+                    m_postUrl = post.Url;
 
                     // Make the webview
                     m_webView = new WebView(WebViewExecutionMode.SeparateThread);
@@ -102,11 +115,14 @@ namespace Baconit.FlipViewControls
                     {
                         m_webView.Navigate(new Uri(post.Url, UriKind.Absolute));
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
                         m_host.ShowError();
                     }
+
+                    // Now add an event for navigating.
+                    m_webView.NavigationStarting += NavigationStarting;
 
                     // Insert this before the full screen button.
                     ui_contentRoot.Children.Insert(0, m_webView);
@@ -124,7 +140,7 @@ namespace Baconit.FlipViewControls
 
         public void OnDestroyContent()
         {
-            lock(this)
+            lock (this)
             {
                 m_isDestroyed = true;
 
@@ -141,7 +157,6 @@ namespace Baconit.FlipViewControls
                     m_webView.NavigateToString("");
                 }
                 m_webView = null;
-                GC.Collect();
             }
 
             // Clear the UI
@@ -152,20 +167,28 @@ namespace Baconit.FlipViewControls
         private void DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
             HideLoading();
+            HideReadingModeLoading();
         }
 
         private void ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
             HideLoading();
+            HideReadingModeLoading();
         }
 
         private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
             HideLoading();
+            HideReadingModeLoading();
         }
         private void NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
             m_host.ShowError();
+        }
+
+        private void NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            ToggleBackButton(true);
         }
 
         /// <summary>
@@ -174,9 +197,9 @@ namespace Baconit.FlipViewControls
         private void HideLoading()
         {
             // Make sure we haven't been called before.
-            lock(m_host)
+            lock (m_host)
             {
-                if(m_loadingHidden)
+                if (m_loadingHidden)
                 {
                     return;
                 }
@@ -206,7 +229,7 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
         {
-            if(e.IsHandled)
+            if (e.IsHandled)
             {
                 return;
             }
@@ -222,6 +245,11 @@ namespace Baconit.FlipViewControls
         /// <param name="args"></param>
         private void WebView_ContainsFullScreenElementChanged(WebView sender, object args)
         {
+            if (m_webView == null)
+            {
+                return;
+            }
+
             if (m_webView.ContainsFullScreenElement)
             {
                 // Go full screen
@@ -255,5 +283,89 @@ namespace Baconit.FlipViewControls
         }
 
         #endregion
+
+        private void ReadingMode_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // Show loading
+            ui_readingModeLoading.Visibility = Visibility.Visible;
+            ui_readingModeLoading.IsActive = true;
+            ui_readingModeIconHolder.Visibility = Visibility.Collapsed;
+
+            // Flip
+            m_isReadigModeEnabled = !m_isReadigModeEnabled;
+
+            // Get the URI
+            Uri webLink = null;
+            if (m_isReadigModeEnabled)
+            {
+                webLink = new Uri("http://www.readability.com/m?url=" + m_postUrl, UriKind.Absolute);
+            }           
+            else
+            {
+                webLink = new Uri(m_postUrl, UriKind.Absolute);
+            }
+
+            // Navigate.
+            try
+            {
+                m_webView.Navigate(webLink);
+            }
+            catch (Exception ex)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToNavReadingMode", ex);
+                m_host.ShowError();
+            }
+
+            App.BaconMan.TelemetryMan.ReportEvent(this, "ReadingModeEnabled");
+        }
+
+        private void HideReadingModeLoading()
+        {
+            ui_readingModeLoading.Visibility = Visibility.Collapsed;
+            ui_readingModeLoading.IsActive = false;
+            ui_readingModeIconHolder.Visibility = Visibility.Visible;
+        }
+
+        private async void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (m_webView != null)
+            {
+                // Go back
+                if (m_webView.CanGoBack)
+                {
+                    m_webView.GoBack();
+                }
+
+                // Delay a little while so CanGoBack gets updated
+                await Task.Delay(500);
+
+                ToggleBackButton(m_webView.CanGoBack);
+            }
+        }
+
+        public void ToggleBackButton(bool show)
+        {
+            if ((show && ui_backButton.Opacity == 1) ||
+                (!show && ui_backButton.Opacity == 0))
+            {
+                return;
+            }
+
+            if (show)
+            {
+                ui_backButton.Visibility = Visibility.Visible;
+            }
+            anim_backButtonFade.To = show ? 1 : 0;
+            anim_backButtonFade.From = show ? 0 : 1;
+            story_backButtonFade.Begin();
+        }
+
+        private void BackButtonFade_Completed(object sender, object e)
+        {
+            if (ui_backButton.Opacity == 0)
+            {
+                ui_backButton.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }

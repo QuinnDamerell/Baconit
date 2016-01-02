@@ -116,6 +116,11 @@ namespace Baconit.Panels.SettingsPanels
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         /// <summary>
         /// If the subreddits change update the UI
         /// </summary>

@@ -70,6 +70,11 @@ namespace Baconit.Panels.SettingsPanels
             }
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private void MessageNotificationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(m_ignoreUpdates)

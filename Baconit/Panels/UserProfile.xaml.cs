@@ -171,6 +171,26 @@ namespace Baconit.Panels
         {
         }
 
+        public void OnCleanupPanel()
+        {
+            lock (this)
+            {
+                if (m_postCollector != null)
+                {
+                    m_postCollector.OnCollectionUpdated -= PostCollector_OnCollectionUpdated;
+                    m_postCollector.OnCollectorStateChange -= PostCollector_OnCollectorStateChange;
+                    m_postCollector = null;
+                }
+
+                if (m_commentCollector != null)
+                {
+                    m_commentCollector.OnCollectionUpdated -= CommentCollector_OnCollectionUpdated;
+                    m_commentCollector.OnCollectorStateChange -= CommentCollector_OnCollectorStateChange;
+                    m_commentCollector = null;
+                }
+            }
+        }
+
         public async void OnNavigatingTo()
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the

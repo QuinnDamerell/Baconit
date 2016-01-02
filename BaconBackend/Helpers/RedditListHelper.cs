@@ -215,8 +215,9 @@ namespace BaconBackend.Helpers
                         JsonSerializer serializer = new JsonSerializer();
                         root = await Task.Run(() => serializer.Deserialize<RootElement<T>>(jsonReader));
                     }
-                }     
+                }
 
+             
                 // Copy the new contents into the current cache
                 m_currentElementList.Children.AddRange(root.Data.Children);
 

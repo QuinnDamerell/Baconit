@@ -126,6 +126,12 @@ namespace Baconit.Panels
             // Ignore for now
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+            // #todo stop any on going requests.
+        }
+
         #region Search Button UI Logic
 
         private void SearchBox_KeyUp(object sender, KeyRoutedEventArgs e)

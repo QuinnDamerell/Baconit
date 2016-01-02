@@ -59,6 +59,11 @@ namespace Baconit.Panels.SettingsPanels
             m_takeAction = true;
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private void DebuggingOn_Toggled(object sender, RoutedEventArgs e)
         {
             if(!m_takeAction)

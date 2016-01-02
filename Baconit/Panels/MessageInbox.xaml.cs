@@ -79,6 +79,11 @@ namespace Baconit.Panels
             OnNavigatingTo();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         #region Collector callbacks
 
         private async void Collector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)

@@ -9,6 +9,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -250,7 +251,31 @@ namespace Baconit.Panels
 
         public void OnNavigatingFrom()
         {
-            // #todo reduce memory foot print.
+        }
+
+        public async void OnCleanupPanel()
+        {
+            // If we have a collector unregister for updates.
+            if(m_collector != null)
+            {
+                m_collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
+            }
+            
+            // Deffer the action so we don't mess up any animations.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                // Clear out all of the content, posts, and comments. 
+                lock (m_postsLists)
+                {
+                    foreach (Post post in m_postsLists)
+                    {
+                        Post refPost = post;
+                        ClearPostComments(ref refPost);
+                        ClearPostContent(ref refPost);
+                    }
+                    m_postsLists.Clear();
+                }
+            });
         }
 
         /// <summary>
@@ -464,17 +489,13 @@ namespace Baconit.Panels
         /// </summary>
         public async void DoDeferredPostUpdate()
         {
-            // Check if we have deferred posts
-            bool hasDeferredPosts = false;
+            // Check if we have work to do.
             lock(m_postsLists)
             {
-                hasDeferredPosts = m_deferredPostList.Count != 0;
-            }
-
-            // If not get out of here
-            if(!hasDeferredPosts)
-            {
-                return;
+                if(m_deferredPostList.Count == 0)
+                {
+                    return;
+                }
             }
 
             // Otherwise, sleep for a little to let the UI settle down.
@@ -485,13 +506,19 @@ namespace Baconit.Panels
             {
                 lock(m_postsLists)
                 {
-                    int insertIndex = 0;
+                    // Ensure we sill have work do to.
+                    if (m_deferredPostList.Count == 0)
+                    {
+                        return;
+                    }
+
                     bool addBefore = true;
                     string deferredPostId = m_postsLists.Count > 0 ? m_postsLists[0].Id : String.Empty;
+                    List<Post> insertList = new List<Post>();
 
                     foreach(Post post in m_deferredPostList)
                     {
-                        // If this is the post dont do anything but indicate we should add after
+                        // If this is the post don't do anything but indicate we should add after
                         if(post.Id.Equals(deferredPostId))
                         {
                             addBefore = false;
@@ -501,8 +528,11 @@ namespace Baconit.Panels
                             // If we are adding before add it before
                             if(addBefore)
                             {
-                                m_postsLists.Insert(insertIndex, post);
-                                insertIndex++;
+                                // #todo BUG! This is a fun work around. If we insert posts here about 5% of the time the app will
+                                // crash due to a bug in the platform. Since the exception is in the system we don't get a chance to handle it
+                                // we just die.
+                                // So, add these to another list and add them after.
+                                insertList.Add(post);
                             }
                             else
                             {
@@ -512,7 +542,15 @@ namespace Baconit.Panels
                         }
                     }
 
-                    // Now clear out the deferred posts
+                    // Now ad the inserts
+                    int insertIndex = 0;
+                    foreach (Post post in insertList)
+                    {
+                        m_postsLists.Insert(insertIndex, post);
+                        insertIndex++;
+                    }
+
+                    // Clear the deferrals
                     m_deferredPostList.Clear();
                 }
 

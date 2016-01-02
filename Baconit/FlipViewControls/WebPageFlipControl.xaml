@@ -9,16 +9,67 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#191919">
-        <Border x:Name="ui_fullScreenHolder"
-                Margin="24"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Background="#BB000000"
-                CornerRadius="2"
-                Tapped="FullScreenHolder_Tapped">
-            <ContentPresenter Width="40" Height="40">
-                <SymbolIcon x:Name="ui_fullScreenIcon" Symbol="FullScreen" />
-            </ContentPresenter>
-        </Border>
+        <StackPanel HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Orientation="Horizontal">
+            <Border x:Name="ui_backButton"
+                    Margin="24,24,12,24"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="#BB000000"
+                    CornerRadius="2"
+                    Opacity="0"
+                    Tapped="BackButton_Tapped"
+                    Visibility="Collapsed">
+                <Border.Resources>
+                    <Storyboard x:Name="story_backButtonFade" Completed="BackButtonFade_Completed">
+                        <DoubleAnimation x:Name="anim_backButtonFade"
+                                         Duration="0:0:0.5"
+                                         From="0"
+                                         Storyboard.TargetName="ui_backButton"
+                                         Storyboard.TargetProperty="Opacity"
+                                         To="1" />
+                    </Storyboard>
+                </Border.Resources>
+                <ContentPresenter Width="40" Height="40">
+                    <SymbolIcon Symbol="Back" />
+                </ContentPresenter>
+            </Border>
+            <Border x:Name="ui_readingMode"
+                    Width="40"
+                    Height="40"
+                    Margin="12,24,12,24"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="#BB000000"
+                    CornerRadius="2"
+                    Tapped="ReadingMode_Tapped">
+                <Grid>
+                    <ContentPresenter x:Name="ui_readingModeIconHolder"
+                                      Width="40"
+                                      Height="40">
+                        <SymbolIcon x:Name="ui_readingModeIdon" Symbol="PreviewLink" />
+                    </ContentPresenter>
+                    <ProgressRing x:Name="ui_readingModeLoading"
+                                  Width="23"
+                                  Height="23"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Foreground="White"
+                                  Visibility="Collapsed" />
+                </Grid>
+            </Border>
+            <Border x:Name="ui_fullScreenHolder"
+                    Margin="12,24,24,24"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="#BB000000"
+                    CornerRadius="2"
+                    Tapped="FullScreenHolder_Tapped">
+                <ContentPresenter Width="40" Height="40">
+                    <SymbolIcon x:Name="ui_fullScreenIcon" Symbol="FullScreen" />
+                </ContentPresenter>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>

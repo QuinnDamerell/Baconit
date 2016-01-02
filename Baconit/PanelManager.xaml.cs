@@ -273,7 +273,7 @@ namespace Baconit
         /// <summary>
         /// Navigates back to the previous page
         /// </summary>
-        private bool GoBack_Internal()
+        private bool? GoBack_Internal()
         {
             IPanel leavingPanel = null;
             lock(m_panelStack)
@@ -281,7 +281,7 @@ namespace Baconit
                 if(m_state != State.Idle)
                 {
                     // We can't do anything if we are already animating.
-                    return false;
+                    return null;
                 }
 
                 if(m_panelStack.Count <= 1)
@@ -309,6 +309,10 @@ namespace Baconit
             // While not under lock inform the panel it is leaving.
             FireOnNavigateFrom(leavingPanel);
 
+            // Since we are going back this panel will also never be seen again, so tell it to
+            // clean up.
+            FireOnCleanupPanel(leavingPanel);
+
             return true;
         }
 
@@ -326,7 +330,23 @@ namespace Baconit
             {
                 // Call go back but this might not work, we can't go back while something else is navigating.
                 // If we can't go back right now just silently ignore the request.
-                handled = GoBack_Internal();
+                bool? wentBack = GoBack_Internal();
+
+                // If null was returned we are animating a navigation so just ignore this.
+                if(!wentBack.HasValue)
+                {
+                    handled = true;
+                }
+                // If we got true then we actually did go back.
+                else if(wentBack.Value)
+                {
+                    handled = true;
+                }
+                // If we get false we can't go back and din't go anything.
+                else
+                {
+                    handled = false;
+                }               
             }
             
             if(!handled)
@@ -912,6 +932,24 @@ namespace Baconit
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("OnNavigatingTo failed!", e);
+            }
+        }
+
+
+        /// <summary>
+        /// Fires OnCleanupPanel for the panel
+        /// </summary>
+        /// <param name="panel"></param>
+        private void FireOnCleanupPanel(IPanel panel)
+        {
+            try
+            {
+                // Tell the panel to clean up.
+                panel.OnCleanupPanel();
+            }
+            catch (Exception e)
+            {
+                App.BaconMan.MessageMan.DebugDia("OnCleanupPanel failed!", e);
             }
         }
 

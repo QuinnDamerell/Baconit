@@ -68,6 +68,11 @@ namespace Baconit.Panels
             OnNavigatingTo();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             App.BaconMan.TelemetryMan.ReportEvent(this, "LoginButtonClicked");

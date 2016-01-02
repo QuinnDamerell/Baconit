@@ -62,6 +62,11 @@ namespace Baconit.Panels.SettingsPanels
             m_takeChangeAction = true;
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private void PreLoadComments_Toggled(object sender, RoutedEventArgs e)
         {
             if (!m_takeChangeAction)

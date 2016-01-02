@@ -101,6 +101,10 @@ namespace Baconit.Panels.SettingsPanels
             }
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
 
         /// <summary>
         /// Ticks every 5 seconds until a band is found.

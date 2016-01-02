@@ -141,6 +141,16 @@ namespace Baconit.Panels
             m_host.SetStatusBar(Color.FromArgb(255,10,10,10));
         }
 
+        public void OnCleanupPanel()
+        {
+            if(m_collector != null)
+            {
+                // Remove the listeners so we won't get updates.
+                m_collector.OnCollectorStateChange -= Collector_OnCollectorStateChange;
+                m_collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
+            }
+        }
+
         #region Subreddit Setup
 
         public void SetupPage(Subreddit subreddit, SortTypes sortType, SortTimeTypes sortTimeType)

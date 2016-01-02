@@ -32,5 +32,11 @@ namespace Baconit.Interfaces
         /// Fired just before the panel is going to be hidden.
         /// </summary>
         void OnNavigatingFrom();
+
+        /// <summary>
+        /// Fired when the panel is being removed from the navigation stack and will
+        /// never be shown again.
+        /// </summary>
+        void OnCleanupPanel();
     }
 }

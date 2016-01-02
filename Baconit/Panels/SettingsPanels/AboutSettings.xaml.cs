@@ -64,6 +64,11 @@ namespace Baconit.Panels.SettingsPanels
             ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private async void RateAndReview_Tapped(object sender, TappedRoutedEventArgs e)
         {
             await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));

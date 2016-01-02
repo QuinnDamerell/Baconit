@@ -64,6 +64,11 @@ namespace Baconit.Panels
             OnNavigatingTo();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private void SettingsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (ui_settingsList.SelectedIndex)

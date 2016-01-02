@@ -61,6 +61,11 @@ namespace Baconit.Panels.SettingsPanels
             m_takeChangeAction = true;
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         private void SubredditMan_OnSubredditsUpdated(object sender, BaconBackend.Managers.OnSubredditsUpdatedArgs e)
         {
             m_takeChangeAction = false;

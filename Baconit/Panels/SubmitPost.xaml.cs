@@ -109,6 +109,11 @@ namespace Baconit.Panels
             OnNavigatingTo();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         #region Selftext
 
         /// <summary>
