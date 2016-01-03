@@ -146,13 +146,16 @@ namespace BaconBackend.Managers
 
         public void UpdateUnReadMessageCount(int unreadMessages)
         {
-            // Update
-            CurrentUser.HasMail = unreadMessages != 0;
-            CurrentUser.InboxCount = unreadMessages;
-            // Force a save
-            CurrentUser = CurrentUser;
-            // Fire the callback
-            FireOnUserUpdated(UserCallbackAction.Updated);
+            if (CurrentUser != null)
+            {
+                // Update
+                CurrentUser.HasMail = unreadMessages != 0;
+                CurrentUser.InboxCount = unreadMessages;
+                // Force a save
+                CurrentUser = CurrentUser;
+                // Fire the callback
+                FireOnUserUpdated(UserCallbackAction.Updated);
+            }
         }
 
         private void FireOnUserUpdated(UserCallbackAction action)

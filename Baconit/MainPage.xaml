@@ -410,6 +410,12 @@
                               Tapped="SigninGrid_Tapped">
                             <TextBlock x:Name="ui_signInText" Text="Sign In" />
                         </Grid>
+                        <Grid x:Name="ui_profileGrid"
+                              Background="#01000000"
+                              Padding="12"
+                              Tapped="ProfileGrid_Tapped">
+                            <TextBlock Text="Profile" />
+                        </Grid>
                         <Grid x:Name="ui_inboxGrid"
                               Background="#01000000"
                               Padding="12"

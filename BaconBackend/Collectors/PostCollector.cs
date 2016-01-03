@@ -151,6 +151,24 @@ namespace BaconBackend.Collectors
             }
 
             InitListHelper(postCollectionUrl, hasEmptyRoot, true, optionalArgs);
+
+            // Listen to user changes so we will update the subreddits
+            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
+        }
+
+
+        /// <summary>
+        /// Fired when the current user is updated.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnUserUpdated(object sender, OnUserUpdatedArgs args)
+        {
+            // If a user is added or removed update the subreddit to reflect the new user.
+            if (args.Action != UserCallbackAction.Updated)
+            {
+                Update(true);
+            }
         }
 
         /// <summary>

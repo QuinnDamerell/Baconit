@@ -345,6 +345,7 @@ namespace Baconit
             ui_accountHeader.Text = App.BaconMan.UserMan.IsUserSignedIn ? userName : "Account";
             ui_signInText.Text = App.BaconMan.UserMan.IsUserSignedIn ? "Sign Out" : "Sign In";
             ui_inboxGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
+            ui_profileGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
             ui_accountHeaderMailBox.Visibility = Visibility.Collapsed;
             ui_accountHeaderKarmaHolder.Visibility = Visibility.Collapsed;
 
@@ -1131,6 +1132,23 @@ namespace Baconit
         {
             bool isHandled = false;
             App.BaconMan.OnBackButton_Fired(ref isHandled);
+        }
+
+        /// <summary>
+        /// Fired when the user taps prfile in the menu.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ProfileGrid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if(App.BaconMan.UserMan.IsUserSignedIn)
+            {
+                // Navigate to the user.
+                Dictionary<string, object> args = new Dictionary<string, object>();
+                args.Add(PanelManager.NAV_ARGS_USER_NAME, App.BaconMan.UserMan.CurrentUser.Name);
+                m_panelManager.Navigate(typeof(UserProfile), App.BaconMan.UserMan.CurrentUser.Name, args);
+                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToProfileViaGlobalMenu");
+            }
         }
     }
 }

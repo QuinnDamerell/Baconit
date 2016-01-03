@@ -1,5 +1,6 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
+using BaconBackend.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,6 +78,7 @@ namespace BaconBackend.Collectors
             // Set up the list helper
             InitListHelper($"/search.json", false, false, $"q={searchTerm}&sort={sortString}&t={timeString}");
         }
+
 
         /// <summary>
         /// Fired when the subreddits should be formatted.

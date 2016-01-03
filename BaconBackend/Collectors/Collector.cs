@@ -222,9 +222,6 @@ namespace BaconBackend.Collectors
         {
             m_baconMan = manager;
             m_uniqueId = uniqueId;
-
-            // Sub to user changes so we can update the list.
-            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
         }
 
         /// <summary>
@@ -252,7 +249,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="force"></param>
         /// <returns>If an update was kicked off or not</returns>
-        public bool Update(bool force = false, int updateCount = 50)
+        public virtual bool Update(bool force = false, int updateCount = 50)
         {
             // #todo add caching
             // #todo #bug If we are refreshing we will grab 50 new post but listeners might already have 100
@@ -387,22 +384,6 @@ namespace BaconBackend.Collectors
                 }
             });
         }
-
-
-        /// <summary>
-        /// Fired when the current user is updated.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void OnUserUpdated(object sender, OnUserUpdatedArgs args)
-        {
-            // If a user is added or removed update the subreddit to reflect the new user.
-            if (args.Action != UserCallbackAction.Updated)
-            {
-                Update(true);
-            }
-        }
-
 
         /// <summary>
         /// Returns the current post that are cached in the object.

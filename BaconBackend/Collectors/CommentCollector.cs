@@ -1,5 +1,6 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
+using BaconBackend.Managers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -123,6 +124,22 @@ namespace BaconBackend.Collectors
             // Make the helper, we need to ask it to make a fake root and not to take the
             // first element, the second element is the comment tree.
             InitListHelper(commentBaseUrl, hasEmptyRoot, takeFirstArray, optionalParams);
+
+            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
+        }
+
+        /// <summary>
+        /// Fired when the current user is updated.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnUserUpdated(object sender, OnUserUpdatedArgs args)
+        {
+            // If a user is added or removed update the subreddit to reflect the new user.
+            if (args.Action != UserCallbackAction.Updated)
+            {
+                Update(true);
+            }
         }
 
         /// <summary>

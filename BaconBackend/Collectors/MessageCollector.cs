@@ -23,6 +23,8 @@ namespace BaconBackend.Collectors
 
             // Sub ourselves to the on updated event.
             OnCollectionUpdated += MessageCollector_OnCollectionUpdated;
+
+            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace BaconBackend.Collectors
             }
             return messages;
         }
-
+        
         #region Message Actions
 
         /// <summary>
@@ -147,9 +149,27 @@ namespace BaconBackend.Collectors
         /// <param name="e"></param>
         private void MessageCollector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Message> e)
         {
+            UpdateMessageCounts(GetCurrentPostsInternal());            
+        }
+
+        private void OnUserUpdated(object sender, Managers.OnUserUpdatedArgs e)
+        {
+            // If the user is now signed in update.
+            if (e.Action == Managers.UserCallbackAction.Added)
+            {
+                Update();
+            }
+            else if(e.Action == Managers.UserCallbackAction.Removed)
+            {
+                // If the user is logged out clear out the message ui.
+                UpdateMessageCounts(new List<Message>(), true);
+            }
+        }
+
+        private void UpdateMessageCounts(List<Message> messages, bool forceUiSet = false)
+        {
             // Check to see if there are any unread messages
             int unreadCount = 0;
-            List<Message> messages = GetCurrentPostsInternal();            
             foreach (Message searchMessage in messages)
             {
                 if (searchMessage.IsNew)
@@ -158,7 +178,7 @@ namespace BaconBackend.Collectors
                 }
             }
 
-            if(messages.Count != 0)
+            if (messages.Count != 0 || forceUiSet)
             {
                 // Update the UI
                 m_baconMan.UserMan.UpdateUnReadMessageCount(unreadCount);
