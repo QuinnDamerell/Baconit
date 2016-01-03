@@ -27,11 +27,41 @@
         <StackPanel Grid.Row="1"
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     Padding="12">
-            <TextBlock Text="Subreddit to show when the app opens" TextWrapping="Wrap" />
+            <TextBlock Text="Subreddit to view when the app opens" TextWrapping="Wrap" />
             <ComboBox x:Name="ui_defaultSubreddit"
+                      MinWidth="150"
                       Margin="0,8,12,18"
-                      SelectionChanged="DefaultSubreddit_SelectionChanged" MinWidth="150" />
-            <TextBlock Text="Show full post titles in subreddit view" TextWrapping="Wrap" />
+                      SelectionChanged="DefaultSubreddit_SelectionChanged" />
+
+            <TextBlock Text="Default subreddit sort" TextWrapping="Wrap" />
+            <ComboBox x:Name="ui_defaultSort"
+                      MinWidth="150"
+                      Margin="0,8,12,18"
+                      SelectionChanged="DefaultSort_SelectionChanged">
+                <ComboBoxItem Content="hot" />
+                <ComboBoxItem Content="new" />
+                <ComboBoxItem Content="rising" />
+                <ComboBoxItem Content="controversial" />
+                <ComboBoxItem Content="top" />
+            </ComboBox>
+
+            <TextBlock Text="Default subreddit time sort"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed" />
+            <ComboBox x:Name="ui_defaultTimeSort"
+                      MinWidth="150"
+                      Margin="0,8,12,18"
+                      SelectionChanged="DefaultTimeSort_SelectionChanged"
+                      Visibility="Collapsed">
+                <ComboBoxItem Content="past hour" />
+                <ComboBoxItem Content="past day" />
+                <ComboBoxItem Content="past week" />
+                <ComboBoxItem Content="past month" />
+                <ComboBoxItem Content="past year" />
+                <ComboBoxItem Content="all time" />
+            </ComboBox>
+
+            <TextBlock Text="Show full post titles" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showFullTitles" Toggled="ShowFullTitles_Toggled" />
         </StackPanel>
     </Grid>

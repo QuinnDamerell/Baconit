@@ -5,7 +5,7 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels.SettingsPanels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             d:DesignHeight="300"
+             d:DesignHeight="800"
              d:DesignWidth="400"
              mc:Ignorable="d">
 
@@ -26,14 +26,10 @@
                            Text="BACKGROUND INBOX UPDATING" />
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
                 <StackPanel Grid.Row="1" Margin="12">
-                    <TextBlock Margin="0,0,0,12"
-                               Text="These settings allow Baconit to automatically check for new inbox messages while the app isn't open. If new messages are found you will be notified in the notification center."
-                               TextWrapping="Wrap" />
-
-                    <TextBlock Margin="0,12,0,0"
-                               Text="Allow Baconit to check for messages while not running"
+                    <TextBlock Margin="0,0,0,0"
+                               Text="Background inbox updating"
                                TextWrapping="Wrap" />
                     <ToggleSwitch x:Name="ui_enableBackgroundMessages" Toggled="EnableBackgroundMessages_Toggled" />
 
@@ -43,12 +39,13 @@
                     <ToggleSwitch x:Name="ui_addNotesSliently" Toggled="AddNotesSliently_Toggled" />
 
                     <TextBlock Margin="0,12,0,0"
-                               Text="How new messages appear in the notification center"
+                               Text="How messages appear in the notification center"
                                TextWrapping="Wrap" />
                     <ComboBox x:Name="ui_messageNotificationType"
+                              MinWidth="150"
                               Margin="0,8,0,8"
                               SelectedIndex="0"
-                              SelectionChanged="MessageNotificationType_SelectionChanged" MinWidth="150">
+                              SelectionChanged="MessageNotificationType_SelectionChanged">
                         <ComboBoxItem>Show each message</ComboBoxItem>
                         <ComboBoxItem>Show one total unread count</ComboBoxItem>
                     </ComboBox>

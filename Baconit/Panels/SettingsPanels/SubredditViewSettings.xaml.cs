@@ -1,4 +1,5 @@
-﻿using BaconBackend.DataObjects;
+﻿using BaconBackend.Collectors;
+using BaconBackend.DataObjects;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,8 @@ namespace Baconit.Panels.SettingsPanels
             m_takeChangeAction = false;
 
             ui_showFullTitles.IsOn = App.BaconMan.UiSettingsMan.SubredditList_ShowFullTitles;
+            SetDefaultSortType(App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType);
+            SetDefaultSortTimeType(App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType);
             SetSubredditList();
 
             m_takeChangeAction = true;
@@ -128,6 +131,110 @@ namespace Baconit.Panels.SettingsPanels
             }
 
             App.BaconMan.UiSettingsMan.SubredditList_DefaultSubredditDisplayName = (string)ui_defaultSubreddit.SelectedItem;
+        }
+
+        private void DefaultSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!m_takeChangeAction || ui_defaultSort.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            switch (ui_defaultSort.SelectedIndex)
+            {
+                case 0:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Hot;
+                    break;
+                case 1:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.New;
+                    break;
+                case 2:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Rising;
+                    break;
+                case 3:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Controversial;
+                    break;
+                case 4:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Top;
+                    break;
+            }
+        }
+
+        private void SetDefaultSortType(SortTypes type)
+        {
+            switch(type)
+            {
+                case SortTypes.Hot:
+                    ui_defaultSort.SelectedIndex = 0;
+                    break;
+                case SortTypes.Controversial:
+                    ui_defaultSort.SelectedIndex = 3;
+                    break;
+                case SortTypes.New:
+                    ui_defaultSort.SelectedIndex = 1;
+                    break;
+                case SortTypes.Rising:
+                    ui_defaultSort.SelectedIndex = 2;
+                    break;
+                case SortTypes.Top:
+                    ui_defaultSort.SelectedIndex = 4;
+                    break;
+            }
+        }
+
+        private void DefaultTimeSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!m_takeChangeAction || ui_defaultTimeSort.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            switch (ui_defaultTimeSort.SelectedIndex)
+            {
+                case 0:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Hour;
+                    break;
+                case 1:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Day;
+                    break;
+                case 2:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Week;
+                    break;
+                case 3:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Month;
+                    break;
+                case 4:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Year;
+                    break;
+                case 5:
+                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.AllTime;
+                    break;
+            }
+        }
+        
+        private void SetDefaultSortTimeType(SortTimeTypes type)
+        {
+            switch (type)
+            {
+                case SortTimeTypes.Hour:
+                    ui_defaultTimeSort.SelectedIndex = 0;
+                    break;
+                case SortTimeTypes.Day:
+                    ui_defaultTimeSort.SelectedIndex = 1;
+                    break;
+                case SortTimeTypes.Week:
+                    ui_defaultTimeSort.SelectedIndex = 2;
+                    break;
+                case SortTimeTypes.Month:
+                    ui_defaultTimeSort.SelectedIndex = 3;
+                    break;
+                case SortTimeTypes.Year:
+                    ui_defaultTimeSort.SelectedIndex = 4;
+                    break;
+                case SortTimeTypes.AllTime:
+                    ui_defaultTimeSort.SelectedIndex = 5;
+                    break;
+            }
         }
     }
 }

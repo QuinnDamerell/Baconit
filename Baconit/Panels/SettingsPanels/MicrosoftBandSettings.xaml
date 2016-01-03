@@ -26,7 +26,7 @@
                            Text="MICROSOFT BAND" />
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
                 <Grid Grid.Row="1" Margin="12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -36,7 +36,7 @@
 
                     <TextBlock Grid.Row="0"
                                Margin="0,0,0,12"
-                               Text="These settings allow Baconit to integrate with your Microsoft Band v1 or v2. Baconit can change your wallpaper daily, add the Baconit tile on your Band, and give you instant notifications for new inbox messages."
+                               Text="Baconit can integrate with your Microsoft Band v1 or v2 to update your wallpaper, add a Baconit tile, or give you instant notifications for new inbox messages."
                                TextWrapping="Wrap" />
 
                     <TextBlock x:Name="ui_noBandConnected"
@@ -55,16 +55,17 @@
                                        TextWrapping="Wrap" />
 
                             <TextBlock Margin="0,12,0,0"
-                                       Text="Allow Baconit to update my Band wallpaper daily."
+                                       Text="Automatically update Band wallpaper"
                                        TextWrapping="Wrap" />
                             <ToggleSwitch x:Name="ui_enableBandWallpaperUpdate" Toggled="EnableBandWallpaperUpdate_Toggled" />
 
                             <TextBlock Margin="0,12,0,0"
-                                       Text="Band wallpaper subreddit source."
+                                       Text="Band wallpaper image source"
                                        TextWrapping="Wrap" />
                             <ComboBox x:Name="ui_wallpaperSubreddit"
+                                      MinWidth="150"
                                       Margin="0,8,0,8"
-                                      SelectionChanged="WallpaperSubreddit_SelectionChanged" MinWidth="150" />
+                                      SelectionChanged="WallpaperSubreddit_SelectionChanged" />
 
                             <TextBlock Margin="0,24,0,0"
                                        FontWeight="Bold"
@@ -73,7 +74,7 @@
                                        TextWrapping="Wrap" />
 
                             <TextBlock Margin="0,12,0,0"
-                                       Text="Add the Baconit tile and sync my inbox to my Band."
+                                       Text="Add a Baconit tile and sync my message inbox"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="ui_messageInboxNotEnabled"
                                        Margin="0,6,0,0"
@@ -85,7 +86,7 @@
 
                         <Grid x:Name="ui_noBandBlock"
                               Background="#BB000000"
-                              Visibility="Collapsed" />
+                              Visibility="Visible" />
                     </Grid>
                 </Grid>
             </ScrollViewer>

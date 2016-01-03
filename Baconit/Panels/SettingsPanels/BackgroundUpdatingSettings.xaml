@@ -24,32 +24,23 @@
                        Text="UPDATING AND LOCK SCREEN IMAGES" />
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
             <StackPanel Grid.Row="1" Margin="12">
-                <TextBlock Margin="0,0,0,12"
-                           Text="These settings allow Baconit to automatically update your lock screen image and desktop wallpaper from images on any subreddit. On a mobile device, the desktop wallpaper is the image behind your tiles. These settings don't roam so you can set them per device."
-                           TextWrapping="Wrap" />
-
-                <TextBlock Margin="0,0,0,12"
-                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Note: These settings might take a little while to apply."
-                           TextWrapping="Wrap" />
-
-                <TextBlock Text="Allow Baconit to update my lock screen image." TextWrapping="Wrap" />
+                 <TextBlock Text="Automatically update lock screen image" TextWrapping="Wrap" />
                 <ToggleSwitch x:Name="ui_enableLockScreen" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Allow Baconit to update my desktop wallpaper"
+                           Text="Automatically update wallpaper image"
                            TextWrapping="Wrap" />
                 <ToggleSwitch x:Name="ui_enableDesktop" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Subreddit to source images from for lock screen"
+                           Text="Lock screen image source"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_lockScreenSource"
                           MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
-                           Text="Subreddit to source images from for desktop wallpaper"
+                           Text="Wallpaper image source"
                            TextWrapping="Wrap" />
                 <ComboBox x:Name="ui_desktopSource"
                           MinWidth="150"

@@ -110,8 +110,8 @@ namespace Baconit.Panels
             }
 
             // Get the sort type
-            SortTypes sortType = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT) ? (SortTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT] : SortTypes.Hot;
-            SortTimeTypes postSortTime = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME) ? (SortTimeTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME] : SortTimeTypes.Week;
+            SortTypes sortType = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT) ? (SortTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT] : App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType;
+            SortTimeTypes postSortTime = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME) ? (SortTimeTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME] : App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType;
 
             // Do the rest of the setup
             SetupPage(subreddit, sortType, postSortTime);
