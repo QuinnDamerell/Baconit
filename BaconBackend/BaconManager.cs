@@ -217,7 +217,7 @@ namespace BaconBackend
             // Add a ref to cover anyone down this call stack.
             refDeferral.AddRef();
 
-            // Make the 
+            // Make the
             OnSuspendingArgs args = new OnSuspendingArgs()
             {
                 RefDeferral = refDeferral
@@ -289,7 +289,7 @@ namespace BaconBackend
                 // Call update on background man and give him a null deferral
                 // since this won't be called from the background.
                 await BackgroundMan.RunUpdate(new RefCountedDeferral(null));
-            });            
+            });
         }
 
         #region Global Back to Front Actions
@@ -367,21 +367,6 @@ namespace BaconBackend
 
             m_backendActionListener.NavigateToLogin();
             return true;
-        }
-
-        /// <summary>
-        /// Reports a new value for the memory usage of the app.
-        /// </summary>
-        /// <param name="currentUsage"></param>
-        /// <param name="maxLimit"></param>
-        public void ReportMemoryUsage(ulong currentUsage, ulong maxLimit)
-        {
-            if (m_backendActionListener == null)
-            {
-                return;
-            }
-
-            m_backendActionListener.ReportMemoryUsage(currentUsage, maxLimit);
         }
 
         #endregion

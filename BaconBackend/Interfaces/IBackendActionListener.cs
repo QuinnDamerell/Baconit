@@ -41,12 +41,5 @@ namespace BaconBackend.Interfaces
         /// </summary>
         /// <returns>If the back navigation was handled.</returns>
         bool NavigateBack();
-
-        /// <summary>
-        /// Reports a new value for the memory usage of the app.
-        /// </summary>
-        /// <param name="currentUsage"></param>
-        /// <param name="maxLimit"></param>
-        void ReportMemoryUsage(ulong currentUsage, ulong maxLimit);
     }
 }

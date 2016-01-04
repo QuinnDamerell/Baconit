@@ -90,13 +90,8 @@ namespace Baconit.Panels.SettingsPanels
             }
             App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay = ui_showMemoryOverlay.IsOn;
 
-            if(ui_showMemoryOverlay.IsOn)
+            if (!ui_showMemoryOverlay.IsOn)
             {
-                App.BaconMan.MemoryMan.StartMemoryWatch();
-            }
-            else
-            {
-                App.BaconMan.MemoryMan.StopMemoryWatch();
                 App.BaconMan.MessageMan.ShowMessageSimple("Restart", "The UI will not be removed until the app is restarted.");
             }
         }

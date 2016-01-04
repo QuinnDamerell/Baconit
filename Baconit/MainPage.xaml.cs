@@ -123,6 +123,9 @@ namespace Baconit
             m_keyboardShortcutHepler.OnGoBackActivation += KeyboardShortcutHepler_OnGoBackActivation;
 
             m_panelManager.OnNavigationComplete += PanelManager_OnNavigationComplete;
+
+            // Sub to the memory report
+            App.BaconMan.MemoryMan.OnMemoryReport += MemoryMan_OnMemoryReport;
         }
 
         /// <summary>
@@ -139,7 +142,7 @@ namespace Baconit
             // Request an update if needed
             App.BaconMan.SubredditMan.Update();
             App.BaconMan.UserMan.UpdateUser();
-            
+
             // Get the default subreddit.
             string defaultDisplayName = App.BaconMan.UiSettingsMan.SubredditList_DefaultSubredditDisplayName;
             if (String.IsNullOrWhiteSpace(defaultDisplayName))
@@ -1041,12 +1044,13 @@ namespace Baconit
             return m_panelManager.GoBack();
         }
 
+
         /// <summary>
-        /// Reports a new value for the memory usage of the app.
+        /// Fired when there is a new memory report.
         /// </summary>
-        /// <param name="currentUsage"></param>
-        /// <param name="maxLimit"></param>
-        public async void ReportMemoryUsage(ulong currentUsage, ulong maxLimit)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void MemoryMan_OnMemoryReport(object sender, OnMemoryReportArgs e)
         {
             // Jump to the UI thread.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -1055,13 +1059,12 @@ namespace Baconit
                 ui_memoryContainer.Visibility = Visibility.Visible;
 
                 // Set the text
-                ui_memoryAppUsage.Text = String.Format("{0:N0}", currentUsage / 1024 / 1024);
-                ui_memoryAppLimit.Text = String.Format("{0:N0}", maxLimit / 1024 / 1024);
-                double percent = ((double)currentUsage / (double)maxLimit);
-                ui_memoryAppPercentage.Text = String.Format("{0:N2}%", percent * 100);
+                ui_memoryAppUsage.Text = String.Format("{0:N0}", e.CurrentMemoryUsage / 1024 / 1024);
+                ui_memoryAppLimit.Text = String.Format("{0:N0}", e.AvailableMemory / 1024 / 1024);
+                ui_memoryAppPercentage.Text = String.Format("{0:N2}%", e.UsagePercentage * 100);
 
                 // Set the usage height.
-                double currentBar = ui_memoryBarBackground.ActualHeight * percent;
+                double currentBar = ui_memoryBarBackground.ActualHeight * e.UsagePercentage;
                 ui_memoryBarOverlay.Height = currentBar;
             });
         }
