@@ -215,6 +215,12 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         CommentSortTypes m_commentSortType = CommentSortTypes.Best;
 
+        /// <summary>
+        /// Indicates if we have seeded this post with the defaults yet.
+        /// </summary>
+        [JsonIgnore]
+        public bool HaveCommentDefaultsBeenSet = false;
+
         //
         // UI Vars
         //

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Baconit.Panels.SettingsPanels.SubredditViewSettings"
+﻿<UserControl x:Class="Baconit.Panels.SettingsPanels.CommentSettings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,52 +14,44 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  Subreddit Header  -->
+        <!--  Comment Header  -->
         <StackPanel Grid.Row="0"
                     Background="#333333"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SUBREDDIT VIEW SETTINGS" />
+                       Text="COMMENT SETTINGS" />
         </StackPanel>
 
         <StackPanel Grid.Row="1"
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     Padding="12">
-            <TextBlock Text="Subreddit to view when the app opens" TextWrapping="Wrap" />
-            <ComboBox x:Name="ui_defaultSubreddit"
-                      MinWidth="150"
-                      Margin="0,8,12,18"
-                      SelectionChanged="DefaultSubreddit_SelectionChanged" />
 
             <TextBlock Text="Default sort" TextWrapping="Wrap" />
             <ComboBox x:Name="ui_defaultSort"
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSort_SelectionChanged">
-                <ComboBoxItem Content="hot" />
-                <ComboBoxItem Content="new" />
-                <ComboBoxItem Content="rising" />
-                <ComboBoxItem Content="controversial" />
-                <ComboBoxItem Content="top" />
+                <ComboBoxItem Content="Best" />
+                <ComboBoxItem Content="Top" />
+                <ComboBoxItem Content="Controversial" />
+                <ComboBoxItem Content="New" />
+                <ComboBoxItem Content="Old" />
+                <ComboBoxItem Content="Q&amp;A" />
             </ComboBox>
 
-            <TextBlock Text="Default time sort" TextWrapping="Wrap" />
-            <ComboBox x:Name="ui_defaultTimeSort"
+            <TextBlock Text="Default count" TextWrapping="Wrap" />
+            <ComboBox x:Name="ui_defaultCommentCount"
                       MinWidth="150"
                       Margin="0,8,12,18"
-                      SelectionChanged="DefaultTimeSort_SelectionChanged">
-                <ComboBoxItem Content="past hour" />
-                <ComboBoxItem Content="past day" />
-                <ComboBoxItem Content="past week" />
-                <ComboBoxItem Content="past month" />
-                <ComboBoxItem Content="past year" />
-                <ComboBoxItem Content="all time" />
+                      SelectionChanged="DefaultCommentCount_SelectionChanged">
+                <ComboBoxItem Content="50" />
+                <ComboBoxItem Content="150" />
+                <ComboBoxItem Content="200" />
+                <ComboBoxItem Content="300" />
+                <ComboBoxItem Content="500" />
             </ComboBox>
-
-            <TextBlock Text="Show full post titles" TextWrapping="Wrap" />
-            <ToggleSwitch x:Name="ui_showFullTitles" Toggled="ShowFullTitles_Toggled" />
         </StackPanel>
     </Grid>
 </UserControl>

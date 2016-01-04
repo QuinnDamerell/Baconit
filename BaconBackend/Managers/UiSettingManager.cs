@@ -308,6 +308,67 @@ namespace BaconBackend.Managers
 
         #endregion
 
+        #region Comments
+
+        /// <summary>
+        /// The default comment sort type
+        /// </summary>
+        public CommentSortTypes Comments_DefaultSortType
+        {
+            get
+            {
+                if (!m_comments_DefaultSortType.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultSortType"))
+                    {
+                        m_comments_DefaultSortType = m_baconMan.SettingsMan.ReadFromRoamingSettings<CommentSortTypes>("UiSettingManager.Comments_DefaultSortType");
+                    }
+                    else
+                    {
+                        m_comments_DefaultSortType = CommentSortTypes.Best;
+                    }
+                }
+                return m_comments_DefaultSortType.Value;
+            }
+            set
+            {
+                m_comments_DefaultSortType = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<CommentSortTypes>("UiSettingManager.Comments_DefaultSortType", m_comments_DefaultSortType.Value);
+            }
+        }
+        private CommentSortTypes? m_comments_DefaultSortType = null;
+
+
+        /// <summary>
+        /// The default comment count number
+        /// </summary>
+        public int Comments_DefaultCount
+        {
+            get
+            {
+                if (!m_comments_DefaultCount.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultCount"))
+                    {
+                        m_comments_DefaultCount = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.Comments_DefaultCount");
+                    }
+                    else
+                    {
+                        m_comments_DefaultCount = 150;
+                    }
+                }
+                return m_comments_DefaultCount.Value;
+            }
+            set
+            {
+                m_comments_DefaultCount = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.Comments_DefaultCount", m_comments_DefaultCount.Value);
+            }
+        }
+        private int? m_comments_DefaultCount = null;
+
+        #endregion
+
         #region Flip View
 
         /// <summary>

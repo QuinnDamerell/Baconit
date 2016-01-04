@@ -65,6 +65,14 @@ namespace Baconit.Panels
 
             // This post might have comments if opened already in flip view. Clear them out if it does.
             m_post.Comments.Clear();
+
+            if (!m_post.HaveCommentDefaultsBeenSet)
+            {
+                // Set the default count and sort for comments
+                post.CurrentCommentShowingCount = App.BaconMan.UiSettingsMan.Comments_DefaultCount;
+                post.CommentSortType = App.BaconMan.UiSettingsMan.Comments_DefaultSortType;
+                m_post.HaveCommentDefaultsBeenSet = true;
+            }
         }
 
         /// <summary>

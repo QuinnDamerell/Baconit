@@ -202,6 +202,9 @@
     <Compile Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml.cs">
       <DependentUpon>BackgroundUpdatingSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\SettingsPanels\CommentSettings.xaml.cs">
+      <DependentUpon>CommentSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\SettingsPanels\DeveloperSettings.xaml.cs">
       <DependentUpon>DeveloperSettings.xaml</DependentUpon>
     </Compile>
@@ -439,6 +442,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\SettingsPanels\BackgroundUpdatingSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\CommentSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
