@@ -70,6 +70,12 @@ namespace BaconBackend.DataObjects
         public string Subreddit { get; set; }
 
         /// <summary>
+        /// IF the comment has been gilded
+        /// </summary>
+        [JsonProperty(PropertyName = "gilded")]
+        public bool IsGilded { get; set; }
+        
+        /// <summary>
         /// The comment's score: total upvotes - total downvotes.
         /// </summary>
         [JsonProperty(PropertyName = "score")]
@@ -428,6 +434,18 @@ namespace BaconBackend.DataObjects
                 return String.IsNullOrWhiteSpace(AuthorFlairText) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+
+        /// <summary>
+        /// The visibility of the comment giled status.
+        /// </summary>
+        [JsonIgnore]
+        public Visibility GildedVisibility
+        {
+            get
+            {
+                return IsGilded ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }        
 
         /// <summary>
         /// Whether the comment should be uncollapsed.

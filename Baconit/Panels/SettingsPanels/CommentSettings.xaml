@@ -50,7 +50,6 @@
                 <ComboBoxItem Content="150" />
                 <ComboBoxItem Content="200" />
                 <ComboBoxItem Content="300" />
-                <ComboBoxItem Content="500" />
             </ComboBox>
         </StackPanel>
     </Grid>

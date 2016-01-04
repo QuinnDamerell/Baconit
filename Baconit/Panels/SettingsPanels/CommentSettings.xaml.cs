@@ -117,7 +117,9 @@ namespace Baconit.Panels.SettingsPanels
                     App.BaconMan.UiSettingsMan.Comments_DefaultCount = 300;
                     break;
                 case 4:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultCount = 500;
+                    // We don't allow setting the default to 500 even though the user can still do so
+                    // per post.
+                    //App.BaconMan.UiSettingsMan.Comments_DefaultCount = 500;
                     break;
             }
         }
@@ -164,7 +166,9 @@ namespace Baconit.Panels.SettingsPanels
                     ui_defaultCommentCount.SelectedIndex = 3;
                     break;
                 case 500:
-                    ui_defaultCommentCount.SelectedIndex = 4;
+                    // We don't allow setting the default to 500 even though the user can still do so
+                    // per post.
+                    //ui_defaultCommentCount.SelectedIndex = 4;
                     break;
             }
         }

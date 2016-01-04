@@ -137,6 +137,12 @@ namespace BaconBackend.DataObjects
         public string LinkFlairText { get; set; }
 
         /// <summary>
+        /// If the post is gilded or not.
+        /// </summary>
+        [JsonProperty(PropertyName = "gilded")]
+        public bool Gilded { get; set; }        
+
+        /// <summary>
         /// true: the logged-in user upvoted the post.
         /// false: the logged-in user downvoted the post.
         /// null: the logged-in user has neither upvoted nor downvoted the post.
@@ -608,6 +614,20 @@ namespace BaconBackend.DataObjects
                 return String.IsNullOrWhiteSpace(LinkFlairText) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+
+        /// <summary>
+        /// Used by the subreddit list to show or hide gilded tag
+        /// </summary>
+        [JsonIgnore]
+        public Visibility GildedVisibility
+        {
+            get
+            {
+                return Gilded ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        
 
         #region FlipView Vars
 
