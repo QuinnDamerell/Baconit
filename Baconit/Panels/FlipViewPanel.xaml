@@ -502,7 +502,12 @@
                         </helperControls:EndDetectingListView>
 
                         <!--  The sticky header for flip view  -->
-                        <ContentControl VerticalAlignment="Top"
+                        <!--
+                            Fun trick, we initally set the visibilty to visible with a -3000 margin so the UI loads and renders
+                            off screen so it is ready when we want to show it. Otherwise it 'pops' in.
+                        -->
+                        <ContentControl Margin="{Binding FlipViewStickyHeaderMargin}"
+                                        VerticalAlignment="Top"
                                         HorizontalContentAlignment="Stretch"
                                         ContentTemplate="{StaticResource FlipViewStoryHeader}"
                                         Visibility="{Binding FlipViewStickyHeaderVis}" />

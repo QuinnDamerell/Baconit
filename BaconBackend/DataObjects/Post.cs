@@ -748,6 +748,7 @@ namespace BaconBackend.DataObjects
 
         /// <summary>
         /// The visibility of the post's header as sticky to the top of the flip view.
+        /// Note!!! The default should be visible so the FlipViewStickyHeaderMargin trick works!
         /// </summary>
         [JsonIgnore]
         public Visibility FlipViewStickyHeaderVis
@@ -763,7 +764,26 @@ namespace BaconBackend.DataObjects
             }
         }
         [JsonIgnore]
-        Visibility m_flipViewStickyHeaderVis = Visibility.Collapsed;
+        Visibility m_flipViewStickyHeaderVis = Visibility.Visible;
+
+        /// <summary>
+        /// Fun trick, this is used to make the flipview sticky header render off screen so it is ready when we want
+        /// to show it. We use -3000 to make sure it is way off screen.
+        /// </summary>
+        public Thickness FlipViewStickyHeaderMargin
+        {
+            get
+            {
+                return m_flipViewStickyHeaderMargin;
+            }
+            set
+            {
+                m_flipViewStickyHeaderMargin = value;
+                NotifyPropertyChanged(nameof(FlipViewStickyHeaderMargin));
+            }
+        }
+        [JsonIgnore]
+        Thickness m_flipViewStickyHeaderMargin = new Thickness(0,-3000,0,0);
 
         /// <summary>
         /// The visibility of the button to show all comments on a post.

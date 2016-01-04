@@ -997,6 +997,18 @@ namespace Baconit.Panels
             // Get the post
             Post post = ((Post)((FrameworkElement)sender).DataContext);
 
+            // Make sure the margin is normal.
+            if(post.FlipViewStickyHeaderMargin.Top != 0)
+            {
+                // If the margin is not 0 we are playing our render tick. If the sticky header
+                // is always set to collapsed it actually never loads or render until we set it to
+                // visible while we are scrolling which makes it 'pop' in with a delay. To avoid this
+                // it defaults visible but way off the screen, this makes it load and render so it is ready
+                // when we set it visible. Here is is safe to restore it to the normal state.
+                post.FlipViewStickyHeaderVis = Visibility.Collapsed;
+                post.FlipViewStickyHeaderMargin = new Thickness(0, 0, 0, 0);                
+            }
+            
             // Show or hide the scroll bar depending if we have gotten to comments yet or not.
             post.VerticalScrollBarVisibility = e.ListScrollTotalDistance > 60 ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
 
