@@ -446,7 +446,7 @@
                             <Grid Margin="-4,-4,-4,-13"
                                   Background="#01000000"
                                   Padding="4,4,14,13"
-                                  Tapped="CommentCollpase_Tapped">
+                                  Tapped="CommentCollapse_Tapped">
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
                                            Text="collapse" />
