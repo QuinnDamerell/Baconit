@@ -72,6 +72,13 @@ namespace BaconBackend.DataObjects
         public string MinorText { get; set; }
 
         /// <summary>
+        /// The subtitle of the search result formatted with markdown.
+        /// For a subreddit, its description.
+        /// For others it is null.
+        /// </summary>
+        public string MarkdownText { get; set; }
+
+        /// <summary>
         /// The accented text of the search result.
         /// For a subreddit, its name.
         /// For a post, its score and comment count.
@@ -88,7 +95,13 @@ namespace BaconBackend.DataObjects
         /// Whether the search result view should show the minor text.
         /// This is only true on subreddit search results without minor text.
         /// </summary>
-        public Visibility ShowMinorText { get; set; } = Visibility.Visible;
+        public Visibility ShowMinorText
+        {
+            get
+            {
+                return String.IsNullOrWhiteSpace(MinorText) ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
 
         /// <summary>
         /// Whether the search result view should show this result's header.
@@ -135,6 +148,18 @@ namespace BaconBackend.DataObjects
             get
             {
                 return ResultType == SearchResultTypes.NoResults ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Whether the search result view should show the "no results" text.
+        /// True only if this search result list item's type is NoResults.
+        /// </summary>
+        public Visibility ShowMarkdownText
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(MarkdownText) ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 

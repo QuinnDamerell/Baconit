@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
              RequestedTheme="Dark"
              d:DesignHeight="600"
              d:DesignWidth="400"
@@ -27,6 +28,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
                     <TextBlock FontSize="18"
                                MaxLines="2"
@@ -38,7 +40,11 @@
                                TextTrimming="WordEllipsis"
                                TextWrapping="Wrap"
                                Visibility="{Binding ShowMinorText}" />
-                    <TextBlock Grid.Row="2"
+                    <universalMarkdown:MarkdownTextBlock Grid.Row="2"
+                                                         Foreground="#999999"
+                                                         Markdown="{Binding MarkdownText}"
+                                                         Visibility="{Binding ShowMarkdownText}" />
+                    <TextBlock Grid.Row="3"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Text="{Binding MinorAccentText}" />
                 </Grid>

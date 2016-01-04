@@ -324,16 +324,10 @@ namespace Baconit.Panels
                         {
                             ResultType = SearchResultTypes.Subreddit,
                             MajorText = subreddit.Title,
-                            MinorText = subreddit.PublicDescription,
+                            MarkdownText = subreddit.PublicDescription,
                             MinorAccentText = $"/r/{subreddit.DisplayName}",
                             DataContext = subreddit
                         };
-
-                        // Hide the minor text if there isn't any
-                        if(String.IsNullOrWhiteSpace(subreddit.PublicDescription))
-                        {
-                            subredditResult.ShowMinorText = Visibility.Collapsed;
-                        }
 
                         // Add it to the list
                         m_searchResultsList.Insert(insertIndex, subredditResult);
@@ -540,7 +534,7 @@ namespace Baconit.Panels
         }
 
         #endregion
-        
+
         #region User Search Logic
 
         /// <summary>
