@@ -29,6 +29,13 @@
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   Padding="12"
                   SelectionChanged="SettingsList_SelectionChanged"
-                  Style="{StaticResource ListViewStyle}" />
+                  Style="{StaticResource ListViewStyle}">
+            <ListView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <AddDeleteThemeTransition />
+                </TransitionCollection>
+            </ListView.ItemContainerTransitions>
+        </ListView>
     </Grid>
 </UserControl>

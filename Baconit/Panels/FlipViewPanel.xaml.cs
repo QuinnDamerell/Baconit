@@ -1038,18 +1038,26 @@ namespace Baconit.Panels
             // Do the rest of this work on a background thread
             Task.Run(() =>
             {
+                FlipViewPostCommentManager manager = null;
+
                 // Get the comment manager for this post
                 lock (m_commentManagers)
                 {
-                    foreach (FlipViewPostCommentManager manager in m_commentManagers)
+                    foreach (FlipViewPostCommentManager search in m_commentManagers)
                     {
-                        if (manager.Post.Id.Equals(post.Id))
+                        if (search.Post.Id.Equals(post.Id))
                         {
                             // When found, request more posts
-                            manager.RequestMorePosts();
+                            manager = search;
                             break;
                         }
                     }
+                }
+
+                // Make the call if we found one
+                if(manager != null)
+                {
+                    manager.RequestMorePosts();
                 }
             });
         }

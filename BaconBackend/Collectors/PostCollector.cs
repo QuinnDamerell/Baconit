@@ -469,7 +469,7 @@ namespace BaconBackend.Collectors
                 post.SubTextLine2PartTwo = (showSubreddit ? post.Subreddit.ToLower() : post.Domain);
 
                 // Set the second line for flipview
-                post.FlipViewSecondary = $"r/{post.Subreddit.ToLower()}";
+                post.FlipViewSecondary = showSubreddit ? $"r/{post.Subreddit.ToLower()}" : TimeToTextHelper.TimeElapseToText(postTime) + " ago";
 
                 // Escape the title, flair, and selftext
                 post.Title = WebUtility.HtmlDecode(post.Title);

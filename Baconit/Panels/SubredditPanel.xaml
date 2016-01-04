@@ -116,23 +116,27 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Border Margin="0,0,8,0"
-                              HorizontalAlignment="Left"
-                              Background="#107c10"
-                              Visibility="{Binding StickyVisibility}" CornerRadius="2">
+                                HorizontalAlignment="Left"
+                                Background="#107c10"
+                                CornerRadius="2"
+                                Visibility="{Binding StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
                                        Text="Sticky" />
                         </Border>
-                        <Border HorizontalAlignment="Left"
-                              Background="{Binding DarkenedAccentColorBrush}"
-                              Visibility="{Binding FlairVisibility}" CornerRadius="2">
+                        <Border Margin="0,0,8,0"
+                                HorizontalAlignment="Left"
+                                Background="{Binding DarkenedAccentColorBrush}"
+                                CornerRadius="2"
+                                Visibility="{Binding FlairVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
                                        Text="{Binding LinkFlairText}" />
                         </Border>
                         <Border HorizontalAlignment="Left"
-                              Background="#DDB152"
-                              Visibility="{Binding GildedVisibility}" CornerRadius="2">
+                                Background="#DDB152"
+                                CornerRadius="2"
+                                Visibility="{Binding GildedVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#0F0C05"
                                        Text="Gilded" />

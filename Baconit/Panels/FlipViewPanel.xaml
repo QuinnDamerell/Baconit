@@ -38,35 +38,24 @@
                                TextWrapping="Wrap" />
 
                     <!--  Story subtext  -->
-                    <Grid Grid.Row="1"
-                          Margin="8,2,8,2"
-                          HorizontalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Margin="0,0,6,0"
-                                   VerticalAlignment="Center"
-                                   Foreground="#939393"
-                                   Text="{Binding Author}"
-                                   TextTrimming="WordEllipsis" />
-                        <TextBlock Grid.Column="1"
-                                   VerticalAlignment="Center"
-                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{Binding FlipViewSecondary}"
-                                   TextTrimming="WordEllipsis" />
-                        <Grid Grid.Column="2"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Left"
-                              Background="{Binding DarkenedAccentColorBrush}"
-                              Visibility="{Binding FlairVisibility}">
-                            <TextBlock Margin="6,2,6,2"
-                                       Foreground="#DDFFFFFF"
-                                       Text="{Binding LinkFlairText}" />
-                        </Grid>
-                    </Grid>
+                    <StackPanel Grid.Row="1"
+                                Margin="8,2,8,2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                        <TextBlock TextTrimming="WordEllipsis">
+                            <Run Foreground="#939393" Text="{Binding Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{Binding Score}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#939393" Text="{Binding FlipViewSecondary}" />
+                        </TextBlock>
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{Binding StickyVisibility}">
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" />
+                        </TextBlock>
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{Binding FlairVisibility}">
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{Binding LinkFlairText}" />
+                        </TextBlock>
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{Binding GildedVisibility}">
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#DDB152" Text="gilded" />
+                        </TextBlock>
+                    </StackPanel>
 
                     <!--  Action icons  -->
                     <Grid Grid.Row="2"
@@ -152,13 +141,28 @@
                                  IsIndeterminate="{Binding FlipViewShowLoadingMoreComments}"
                                  Visibility="{Binding FlipViewShowLoadingMoreCommentsVis}" />
 
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Margin="8,4,2,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="#989898"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Symbol="Message">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX="0.7" ScaleY="0.7" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                        <TextBlock VerticalAlignment="Center"
+                                   Foreground="#989898"
+                                   Text="{Binding NumComments}" />
+                    </StackPanel>
+
                     <!--  Sort Header  -->
                     <StackPanel Grid.Column="1"
                                 Height="36"
                                 VerticalAlignment="Center"
                                 Background="Transparent"
                                 Orientation="Horizontal"
-                                Padding="12,0,12,0"
+                                Padding="12,0,6,0"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
@@ -177,7 +181,7 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CommentCurrentSortTypeString}" />
-                        <TextBlock Margin="2,1,0,0"
+                        <TextBlock Margin="1,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                    FontSize="10"
@@ -191,7 +195,7 @@
                                 VerticalAlignment="Center"
                                 Background="Transparent"
                                 Orientation="Horizontal"
-                                Padding="12,0,12,0"
+                                Padding="6,0,6,0"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
@@ -209,7 +213,7 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CurrentCommentShowingCount}" />
-                        <TextBlock Margin="2,1,0,0"
+                        <TextBlock Margin="1,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                    FontSize="10"
@@ -306,7 +310,6 @@
 
 
         <DataTemplate x:Name="CommentListItemTemplate">
-
             <!--  Note the 15 padding on the right keeps us off the scrollbar on desktop  -->
             <Border Margin="{Binding CommentMargin}"
                     VerticalAlignment="Stretch"
@@ -326,23 +329,14 @@
                           Visibility="{Binding ShowCollapsedCommentVis}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Margin="0,0,8,0"
-                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{Binding Author}" />
+                        <TextBlock Margin="0,0,8,0">
+                            <Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{Binding Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{Binding ScoreText}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#999999" Text="{Binding TimeString}" />
+                        </TextBlock>
+
                         <TextBlock Grid.Column="1"
-                                   Margin="0,0,8,0"
-                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{Binding ScoreText}" />
-                        <TextBlock Grid.Column="2"
-                                   Margin="0,0,8,0"
-                                   Foreground="#999999"
-                                   Text="{Binding TimeString}" />
-                        <TextBlock Grid.Column="3"
                                    Margin="0,0,8,0"
                                    HorizontalAlignment="Right"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
