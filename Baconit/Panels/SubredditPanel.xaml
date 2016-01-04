@@ -134,11 +134,11 @@
                                        Text="{Binding LinkFlairText}" />
                         </Border>
                         <Border HorizontalAlignment="Left"
-                                Background="#DDB152"
+                                Background="#A88745"
                                 CornerRadius="2"
                                 Visibility="{Binding GildedVisibility}">
                             <TextBlock Margin="6,2,6,2"
-                                       Foreground="#0F0C05"
+                                       Foreground="White"
                                        Text="Gilded" />
                         </Border>
                     </StackPanel>

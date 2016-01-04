@@ -254,7 +254,7 @@ namespace Baconit
             {
                 // Warning this will report the error but leave us in a very bad state. Only use this for debugging.
                 e.Handled = true;
-                BaconMan.MessageMan.ShowMessageSimple("Fatal Crash", "The app tried to crash. Message (" + e.Message + ")\n\n Exception Msg (" + e.Exception.Message + ")");
+                BaconMan.MessageMan.ShowMessageSimple("Fatal Crash", "The app tried to crash. \n\nMessage: " + e.Message + "\n\nException Msg: " + e.Exception.Message + "\n\nStack Trace:\n"+e.Exception.StackTrace);
             }
         }
     }
