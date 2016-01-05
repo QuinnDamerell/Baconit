@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -31,12 +32,12 @@ namespace Baconit.FlipViewControls
         /// <summary>
         /// Holds a reference to the webview.
         /// </summary>
-        WebView m_webView;
+        WebView m_webView = null;
 
         /// <summary>
         /// Indicates if we have called hide or not.
         /// </summary>
-        bool m_loadingHidden;
+        bool m_loadingHidden = false;
 
         /// <summary>
         /// Indicates if we should be destroyed
@@ -63,6 +64,9 @@ namespace Baconit.FlipViewControls
 
             // Listen for back presses
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
+
+            // Listen for memory pressure
+            App.BaconMan.MemoryMan.OnMemoryCleanUpRequest += MemoryMan_OnMemoryCleanUpRequest;
         }
 
         /// <summary>
@@ -86,83 +90,147 @@ namespace Baconit.FlipViewControls
             m_host.ShowLoading();
             m_loadingHidden = false;
 
+            // Get the post url
+            m_postUrl = post.Url;
+
+
             // Since some of this can be costly, delay the work load until we aren't animating.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 lock (this)
                 {
-                    if (m_isDestroyed)
+                    // If we are destroyed or already created return.
+                    if (m_isDestroyed || m_webView != null)
                     {
                         return;
                     }
 
-                    // Get the post url
-                    m_postUrl = post.Url;
-
-                    // Make the webview
-                    m_webView = new WebView(WebViewExecutionMode.SeparateThread);
-
-                    // Setup the listeners, we need all of these because some web pages don't trigger
-                    // some of them.
-                    m_webView.FrameNavigationCompleted += NavigationCompleted;
-                    m_webView.NavigationFailed += NavigationFailed;
-                    m_webView.DOMContentLoaded += DOMContentLoaded;
-                    m_webView.ContentLoading += ContentLoading;
-                    m_webView.ContainsFullScreenElementChanged += WebView_ContainsFullScreenElementChanged;
-
-                    // Navigate
-                    try
+                    // Make sure we have resources to make a not visible control.
+                    if (CanMakeNotVisibleWebHost())
                     {
-                        m_webView.Navigate(new Uri(post.Url, UriKind.Absolute));
-                    }
-                    catch (Exception e)
-                    {
-                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
-                        m_host.ShowError();
+                        MakeWebView();
                     }
 
-                    // Now add an event for navigating.
-                    m_webView.NavigationStarting += NavigationStarting;
+                    // If not we will try again when we become visible
+                }
+            });
+        }
 
-                    // Insert this before the full screen button.
-                    ui_contentRoot.Children.Insert(0, m_webView);
+
+        /// <summary>
+        /// Called when the  post actually becomes visible
+        /// </summary>
+        public async void OnVisible()
+        {
+            // Jump to the UI thread.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                lock (this)
+                {
+                    // If we are destroyed or already created return.
+                    if (m_isDestroyed || m_webView != null)
+                    {
+                        return;
+                    }
+
+                    // Make sure we have resources to make a web view at all.
+                    if (CanMakeVisibleWebHost())
+                    {
+                        MakeWebView();
+                    }
+                    else
+                    {
+                        // If we don't have the resources show the error
+                        ShowLowResourcesError();
+                        HideLoading();
+                    }
                 }
             });
         }
 
         /// <summary>
-        /// Called when the  post actually becomes visible
+        /// Called by the host when the content should be destroyed.
         /// </summary>
-        public void OnVisible()
-        {
-            // Ignore for now
-        }
-
         public void OnDestroyContent()
         {
             lock (this)
             {
-                m_isDestroyed = true;
-
-                if (m_webView != null)
-                {
-                    // Clear handlers
-                    m_webView.FrameNavigationCompleted -= NavigationCompleted;
-                    m_webView.NavigationFailed -= NavigationFailed;
-                    m_webView.DOMContentLoaded -= DOMContentLoaded;
-                    m_webView.ContentLoading -= ContentLoading;
-
-                    // Clear the webview
-                    m_webView.Stop();
-                    m_webView.NavigateToString("");
-                }
-                m_webView = null;
+                DestroyWebView();
             }
-
-            // Clear the UI
-            ui_contentRoot.Children.Remove(m_webView);
         }
 
+        /// <summary>
+        /// Creates a new webview, this should be called under lock!
+        /// </summary>
+        private void MakeWebView()
+        {
+            if(m_webView != null)
+            {
+                return;
+            }
+
+            // Make the webview
+            m_webView = new WebView(WebViewExecutionMode.SeparateThread);
+
+            // Setup the listeners, we need all of these because some web pages don't trigger
+            // some of them.
+            m_webView.FrameNavigationCompleted += NavigationCompleted;
+            m_webView.NavigationFailed += NavigationFailed;
+            m_webView.DOMContentLoaded += DOMContentLoaded;
+            m_webView.ContentLoading += ContentLoading;
+            m_webView.ContainsFullScreenElementChanged += WebView_ContainsFullScreenElementChanged;
+
+            // Navigate
+            try
+            {
+                m_webView.Navigate(new Uri(m_postUrl, UriKind.Absolute));
+            }
+            catch (Exception e)
+            {
+                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
+                m_host.ShowError();
+            }
+
+            // Now add an event for navigating.
+            m_webView.NavigationStarting += NavigationStarting;
+
+            // Insert this before the full screen button.
+            ui_contentRoot.Children.Insert(0, m_webView);
+
+            // Show the overlays
+            ui_webviewOverlays.Visibility = Visibility.Visible;
+            // Hide the error UI.
+            ui_lowResourcesError.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Destroys a web view if there is one and sets the flag. This should be called under lock!
+        /// </summary>
+        private void DestroyWebView()
+        {
+            // Set the flag
+            m_isDestroyed = true;
+
+            // Destroy if it exists
+            if (m_webView != null)
+            {
+                // Clear handlers
+                m_webView.FrameNavigationCompleted -= NavigationCompleted;
+                m_webView.NavigationFailed -= NavigationFailed;
+                m_webView.DOMContentLoaded -= DOMContentLoaded;
+                m_webView.ContentLoading -= ContentLoading;
+
+                // Clear the webview
+                m_webView.Stop();
+                m_webView.NavigateToString("");
+
+                // Remove it from the UI.
+                ui_contentRoot.Children.Remove(m_webView);
+            }
+
+            // Null it
+            m_webView = null;
+        }
 
         private void DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
@@ -284,6 +352,8 @@ namespace Baconit.FlipViewControls
 
         #endregion
 
+        #region Reading Mode Logic
+
         private void ReadingMode_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Show loading
@@ -299,7 +369,7 @@ namespace Baconit.FlipViewControls
             if (m_isReadigModeEnabled)
             {
                 webLink = new Uri("http://www.readability.com/m?url=" + m_postUrl, UriKind.Absolute);
-            }           
+            }
             else
             {
                 webLink = new Uri(m_postUrl, UriKind.Absolute);
@@ -325,6 +395,10 @@ namespace Baconit.FlipViewControls
             ui_readingModeLoading.IsActive = false;
             ui_readingModeIconHolder.Visibility = Visibility.Visible;
         }
+
+        #endregion
+
+        #region Back Button
 
         private async void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -367,5 +441,131 @@ namespace Baconit.FlipViewControls
                 ui_backButton.Visibility = Visibility.Collapsed;
             }
         }
+
+        #endregion
+
+        #region Memory Pressure Logic
+
+        /// <summary>
+        /// Returns if we can currently make the web control that is visible.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanMakeVisibleWebHost()
+        {
+            // If we are not at high we can do this.
+            return App.BaconMan.MemoryMan.MemoryPressure < MemoryPressureStates.HighNoAllocations;
+        }
+
+        /// <summary>
+        /// Returns if we can currently make the web control that is not visible (pre loading).
+        /// </summary>
+        /// <returns></returns>
+        private bool CanMakeNotVisibleWebHost()
+        {
+            // If we are not at medium we can do this.
+            return App.BaconMan.MemoryMan.MemoryPressure < MemoryPressureStates.Medium;
+        }
+
+        /// <summary>
+        /// Fired when the memory manager requests cleanup.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void MemoryMan_OnMemoryCleanUpRequest(object sender, BaconBackend.Managers.OnMemoryCleanupRequestArgs e)
+        {
+            // Make sure it is medium or low.
+            if (e.CurrentPressure > MemoryPressureStates.Low)
+            {
+                // Jump to the UI thread, use high because we might need to get this web view out of here.
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+                {
+                    lock (this)
+                    {
+                        // If we are already gone get out of here.
+                        if(m_isDestroyed)
+                        {
+                            return;
+                        }
+
+                        bool shouldDestroy = true;
+
+                        // If we are at medium...
+                        if(e.CurrentPressure == MemoryPressureStates.Medium)
+                        {
+                            // Don't destroy if we are visible
+                            if(m_host.IsVisible)
+                            {
+                                shouldDestroy = false;
+                            }
+                            else
+                            {
+                                // Or if we aren't visible and we haven't make the web control yet.
+                                // If we destory here we will never make the control even when visible.
+                                if(m_webView == null)
+                                {
+                                    shouldDestroy = false;
+                                }
+                            }
+                        }
+
+                        // Do it if we should.
+                        if(shouldDestroy)
+                        {
+                            // Destroy the control
+                            DestroyWebView();
+
+                            // Show the error.
+                            ShowLowResourcesError();
+                            HideLoading();
+                        }
+                    }
+                });
+            }
+        }
+
+        private void ShowLowResourcesError()
+        {
+            // Hide the overlays
+            ui_webviewOverlays.Visibility = Visibility.Collapsed;
+
+            // Show the error
+            ui_lowResourcesError.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Fired when the user taps the error screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void LowResourcesError_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (e.Handled)
+            {
+                return;
+            }
+
+            // Navigate to the web browser.
+            try
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(m_postUrl, UriKind.Absolute));
+            }
+            catch (Exception ex)
+            {
+                App.BaconMan.MessageMan.DebugDia("failed to open IE", ex);
+            }
+        }
+
+        /// <summary>
+        /// Fired if the user taps the help icon.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LowResourcesHelp_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            App.BaconMan.MessageMan.ShowMessageSimple("Out of Resources", $"Windows apps have a limited amount of memory (RAM) they are allowed to use. Currently Baconit is using { Math.Round(App.BaconMan.MemoryMan.CurrentMemoryUsagePercentage * 100) }% of its allocation; if it exceeds 100% the app will crash. This website would push Baconit over the limit, so we stopped loading it.\n\nApp memory limits are determined by Windows depending on how much memory your device has. Reddit content is often quite large (images, gifs, websites, etc) so lower end devices might have trouble showing content. Baconit has an advance memory manager that will attempt to free up space, but it isn’t always possible.\n\nIf you see this error often, please post on /r/Baconit and we will take a look.");
+        }
+
+        #endregion
     }
 }

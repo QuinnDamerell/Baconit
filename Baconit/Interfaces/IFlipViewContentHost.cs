@@ -48,5 +48,11 @@ namespace Baconit.Interfaces
         /// </summary>
         /// <returns></returns>
         bool CanGoFullScreen { get; }
+
+        /// <summary>
+        /// Indicates if the control is visible or not.
+        /// </summary>
+        /// <returns></returns>
+        bool IsVisible { get; }
     }
 }

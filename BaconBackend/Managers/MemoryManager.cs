@@ -56,8 +56,8 @@ namespace BaconBackend.Managers
         // These are the limits we use to define the memory pressure.
         // Expressed as % of memory available.
         const double c_noneMemoryPressueLimit = 0.5;
-        const double c_lowMemoryPressueLimit = 0.65;
-        const double c_mediumMemoryPressueLimit = 0.85;
+        const double c_lowMemoryPressueLimit = 0.80;
+        const double c_mediumMemoryPressueLimit = 0.90;
 
         //
         // Events
@@ -93,6 +93,11 @@ namespace BaconBackend.Managers
         /// Indicates the current memory pressure state of the app.
         /// </summary>
         public MemoryPressureStates MemoryPressure;
+
+        /// <summary>
+        /// How much memory we are currently using.
+        /// </summary>
+        public double CurrentMemoryUsagePercentage = 0.0;
 
         //
         // Private vars
@@ -174,19 +179,19 @@ namespace BaconBackend.Managers
                     // Calculate the current memory pressure.
                     ulong usedMemory = Windows.System.MemoryManager.AppMemoryUsage;
                     ulong memoryLimit = 398458880;//Windows.System.MemoryManager.AppMemoryUsageLimit;
-                    double usedPercentage = (double)usedMemory / (double)memoryLimit;
+                    CurrentMemoryUsagePercentage = (double)usedMemory / (double)memoryLimit;
 
                     // Set the pressure state.
                     MemoryPressureStates oldPressure = MemoryPressure;
-                    if(usedPercentage < c_noneMemoryPressueLimit)
+                    if(CurrentMemoryUsagePercentage < c_noneMemoryPressueLimit)
                     {
                         MemoryPressure = MemoryPressureStates.None;
                     }
-                    else if(usedPercentage < c_lowMemoryPressueLimit)
+                    else if(CurrentMemoryUsagePercentage < c_lowMemoryPressueLimit)
                     {
                         MemoryPressure = MemoryPressureStates.Low;
                     }
-                    else if (usedPercentage < c_mediumMemoryPressueLimit)
+                    else if (CurrentMemoryUsagePercentage < c_mediumMemoryPressueLimit)
                     {
                         MemoryPressure = MemoryPressureStates.Medium;
                     }
@@ -236,7 +241,7 @@ namespace BaconBackend.Managers
                         m_reportTick++;
                         if (m_reportTick > 5 || oldPressure != MemoryPressure)
                         {
-                            FireMemoryReport(usedMemory, memoryLimit, usedPercentage);
+                            FireMemoryReport(usedMemory, memoryLimit, CurrentMemoryUsagePercentage);
                             m_reportTick = 0;
                         }
                     }

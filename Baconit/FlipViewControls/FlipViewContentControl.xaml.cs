@@ -142,6 +142,29 @@ namespace Baconit.FlipViewControls
             }
         }
 
+        /// <summary>
+        /// Fired when IsVisible changes. This indicates the post should play or show now.
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void OnVisibleChanged(bool isVisible)
+        {
+            // Set the var
+            IsVisible = IsVisible;
+
+            if (isVisible)
+            {
+                // Confirm the NSFW block is correct. We need to do this again to check if the user has lowered
+                // the nsfw block for this subreddit.
+                ShowNsfwIfNeeded(m_currentPost);
+
+                // If we are now visible fire the on visible event.
+                if (m_control != null)
+                {
+                    m_control.OnVisible();
+                }
+            }
+        }
+
         #endregion
 
         #region CanGoFullScreen Logic
@@ -208,7 +231,7 @@ namespace Baconit.FlipViewControls
                 {
                     // The user don't want us to load content without them tapping the screen.
                     VisualStateManager.GoToState(this, "ShowDontPreloadBlock", true);
-                }             
+                }
             }
         }
 
@@ -306,31 +329,6 @@ namespace Baconit.FlipViewControls
             // Add the control to the UI
             ui_contentRoot.Children.Add((UserControl)m_control);
         }
-
-        #endregion
-
-        #region IsVisible Logic
-
-        /// <summary>
-        /// Fired when IsVisible changes. This indicates the post should play or show now.
-        /// </summary>
-        /// <param name="isVisible"></param>
-        public void OnVisibleChanged(bool isVisible)
-        {
-            if(isVisible)
-            {
-                // Confirm the NSFW block is correct. We need to do this again to check if the user has lowered
-                // the nsfw block for this subreddit.
-                ShowNsfwIfNeeded(m_currentPost);
-
-                // If we are now visible fire the on visible event.
-                if(m_control != null)
-                {
-                    m_control.OnVisible();
-                }
-            }
-        }
-
 
         #endregion
 

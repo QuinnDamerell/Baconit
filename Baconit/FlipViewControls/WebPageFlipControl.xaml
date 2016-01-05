@@ -9,7 +9,10 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#191919">
-        <StackPanel HorizontalAlignment="Right"
+
+        <!--  Web view overlays  -->
+        <StackPanel x:Name="ui_webviewOverlays"
+                    HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Orientation="Horizontal">
             <Border x:Name="ui_backButton"
@@ -71,5 +74,42 @@
                 </ContentPresenter>
             </Border>
         </StackPanel>
+
+        <!--  Low resources error  -->
+        <Grid x:Name="ui_lowResourcesError"
+              Background="#191919"
+              Tapped="LowResourcesError_Tapped"
+              Visibility="Collapsed">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="ui_headerText"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Center"
+                           FontSize="22"
+                           Text="Oh dear... this site is too big"
+                           TextAlignment="Center" />
+                <TextBlock x:Name="ui_minorText"
+                           Grid.Row="1"
+                           Margin="12,0"
+                           FontSize="15"
+                           Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                           Text="Tap anywhere to view it in Edge."
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+            </Grid>
+            <Border Margin="12,24,24,24"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="#BB000000"
+                    CornerRadius="2"
+                    Tapped="LowResourcesHelp_Tapped">
+                <ContentPresenter Width="40" Height="40">
+                    <SymbolIcon Symbol="Help" />
+                </ContentPresenter>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
