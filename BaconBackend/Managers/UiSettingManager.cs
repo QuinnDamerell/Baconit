@@ -512,5 +512,14 @@ namespace BaconBackend.Managers
         private bool? m_flipView_ShowCommentScrollTip = null;
 
         #endregion
+
+        #region Developer
+
+        /// <summary>
+        /// Used to keep track of how many pages have been removed.
+        /// </summary>
+        public int PagesMemoryCleanedUp = 0;
+
+        #endregion
     }
 }

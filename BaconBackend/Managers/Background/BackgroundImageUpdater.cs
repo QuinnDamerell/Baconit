@@ -814,6 +814,8 @@ namespace BaconBackend.Managers.Background
             if(type == UpdateTypes.Band)
             {
                 wasSuccess = await m_baconMan.BackgroundMan.BandMan.UpdateBandWallpaper(file);
+                // The band can fail quite a lot, if so don't count this as a fail.
+                wasSuccess = true;
             }
             // Make sure we can do it
             else if (UserProfilePersonalizationSettings.IsSupported())

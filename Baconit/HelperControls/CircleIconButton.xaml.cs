@@ -54,7 +54,7 @@ namespace Baconit.HelperControls
                 typeof(Symbol),                   // The type of the DependencyProperty
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
+                    Symbol.Emoji2,                      // The default value of the DependencyProperty
                     new PropertyChangedCallback(OnSymbolIconChangedStatic)
                 ));
 
@@ -63,12 +63,7 @@ namespace Baconit.HelperControls
             var instance = d as CircleIconButton;
             if (instance != null)
             {
-                Symbol? newSymbol = null;
-                if(e.NewValue.GetType() == typeof(Symbol))
-                {
-                    newSymbol = (Symbol)e.NewValue;
-                }
-                instance.OnSymbolIconChanged(newSymbol);
+                instance.OnSymbolIconChanged((Symbol)e.NewValue);
             }
         }
 
@@ -88,7 +83,7 @@ namespace Baconit.HelperControls
         public static readonly DependencyProperty FontIconGlyphProperty =
             DependencyProperty.Register(
                 "FontIconGlyph",                     // The name of the DependencyProperty
-                typeof(Symbol),                   // The type of the DependencyProperty
+                typeof(string),                   // The type of the DependencyProperty
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     "",                      // The default value of the DependencyProperty
@@ -123,7 +118,7 @@ namespace Baconit.HelperControls
                 typeof(VoteIconStatus),                   // The type of the DependencyProperty
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
+                    null,                      // The default value of the DependencyProperty
                     new PropertyChangedCallback(OnVoteStatusChangedStatic)
                 ));
 
@@ -132,12 +127,7 @@ namespace Baconit.HelperControls
             var instance = d as CircleIconButton;
             if (instance != null)
             {
-                VoteIconStatus? newStatus = null;
-                if (e.NewValue.GetType() == typeof(VoteIconStatus))
-                {
-                    newStatus = (VoteIconStatus)e.NewValue;
-                }
-                instance.OnVoteStatusChanged(newStatus);
+                instance.OnVoteStatusChanged((VoteIconStatus)e.NewValue);
             }
         }
 
@@ -160,7 +150,7 @@ namespace Baconit.HelperControls
                 typeof(SolidColorBrush),                   // The type of the DependencyProperty
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
+                    null,                      // The default value of the DependencyProperty
                     new PropertyChangedCallback(OnVoteBrushChangedStatic)
                 ));
 
@@ -169,12 +159,7 @@ namespace Baconit.HelperControls
             var instance = d as CircleIconButton;
             if (instance != null)
             {
-                SolidColorBrush newBrush = null;
-                if (e.NewValue.GetType() == typeof(SolidColorBrush))
-                {
-                    newBrush = (SolidColorBrush)e.NewValue;
-                }
-                instance.OnVoteBrushChanged(newBrush);
+                instance.OnVoteBrushChanged((SolidColorBrush)e.NewValue);
             }
         }
 

@@ -42,7 +42,7 @@ namespace Baconit.HelperControls
                 typeof(Visibility),                   // The type of the DependencyProperty
                 typeof(CommentsLoadingFooter), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
+                    Visibility.Collapsed,                      // The default value of the DependencyProperty
                     new PropertyChangedCallback(OnShowLoadingChangedStatic)
                 ));
 
@@ -51,7 +51,7 @@ namespace Baconit.HelperControls
             var instance = d as CommentsLoadingFooter;
             if (instance != null)
             {
-                Visibility newVis = e.NewValue.GetType() == typeof(Visibility) ? (Visibility)e.NewValue : Visibility.Collapsed;
+                Visibility newVis = (Visibility)e.NewValue;
                 if (instance.m_showLoading != newVis)
                 {
                     instance.m_showLoading = newVis;
@@ -79,7 +79,7 @@ namespace Baconit.HelperControls
                 typeof(string),                   // The type of the DependencyProperty
                 typeof(CommentsLoadingFooter), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                    false,                      // The default value of the DependencyProperty
+                    "",                      // The default value of the DependencyProperty
                     new PropertyChangedCallback(OnShowErrorTextChangedStatic)
                 ));
 
@@ -88,8 +88,7 @@ namespace Baconit.HelperControls
             var instance = d as CommentsLoadingFooter;
             if (instance != null)
             {
-                string newText = e.NewValue.GetType() == typeof(string) ? (string)e.NewValue : "";
-                instance.OnShowErrorTextChanged(newText);
+                instance.OnShowErrorTextChanged((string)e.NewValue);
             }
         }
 

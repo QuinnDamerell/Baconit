@@ -91,7 +91,7 @@ namespace Baconit.FlipViewControls
                typeof(Post),                 // The type of the DependencyProperty
                typeof(FlipViewContentControl), // The type of the owner of the DependencyProperty
                new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
-                   false,                      // The default value of the DependencyProperty
+                   null,                      // The default value of the DependencyProperty
                    new PropertyChangedCallback(OnFlipPostChangedStatic)
                ));
 
@@ -101,12 +101,7 @@ namespace Baconit.FlipViewControls
             if (instance != null)
             {
                 // Send the post to the class.
-                Post newPost = null;
-                if(e.NewValue != null && e.NewValue.GetType() == typeof(Post))
-                {
-                    newPost = (Post)e.NewValue;
-                }
-                instance.OnPostChanged(newPost);
+                instance.OnPostChanged((Post)e.NewValue);
             }
         }
 
@@ -138,7 +133,7 @@ namespace Baconit.FlipViewControls
             var instance = d as FlipViewContentControl;
             if (instance != null)
             {
-                instance.OnVisibleChanged(e.NewValue.GetType() == typeof(bool) ? (bool)e.NewValue : false);
+                instance.OnVisibleChanged((bool)e.NewValue);
             }
         }
 
