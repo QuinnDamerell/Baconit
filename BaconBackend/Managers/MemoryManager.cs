@@ -19,9 +19,10 @@ namespace BaconBackend.Managers
     public enum MemoryPressureStates
     {
         None = 0,
-        Low = 1,
-        Medium = 2,
-        HighNoAllocations = 3
+        VeryLow = 1,
+        Low = 2,
+        Medium = 3,
+        HighNoAllocations = 4
     }
 
     /// <summary>
@@ -55,9 +56,15 @@ namespace BaconBackend.Managers
 
         // These are the limits we use to define the memory pressure.
         // Expressed as % of memory available.
-        const double c_noneMemoryPressueLimit = 0.5;
+        const double c_noneMemoryPressueLimit = 0.3;
+        const double c_veryLowMemoryPressueLimit = 0.5;
         const double c_lowMemoryPressueLimit = 0.80;
         const double c_mediumMemoryPressueLimit = 0.90;
+
+        // For low just do it every now and then to free up pages we don't need.
+        // For medium and high to it more frequently.
+        const int c_lowTickRollover = 200;
+        const int c_mediumAndHighTickRollover = 10;
 
         //
         // Events
@@ -187,6 +194,10 @@ namespace BaconBackend.Managers
                     {
                         MemoryPressure = MemoryPressureStates.None;
                     }
+                    else if (CurrentMemoryUsagePercentage < c_veryLowMemoryPressueLimit)
+                    {
+                        MemoryPressure = MemoryPressureStates.VeryLow;
+                    }
                     else if(CurrentMemoryUsagePercentage < c_lowMemoryPressueLimit)
                     {
                         MemoryPressure = MemoryPressureStates.Low;
@@ -217,14 +228,17 @@ namespace BaconBackend.Managers
                     }
                     else
                     {
-                        // Things are the same, if we are medium or above take action.
-                        if(MemoryPressure >= MemoryPressureStates.Medium)
+                        // Things are the same, if we are low or above take action.
+                        if(MemoryPressure >= MemoryPressureStates.Low)
                         {
                             // Count
                             m_cleanupTick++;
 
-                            // If we are at the same state for more than 10 counts fire it again.
-                            if(m_cleanupTick > 10)
+                            // Get the rollover count.
+                            int tickRollover = MemoryPressure == MemoryPressureStates.Low ? c_lowTickRollover : c_mediumAndHighTickRollover;
+
+                            // Check for roll over
+                            if(m_cleanupTick > tickRollover)
                             {
                                 FireMemoryCleanup(MemoryPressure, oldPressure);
                                 m_cleanupTick = 0;
