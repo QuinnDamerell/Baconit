@@ -230,6 +230,9 @@ namespace Baconit.FlipViewControls
 
             // Null it
             m_webView = null;
+
+            // Once destroyed we will never be shown again. So we can stop listening for memory pressure.
+            App.BaconMan.MemoryMan.OnMemoryCleanUpRequest -= MemoryMan_OnMemoryCleanUpRequest;
         }
 
         private void DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
@@ -473,11 +476,11 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private async void MemoryMan_OnMemoryCleanUpRequest(object sender, BaconBackend.Managers.OnMemoryCleanupRequestArgs e)
         {
-            // Make sure it is medium or low.
+            // Make sure it is medium or high.
             if (e.CurrentPressure > MemoryPressureStates.Low)
             {
                 // Jump to the UI thread, use high because we might need to get this web view out of here.
-                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     lock (this)
                     {
