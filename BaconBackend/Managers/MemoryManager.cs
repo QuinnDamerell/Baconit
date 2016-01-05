@@ -59,7 +59,7 @@ namespace BaconBackend.Managers
         const double c_noneMemoryPressueLimit = 0.3;
         const double c_veryLowMemoryPressueLimit = 0.5;
         const double c_lowMemoryPressueLimit = 0.80;
-        const double c_mediumMemoryPressueLimit = 0.90;
+        const double c_mediumMemoryPressueLimit = .85;
 
         // For low just do it every now and then to free up pages we don't need.
         // For medium and high to it more frequently.

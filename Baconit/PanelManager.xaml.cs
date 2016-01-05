@@ -1044,8 +1044,8 @@ namespace Baconit
             // Now that we are out of lock, delete the panels if we have any.
             if (cleanupPanelList.Count > 0)
             {
-                // #todo remove me
-                App.BaconMan.MessageMan.DebugDia($"History removed; ({cleanupPanelList.Count}) pages");
+                // Keep track of how many pages have been cleaned up.
+                App.BaconMan.UiSettingsMan.PagesMemoryCleanedUp += cleanupPanelList.Count;
 
                 // Jump to the UI thread to do this.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>

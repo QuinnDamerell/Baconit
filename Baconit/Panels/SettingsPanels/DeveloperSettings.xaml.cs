@@ -57,6 +57,9 @@ namespace Baconit.Panels.SettingsPanels
             ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport;
             ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay;
             m_takeAction = true;
+
+            // Set the clean up text
+            ui_numberPagesCleanedUp.Text = $"Pages cleaned up for memory pressure: {App.BaconMan.UiSettingsMan.PagesMemoryCleanedUp}";            
         }
 
         public void OnCleanupPanel()
