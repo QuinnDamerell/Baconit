@@ -185,7 +185,7 @@ namespace BaconBackend.Managers
 
                     // Calculate the current memory pressure.
                     ulong usedMemory = Windows.System.MemoryManager.AppMemoryUsage;
-                    ulong memoryLimit = 398458880;//Windows.System.MemoryManager.AppMemoryUsageLimit;
+                    ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit;
                     CurrentMemoryUsagePercentage = (double)usedMemory / (double)memoryLimit;
 
                     // Set the pressure state.
