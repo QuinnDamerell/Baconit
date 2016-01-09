@@ -62,5 +62,10 @@ namespace Baconit.Interfaces
         /// <param name="goFullscreen"></param>
         /// <returns>True if success, false if failed.</returns>
         bool OnFullscreenChanged(bool goFullscreen);
+
+        /// <summary>
+        /// Indicates that the panel has been unloaded.
+        /// </summary>
+        void OnPanelUnloaded();
     }
 }

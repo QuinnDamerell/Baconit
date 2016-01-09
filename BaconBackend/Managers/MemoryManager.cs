@@ -212,7 +212,7 @@ namespace BaconBackend.Managers
                     }
 
                     // If our new state is higher than our old state
-                    if(MemoryPressure > oldPressure)
+                    if (MemoryPressure > oldPressure)
                     {
                         // We went up a state, Fire the cleanup request since we are at least low.
                         FireMemoryCleanup(MemoryPressure, oldPressure);

@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using BaconBackend.Managers;
 using Baconit.ContentPanels;
 using Baconit.ContentPanels.Panels;
 using Baconit.Interfaces;
@@ -51,6 +52,7 @@ namespace Baconit.ContentPanels
             public IContentPanelBase PanelBase = null;
             public ContentPanelSource Source;
             public string Group;
+            public bool IsVisible = false;
         }
 
         /// <summary>
@@ -69,6 +71,12 @@ namespace Baconit.ContentPanels
         /// </summary>
         List<ContentPanelSource> m_delayLoadQueue = new List<ContentPanelSource>();
 
+        public ContentPanelMaster()
+        {
+            // When created register to listen for memory updates.
+            App.BaconMan.MemoryMan.OnMemoryCleanUpRequest += MemoryMan_OnMemoryCleanUpRequest;
+        }
+
         #region Content Control
 
         /// <summary>
@@ -78,6 +86,8 @@ namespace Baconit.ContentPanels
         /// <param name="source"></param>
         public void AddAllowedContent(ContentPanelSource source, string groupId = "default", bool delayLoad = false)
         {
+            bool isSourceVisible = false;
+
             // First add an entry that we are making the control.
             lock (m_currentPanelList)
             {
@@ -116,8 +126,11 @@ namespace Baconit.ContentPanels
                     m_currentPanelList.Add(source.Id, element);
                 }
 
+                // Set if we are visible or not
+                isSourceVisible = element.IsVisible;
+
                 // Check if we are delay load.
-                if(delayLoad)
+                if (delayLoad)
                 {
                     // If so, check if there is content loading.
                     if(String.IsNullOrWhiteSpace(m_currentLoadingContent))
@@ -143,7 +156,7 @@ namespace Baconit.ContentPanels
             }
 
             // If we got here we need to load some content!
-            BeginLoadContent(source);
+            BeginLoadContent(source, isSourceVisible);
         }
 
         /// <summary>
@@ -245,6 +258,11 @@ namespace Baconit.ContentPanels
         /// <param name="sourceId"></param>
         public async void OnContentLoadComplete(string sourceId)
         {
+            // Delay a little bit since this might kick off a background load
+            // and it isn't super important. 
+            await Task.Delay(100);
+
+            bool isSourceVisible = false;
             ContentPanelSource nextSource = null;
             lock(m_currentPanelList)
             {
@@ -263,6 +281,13 @@ namespace Baconit.ContentPanels
                         // Otherwise, grab the next element
                         nextSource = m_delayLoadQueue.First();
                         m_delayLoadQueue.RemoveAt(0);
+
+                        // Get if the source is visible.
+                        if(m_currentPanelList.ContainsKey(nextSource.Id))
+                        {
+                            isSourceVisible = m_currentPanelList[nextSource.Id].IsVisible;
+                        }
+
                         // Set it loading
                         m_currentLoadingContent = nextSource.Id;
                     }
@@ -274,72 +299,81 @@ namespace Baconit.ContentPanels
                 }
             }
 
-            // Delay a little bit since this is a background load
-            await Task.Delay(500);
-
             // And out of lock start loading.
             if (nextSource != null)
             {
-                BeginLoadContent(nextSource);
+                BeginLoadContent(nextSource, isSourceVisible);
             }
         }
 
         /// <summary>
-        /// Called by the panel when it becomes visible so the master can instantly load the content.
+        /// Called when a panel changes visibility.
         /// </summary>
         /// <param name="sourcdId"></param>
-        public void OnPanelVisibile(string sourceId)
+        public void OnPanelVisibliltyChanged(string sourceId, bool isVisible)
         {
             ContentPanelSource loadNowSource = null;
             lock (m_currentPanelList)
             {
-                // See if this post is in the delay load post list.
-                foreach(ContentPanelSource source in m_delayLoadQueue)
+                // See if the panel exists.
+                if (m_currentPanelList.ContainsKey(sourceId))
                 {
-                    if(source.Id.Equals(sourceId))
+                    // Get the element
+                    ContentListElement element = m_currentPanelList[sourceId];
+
+                    // Set the new visibility
+                    element.IsVisible = isVisible;
+
+                    // If we aren't visible get out of here now.
+                    if(!isVisible)
                     {
-                        loadNowSource = source;
-                        break;
+                        return;
                     }
-                }
 
-                // If we found the element clean it out of the queue
-                if(loadNowSource != null)
-                {
-                    // Remove us from it and start loading now!
-                    m_delayLoadQueue.Remove(loadNowSource);
-
-                    // We want to load this now. No matter if we were currently waiting on someone or not
-                    // all delay loaded post should wait on this one.
-                    m_currentLoadingContent = loadNowSource.Id;
-                }
-                else
-                {
-                    // The element wasn't in the dealy list, check if it is even allowed
-                    if(m_currentPanelList.ContainsKey(sourceId))
+                    // If we are unloaded start loading right now.
+                    if (element.State == ContentState.Unloaded)
                     {
-                        // Get the element
-                        ContentListElement element = m_currentPanelList[sourceId];
+                        // Grab the source
+                        loadNowSource = element.Source;
 
-                        // If we are unloaded start loading right now.
-                        if(element.State == ContentState.Unloaded)
+                        // Set our state to pending.
+                        element.State = ContentState.PendingCreation;
+
+                        // Make the delay loading id this so everyone will wait on us.
+                        m_currentLoadingContent = loadNowSource.Id;
+                    }
+                    // If we are pending make sure we aren't being delayed.
+                    else if(element.State == ContentState.PendingCreation)
+                    {
+                        // See if this post is in the delay load post list.
+                        foreach (ContentPanelSource source in m_delayLoadQueue)
                         {
-                            // Grab the source
-                            loadNowSource = element.Source;
+                            if (source.Id.Equals(sourceId))
+                            {
+                                loadNowSource = source;
+                                break;
+                            }
+                        }
 
-                            // Set our state to pending.
-                            element.State = ContentState.PendingCreation;
+                        // If we found the element clean it out of the queue
+                        if (loadNowSource != null)
+                        {
+                            // Remove us from it and start loading now!
+                            m_delayLoadQueue.Remove(loadNowSource);
 
-                            // Make the delay loading id this so everyone will wait on us.
+                            // We want to load this now. No matter if we were currently waiting on someone or not
+                            // all delay loaded post should wait on this one.
                             m_currentLoadingContent = loadNowSource.Id;
                         }
                     }
                 }
             }
 
+            // Now that we are out of lock load the source if we have 
+            // one to load.
             if (loadNowSource != null)
             {
-                BeginLoadContent(loadNowSource);
+                BeginLoadContent(loadNowSource, true);
             }
         }
 
@@ -348,17 +382,18 @@ namespace Baconit.ContentPanels
         /// the load isn't actually done until the app fires the loading function above.
         /// </summary>
         /// <param name="source"></param>
-        private void BeginLoadContent(ContentPanelSource source)
+        private void BeginLoadContent(ContentPanelSource source, bool isVisible)
         {
             // Next make the control, spin this off to keep the UI thread going.
             Task.Run(async () =>
             {
                 // Create a new base and panel.
                 ContentPanelBase panelBase = new ContentPanelBase();
-                await panelBase.CreateContentPanel(source);
+                bool panelLoaded = await panelBase.CreateContentPanel(source, CanLoadLaregePanel(isVisible));
 
                 bool destoryPanel = true;
-                IContentPanelHost host = null;
+                IContentPanelHost hostToGivePanel = null;
+                IContentPanelHost hostToInformUnlaoded = null;
 
                 // Update the list with the control
                 lock (m_currentPanelList)
@@ -367,17 +402,28 @@ namespace Baconit.ContentPanels
                     if (m_currentPanelList.ContainsKey(source.Id))
                     {
                         ContentListElement element = m_currentPanelList[source.Id];
-                        element.PanelBase = panelBase;
 
-                        // Make sure the state is still good.
+                        // Make sure we still have a good state.
                         if (element.State == ContentState.PendingCreation)
                         {
-                            // Set the panel and state, if we have a host grab it.
-                            destoryPanel = false;
-                            element.PanelBase = panelBase;
-                            element.State = ContentState.Created;
-                            host = element.Host;
-                        }
+                            // Make sure the panel loaded
+                            if (panelLoaded)
+                            {
+                                // Set the panel and state, if we have a host grab it.
+                                destoryPanel = false;
+                                element.PanelBase = panelBase;
+                                element.State = ContentState.Created;
+                                hostToGivePanel = element.Host;                               
+                            }
+                            else
+                            {
+                                // If we didn't load it was probably due to low memory.
+                                // Set our state to unloaded and tell the host.
+                                element.State = ContentState.Unloaded;
+                                hostToInformUnlaoded = element.Host;
+                                destoryPanel = true;
+                            }
+                        }                                        
                     }
                 }
 
@@ -389,10 +435,16 @@ namespace Baconit.ContentPanels
                 else
                 {
                     // If we have a host inform them the panel is now ready.
-                    if (host != null)
+                    if (hostToGivePanel != null)
                     {
-                        FireOnPanelAvailable(host, panelBase);
+                        FireOnPanelAvailable(hostToGivePanel, panelBase);
                     }
+                }
+
+                // If we have a host to tell that we unloaded the panel tell them.
+                if(hostToInformUnlaoded != null)
+                {
+                    FireOnPanelUnloaded(hostToInformUnlaoded);
                 }
             });
         }
@@ -416,8 +468,12 @@ namespace Baconit.ContentPanels
             // Used to hold a past host if there is one.
             IContentPanelHost pastHost = null;
 
+            // Used to hold the host we will tell is unloaded.
+            IContentPanelHost fireUnloadedHost = null;
+
+
             // Check to see if the panel exists
-            lock(m_currentPanelList)
+            lock (m_currentPanelList)
             {
                 // We already have it
                 if(m_currentPanelList.ContainsKey(panelId))
@@ -438,7 +494,10 @@ namespace Baconit.ContentPanels
                             // If the content is being created tell the panel that.
                             fireContentLoadingHost = element.Host;
                         }
-                        // #todo add the unloaded UI fire here also
+                        else if(element.State == ContentState.Unloaded)
+                        {
+                            fireUnloadedHost = element.Host;
+                        }
                     }
                     else
                     {
@@ -492,6 +551,12 @@ namespace Baconit.ContentPanels
             if(fireContentLoadingHost != null)
             {
                 FireOnContentPreloading(fireContentLoadingHost);
+            }
+
+            // Or if we have unloaded content.
+            if (fireUnloadedHost != null)
+            {
+                FireOnPanelUnloaded(fireUnloadedHost);
             }
         }
 
@@ -547,6 +612,23 @@ namespace Baconit.ContentPanels
                     m_currentPanelList.Remove(panelId);
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns a content source for an id if we have it.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ContentPanelSource GetSource(string sourceId)
+        {
+            lock(m_currentPanelList)
+            {
+                if(m_currentPanelList.ContainsKey(sourceId))
+                {
+                    return m_currentPanelList[sourceId].Source;
+                }
+            }
+            return null;
         }
 
         #endregion
@@ -664,6 +746,30 @@ namespace Baconit.ContentPanels
 
         #endregion
 
+        #region Memory Pressure Logic
+
+        /// <summary>
+        /// Fired by the memory manager when we have memory pressure.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MemoryMan_OnMemoryCleanUpRequest(object sender, BaconBackend.Managers.OnMemoryCleanupRequestArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Indicates if we can load a large panel.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanLoadLaregePanel(bool isVisible)
+        {
+            // If we are visible only don't load if we are on high, if not visible only load if not medium or high.
+            return App.BaconMan.MemoryMan.MemoryPressure < (isVisible ? MemoryPressureStates.HighNoAllocations : MemoryPressureStates.Medium);
+        }
+
+        #endregion
+
         #region Fire Events
 
         /// <summary>
@@ -756,6 +862,28 @@ namespace Baconit.ContentPanels
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnContentPreloading failed", e);
                     App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnContentPreloadingFailed", e);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Fires OnPanelUnloaded on the UI thread.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="panel"></param>
+        private async void FireOnPanelUnloaded(IContentPanelHost host)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                try
+                {
+                    // Then tell the pane has been unloaded.
+                    host.OnPanelUnloaded();
+                }
+                catch (Exception e)
+                {
+                    App.BaconMan.MessageMan.DebugDia("FireOnPanelUnloaded failed", e);
+                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnPanelUnloadedFailed", e);
                 }
             });
         }

@@ -203,7 +203,13 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         public void OnDestroyContent()
         {
-            Panel.OnDestroyContent();
+            // Make sure the panel isn't null, in the case where we 
+            // can't load the panel we will be be destroyed before
+            // the base is nulled.
+            if(Panel != null)
+            {
+                Panel.OnDestroyContent();
+            }
         }
 
         /// <summary>
@@ -231,8 +237,11 @@ namespace Baconit.ContentPanels.Panels
 
         #region Create Control
 
-        public async Task CreateContentPanel(ContentPanelSource source)
+        public async Task<bool> CreateContentPanel(ContentPanelSource source, bool canLoadLargePanels)
         {
+            // Indicates if the panel was loaded.
+            bool loadedPanel = true;
+
             // Capture the source 
             Source = source;
 
@@ -241,7 +250,7 @@ namespace Baconit.ContentPanels.Panels
 
             // Try to figure out the type.
             try
-            {                
+            {
                 if (GifImageContentPanel.CanHandlePost(source))
                 {
                     controlType = typeof(GifImageContentPanel);
@@ -270,32 +279,51 @@ namespace Baconit.ContentPanels.Panels
                 {
                     controlType = typeof(WindowsAppContentPanel);
                 }
+                else
+                {
+                    // This is a web browser
+
+                    // If we are blocking large panels don't allow the
+                    // browser.
+                    if (!canLoadLargePanels)
+                    {
+                        loadedPanel = false;
+                    }
+                }
             }
             catch (Exception e)
             {
                 // If we fail here we will fall back to the web browser.
                 App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
                 App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToQueryCanHandlePost", e);
-            }      
+            }
 
-            // Make the control on the UI thread.
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            // Check if we should still load.
+            if (loadedPanel)
             {
-                try
+                // Make the control on the UI thread.
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
-                    // Create the panel
-                    Panel = (IContentPanel)Activator.CreateInstance(controlType, this);
+                    try
+                    {
+                        // Create the panel
+                        Panel = (IContentPanel)Activator.CreateInstance(controlType, this);
 
-                    // Fire OnPrepareContent 
-                    Panel.OnPrepareContent();
-                }
-                catch (Exception e)
-                {
-                    HasError = true;
-                    App.BaconMan.MessageMan.DebugDia("failed to create content control", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToCreateContentPanel", e);
-                }
-            });
+                        // Fire OnPrepareContent 
+                        Panel.OnPrepareContent();
+                    }
+                    catch (Exception e)
+                    {
+                        loadedPanel = false;
+                        HasError = true;
+                        App.BaconMan.MessageMan.DebugDia("failed to create content control", e);
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToCreateContentPanel", e);
+                    }
+                });
+            }
+
+            // Indicate that we have loaded.
+            return loadedPanel;
         }
 
         #endregion

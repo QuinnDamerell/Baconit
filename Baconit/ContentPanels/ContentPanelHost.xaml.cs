@@ -273,6 +273,15 @@ namespace Baconit.ContentPanels
             }
         }
 
+        /// <summary>
+        /// Fired when the panel has been unloaded.
+        /// </summary>
+        public void OnPanelUnloaded()
+        {
+            // Show an error message.
+            ToggleGenericMessage(true, "Oh dear... this post is too big");
+        }
+
         #endregion
 
         #region IsVisible Logic
@@ -322,28 +331,24 @@ namespace Baconit.ContentPanels
                 panelBase.OnVisibilityChanged(isVisible);
             }
 
-            // We need to tell the master that we are visible so it will know to immediately start loading the
-            // content if it is not already loading.
-            if (isVisible)
+            // We need to tell the master that our visibility has changed.
+            // Sometimes we need to spin a bit because the source might not be set yet.
+            int sanityCount = 0;
+            while(SourceId == null && sanityCount < 50)
             {
-                // Sometimes we need to spin a bit because the source might not be set yet.
-                int sanityCount = 0;
-                while(SourceId == null && sanityCount < 30)
-                {
-                    await Task.Delay(5);
-                    sanityCount++;
-                }
-
-                // Capture the source id.
-                string sourceId = SourceId;
-                if(sourceId != null)
-                {
-                    await Task.Run(() =>
-                    {
-                        ContentPanelMaster.Current.OnPanelVisibile(sourceId);
-                    });
-                }      
+                await Task.Delay(5);
+                sanityCount++;
             }
+
+            // Capture the source id.
+            string sourceId = SourceId;
+            if(sourceId != null)
+            {
+                await Task.Run(() =>
+                {
+                    ContentPanelMaster.Current.OnPanelVisibliltyChanged(sourceId, isVisible);
+                });
+            }   
         }
 
         #endregion
@@ -577,7 +582,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         /// <param name="show"></param>
         /// <param name="message"></param>
-        private void ToggleGenericMessage(bool show, string message = null)
+        private void ToggleGenericMessage(bool show, string message = null, string subMessage = null)
         {
             m_isGenericMessageShowing = show;
 
@@ -585,6 +590,7 @@ namespace Baconit.ContentPanels
             if (show)
             {
                 ui_genericTextHeader.Text = message == null ? "Error loading post" : message;
+                ui_genericTextSub.Text = subMessage == null ? "Tap anywhere to open in Edge" : subMessage;
             }
 
             if (show)
@@ -607,7 +613,20 @@ namespace Baconit.ContentPanels
         {
             try
             {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(m_currentPanelBase.Source.Url, UriKind.Absolute));
+                // Get the url, when we are unloaded we will not have a panel base
+                // thus we have to get the source from the master.
+                string url;
+                if(m_currentPanelBase != null)
+                {
+                    url = m_currentPanelBase.Source.Url;
+                }
+                else
+                {
+                    // This could be null (but never should be), but if so we are fucked anyways.
+                    url = ContentPanelMaster.Current.GetSource(SourceId).Url;
+                }
+
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
             }
             catch (Exception)
             { }
