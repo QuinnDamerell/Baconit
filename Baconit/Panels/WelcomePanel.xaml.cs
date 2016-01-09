@@ -46,7 +46,7 @@ namespace Baconit.Panels
         {
             if(m_host.CurrentScreenMode() == ScreenMode.Split)
             {
-                ui_slidingImageControl.BeginAnimation();                
+                ui_slidingImageControl.BeginAnimation();
             }
 
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
@@ -61,6 +61,15 @@ namespace Baconit.Panels
         }
 
         public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
         {
             // Ignore for now.
         }

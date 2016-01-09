@@ -132,6 +132,15 @@ namespace Baconit.Panels
             // #todo stop any on going requests.
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         #region Search Button UI Logic
 
         private void SearchBox_KeyUp(object sender, KeyRoutedEventArgs e)

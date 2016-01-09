@@ -22,7 +22,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <AppxPackageDir>C:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
+    <AppxPackageDir>D:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -108,33 +108,37 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\BasicImageFlipControl.xaml.cs">
-      <DependentUpon>BasicImageFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\await.cs" />
+    <Compile Include="ContentPanels\ContentPanelHost.xaml.cs">
+      <DependentUpon>ContentPanelHost.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\FlipViewContentControl.xaml.cs">
-      <DependentUpon>FlipViewContentControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\ContentPanelSource.cs" />
+    <Compile Include="ContentPanels\Panels\BasicImageContentPanel.xaml.cs">
+      <DependentUpon>BasicImageContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\GifImageFliplControl.xaml.cs">
-      <DependentUpon>GifImageFliplControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\CommentSpoilerContentPanel.xaml.cs">
+      <DependentUpon>CommentSpoilerContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\CommentSpoilerFlipControl.xaml.cs">
-      <DependentUpon>CommentSpoilerFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\ContentPanelBase.cs" />
+    <Compile Include="ContentPanels\Panels\GifImageContentPanel.xaml.cs">
+      <DependentUpon>GifImageContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\RedditMarkdownFlipControl.xaml.cs">
-      <DependentUpon>RedditMarkdownFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\MarkdownContentPanel.xaml.cs">
+      <DependentUpon>MarkdownContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\RedditContentFlipControl.xaml.cs">
-      <DependentUpon>RedditContentFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\RedditContentPanel.xaml.cs">
+      <DependentUpon>RedditContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\WebPageFlipControl.xaml.cs">
-      <DependentUpon>WebPageFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\WebPageContentPanel.xaml.cs">
+      <DependentUpon>WebPageContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\WindowsAppFlipControl.xaml.cs">
-      <DependentUpon>WindowsAppFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\WindowsAppContentPanel.xaml.cs">
+      <DependentUpon>WindowsAppContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlipViewControls\YoutubeFlipControl.xaml.cs">
-      <DependentUpon>YoutubeFlipControl.xaml</DependentUpon>
+    <Compile Include="ContentPanels\Panels\YoutubeContentPanel.xaml.cs">
+      <DependentUpon>YoutubeContentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ContentPanels\ContentPanelMaster.cs" />
     <Compile Include="HelperControls\CircleIconButton.xaml.cs">
       <DependentUpon>CircleIconButton.xaml</DependentUpon>
     </Compile>
@@ -175,6 +179,10 @@
     <Compile Include="HelperControls\MotdPopUp.xaml.cs">
       <DependentUpon>MotdPopUp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IContentPanel.cs" />
+    <Compile Include="Interfaces\IContentPanelBase.cs" />
+    <Compile Include="Interfaces\IContentPanelHost.cs" />
+    <Compile Include="Interfaces\IContentPanelBaseInternal.cs" />
     <Compile Include="Interfaces\IFlipViewContentControl.cs" />
     <Compile Include="Interfaces\IFlipViewContentHost.cs" />
     <Compile Include="Interfaces\IMainPage.cs" />
@@ -321,39 +329,39 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="FlipViewControls\BasicImageFlipControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FlipViewControls\FlipViewContentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FlipViewControls\GifImageFliplControl.xaml">
+    <Page Include="ContentPanels\ContentPanelHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FlipViewControls\CommentSpoilerFlipControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FlipViewControls\RedditMarkdownFlipControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FlipViewControls\RedditContentFlipControl.xaml">
+    <Page Include="ContentPanels\Panels\BasicImageContentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FlipViewControls\WebPageFlipControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FlipViewControls\WindowsAppFlipControl.xaml">
+    <Page Include="ContentPanels\Panels\CommentSpoilerContentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FlipViewControls\YoutubeFlipControl.xaml">
+    <Page Include="ContentPanels\Panels\GifImageContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\MarkdownContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\RedditContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\WebPageContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\WindowsAppContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\YoutubeContentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

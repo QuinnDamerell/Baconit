@@ -128,6 +128,9 @@ namespace BaconBackend.Managers
             // If we are not a background task check message of the day
             if(!m_baconMan.IsBackgroundTask)
             {
+                // Sleep for a little while to give the UI some time get work done.
+                await Task.Delay(1000);
+
                 // Check for MOTD updates.
                 await m_baconMan.MotdMan.CheckForUpdates();
 
@@ -142,8 +145,7 @@ namespace BaconBackend.Managers
             await ImageUpdaterMan.RunUpdate(refDefferal);
 
             // Run the message update if needed.
-            MessageUpdaterMan.RunUpdate(refDefferal);
-            
+            MessageUpdaterMan.RunUpdate(refDefferal);            
         }
 
         #region Vars

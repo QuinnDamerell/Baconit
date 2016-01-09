@@ -2,17 +2,19 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Storage.Streams;
 using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
     public class MessageOfTheDayManager
     {
-        const string c_motdUrl = "https://dl.dropboxusercontent.com/u/451896/motd_win10.txt";
+        const string c_motdUrl = "http://baconit.quinndamerell.com/motd/motd_win10.json";
         const int c_minHoursBetweenCheck = 12;
 
         BaconManager m_baconMan;
@@ -83,13 +85,20 @@ namespace BaconBackend.Managers
         public async Task<MessageOfTheDay> GetNewMessage()
         {
             try
-            {
-                // Make the request
-                IHttpContent response = await m_baconMan.NetworkMan.MakeGetRequest(c_motdUrl);
-                string jsonResponse = await response.ReadAsStringAsync();
+            {             
+                // Make the request.
+                IHttpContent webResult = await m_baconMan.NetworkMan.MakeGetRequest(c_motdUrl);
 
-                // Try to parse it
-                return JsonConvert.DeserializeObject<MessageOfTheDay>(jsonResponse);
+                // Get the input stream and json reader.
+                // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
+                IInputStream inputStream = await webResult.ReadAsInputStreamAsync();
+                using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                using (JsonReader jsonReader = new JsonTextReader(reader))
+                {
+                    // Parse the Json as an object
+                    JsonSerializer serializer = new JsonSerializer();
+                    return await Task.Run(() => serializer.Deserialize<MessageOfTheDay>(jsonReader));
+                }                    
             }
             catch(Exception e)
             {

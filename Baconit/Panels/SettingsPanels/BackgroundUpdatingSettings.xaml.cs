@@ -86,7 +86,7 @@ namespace Baconit.Panels.SettingsPanels
                     // Force a update, give it a null deferral since this isn't a background task.
                     await App.BaconMan.BackgroundMan.ImageUpdaterMan.RunUpdate(new RefCountedDeferral(null), true);
                 });
-            }         
+            }
         }
 
         public async void OnNavigatingTo()
@@ -122,6 +122,15 @@ namespace Baconit.Panels.SettingsPanels
         }
 
         /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
         /// If the subreddits change update the UI
         /// </summary>
         /// <param name="sender"></param>
@@ -131,7 +140,7 @@ namespace Baconit.Panels.SettingsPanels
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 SetupSubredditLists();
-            });            
+            });
         }
 
         #region Click Helpers

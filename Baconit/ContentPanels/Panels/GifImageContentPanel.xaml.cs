@@ -1,5 +1,4 @@
-﻿using BaconBackend.DataObjects;
-using Baconit.Interfaces;
+﻿using Baconit.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,20 +19,29 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 
-namespace Baconit.FlipViewControls
+namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class GifImageFliplControl : UserControl, IFlipViewContentControl
+    public sealed partial class GifImageContentPanel : UserControl, IContentPanel
     {
-        IFlipViewContentHost m_host;
-        MediaElement m_gifVideo;
-        bool m_loadingHidden = false;
-        bool m_shouldBePlaying = false;
-        bool m_isDestoryed = false;
+        /// <summary>
+        /// Holds a reference to our base.
+        /// </summary>
+        IContentPanelBaseInternal m_base;
 
-        public GifImageFliplControl(IFlipViewContentHost host)
+        /// <summary>
+        /// Indicates if we should be playing or not.
+        /// </summary>
+        bool m_shouldBePlaying = false;
+
+        /// <summary>
+        /// Holds a reference to the video we are playing.
+        /// </summary>
+        MediaElement m_gifVideo;
+
+        public GifImageContentPanel(IContentPanelBaseInternal panelBase)
         {
-            m_host = host;
             this.InitializeComponent();
+            m_base = panelBase;
         }
 
         /// <summary>
@@ -40,112 +49,135 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(Post post)
+        static public bool CanHandlePost(ContentPanelSource source)
         {
             // See if we can find a imgur or gfycat gif
-            if (String.IsNullOrWhiteSpace(GetImgurUrl(post.Url)) && String.IsNullOrWhiteSpace(GetGfyCatApiUrl(post.Url)))
+            if (String.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && String.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)))
             {
                 return false;
             }
             return true;
         }
 
+        #region IContentPanel
+
         /// <summary>
-        /// Called when the flip view consent should shown.
+        /// Fired when we should load the content.
         /// </summary>
-        /// <param name="url"></param>
-        public void OnPrepareContent(Post post)
+        /// <param name="source"></param>
+        public void OnPrepareContent()
         {
-            m_shouldBePlaying = false;
-            m_loadingHidden = false;
-
-            // Show loading
-            m_host.ShowLoading();
-
             // Run the rest on a background thread.
             Task.Run(async () =>
             {
                 // Try to get the imgur url
-                string gifUrl = GetImgurUrl(post.Url);
+                string gifUrl = GetImgurUrl(m_base.Source.Url);
 
                 // If that failed try to get a url from GfyCat
                 if (gifUrl.Equals(String.Empty))
                 {
-                    // We have to get it from gyfcat
-                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(post.Url));
-                }               
+                    // We have to get it from gfycat
+                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(m_base.Source.Url));
+                }
 
                 // Since some of this can be costly, delay the work load until we aren't animating.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
-                    // Make sure we aren't destroyed.
-                    if (m_isDestoryed)
-                    {
-                        return;
-                    }
-
                     // If we didn't get anything something went wrong.
                     if (String.IsNullOrWhiteSpace(gifUrl))
                     {
-                        m_host.FallbackToWebBrowser(post);
+                        m_base.FireOnFallbackToBrowser();
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowGifAfterConfirm");
                         return;
                     }
 
-                    // Create the media element
-                    m_gifVideo = new MediaElement();
-                    m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    m_gifVideo.Tapped += OnVideoTapped;
-                    m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
-                    m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
-                    m_gifVideo.Play();
-                    m_gifVideo.IsLooping = true;
-                    ui_contentRoot.Children.Add(m_gifVideo);
+                    lock(this)
+                    {
+                        // Make sure we aren't destroyed.
+                        if (m_base.IsDestoryed)
+                        {
+                            return;
+                        }
+
+                        // Create the media element
+                        m_gifVideo = new MediaElement();
+                        m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        m_gifVideo.Tapped += OnVideoTapped;
+                        m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
+                        m_gifVideo.IsLooping = true;
+
+                        // Set the source
+                        m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
+                        m_gifVideo.Play();
+
+                        // Add the video to the root                    
+                        ui_contentRoot.Children.Add(m_gifVideo);
+                    }
                 });
-            });    
+            });
         }
 
         /// <summary>
-        /// Called when the  post actually becomes visible
+        /// Fired when we should destroy our content.
         /// </summary>
-        public void OnVisible()
+        public void OnDestroyContent()
         {
             lock(this)
             {
+                // Destroy the video
+                if (m_gifVideo != null)
+                {
+                    m_gifVideo.CurrentStateChanged -= OnVideoCurrentStateChanged;
+                    m_gifVideo.Tapped -= OnVideoTapped;
+                    m_gifVideo.Stop();
+                    m_gifVideo = null;
+                }
+
+                // Clear vars
+                m_shouldBePlaying = false;
+
+                // Clear the UI
+                ui_contentRoot.Children.Clear();
+            } 
+        }
+
+        /// <summary>
+        /// Fired when a new host has been added.
+        /// </summary>
+        public void OnHostAdded()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when this post becomes visible
+        /// </summary>
+        public void OnVisibilityChanged(bool isVisible)
+        {
+            lock (this)
+            {
                 // Set that we should be playing
-                m_shouldBePlaying = true;
+                m_shouldBePlaying = isVisible;
 
                 if (m_gifVideo != null)
                 {
-                    // Call play. If we are playing this will do nothing, if we are paused it will start playing.
-                    m_gifVideo.Play();
+                    // Call the action. If we are already playing or paused this
+                    // will do nothing.
+                    if(isVisible)
+                    {
+                        m_gifVideo.Play();
+                    }
+                    else
+                    {
+                        m_gifVideo.Pause();
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Called when the flip view content should be destroyed.
-        /// </summary>
-        public void OnDestroyContent()
-        {
-            // Set that we are destroyed
-            m_isDestoryed = true;
+        #endregion
 
-            // Destroy the video
-            if (m_gifVideo != null)
-            {
-                m_gifVideo.CurrentStateChanged -= OnVideoCurrentStateChanged;
-                m_gifVideo.Tapped -= OnVideoTapped;
-                m_gifVideo.Stop();
-                m_gifVideo = null;
-            }
-
-            // Clear vars
-            m_shouldBePlaying = false;
-
-            // Clear the UI
-            ui_contentRoot.Children.Clear();
-        }
+        #region Video Playback
 
         /// <summary>
         /// Hides the loading and fades in the video when it start playing.
@@ -154,22 +186,17 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void OnVideoCurrentStateChanged(object sender, RoutedEventArgs e)
         {
-            lock(this)
+            // If we start playing and the loading UI isn't hidden do so.
+            if (m_base.IsLoading && m_gifVideo.CurrentState == MediaElementState.Playing)
             {
-                // If we start playing and the loading UI isn't hidden do so.
-                if(!m_loadingHidden && m_gifVideo.CurrentState == MediaElementState.Playing)
-                {
-                    m_host.HideLoading();
-                    ui_storyContentRoot.Begin();
-                    m_loadingHidden = true;
-                }
-
-                // Make sure if we are playing that we should be (that we are actually visible)
-                if (!m_shouldBePlaying && m_gifVideo.CurrentState == MediaElementState.Playing)
-                {
-                    m_gifVideo.Pause();
-                }
+                m_base.FireOnLoading(false);
             }
+
+            // Make sure if we are playing that we should be (that we are actually visible)
+            if (!m_shouldBePlaying && m_gifVideo.CurrentState == MediaElementState.Playing)
+            {
+                m_gifVideo.Pause();
+            }            
         }
 
         /// <summary>
@@ -179,9 +206,9 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void OnVideoTapped(object sender, TappedRoutedEventArgs e)
         {
-            if(m_gifVideo != null)
+            if (m_gifVideo != null)
             {
-                if(m_gifVideo.CurrentState == MediaElementState.Playing)
+                if (m_gifVideo.CurrentState == MediaElementState.Playing)
                 {
                     m_gifVideo.Pause();
                 }
@@ -191,6 +218,10 @@ namespace Baconit.FlipViewControls
                 }
             }
         }
+
+        #endregion
+
+        #region Gif Url Parsing
 
         /// <summary>
         /// Tries to get a Imgur gif url
@@ -251,7 +282,7 @@ namespace Baconit.FlipViewControls
             return String.Empty;
         }
 
-// Disable this annoying warning.
+        // Disable this annoying warning.
 #pragma warning disable CS0649
 
         private class GfyCatDataContainer
@@ -276,7 +307,7 @@ namespace Baconit.FlipViewControls
         private async Task<string> GetGfyCatGifUrl(string apiUrl)
         {
             // Return if we have nothing.
-            if(apiUrl.Equals(String.Empty))
+            if (apiUrl.Equals(String.Empty))
             {
                 return String.Empty;
             }
@@ -284,23 +315,30 @@ namespace Baconit.FlipViewControls
             try
             {
                 // Make the call
-                IHttpContent response = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
-                string jsonReponse = await response.ReadAsStringAsync();
+                IHttpContent webResult = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
 
-                // Parse the data
-                GfyCatDataContainer gfyData = JsonConvert.DeserializeObject<GfyCatDataContainer>(jsonReponse);
+                // Get the input stream and json reader.
+                // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
+                IInputStream inputStream = await webResult.ReadAsInputStreamAsync();
+                using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                using (JsonReader jsonReader = new JsonTextReader(reader))
+                {           
+                    // Parse the Json as an object
+                    JsonSerializer serializer = new JsonSerializer();
+                    GfyCatDataContainer gfyData = await Task.Run(() => serializer.Deserialize<GfyCatDataContainer>(jsonReader));
 
-                // Validate the repsonse
-                string mp4Url = gfyData.item.Mp4Url;
-                if(String.IsNullOrWhiteSpace(mp4Url))
-                {
-                    throw new Exception("Gfycat response failed to parse");
-                }
+                    // Validate the response
+                    string mp4Url = gfyData.item.Mp4Url;
+                    if (String.IsNullOrWhiteSpace(mp4Url))
+                    {
+                        throw new Exception("Gfycat response failed to parse");
+                    }
 
-                // Return the url
-                return mp4Url;
+                    // Return the url
+                    return mp4Url;
+                }     
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("failed to get image from gfycat", e);
                 App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FaileGfyCatApiCall", e);
@@ -308,5 +346,7 @@ namespace Baconit.FlipViewControls
 
             return String.Empty;
         }
+
+        #endregion
     }
 }

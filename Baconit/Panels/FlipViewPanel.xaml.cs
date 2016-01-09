@@ -2,7 +2,7 @@
 using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Managers;
-using Baconit.FlipViewControls;
+using Baconit.ContentPanels;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -28,8 +28,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Baconit.Panels
 {
@@ -130,6 +128,10 @@ namespace Baconit.Panels
         /// </summary>
         bool m_isFullScreen = false;
 
+        /// <summary>
+        /// Holds a unique id for this flipview.
+        /// </summary>
+        string m_uniqueId = String.Empty;
 
         public FlipViewPanel()
         {
@@ -139,6 +141,9 @@ namespace Baconit.Panels
             // when created but it doesn't seem to work. So for now just hide it
             // and when the first person tries to open it we will show it.
             ui_commmentBox.Visibility = Visibility.Collapsed;
+
+            // Create a unique id for this
+            m_uniqueId = DateTime.Now.Ticks.ToString();
         }
 
         /// <summary>
@@ -247,10 +252,31 @@ namespace Baconit.Panels
         {
             // Set the task bar color
             m_host.SetStatusBar(Color.FromArgb(255, 25, 25, 25));
+
+            // If we have a current panel, set it visible.
+            if(ui_flipView.SelectedItem != null)
+            {
+                ((Post)ui_flipView.SelectedItem).IsPostVisible = true;
+            }
         }
 
-        public void OnNavigatingFrom()
+        /// <summary>
+        /// Fired when the panel is being navigated from.
+        /// </summary>
+        public async void OnNavigatingFrom()
         {
+            // Deffer the action so we don't mess up any animations.
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            {
+                // Tell all of the posts they are not visible.
+                lock (m_postsLists)
+                {
+                    foreach (Post post in m_postsLists)
+                    {
+                        post.IsPostVisible = false;
+                    }
+                }
+            });
         }
 
         public async void OnCleanupPanel()
@@ -260,21 +286,43 @@ namespace Baconit.Panels
             {
                 m_collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
             }
-            
+
+            // Kick to a background thread, remove all of our content.
+            await Task.Run(() =>
+            {
+                // Remove all of our content
+                ContentPanelMaster.Current.RemoveAllAllowedContent(m_uniqueId);
+            });
+
             // Deffer the action so we don't mess up any animations.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
-                // Clear out all of the content, posts, and comments. 
+                // Clear out all of the posts, and comments.
                 lock (m_postsLists)
                 {
                     foreach (Post post in m_postsLists)
                     {
                         Post refPost = post;
+                        post.IsPostVisible = false;
                         ClearPostComments(ref refPost);
-                        ClearPostContent(ref refPost);
                     }
                     m_postsLists.Clear();
                 }
+            });
+        }
+
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Kick to a background thread.
+            Task.Run(() =>
+            {
+                // When we are asked to reduce memory unload all of our panels.
+                // If the user comes back they will be reloaded as they view them.
+                ContentPanelMaster.Current.UnloadContentForGroup(m_uniqueId);
             });
         }
 
@@ -873,8 +921,7 @@ namespace Baconit.Panels
             foreach(Tuple<Post, bool> tuple in setToUiList)
             {
                 // We found an item to show or prelaod, do it.
-                Post postToSet = tuple.Item1;
-                SetPostContent(ref postToSet, tuple.Item2);
+                await SetPostContent(tuple.Item1, tuple.Item2);
 
                 // If this is the first post to load delay for a while to give the UI time to setup.
                 // This will delay setting the next post as well as prefetching the comments for this
@@ -882,26 +929,56 @@ namespace Baconit.Panels
                 if (m_isFirstPostLoad)
                 {
                     m_isFirstPostLoad = false;
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
 
                 // If this is the current item also preload the comments now.
                 if (tuple.Item2)
                 {
+                    Post postToSet = tuple.Item1;
                     PreFetchPostComments(ref postToSet);
                 }
             }
 
-            // Now clear everything that should be cleared.
+            // Now set them all to not be visible and clear
+            // the comments.
             foreach(Post post in clearList)
             {
+                post.IsPostVisible = false;
                 Post refPost = post;
-                ClearPostContent(ref refPost);
                 ClearPostComments(ref refPost);
             }
 
             // Update the header sizes
             SetHeaderSizes();
+
+            // Kick off a background thread to clear out what we don't want.
+            await Task.Run(() =>
+            {
+                // Get all of our content.
+                List<string> allContent = ContentPanelMaster.Current.GetAllAllowedContentForGroup(m_uniqueId);
+
+                // Find the ids that should be cleared and clear them.
+                List<string> removeId = new List<string>();
+                foreach (string contentId in allContent)
+                {
+                    bool found = false;
+                    foreach (Tuple<Post, bool> tuple in setToUiList)
+                    {
+                        if (tuple.Item1.Id.Equals(contentId))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        // If we didn't find it clear it.
+                        ContentPanelMaster.Current.RemoveAllowedContent(contentId);
+                    }
+                }
+            });
         }
 
         #endregion
@@ -1006,9 +1083,9 @@ namespace Baconit.Panels
                 // it defaults visible but way off the screen, this makes it load and render so it is ready
                 // when we set it visible. Here is is safe to restore it to the normal state.
                 post.FlipViewStickyHeaderVis = Visibility.Collapsed;
-                post.FlipViewStickyHeaderMargin = new Thickness(0, 0, 0, 0);                
+                post.FlipViewStickyHeaderMargin = new Thickness(0, 0, 0, 0);
             }
-            
+
             // Show or hide the scroll bar depending if we have gotten to comments yet or not.
             post.VerticalScrollBarVisibility = e.ListScrollTotalDistance > 60 ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
 
@@ -1565,7 +1642,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void FlipViewContentControl_OnToggleFullscreen(object sender, FlipViewContentControl.OnToggleFullScreenEventArgs e)
+        private void FlipViewContentControl_OnToggleFullscreen(object sender, OnToggleFullScreenEventArgs e)
         {
             // Get the post
             Post post = ((Post)((FrameworkElement)sender).DataContext);
@@ -1687,25 +1764,15 @@ namespace Baconit.Panels
         /// and it must figure out the rest on it's own.
         /// </summary>
         /// <param name="post"></param>
-        private void SetPostContent(ref Post post, bool isVisiblePost)
+        private async Task SetPostContent(Post post, bool isVisiblePost)
         {
-            if(post.FlipPost == null)
-            {
-                post.FlipPost = post;
-            }
-
             // Set that the post is visible if it is
             post.IsPostVisible = isVisiblePost;
-        }
 
-        /// <summary>
-        /// Clears the post of any content
-        /// </summary>
-        /// <param name="post"></param>
-        private void ClearPostContent(ref Post post)
-        {
-            post.FlipPost = null;
-            post.IsPostVisible = false;
+            await Task.Run(() =>
+            {
+                ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, !isVisiblePost);
+            });  
         }
 
         private void ui_contentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1713,9 +1780,13 @@ namespace Baconit.Panels
             SetHeaderSizes();
         }
 
-        private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
+        /// <summary>
+        /// Gets a unique id for this flipview.
+        /// </summary>
+        /// <returns></returns>
+        private string GetUniqueId()
         {
-
+            return m_subreddit.Id + m_currentSort + m_currentSortTime;
         }
     }
 }

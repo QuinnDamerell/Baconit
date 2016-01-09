@@ -23,7 +23,7 @@ namespace BaconBackend.DataObjects
     public class Post : INotifyPropertyChanged
     {
         /// <summary>
-        /// The comment's unique ID. Prefixed with "t3_", this 
+        /// The comment's unique ID. Prefixed with "t3_", this
         /// is the post's fullname.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
@@ -78,7 +78,7 @@ namespace BaconBackend.DataObjects
         /// </summary>
         [JsonProperty(PropertyName = "over_18")]
         public bool IsOver18 { get; set; }
-        
+
         /// <summary>
         /// If this post is stickied to the top of the subreddit's posts, when sorted by hotness.
         /// </summary>
@@ -140,7 +140,7 @@ namespace BaconBackend.DataObjects
         /// If the post is gilded or not.
         /// </summary>
         [JsonProperty(PropertyName = "gilded")]
-        public bool Gilded { get; set; }        
+        public bool Gilded { get; set; }
 
         /// <summary>
         /// true: the logged-in user upvoted the post.
@@ -301,24 +301,6 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public string FlipViewSecondary { get; set; }
 
-        /// <summary>
-        /// Used by flip view to set and unset the post content
-        /// </summary>
-        [JsonIgnore]
-        public Post FlipPost
-        {
-            get
-            {
-                return m_flipPost;
-            }
-            set
-            {
-                m_flipPost = value;
-                NotifyPropertyChanged(nameof(FlipPost));
-            }
-        }
-        [JsonIgnore]
-        Post m_flipPost = null;
 
         /// <summary>
         /// Used by flip view to indicate when the post is visible
@@ -627,7 +609,7 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        
+
 
         #region FlipView Vars
 

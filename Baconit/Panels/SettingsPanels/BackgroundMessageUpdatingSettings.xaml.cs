@@ -75,6 +75,15 @@ namespace Baconit.Panels.SettingsPanels
             // Ignore for now.
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         private void MessageNotificationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(m_ignoreUpdates)
@@ -104,6 +113,6 @@ namespace Baconit.Panels.SettingsPanels
             }
 
             App.BaconMan.BackgroundMan.MessageUpdaterMan.AddToNotificationCenterSilently = ui_addNotesSliently.IsOn;
-        }    
+        }
     }
 }

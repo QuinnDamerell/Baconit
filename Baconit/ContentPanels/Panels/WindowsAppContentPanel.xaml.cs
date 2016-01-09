@@ -1,6 +1,4 @@
-﻿using BaconBackend.DataObjects;
-using BaconBackend.Helpers;
-using Baconit.Interfaces;
+﻿using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,18 +14,26 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace Baconit.FlipViewControls
-{
-    public sealed partial class WindowsAppFlipControl : UserControl, IFlipViewContentControl
-    {
-        IFlipViewContentHost m_host;
-        string m_appUrl = "";
-        WebView m_hiddenWebView;
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-        public WindowsAppFlipControl(IFlipViewContentHost host)
+namespace Baconit.ContentPanels.Panels
+{
+    public sealed partial class WindowsAppContentPanel : UserControl, IContentPanel
+    {
+        /// <summary>
+        /// Holds a reference to our base.
+        /// </summary>
+        IContentPanelBaseInternal m_base;
+
+        /// <summary>
+        /// A hidden webview used if we can't parse the string.
+        /// </summary>
+        WebView m_hiddenWebView = null;
+
+        public WindowsAppContentPanel(IContentPanelBaseInternal panelBase)
         {
-            m_host = host;
             this.InitializeComponent();
+            m_base = panelBase;
         }
 
         /// <summary>
@@ -35,49 +41,60 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(Post post)
+        static public bool CanHandlePost(ContentPanelSource source)
         {
-            string urlLower = post.Url.ToLower();
-            if(urlLower.Contains("microsoft.com") && (urlLower.Contains("/store/apps/") || urlLower.Contains("/store/games/")))
+            string urlLower = source.Url.ToLower();
+            if (urlLower.Contains("microsoft.com") && (urlLower.Contains("/store/apps/") || urlLower.Contains("/store/games/")))
             {
                 return true;
             }
             return false;
         }
 
+        #region IContentPanel
+
         /// <summary>
-        /// Called when we should show the content
+        /// Fired when we should load the content.
         /// </summary>
-        /// <param name="post"></param>
-        public void OnPrepareContent(Post post)
+        /// <param name="source"></param>
+        public void OnPrepareContent()
         {
-            // Capture the url.
-            m_appUrl = post.Url;
+            // Hide loading
+            m_base.FireOnLoading(false);
         }
 
         /// <summary>
-        /// Called when the  post actually becomes visible
-        /// </summary>
-        public void OnVisible()
-        {
-            // Ignore for now
-        }
-
-        /// <summary>
-        /// Called when we should destroy the content
+        /// Fired when we should destroy our content.
         /// </summary>
         public void OnDestroyContent()
         {
-            // Kill the url
-            m_appUrl = null;
-
             // Kill the web view
-            if(m_hiddenWebView != null)
+            if (m_hiddenWebView != null)
             {
                 m_hiddenWebView.NavigationCompleted -= HiddenWebView_NavigationCompleted;
             }
             m_hiddenWebView = null;
         }
+
+        /// <summary>
+        /// Fired when a new host has been added.
+        /// </summary>
+        public void OnHostAdded()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when this post becomes visible
+        /// </summary>
+        public void OnVisibilityChanged(bool isVisible)
+        {
+            // Ignore for now
+        }
+
+        #endregion
+
+        #region Tapped events
 
         /// <summary>
         /// Call the global content viewer to show the content.
@@ -86,7 +103,7 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private async void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(m_appUrl))
+            if (!String.IsNullOrWhiteSpace(m_base.Source.Url))
             {
                 // Try to parse out the app id if we can, loading the webpage can take a long
                 // time so we want to avoid it if possible
@@ -101,48 +118,52 @@ namespace Baconit.FlipViewControls
                     // Note the /apps/ changes also
 
                     // Find the last / this should be just before the app id.
-                    int appIdStart = m_appUrl.LastIndexOf('/') + 1;
+                    int appIdStart = m_base.Source.Url.LastIndexOf('/') + 1;
 
                     // Make sure we found one.
-                    if(appIdStart != 0)
+                    if (appIdStart != 0)
                     {
                         // Find the ending, look for a ? if there is one.
-                        int appIdEnd = m_appUrl.IndexOf('?', appIdStart);
+                        int appIdEnd = m_base.Source.Url.IndexOf('?', appIdStart);
                         if (appIdEnd == -1)
                         {
-                            appIdEnd = m_appUrl.Length;
+                            appIdEnd = m_base.Source.Url.Length;
                         }
 
                         // Get the app id
-                        string appId = m_appUrl.Substring(appIdStart, appIdEnd - appIdStart);
+                        string appId = m_base.Source.Url.Substring(appIdStart, appIdEnd - appIdStart);
 
                         // Do a quick sanity check
                         if (appId.Length > 4)
                         {
                             successfullyParsedAppId = await Windows.System.Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?ProductId={appId}"));
                         }
-                    }                
+                    }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     App.BaconMan.MessageMan.DebugDia("failed to parse app id", ex);
                     App.BaconMan.TelemetryMan.ReportEvent(this, "FailedToParseAppId");
                 }
 
                 // If we failed use the web browser
-                if(!successfullyParsedAppId)
-                {                
+                if (!successfullyParsedAppId)
+                {
                     // Show our loading overlay
                     ui_loadingOverlay.Show(true);
 
                     // If we have a link open it in our hidden webview, this will cause the store
                     // to redirect us.
                     m_hiddenWebView = new WebView(WebViewExecutionMode.SeparateThread);
-                    m_hiddenWebView.Navigate(new Uri(m_appUrl, UriKind.Absolute));
                     m_hiddenWebView.NavigationCompleted += HiddenWebView_NavigationCompleted;
+                    m_hiddenWebView.Navigate(new Uri(m_base.Source.Url, UriKind.Absolute));
                 }
             }
         }
+
+        #endregion
+
+        #region Web View Events
 
         /// <summary>
         /// Fired when the webview is loaded.
@@ -157,5 +178,8 @@ namespace Baconit.FlipViewControls
             // Hide the overlay
             ui_loadingOverlay.Hide();
         }
+
+        #endregion
+
     }
 }

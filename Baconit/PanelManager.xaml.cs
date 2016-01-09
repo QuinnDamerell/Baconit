@@ -22,8 +22,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Baconit
 {
     /// <summary>
@@ -67,6 +65,15 @@ namespace Baconit
         const int c_mediumMemoryHistoryPagesLimit = 4;
         const int c_highMemoryHistoryPagesLimit = 1;
 
+        // The max size the subreddit pane will be.
+        private const int MAX_PANEL_SIZE = 400;
+
+        /// <summary>
+        /// How many panel back a panel has to be before we ask it
+        /// to reduce it's memory.
+        /// </summary>
+        private const int c_numberOfHistoryPagesBeforeMemoryReduce = 2;
+
         /// <summary>
         /// Fired when the screen mode changes
         /// </summary>
@@ -90,7 +97,6 @@ namespace Baconit
         //
         // Private Vars
         //
-        private const int MAX_PANEL_SIZE = 400;
 
         private enum State
         {
@@ -142,6 +148,7 @@ namespace Baconit
         /// show the menu. This bool indicates if we have done that or not.
         /// </summary>
         bool m_finalNavigateHasShownMenu = false;
+
 
         public PanelManager(IMainPage main, IPanel startingPanel = null)
         {
@@ -418,6 +425,7 @@ namespace Baconit
 
             bool isExitingPanel = false;
             StackItem navigateFromPanel = null;
+            StackItem panelToReduceMemory = null;
             lock (m_panelStack)
             {
                 // For now we can only do one animation at a time. So if we are doing something we
@@ -508,6 +516,41 @@ namespace Baconit
                 // Report the view
                 App.BaconMan.TelemetryMan.ReportPageView(navigateToPanel.Panel.GetType().Name);
 
+                // Check if there is someone we should ask to reduce memory
+                if(m_panelStack.Count > (c_numberOfHistoryPagesBeforeMemoryReduce + 1))
+                {
+                    panelToReduceMemory = m_panelStack[m_panelStack.Count - (c_numberOfHistoryPagesBeforeMemoryReduce +1)];
+
+                    // This can only happen in split mode.
+                    if(m_screenMode == ScreenMode.Split)
+                    {
+                        // We need to make sure this panel isn't visible
+                        PanelType reducePanelType = GetPanelType(panelToReduceMemory.Panel);
+                        for (int count = m_panelStack.Count - 1; count >= 0; count--)
+                        {
+                            // Find the first panel of this type and make sure it isn't this panel
+                            StackItem item = m_panelStack[count];
+                            if (GetPanelType(item.Panel) == reducePanelType)
+                            {
+                                if (item.Id.Equals(panelToReduceMemory.Id) && item.Panel.GetType() == panelToReduceMemory.Panel.GetType())
+                                {
+                                    // This is the panel thus it is visible. Just null out the var
+                                    // and leave it alone.
+                                    // #todo! There is a bug here, any panel that is cleared here will never be
+                                    // asked to reduce its memory. This isn't a huge deal, but something we might
+                                    // want to fix later. This isn't a huge problem because on mobile this will never happen
+                                    // and the memory manager will start killing pages if memory gets too high.
+                                    panelToReduceMemory = null;
+                                }
+
+                                // If the first panel we found wasn't it then this panel
+                                // isn't visible.
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 // Animate the current panel out
                 PlayFadeAnimation(newPanelType, navigateFromPanelType, State.FadingOut);
             }
@@ -516,6 +559,12 @@ namespace Baconit
             if (navigateFromPanel != null)
             {
                 FireOnNavigateFrom(navigateFromPanel.Panel);
+            }
+
+            // If we have a panel to reduce memory, ask it to.
+            if (panelToReduceMemory != null)
+            {
+                FireOnReduceMemory(panelToReduceMemory.Panel);
             }
 
             return true;
@@ -1155,7 +1204,24 @@ namespace Baconit
             }
             catch (Exception e)
             {
-                App.BaconMan.MessageMan.DebugDia("OnCleanupPanel failed!", e);
+                App.BaconMan.MessageMan.DebugDia("FireOnCleanupPanel failed!", e);
+            }
+        }
+
+        /// <summary>
+        /// Fires OnReduceMemory for the panel
+        /// </summary>
+        /// <param name="panel"></param>
+        private void FireOnReduceMemory(IPanel panel)
+        {
+            try
+            {
+                // Tell the panel to reduce memory.
+                panel.OnReduceMemory();
+            }
+            catch (Exception e)
+            {
+                App.BaconMan.MessageMan.DebugDia("FireOnReduceMemory failed!", e);
             }
         }
 

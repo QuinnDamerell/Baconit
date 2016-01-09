@@ -1,10 +1,11 @@
 ﻿using BaconBackend.DataObjects;
-using Baconit.FlipViewControls;
+using Baconit.ContentPanels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -41,7 +42,12 @@ namespace Baconit.HelperControls
         /// <summary>
         /// Holds a reference to the content control
         /// </summary>
-        FlipViewContentControl m_contentControl;
+        ContentPanelHost m_contentControl;
+
+        /// <summary>
+        /// The current source we are showing.
+        /// </summary>
+        ContentPanelSource m_source;
 
         public GlobalContentPresenter()
         {
@@ -67,19 +73,25 @@ namespace Baconit.HelperControls
             }
 
             // Create the content control
-            m_contentControl = new FlipViewContentControl();
+            m_contentControl = new ContentPanelHost();
 
             // Disable full screen
-            m_contentControl.CanGoFullScreen = false;
+            m_contentControl.CanGoFullscreen = false;
 
             // This isn't great, but for now mock a post
-            Post post = new Post() { Url = link, Id = "quinn" };
+            m_source = ContentPanelSource.CreateFromUrl(link);
+
+            // Approve the content to be shown
+            Task.Run(() =>
+            {                
+                ContentPanelMaster.Current.AddAllowedContent(m_source);
+            });     
 
             // Add the control to the UI
             ui_contentRoot.Children.Add(m_contentControl);
 
             // Set the post to begin loading
-            m_contentControl.FlipPost = post;
+            m_contentControl.SourceId = m_source.Id;
             m_contentControl.IsVisible = true;
 
             // Show the panel
@@ -98,6 +110,12 @@ namespace Baconit.HelperControls
                 State = GlobalContentStates.Closing;
             }
 
+            // Remove the content
+            Task.Run(() =>
+            {                
+                ContentPanelMaster.Current.RemoveAllowedContent(m_source.Id);
+            });           
+
             ToggleShown(false);
         }
 
@@ -113,7 +131,7 @@ namespace Baconit.HelperControls
             // Kill the story
             if(m_contentControl != null)
             {
-                m_contentControl.FlipPost = null;
+                m_contentControl.SourceId = null;
             }
             m_contentControl = null;
 
@@ -142,7 +160,7 @@ namespace Baconit.HelperControls
         {
             try
             {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(m_contentControl.FlipPost.Url, UriKind.Absolute));
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(m_source.Url, UriKind.Absolute));
             }
             catch(Exception)
             { }

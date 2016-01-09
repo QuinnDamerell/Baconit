@@ -70,6 +70,15 @@ namespace Baconit.Panels
             // Ignore for now.
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         private void SettingsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (ui_settingsList.SelectedIndex)
@@ -81,17 +90,17 @@ namespace Baconit.Panels
                     m_host.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
                     break;
                 case 2:
-                    m_host.Navigate(typeof(CommentSettings), "CommentsSettings");                    
-                    break;              
+                    m_host.Navigate(typeof(CommentSettings), "CommentsSettings");
+                    break;
                 case 3:
                     m_host.Navigate(typeof(MicrosoftBandSettings), "MicrosoftBandSettings");
-                    break;          
+                    break;
                 case 4:
                     m_host.Navigate(typeof(BackgroundMessageUpdatingSettings), "BackgroundMessageUpdating");
                     break;
                 case 5:
                     m_host.Navigate(typeof(BackgroundUpdatingSettings), "BackgroundUpdatingSettings");
-                    break;                
+                    break;
                 case 6:
                 case 7:
                     App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");

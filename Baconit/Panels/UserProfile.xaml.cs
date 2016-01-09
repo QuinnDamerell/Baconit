@@ -71,7 +71,7 @@ namespace Baconit.Panels
         /// The current sort type for the posts
         /// </summary>
         SortTypes m_postSort = SortTypes.New;
-        
+
         /// <summary>
         /// The current sort type for the comments
         /// </summary>
@@ -88,7 +88,7 @@ namespace Baconit.Panels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;        
+            m_host = host;
 
             if(!arguments.ContainsKey(PanelManager.NAV_ARGS_USER_NAME))
             {
@@ -204,6 +204,15 @@ namespace Baconit.Panels
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
             OnNavigatingTo();
+        }
+
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
         }
 
         #region Posts

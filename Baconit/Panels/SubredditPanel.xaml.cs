@@ -151,6 +151,15 @@ namespace Baconit.Panels
             }
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         #region Subreddit Setup
 
         public void SetupPage(Subreddit subreddit, SortTypes sortType, SortTimeTypes sortTimeType)

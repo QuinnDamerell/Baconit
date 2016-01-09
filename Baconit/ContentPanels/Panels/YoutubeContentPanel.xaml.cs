@@ -1,5 +1,4 @@
-﻿using BaconBackend.DataObjects;
-using Baconit.Interfaces;
+﻿using Baconit.Interfaces;
 using MyToolkit.Multimedia;
 using System;
 using System.Collections.Generic;
@@ -20,25 +19,16 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Baconit.FlipViewControls
+namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class YoutubeFlipControl : UserControl, IFlipViewContentControl
+    public sealed partial class YoutubeContentPanel : UserControl, IContentPanel
     {
         /// <summary>
-        /// Reference to the host
+        /// Holds a reference to our base.
         /// </summary>
-        IFlipViewContentHost m_host;
-
-        /// <summary>
-        /// The currently displayed post.
-        /// </summary>
-        Post m_post;
-
-        /// <summary>
-        /// Indicates if we have hidden loading yet
-        /// </summary>
-        bool m_hasHiddenLoading = false;
+        IContentPanelBaseInternal m_base;
 
         /// <summary>
         /// Holds a ref to the media element that is playing.
@@ -50,10 +40,10 @@ namespace Baconit.FlipViewControls
         /// </summary>
         DisplayRequest m_displayRequest;
 
-        public YoutubeFlipControl(IFlipViewContentHost host)
+        public YoutubeContentPanel(IContentPanelBaseInternal panelBase)
         {
             this.InitializeComponent();
-            m_host = host;
+            m_base = panelBase;
         }
 
         /// <summary>
@@ -61,32 +51,29 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(Post post)
+        static public bool CanHandlePost(ContentPanelSource source)
         {
             // Note! We can't do the full Uri get because it relays on an Internet request and
             // we can't lose the time for this quick check. If we can get the youtube id assume we are good.
 
             // See if we can get a link
-            return !String.IsNullOrWhiteSpace(TryToGetYouTubeId(post));
+            return !String.IsNullOrWhiteSpace(TryToGetYouTubeId(source));
         }
 
+        #region IContentPanel
+
         /// <summary>
-        /// Called by the host when we should show content.
+        /// Fired when we should load the content.
         /// </summary>
-        /// <param name="post"></param>
-        public void OnPrepareContent(Post post)
+        /// <param name="source"></param>
+        public void OnPrepareContent()
         {
-            // So the loading UI
-            m_host.ShowLoading();
-
-            m_post = post;
-
             // Since this can be costly kick it off to a background thread so we don't do work
             // as we are animating.
             Task.Run(async () =>
             {
                 // Get the video Uri
-                YouTubeUri youTubeUri = await GetYouTubeVideoUrl(post);
+                YouTubeUri youTubeUri = await GetYouTubeVideoUrl(m_base.Source);
 
                 // Back to the UI thread with pri
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
@@ -94,7 +81,7 @@ namespace Baconit.FlipViewControls
                     if (youTubeUri == null)
                     {
                         // If we failed fallback to the browser.
-                        m_host.FallbackToWebBrowser(m_post);
+                        // m_host.FallbackToWebBrowser(m_post);
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
                         return;
                     }
@@ -111,27 +98,49 @@ namespace Baconit.FlipViewControls
         }
 
         /// <summary>
-        /// Called when the  post actually becomes visible
-        /// </summary>
-        public void OnVisible()
-        {
-            // Ignore for now
-        }
-
-        /// <summary>
-        /// Called then the content should be killed
+        /// Fired when we should destroy our content.
         /// </summary>
         public void OnDestroyContent()
         {
-            if(m_youTubeVideo != null)
+            // Delete the video
+            if (m_youTubeVideo != null)
             {
                 m_youTubeVideo.CurrentStateChanged -= MediaElement_CurrentStateChanged;
                 m_youTubeVideo.Stop();
                 m_youTubeVideo.Source = null;
             }
+
+            // Clear the root
+            ui_contentRoot.Children.Clear();
+
+            // Null the object
             m_youTubeVideo = null;
-            m_post = null;
         }
+
+        /// <summary>
+        /// Fired when a new host has been added.
+        /// </summary>
+        public void OnHostAdded()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when this post becomes visible
+        /// </summary>
+        public void OnVisibilityChanged(bool isVisible)
+        {
+            // If we are not visible and still have a video
+            // pause it.
+            if(m_youTubeVideo != null && !isVisible)
+            {
+                m_youTubeVideo.Pause();
+            }
+        }
+
+        #endregion
+
+        #region Media Controls
 
         /// <summary>
         /// Fired when the media state changes
@@ -144,18 +153,16 @@ namespace Baconit.FlipViewControls
             if (m_youTubeVideo.CurrentState != MediaElementState.Opening)
             {
                 // When we get to the state paused hide loading.
-                if (!m_hasHiddenLoading)
+                if (m_base.IsLoading)
                 {
-                    m_hasHiddenLoading = true;
-                    m_host.HideLoading();
-                    ui_storyContentRoot.Begin();
+                    m_base.FireOnLoading(false);
                 }
             }
 
             // If we are playing request for the screen not to turn off.
             if (m_youTubeVideo.CurrentState == MediaElementState.Playing)
             {
-                if(m_displayRequest == null)
+                if (m_displayRequest == null)
                 {
                     m_displayRequest = new DisplayRequest();
                     m_displayRequest.RequestActive();
@@ -164,7 +171,7 @@ namespace Baconit.FlipViewControls
             else
             {
                 // If anything else happens and we have a current request remove it.
-                if(m_displayRequest != null)
+                if (m_displayRequest != null)
                 {
                     m_displayRequest.RequestRelease();
                     m_displayRequest = null;
@@ -172,15 +179,19 @@ namespace Baconit.FlipViewControls
             }
         }
 
+        #endregion
+
+        #region Youtube Id
+
         /// <summary>
         /// Tries to get a youtube link from a post. If it fails
         /// it returns null.
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        private static async Task<YouTubeUri> GetYouTubeVideoUrl(Post post)
+        private static async Task<YouTubeUri> GetYouTubeVideoUrl(ContentPanelSource source)
         {
-            if (String.IsNullOrWhiteSpace(post.Url))
+            if (String.IsNullOrWhiteSpace(source.Url))
             {
                 return null;
             }
@@ -188,7 +199,7 @@ namespace Baconit.FlipViewControls
             try
             {
                 // Try to find the ID
-                string youtubeVideoId = TryToGetYouTubeId(post);
+                string youtubeVideoId = TryToGetYouTubeId(source);
 
                 if (!String.IsNullOrWhiteSpace(youtubeVideoId))
                 {
@@ -205,9 +216,14 @@ namespace Baconit.FlipViewControls
             return null;
         }
 
-        private static string TryToGetYouTubeId(Post post)
+        /// <summary>
+        /// Attempts to get a youtube id from a url.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static string TryToGetYouTubeId(ContentPanelSource source)
         {
-            if (String.IsNullOrWhiteSpace(post.Url))
+            if (String.IsNullOrWhiteSpace(source.Url))
             {
                 return null;
             }
@@ -216,13 +232,13 @@ namespace Baconit.FlipViewControls
             {
                 // Try to find the ID
                 string youtubeVideoId = String.Empty;
-                string postUrl = WebUtility.HtmlDecode(post.Url);
+                string postUrl = WebUtility.HtmlDecode(source.Url);
                 string urlLower = postUrl.ToLower();
                 if (urlLower.Contains("youtube.com"))
                 {
                     // Check for an attribution link
                     int attribution = urlLower.IndexOf("attribution_link?");
-                    if(attribution != -1)
+                    if (attribution != -1)
                     {
                         // We need to parse out the video id
                         // looks like this attribution_link?a=bhvqtDGQD6s&amp;u=%2Fwatch%3Fv%3DrK0D1ehO7CA%26feature%3Dshare
@@ -277,5 +293,7 @@ namespace Baconit.FlipViewControls
             }
             return null;
         }
+
+        #endregion
     }
 }

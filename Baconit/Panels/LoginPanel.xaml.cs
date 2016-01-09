@@ -73,6 +73,15 @@ namespace Baconit.Panels
             // Ignore for now.
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             App.BaconMan.TelemetryMan.ReportEvent(this, "LoginButtonClicked");

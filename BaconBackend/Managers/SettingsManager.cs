@@ -79,7 +79,15 @@ namespace BaconBackend.Managers
         /// <param name="obj"></param>
         public void WriteToLocalSettings<T>(string name, T obj)
         {
-            LocalSettings[name] = JsonConvert.SerializeObject(obj);
+            try
+            {
+                LocalSettings[name] = JsonConvert.SerializeObject(obj);
+            }
+            catch(Exception e)
+            {
+                m_baconMan.MessageMan.DebugDia("failed to write setting " + name, e);
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "failedToWriteSetting" + name, e);
+            }            
         }
 
         /// <summary>

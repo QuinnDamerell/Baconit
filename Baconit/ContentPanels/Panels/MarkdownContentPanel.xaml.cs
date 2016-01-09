@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UniversalMarkdown;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -13,25 +16,25 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using BaconBackend.DataObjects;
-using Baconit.HelperControls;
-using BaconBackend.Helpers;
-using UniversalMarkdown;
-using Windows.UI.Core;
-using System.Threading.Tasks;
 
-namespace Baconit.FlipViewControls
+namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class RedditMarkdownFlipControl : UserControl, IFlipViewContentControl
+    public sealed partial class MarkdownContentPanel : UserControl, IContentPanel
     {
-        IFlipViewContentHost m_host;
+        /// <summary>
+        /// Holds a reference to our base.
+        /// </summary>
+        IContentPanelBaseInternal m_base;
+
+        /// <summary>
+        /// The current markdown text box.
+        /// </summary>
         MarkdownTextBlock m_markdownBlock;
 
-        public RedditMarkdownFlipControl(IFlipViewContentHost host)
+        public MarkdownContentPanel(IContentPanelBaseInternal panelBase)
         {
-            m_host = host;
             this.InitializeComponent();
-            m_host.ShowLoading();
+            m_base = panelBase;
         }
 
         /// <summary>
@@ -39,28 +42,67 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(Post post)
+        static public bool CanHandlePost(ContentPanelSource source)
         {
             // If it is a self post and it has text it is for us.
-            return post.IsSelf && !String.IsNullOrWhiteSpace(post.Selftext);
+            return source.IsSelf && !String.IsNullOrWhiteSpace(source.SelfText);
         }
 
+        #region IContentPanel
+
         /// <summary>
-        /// Called when we should show the content
+        /// Fired when we should load the content.
         /// </summary>
-        /// <param name="post"></param>
-        public async void OnPrepareContent(Post post)
+        /// <param name="source"></param>
+        public async void OnPrepareContent()
         {
             // Since some of this can be costly, delay the work load until we aren't animating.
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 m_markdownBlock = new MarkdownTextBlock();
                 m_markdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
                 m_markdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
-                m_markdownBlock.Markdown = post.Selftext;                
+                m_markdownBlock.Markdown = m_base.Source.SelfText;
                 ui_contentRoot.Children.Add(m_markdownBlock);
-            });     
+            });
         }
+
+        /// <summary>
+        /// Fired when we should destroy our content.
+        /// </summary>
+        public void OnDestroyContent()
+        {
+            // Clear the markdown
+            if (m_markdownBlock != null)
+            {
+                m_markdownBlock.OnMarkdownReady -= MarkdownBox_OnMarkdownReady;
+                m_markdownBlock.OnMarkdownLinkTapped -= MarkdownBlock_OnMarkdownLinkTapped;
+            }
+            m_markdownBlock = null;
+
+            // Clear the UI
+            ui_contentRoot.Children.Clear();
+        }
+
+        /// <summary>
+        /// Fired when a new host has been added.
+        /// </summary>
+        public void OnHostAdded()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when this post becomes visible
+        /// </summary>
+        public void OnVisibilityChanged(bool isVisible)
+        {
+            // Ignore for now
+        }
+
+        #endregion
+
+        #region Markdown Events
 
         /// <summary>
         /// Fired when a link is tapped in the markdown.
@@ -79,41 +121,18 @@ namespace Baconit.FlipViewControls
         /// <param name="e"></param>
         private void MarkdownBox_OnMarkdownReady(object sender, OnMarkdownReadyArgs e)
         {
-            if(e.WasError)
+            if (e.WasError)
             {
-                m_host.ShowError();
+                m_base.FireOnFallbackToBrowser();
                 App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowMarkdown", e.Exception);
             }
             else
             {
                 // Hide loading
-                m_host.HideLoading();
+                m_base.FireOnLoading(false);
             }
         }
 
-        /// <summary>
-        /// Called when the  post actually becomes visible
-        /// </summary>
-        public void OnVisible()
-        {
-            // Ignore for now
-        }
-
-        /// <summary>
-        /// Called when we should destroy the content
-        /// </summary>
-        public void OnDestroyContent()
-        {
-            // Clear the markdown
-            if(m_markdownBlock != null)
-            {
-                m_markdownBlock.OnMarkdownReady -= MarkdownBox_OnMarkdownReady;
-                m_markdownBlock.OnMarkdownLinkTapped -= MarkdownBlock_OnMarkdownLinkTapped;
-            }
-            m_markdownBlock = null;
-
-            // Clear the UI
-            ui_contentRoot.Children.Clear();
-        }
+        #endregion
     }
 }

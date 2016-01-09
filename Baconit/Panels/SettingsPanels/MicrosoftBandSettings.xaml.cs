@@ -27,7 +27,7 @@ namespace Baconit.Panels.SettingsPanels
         const string c_earthPornReplace = "earthimages";
         List<string> m_subredditNameList = new List<string> { "earthporn" };
 
-        DispatcherTimer m_bandCheckTimer = null;       
+        DispatcherTimer m_bandCheckTimer = null;
 
         bool m_hasChanges = false;
         bool m_ignoreUpdates = false;
@@ -59,7 +59,7 @@ namespace Baconit.Panels.SettingsPanels
             double statusBarHeight = await m_host.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
-            ui_loadingOverlay.Margin = new Thickness(0, -statusBarHeight, 0, 0);            
+            ui_loadingOverlay.Margin = new Thickness(0, -statusBarHeight, 0, 0);
 
             // Star the band detection timer
             BandCheckTimer_Tick(null, null);
@@ -77,7 +77,7 @@ namespace Baconit.Panels.SettingsPanels
 
             m_ignoreUpdates = false;
         }
-        
+
         public async void OnNavigatingFrom()
         {
             // Stop the timer
@@ -102,6 +102,15 @@ namespace Baconit.Panels.SettingsPanels
         }
 
         public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
         {
             // Ignore for now.
         }
@@ -236,7 +245,7 @@ namespace Baconit.Panels.SettingsPanels
             {
                 return;
             }
-            
+
             // When this is toggled we need to make sure we setup the band tile
             ui_loadingOverlay.Show(true, "Connecting To Your Band");
 
@@ -271,7 +280,7 @@ namespace Baconit.Panels.SettingsPanels
                     App.BaconMan.MessageMan.ShowMessageSimple("All Done", "We have successfully removed the Baconit tile from your Band.");
                 }
             }
-        }       
+        }
 
         #endregion
     }

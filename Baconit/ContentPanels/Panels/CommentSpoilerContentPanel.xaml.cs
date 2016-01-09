@@ -1,6 +1,4 @@
-﻿using BaconBackend.DataObjects;
-using BaconBackend.Helpers;
-using Baconit.Interfaces;
+﻿using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,16 +16,19 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace Baconit.FlipViewControls
+namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class CommnetSpoilerFlipControl : UserControl, IFlipViewContentControl
+    public sealed partial class CommentSpoilerContentPanel : UserControl, IContentPanel
     {
-        IFlipViewContentHost m_host;
+        /// <summary>
+        /// Holds a reference to our base.
+        /// </summary>
+        IContentPanelBaseInternal m_base;
 
-        public CommnetSpoilerFlipControl(IFlipViewContentHost host)
+        public CommentSpoilerContentPanel(IContentPanelBaseInternal panelBase)
         {
-            m_host = host;
             this.InitializeComponent();
+            m_base = panelBase;
         }
 
         /// <summary>
@@ -35,23 +36,25 @@ namespace Baconit.FlipViewControls
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(Post post)
+        static public bool CanHandlePost(ContentPanelSource source)
         {
             // Check if we have the spoiler tag.
-            if (!String.IsNullOrWhiteSpace(post.Url) && post.Url.TrimStart().ToLower().StartsWith("/s"))
+            if (!String.IsNullOrWhiteSpace(source.Url) && source.Url.TrimStart().ToLower().StartsWith("/s"))
             {
                 return true;
             }
             return false;
         }
 
+        #region IContentPanel
+
         /// <summary>
-        /// Called when we should show the content
+        /// Fired when we should load the content.
         /// </summary>
-        /// <param name="post"></param>
-        public void OnPrepareContent(Post post)
+        /// <param name="source"></param>
+        public void OnPrepareContent()
         {
-            string spoilerText = post.Url;
+            string spoilerText = m_base.Source.SelfText;
 
             // Parse out the spoiler
             int firstQuote = spoilerText.IndexOf('"');
@@ -64,21 +67,34 @@ namespace Baconit.FlipViewControls
 
             // Set the text
             ui_textBlock.Text = spoilerText;
+
+            m_base.FireOnLoading(false);
         }
 
         /// <summary>
-        /// Called when the  post actually becomes visible
+        /// Fired when we should destroy our content.
         /// </summary>
-        public void OnVisible()
+        public void OnDestroyContent()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when a new host has been added.
+        /// </summary>
+        public void OnHostAdded()
+        {
+            // Ignore for now.
+        }
+
+        /// <summary>
+        /// Fired when this post becomes visible
+        /// </summary>
+        public void OnVisibilityChanged(bool isVisible)
         {
             // Ignore for now
         }
 
-        /// <summary>
-        /// Called when we should destroy the content
-        /// </summary>
-        public void OnDestroyContent()
-        {
-        }
+        #endregion
     }
 }

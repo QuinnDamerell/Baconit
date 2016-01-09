@@ -1,8 +1,8 @@
 ﻿<UserControl x:Class="Baconit.Panels.FlipViewPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:contentPanel="using:Baconit.ContentPanels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:flipControls="using:Baconit.FlipViewControls"
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -288,9 +288,9 @@
                     </Grid.RowDefinitions>
 
                     <!--  The post content control  -->
-                    <flipControls:FlipViewContentControl FlipPost="{Binding FlipPost}"
-                                                         IsVisible="{Binding IsPostVisible}"
-                                                         OnToggleFullscreen="FlipViewContentControl_OnToggleFullscreen" />
+                    <contentPanel:ContentPanelHost IsVisible="{Binding IsPostVisible}"
+                                                   OnToggleFullscreen="FlipViewContentControl_OnToggleFullscreen"
+                                                   SourceId="{Binding Id}" />
 
                     <!--  The post header control  -->
                     <ContentControl Grid.Row="2"
@@ -368,7 +368,7 @@
                                      Visibility="{Binding GildedVisibility}" />
 
                             <Border Grid.Column="1"
-                                    Margin="-3,0,6,0"
+                                    Margin="-2,0,6,0"
                                     Background="{Binding AuthorTextBackground}">
                                 <TextBlock Margin="2,0,2,0"
                                            Foreground="{Binding AuthorTextColor}"

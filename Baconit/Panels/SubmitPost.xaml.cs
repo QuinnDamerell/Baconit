@@ -114,6 +114,15 @@ namespace Baconit.Panels
             // Ignore for now.
         }
 
+        /// <summary>
+        /// Fired when the panel should try to reduce memory if possible. This will only be called
+        /// while the panel isn't visible.
+        /// </summary>
+        public void OnReduceMemory()
+        {
+            // Ignore for now.
+        }
+
         #region Selftext
 
         /// <summary>
@@ -281,7 +290,7 @@ namespace Baconit.Panels
                 case HelperControls.VisualHelperTypes.Code:
                     insertNewLine = "    ";
                     break;
-               
+
             }
 
             // If the insert on new line is not null we need to find the last new line and
@@ -517,7 +526,7 @@ namespace Baconit.Panels
         private async void PrmoptUserForBackout()
         {
             // Make a message to show the user
-            bool? saveChanges = null;            
+            bool? saveChanges = null;
             MessageDialog message = new MessageDialog("It looks like you have a post in progress, what would you like to do with it? If you save a draft you can come back an pick up at anytime.", "Leaving So Fast?");
             message.Commands.Add(new UICommand(
                 "Save a Draft",
@@ -599,7 +608,7 @@ namespace Baconit.Panels
             if(success)
             {
                 ui_lastDraftSaveTime.Text = "Saved at " + DateTime.Now.ToString("hh:mm:ss");
-            }           
+            }
         }
 
         /// <summary>
@@ -649,7 +658,7 @@ namespace Baconit.Panels
                         {
                             IsSelfPostCheckBox_Click(null, null);
                         }
-                    }              
+                    }
                 }
                 else
                 {
