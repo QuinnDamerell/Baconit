@@ -233,6 +233,21 @@ namespace Baconit.ContentPanels.Panels
             m_host = null;
         }
 
+        /// <summary>
+        /// Indicates how large the current panel is.
+        /// </summary>
+        public PanelMemorySizes PanelMemorySize
+        {
+            get
+            {
+                if(Panel != null)
+                {
+                    return Panel.PanelMemorySize;
+                }
+                return PanelMemorySizes.Small;
+            }
+        }
+
         #endregion
 
         #region Create Control

@@ -753,9 +753,78 @@ namespace Baconit.ContentPanels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MemoryMan_OnMemoryCleanUpRequest(object sender, BaconBackend.Managers.OnMemoryCleanupRequestArgs e)
+        private async void MemoryMan_OnMemoryCleanUpRequest(object sender, OnMemoryCleanupRequestArgs e)
         {
+            // Only care if we are medium or higher
+            if(e.CurrentPressure >= MemoryPressureStates.Medium)
+            {
+                // A list of panels to destroy and hosts to tell.
+                List<Tuple<IContentPanelBase, IContentPanelHost>> destroyList = new List<Tuple<IContentPanelBase, IContentPanelHost>>();
 
+                lock(m_currentPanelList)
+                {
+                    // Loop through the list and see if we have any large panels.
+                    foreach(KeyValuePair<string, ContentListElement> pair in m_currentPanelList)
+                    {
+                        // Make sure we have a panel.
+                        if(pair.Value.PanelBase == null)
+                        {
+                            continue;
+                        }
+
+                        bool destroyPanel = false;
+
+                        if(pair.Value.IsVisible)
+                        { 
+                            // If we are visible only destroy the panel if we are at high memory pressure
+                            if (e.CurrentPressure == MemoryPressureStates.HighNoAllocations &&
+                                pair.Value.PanelBase.PanelMemorySize > PanelMemorySizes.Small)
+                            {
+                                destroyPanel = true;
+                            }                        
+                        }
+                        else
+                        {
+                            // The memory pressure is medium or high. If it is hidden and larger 
+                            // than small destroy it.
+                            if (pair.Value.PanelBase.PanelMemorySize > PanelMemorySizes.Small)
+                            {
+                                destroyPanel = true;
+                            }
+                        }
+
+                        // If we need to destroy
+                        if(destroyPanel)
+                        {
+                            // Add to our list.
+                            destroyList.Add(new Tuple<IContentPanelBase, IContentPanelHost>(pair.Value.PanelBase, pair.Value.Host));
+
+                            // Null the panel
+                            pair.Value.PanelBase = null;
+
+                            // Update the state
+                            pair.Value.State = ContentState.Unloaded;
+                        }
+                    }
+                }
+
+                // Now out of lock, kill the panels.
+                foreach(Tuple<IContentPanelBase, IContentPanelHost> tuple in destroyList)
+                {
+                    // If we have a host...
+                    if (tuple.Item2 != null)
+                    {
+                        // Remove from the host
+                        await FireOnRemovePanel(tuple.Item2, tuple.Item1);
+
+                        // Tell the panel it was unloaded.
+                        FireOnPanelUnloaded(tuple.Item2);
+                    }
+
+                    // And Destroy the panel
+                    await FireOnDestroyContent(tuple.Item1);
+                }
+            }
         }
 
         /// <summary>

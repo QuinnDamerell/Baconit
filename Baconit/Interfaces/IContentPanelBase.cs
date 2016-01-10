@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 
 namespace Baconit.Interfaces
 {
+    /// <summary>
+    /// Indicates how large the panel is in memory.
+    /// </summary>
+    public enum PanelMemorySizes
+    {
+        Small,
+        Medium,
+        Large
+    }
+
     public interface IContentPanelBase
     {
         /// <summary>
@@ -23,6 +33,11 @@ namespace Baconit.Interfaces
         /// The error text if we have it.
         /// </summary>
         string ErrorText { get; }
+
+        /// <summary>
+        /// Indicates how large the panel is in memory.
+        /// </summary>
+        PanelMemorySizes PanelMemorySize { get; }
 
         /// <summary>
         /// The source for the panel.

@@ -51,6 +51,18 @@ namespace Baconit.ContentPanels.Panels
         #region IContentPanel
 
         /// <summary>
+        /// Indicates how large the panel is in memory.
+        /// </summary>
+        public PanelMemorySizes PanelMemorySize
+        {
+            get
+            {
+                // #todo can we figure this out?
+                return PanelMemorySizes.Small;
+            }
+        }
+
+        /// <summary>
         /// Fired when we should load the content.
         /// </summary>
         /// <param name="source"></param>
