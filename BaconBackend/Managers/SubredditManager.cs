@@ -178,21 +178,16 @@ namespace BaconBackend.Managers
         /// <returns>Returns null if the subreddit get fails.</returns>
         public async Task<Subreddit> GetSubredditFromWebByDisplayName(string displayName)
         {
+            SubredditAbout subredditData = null;
             Subreddit foundSubreddit = null;
             try
             {
                 // Make the call
                 string jsonResponse = await m_baconMan.NetworkMan.MakeRedditGetRequestAsString($"/r/{displayName}/about/.json");
 
-                // Try to parse out the subreddit
-                string subredditData = MiscellaneousHelper.ParseOutRedditDataElement(jsonResponse);
-                if(subredditData == null)
-                {
-                    throw new Exception("Failed to parse out data object");
-                }
-
                 // Parse the new subreddit
-                foundSubreddit = await Task.Run(() => JsonConvert.DeserializeObject<Subreddit>(subredditData));
+                subredditData = await Task.Run(() => JsonConvert.DeserializeObject<SubredditAbout>(jsonResponse));
+                foundSubreddit = subredditData.SubredditInfo;
             }
             catch (Exception e)
             {
@@ -210,7 +205,7 @@ namespace BaconBackend.Managers
 
                 // Format the subreddit
                 foundSubreddit.Description = WebUtility.HtmlDecode(foundSubreddit.Description);
-            }        
+            }
 
             return foundSubreddit;
         }
