@@ -381,7 +381,7 @@ namespace BaconBackend.Helpers
         /// <summary>
         /// Attempts to parse out a reddit object from a reddit data object.
         /// </summary>
-        /// <param name="orgionalJson"></param>
+        /// <param name="originalJson"></param>
         /// <returns></returns>
         public static string ParseOutRedditDataElement(string originalJson)
         {
