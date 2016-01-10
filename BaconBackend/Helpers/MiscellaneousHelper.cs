@@ -383,19 +383,19 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="orgionalJson"></param>
         /// <returns></returns>
-        public static string ParseOutRedditDataElement(string orgionalJson)
+        public static string ParseOutRedditDataElement(string originalJson)
         {
             try
             {
                 // Try to parse out the object
-                int dataPos = orgionalJson.IndexOf("\"data\":");
+                int dataPos = originalJson.IndexOf("\"data\":");
                 if (dataPos == -1) return null;
-                int dataStartPos = orgionalJson.IndexOf('{', dataPos + 7);
+                int dataStartPos = originalJson.IndexOf('{', dataPos + 7);
                 if (dataPos == -1) return null;
-                int dataEndPos = orgionalJson.IndexOf("}", dataStartPos);
-                if (dataPos == -1) return null;
-
-                return orgionalJson.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
+                // "data" is a property of the initial object, so the substring
+                // for "data" should not have the } that closes the initial Json.
+                // The } of the original object is always the last character.
+                return originalJson.Substring(dataStartPos, (originalJson.Length - dataStartPos - 1));
             }
             catch(Exception)
             {
