@@ -41,13 +41,23 @@
                                TextTrimming="WordEllipsis"
                                TextWrapping="Wrap"
                                Visibility="{x:Bind ShowMinorText}" />
+
+                    <!--
+                        Note: we set IsHitTestVisible to false so people don't select text
+                        instead of tapping the item. This isn't ideal but the markdown box can't do any better right now.
+                    -->
                     <universalMarkdown:MarkdownTextBlock Grid.Row="2"
                                                          Foreground="#999999"
+                                                         IsHitTestVisible="False"
                                                          Markdown="{x:Bind MarkdownText}"
                                                          Visibility="{x:Bind ShowMarkdownText}" />
+
+
+
                     <TextBlock Grid.Row="3"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Text="{x:Bind MinorAccentText}" />
+
                 </Grid>
 
                 <Border Margin="12" Visibility="{x:Bind ShowShowMore}">
