@@ -52,8 +52,6 @@
                                                          Markdown="{x:Bind MarkdownText}"
                                                          Visibility="{x:Bind ShowMarkdownText}" />
 
-
-
                     <TextBlock Grid.Row="3"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Text="{x:Bind MinorAccentText}" />
