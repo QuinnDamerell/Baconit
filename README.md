@@ -7,11 +7,12 @@ The highest rated reddit client for Windows Phone has been rewritten from the gr
 * [Baconit Development Subreddit](https://www.reddit.com/r/BaconitDev)
 
 ##Screenshots
-![Desktop 1](https://github.com/QuinnDamerell/Baconit/blob/master/Media/DesktopScreens/Desktop1.png)
-![Desktop 2](https://github.com/QuinnDamerell/Baconit/blob/master/Media/DesktopScreens/Desktop2.png)
-![Desktop 3](https://github.com/QuinnDamerell/Baconit/blob/master/Media/DesktopScreens/Desktop3.png)
-![Mobile 1](https://github.com/QuinnDamerell/Baconit/blob/master/Media/MobileScreens/Phone2.png)
-![Mobile 2](https://github.com/QuinnDamerell/Baconit/blob/master/Media/MobileScreens/Phone3.png)
+![Desktop 1](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop1.png)
+![Desktop 2](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop2.png)
+![Desktop 3](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop3.png)
+![Mobile 1](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Phone1.png)
+![Mobile 2](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Phone2.png)
+![Mobile 3](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Phone3.png)
 
 ## Development Community
 Our [development subreddit] (https://www.reddit.com/r/BaconitDev) is to root of all development activity. We are always excited to welcome new members with any technical skill level or technical background. The subreddit is a good place to start learning about the Baconit project and how you can contribute.
