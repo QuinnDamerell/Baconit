@@ -1429,7 +1429,7 @@ namespace Baconit.Panels
             App.BaconMan.TelemetryMan.ReportEvent(this, "CommentPermalinkTapped");
         }
 
-        private void CommentCollpase_Tapped(object sender, TappedRoutedEventArgs e)
+        private void CommentCollapse_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Animate the text
             AnimateText((FrameworkElement)sender);
