@@ -351,6 +351,20 @@ namespace BaconBackend.Managers
                 return postUrl;
             }
 
+            // We also should look for something like quinn.com/image/hotStuff.jpg?argument=arg
+            // But we must be careful not to just match anything with png or jpg in it.
+            int postOfLastSlash = postUrlLower.LastIndexOf('/');
+            if(postOfLastSlash != -1)
+            {
+                string endingStr = postUrlLower.Substring(postOfLastSlash);
+
+                // Check if we can find anything in the ending string.
+                if (postUrlLower.Contains(".png?") || postUrlLower.Contains(".jpg?") || postUrlLower.Contains(".bmp?"))
+                {
+                    return postUrl;
+                }
+            }
+
             // See if it is imgur
             if (postUrlLower.Contains("imgur.com/"))
             {

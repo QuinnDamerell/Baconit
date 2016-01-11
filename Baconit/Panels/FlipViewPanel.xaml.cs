@@ -1545,7 +1545,7 @@ namespace Baconit.Panels
         {
             if(!App.BaconMan.UiSettingsMan.FlipView_ShowCommentScrollTip)
             {
-                //return;
+                return;
             }
 
             // Never show it again.
