@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:dataObjects="using:BaconBackend.DataObjects"             
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
@@ -11,7 +12,7 @@
              mc:Ignorable="d">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="PostItemDataTemplate">
+        <DataTemplate x:Key="PostItemDataTemplate" x:DataType="dataObjects:Post">
             <Grid>
                 <StackPanel Margin="0,12,6,0"
                             HorizontalAlignment="Stretch"
@@ -20,32 +21,32 @@
                     <Grid>
                         <TextBlock Margin="0,0,10,0"
                                    HorizontalAlignment="Left"
-                                   Foreground="{Binding TitleTextBrush}"
-                                   MaxLines="{Binding TitleMaxLines}"
-                                   Text="{Binding Title}"
+                                   Foreground="{x:Bind TitleTextBrush}"
+                                   MaxLines="{x:Bind TitleMaxLines}"
+                                   Text="{x:Bind Title}"
                                    TextWrapping="Wrap" />
                     </Grid>
                     <StackPanel>
                         <TextBlock Margin="0,0,10,0"
                                    HorizontalAlignment="Left"
                                    Foreground="#939393"
-                                   Text="{Binding SubTextLine1}"
+                                   Text="{x:Bind SubTextLine1}"
                                    TextTrimming="WordEllipsis" />
                         <StackPanel Margin="0,0,10,0"
                                     HorizontalAlignment="Left"
                                     Orientation="Horizontal">
                             <TextBlock Height="27"
-                                       Margin="{Binding NewCommentMargin}"
-                                       Foreground="{Binding NewCommentColor}"
-                                       Text="{Binding NewCommentText}" />
+                                       Margin="{x:Bind NewCommentMargin}"
+                                       Foreground="{x:Bind NewCommentColor}"
+                                       Text="{x:Bind NewCommentText}" />
                             <StackPanel Height="27" Orientation="Horizontal">
                                 <TextBlock Margin="0,0,4,0"
                                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                           Text="{Binding SubTextLine2PartOne}"
+                                           Text="{x:Bind SubTextLine2PartOne}"
                                            TextTrimming="WordEllipsis" />
                                 <TextBlock Margin="0"
-                                           Foreground="{Binding DarkenedAccentColorBrush}"
-                                           Text="{Binding SubTextLine2PartTwo}"
+                                           Foreground="{x:Bind DarkenedAccentColorBrush}"
+                                           Text="{x:Bind SubTextLine2PartTwo}"
                                            TextTrimming="WordEllipsis" />
                             </StackPanel>
                         </StackPanel>
@@ -54,28 +55,28 @@
                         <Grid Margin="0,0,8,0"
                               HorizontalAlignment="Left"
                               Background="#107c10"
-                              Visibility="{Binding StickyVisibility}">
+                              Visibility="{x:Bind StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
                                        Text="Sticky" />
                         </Grid>
                         <Grid HorizontalAlignment="Left"
-                              Background="{Binding DarkenedAccentColorBrush}"
-                              Visibility="{Binding FlairVisibility}">
+                              Background="{x:Bind DarkenedAccentColorBrush}"
+                              Visibility="{x:Bind FlairVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="{Binding LinkFlairText}" />
+                                       Text="{x:Bind LinkFlairText}" />
                         </Grid>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="CommentItemDataTemplate">
+        <DataTemplate x:Key="CommentItemDataTemplate" x:DataType="dataObjects:Comment">
             <Border Margin="0,12,0,12"
                     VerticalAlignment="Stretch"
-                    Background="{Binding CommentBackgroundColor}"
-                    BorderBrush="{Binding CommentBorderColor}"
+                    Background="{x:Bind CommentBackgroundColor}"
+                    BorderBrush="{x:Bind CommentBorderColor}"
                     BorderThickness="2,0,0,0"
                     Padding="6,0,15,0">
 
@@ -95,25 +96,25 @@
                         </Grid.ColumnDefinitions>
 
                         <Grid Margin="0,0,6,2">
-                            <TextBlock Foreground="{Binding AuthorTextColor}" Text="{Binding Subreddit}" />
+                            <TextBlock Foreground="{x:Bind AuthorTextColor}" Text="{x:Bind Subreddit}" />
                         </Grid>
                         <TextBlock Grid.Column="1"
                                    Margin="0,0,8,0"
-                                   Foreground="{Binding FlairBrush}"
-                                   Text="{Binding AuthorFlairText}"
-                                   Visibility="{Binding ShowFlairText}" />
+                                   Foreground="{x:Bind FlairBrush}"
+                                   Text="{x:Bind AuthorFlairText}"
+                                   Visibility="{x:Bind ShowFlairText}" />
                         <TextBlock Grid.Column="2"
                                    Margin="0,0,8,0"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{Binding ScoreText}" />
+                                   Text="{x:Bind ScoreText}" />
                         <TextBlock Grid.Column="3"
                                    Margin="0,0,8,0"
                                    Foreground="#999999"
-                                   Text="{Binding TimeString}" />
+                                   Text="{x:Bind TimeString}" />
                     </Grid>
 
                     <universalMarkdown:MarkdownTextBlock Grid.Row="1"
-                                                         Markdown="{Binding Body}"
+                                                         Markdown="{x:Bind Body}"
                                                          OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                     <Grid Grid.Row="2"

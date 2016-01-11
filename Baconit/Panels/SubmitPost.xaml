@@ -23,7 +23,7 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="0.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <DoubleAnimation Duration="00:00:00.2"
@@ -32,7 +32,7 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="1.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -64,7 +64,7 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="1.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <DoubleAnimation Duration="00:00:00.2"
@@ -73,7 +73,7 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="0.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"

@@ -11,7 +11,7 @@
     <AssemblyName>Baconit</AssemblyName>
     <DefaultLanguage>en-us</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
@@ -108,7 +108,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContentPanels\await.cs" />
     <Compile Include="ContentPanels\ContentPanelHost.xaml.cs">
       <DependentUpon>ContentPanelHost.xaml</DependentUpon>
     </Compile>

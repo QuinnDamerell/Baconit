@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataObjects="using:BaconBackend.DataObjects"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
@@ -11,19 +12,19 @@
              mc:Ignorable="d">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="SearchResultListItem">
+        <DataTemplate x:Key="SearchResultListItem" x:DataType="dataObjects:SearchResult">
             <Grid>
                 <!--  The Search Header  -->
                 <Border Background="#0A0A0A"
                         Padding="12,12,6,12"
-                        Visibility="{Binding ShowHeader}">
+                        Visibility="{x:Bind ShowHeader}">
                     <TextBlock Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Text="{Binding HeaderText}" />
+                               Text="{x:Bind HeaderText}" />
                 </Border>
 
                 <!--  The major and minor text blocks (used for subreddits and users)  -->
-                <Grid Margin="12" Visibility="{Binding ShowText}">
+                <Grid Margin="12" Visibility="{x:Bind ShowText}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
@@ -32,28 +33,28 @@
                     </Grid.RowDefinitions>
                     <TextBlock FontSize="18"
                                MaxLines="2"
-                               Text="{Binding MajorText}" />
+                               Text="{x:Bind MajorText}" />
                     <TextBlock Grid.Row="1"
                                Foreground="#999999"
                                MaxLines="9"
-                               Text="{Binding MinorText}"
+                               Text="{x:Bind MinorText}"
                                TextTrimming="WordEllipsis"
                                TextWrapping="Wrap"
-                               Visibility="{Binding ShowMinorText}" />
+                               Visibility="{x:Bind ShowMinorText}" />
                     <universalMarkdown:MarkdownTextBlock Grid.Row="2"
                                                          Foreground="#999999"
-                                                         Markdown="{Binding MarkdownText}"
-                                                         Visibility="{Binding ShowMarkdownText}" />
+                                                         Markdown="{x:Bind MarkdownText}"
+                                                         Visibility="{x:Bind ShowMarkdownText}" />
                     <TextBlock Grid.Row="3"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                               Text="{Binding MinorAccentText}" />
+                               Text="{x:Bind MinorAccentText}" />
                 </Grid>
 
-                <Border Margin="12" Visibility="{Binding ShowShowMore}">
+                <Border Margin="12" Visibility="{x:Bind ShowShowMore}">
                     <TextBlock Text="show more" />
                 </Border>
 
-                <Border Margin="12" Visibility="{Binding ShowNoResults}">
+                <Border Margin="12" Visibility="{x:Bind ShowNoResults}">
                     <TextBlock Foreground="#999999" Text="no results" />
                 </Border>
             </Grid>

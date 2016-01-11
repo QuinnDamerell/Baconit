@@ -137,11 +137,6 @@ namespace Baconit.Panels
         {
             this.InitializeComponent();
 
-            // Set the comment box invisible for now. It should hide itself
-            // when created but it doesn't seem to work. So for now just hide it
-            // and when the first person tries to open it we will show it.
-            ui_commmentBox.Visibility = Visibility.Collapsed;
-
             // Create a unique id for this
             m_uniqueId = DateTime.Now.Ticks.ToString();
         }
@@ -772,6 +767,8 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void PostCommentOn_OnIconTapped(object sender, EventArgs e)
         {
+            // Important! Call find name so the deferred loaded element is created!
+            FindName("ui_commmentBox");
             Post post = (Post)((FrameworkElement)sender).DataContext;
             ui_commmentBox.Visibility = Visibility.Visible;
             ui_commmentBox.ShowBox(post, "t3_"+post.Id);
@@ -838,7 +835,10 @@ namespace Baconit.Panels
             m_collector.MarkPostRead((Post)ui_flipView.SelectedItem, ui_flipView.SelectedIndex);
 
             // Hide the comment box if shown
-            ui_commmentBox.HideBox();
+            if (ui_commmentBox != null)
+            {
+                ui_commmentBox.HideBox();
+            }
 
             // Reset the scroll pos
             m_lastKnownScrollOffset = 0;
@@ -1092,6 +1092,12 @@ namespace Baconit.Panels
             // Find the header size for this post
             int currentScrollAera = GetCurrentScrollArea(post);
 
+            // This will return -1 if we can't get this yet, so just get out of here.
+            if(currentScrollAera == -1)
+            {
+                return;
+            }
+
             // Get the height of the current post header
             double currentPostHeaderSize = 0;
             lock (m_flipViewStoryHeaders)
@@ -1174,13 +1180,19 @@ namespace Baconit.Panels
             // Get the screen size, account for the comment box if it is open.
             int currentScrollAera = GetCurrentScrollArea();
 
+            // This will return -1 if we can't get this number yet.
+            if(currentScrollAera == -1)
+            {
+                return;
+            }
+
             // Lock the post list
             lock (m_postsLists)
             {
                 // Set up the objects for the UI
                 foreach (Post post in m_postsLists)
                 {
-                    if(post.HeaderSize != currentScrollAera)
+                    //if(post.HeaderSize != currentScrollAera)
                     {
                         post.HeaderSize = currentScrollAera;
                     }
@@ -1203,14 +1215,21 @@ namespace Baconit.Panels
             // Get the control size
             int screenSize = (int)ui_contentRoot.ActualHeight;
 
+            // Make sure we are ready.
+            if(ui_contentRoot.ActualHeight == 0)
+            {
+                // If not return -1.
+                return -1;
+            }
+
             // If the comment box is open remove the height of it.
-            if (ui_commmentBox.IsOpen)
+            if (ui_commmentBox != null && ui_commmentBox.IsOpen)
             {
                 screenSize -= (int)ui_commmentBox.ActualHeight;
             }
 
             // If post is null back out here.
-            if(post == null)
+            if (post == null)
             {
                 return screenSize;
             }
@@ -1341,8 +1360,8 @@ namespace Baconit.Panels
                 return;
             }
 
-            // Show the comment box
-            ui_commmentBox.Visibility = Visibility.Visible;
+            // Show the comment box, call find element to make sure this is created.
+            FindName("ui_commmentBox");
             ui_commmentBox.ShowBox(post, "t1_" +comment.Id);
         }
 

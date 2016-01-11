@@ -20,7 +20,7 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="0.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -40,11 +40,7 @@
                                          From="1.0"
                                          Storyboard.TargetName="ui_progressHolder"
                                          Storyboard.TargetProperty="Opacity"
-                                         To="0.0">
-                            <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
+                                         To="0.0"/>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
                                                        Storyboard.TargetName="ui_progressHolder"
                                                        Storyboard.TargetProperty="Visibility">
@@ -90,13 +86,13 @@
                                          Storyboard.TargetProperty="Opacity"
                                          To="0.0">
                             <DoubleAnimation.EasingFunction>
-                                <QuinticEase EasingMode="EaseIn" />
+                                <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
                                                        Storyboard.TargetName="ui_nsfwBlockRoot"
                                                        Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame KeyTime="00:00:00.3">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.5">
                                 <DiscreteObjectKeyFrame.Value>
                                     <Visibility>Collapsed</Visibility>
                                 </DiscreteObjectKeyFrame.Value>

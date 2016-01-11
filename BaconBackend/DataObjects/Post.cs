@@ -17,10 +17,10 @@ namespace BaconBackend.DataObjects
 {
     /// <summary>
     /// A reddit post, either of a link or of text.
-    /// A post has a score, which is the total number of upvotes - total number of downvotes.
+    /// A post has a score, which is the total number of up votes - total number of down votes.
     /// </summary>
     [JsonObject(MemberSerialization.OptOut)]
-    public class Post : INotifyPropertyChanged
+    public class Post : BindableBase
     {
         /// <summary>
         /// The comment's unique ID. Prefixed with "t3_", this
@@ -55,7 +55,7 @@ namespace BaconBackend.DataObjects
         public string Author { get; set; }
 
         /// <summary>
-        /// The comment's score: total upvotes - total downvotes.
+        /// The comment's score: total up votes - total down votes.
         /// </summary>
         [JsonProperty(PropertyName = "score")]
         public int Score
@@ -66,8 +66,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_score = value;
-                NotifyPropertyChanged(nameof(Score));
+                this.SetProperty(ref this.m_score, value);
             }
         }
         [JsonIgnore]
@@ -155,10 +154,12 @@ namespace BaconBackend.DataObjects
                 return m_likes;
             }
             set
-            {
-                m_likes = value;
-                NotifyPropertyChanged(nameof(DownVoteColor));
-                NotifyPropertyChanged(nameof(UpVoteColor));
+            {                
+                if (this.SetProperty(ref this.m_likes, value))
+                {
+                    this.OnPropertyChanged(nameof(DownVoteColor));
+                    this.OnPropertyChanged(nameof(UpVoteColor));
+                }           
             }
         }
         [JsonIgnore]
@@ -176,8 +177,10 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_isSaved = value;
-                NotifyPropertyChanged(nameof(IsSavedMenuText));
+                if(this.SetProperty(ref this.m_isSaved, value))
+                {
+                    OnPropertyChanged(nameof(IsSavedMenuText));
+                }
             }
         }
         [JsonIgnore]
@@ -195,8 +198,10 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_isHidden = value;
-                NotifyPropertyChanged(nameof(IsHiddenMenuText));
+                if (this.SetProperty(ref this.m_isHidden, value))
+                {
+                    OnPropertyChanged(nameof(IsHiddenMenuText));
+                }
             }
         }
         [JsonIgnore]
@@ -214,8 +219,10 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_commentSortType = value;
-                NotifyPropertyChanged(nameof(CommentCurrentSortTypeString));
+                if(SetProperty(ref m_commentSortType, value))
+                {
+                    OnPropertyChanged(nameof(CommentCurrentSortTypeString));
+                }
             }
         }
         [JsonIgnore]
@@ -314,8 +321,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_isPostVisible = value;
-                NotifyPropertyChanged(nameof(IsPostVisible));
+                SetProperty(ref m_isPostVisible, value);
             }
         }
         [JsonIgnore]
@@ -333,10 +339,11 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_newCommentText = value;
-                NotifyPropertyChanged(nameof(NewCommentText));
-                NotifyPropertyChanged(nameof(NewCommentColor));
-                NotifyPropertyChanged(nameof(NewCommentMargin));
+                if(SetProperty(ref m_newCommentText, value))
+                {
+                    OnPropertyChanged(nameof(NewCommentColor));
+                    OnPropertyChanged(nameof(NewCommentMargin));
+                }
             }
         }
         [JsonIgnore]
@@ -354,8 +361,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_imageVisibility = value;
-                NotifyPropertyChanged(nameof(ImageVisibility));
+                SetProperty(ref m_imageVisibility, value);
             }
         }
         [JsonIgnore]
@@ -373,8 +379,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_image = value;
-                NotifyPropertyChanged(nameof(Image));
+                SetProperty(ref m_image, value);
             }
         }
         [JsonIgnore]
@@ -394,7 +399,7 @@ namespace BaconBackend.DataObjects
             set
             {
                 m_titleTextColor = value;
-                NotifyPropertyChanged(nameof(TitleTextBrush));
+                OnPropertyChanged(nameof(TitleTextBrush)); 
             }
         }
         [JsonIgnore]
@@ -412,8 +417,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_titleMaxLines = value;
-                NotifyPropertyChanged(nameof(TitleMaxLines));
+                SetProperty(ref m_titleMaxLines, value);
             }
         }
         [JsonIgnore]
@@ -625,8 +629,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_headerSize = value;
-                NotifyPropertyChanged(nameof(HeaderSize));
+                SetProperty(ref m_headerSize, value);
             }
         }
         [JsonIgnore]
@@ -644,8 +647,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_comments = value;
-                NotifyPropertyChanged(nameof(Comments));
+                SetProperty(ref m_comments, value);
             }
         }
         [JsonIgnore]
@@ -663,8 +665,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_verticalScrollBarVisibility = value;
-                NotifyPropertyChanged(nameof(VerticalScrollBarVisibility));
+                SetProperty(ref m_verticalScrollBarVisibility, value);
             }
         }
         [JsonIgnore]
@@ -683,8 +684,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_showCommentLoadingMessage = value;
-                NotifyPropertyChanged(nameof(ShowCommentLoadingMessage));
+                SetProperty(ref m_showCommentLoadingMessage, value);
             }
         }
         [JsonIgnore]
@@ -702,8 +702,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_showCommentsErrorMessage = value;
-                NotifyPropertyChanged(nameof(ShowCommentsErrorMessage));
+                SetProperty(ref m_showCommentsErrorMessage, value);
             }
         }
         [JsonIgnore]
@@ -721,8 +720,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipViewMenuButton = value;
-                NotifyPropertyChanged(nameof(FlipViewMenuButton));
+                SetProperty(ref m_flipViewMenuButton, value);
             }
         }
         [JsonIgnore]
@@ -741,8 +739,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipViewStickyHeaderVis = value;
-                NotifyPropertyChanged(nameof(FlipViewStickyHeaderVis));
+                SetProperty(ref m_flipViewStickyHeaderVis, value);
             }
         }
         [JsonIgnore]
@@ -760,8 +757,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipViewStickyHeaderMargin = value;
-                NotifyPropertyChanged(nameof(FlipViewStickyHeaderMargin));
+                SetProperty(ref m_flipViewStickyHeaderMargin, value);
             }
         }
         [JsonIgnore]
@@ -780,8 +776,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipViewShowEntireThreadMessage = value;
-                NotifyPropertyChanged(nameof(FlipViewShowEntireThreadMessage));
+                SetProperty(ref m_flipViewShowEntireThreadMessage, value);
             }
         }
         [JsonIgnore]
@@ -805,8 +800,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_commentingOnId = value;
-                NotifyPropertyChanged(nameof(CommentingOnId));
+                SetProperty(ref m_commentingOnId, value);
             }
         }
         [JsonIgnore]
@@ -830,8 +824,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipviewHeaderVisibility = value;
-                NotifyPropertyChanged(nameof(FlipviewHeaderVisibility));
+                SetProperty(ref m_flipviewHeaderVisibility, value);               
             }
         }
         [JsonIgnore]
@@ -849,8 +842,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_headerCollpaseToggleAngle = value;
-                NotifyPropertyChanged(nameof(HeaderCollpaseToggleAngle));
+                SetProperty(ref m_headerCollpaseToggleAngle, value);
             }
         }
         [JsonIgnore]
@@ -869,8 +861,7 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_currentCommentCount = value;
-                NotifyPropertyChanged(nameof(CurrentCommentShowingCount));
+                SetProperty(ref m_currentCommentCount, value);
             }
         }
         [JsonIgnore]
@@ -888,9 +879,10 @@ namespace BaconBackend.DataObjects
             }
             set
             {
-                m_flipViewShowLoadingMoreComments = value;
-                NotifyPropertyChanged(nameof(FlipViewShowLoadingMoreComments));
-                NotifyPropertyChanged(nameof(FlipViewShowLoadingMoreCommentsVis));
+                if (SetProperty(ref m_flipViewShowLoadingMoreComments, value))
+                {
+                    OnPropertyChanged(nameof(FlipViewShowLoadingMoreCommentsVis));
+                }
             }
         }
         [JsonIgnore]
@@ -908,25 +900,6 @@ namespace BaconBackend.DataObjects
             }
         }
 
-
         #endregion
-
-        /// <summary>
-        /// UI property changed handler that's called when a property of this comment is changed.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Called to indicate a property of this object has changed.
-        /// </summary>
-        /// <param name="propertyName">Name of the changed property.</param>
-        private void NotifyPropertyChanged(String propertyName)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:dataObjects="using:BaconBackend.DataObjects"             
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
@@ -12,9 +13,9 @@
              mc:Ignorable="d">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="MessageListItem">
+        <DataTemplate x:Key="MessageListItem" x:DataType="dataObjects:Message">
             <Grid Margin="4,12,12,12"
-                  BorderBrush="{Binding BorderColor}"
+                  BorderBrush="{x:Bind BorderColor, Mode=OneWay}"
                   BorderThickness="2,0,0,0"
                   Padding="6,0,0,0">
                 <Grid.RowDefinitions>
@@ -31,15 +32,15 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Margin="0,0,8,0"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                               Text="{Binding HeaderFirst}" />
+                               Text="{x:Bind HeaderFirst}" />
                     <TextBlock Grid.Column="1"
                                Margin="0,0,8,0"
                                Foreground="#999999"
-                               Text="{Binding HeaderSecond}" />
+                               Text="{x:Bind HeaderSecond}" />
                 </Grid>
 
                 <universalMarkdown:MarkdownTextBlock Grid.Row="1"
-                                                     Markdown="{Binding Body}"
+                                                     Markdown="{x:Bind Body}"
                                                      OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped" />
 
                 <!--  Message buttons  -->
@@ -52,12 +53,12 @@
                     <helperControls:SimpleTextButton ButtonText="reply" OnButtonTapped="Reply_Tapped" />
 
                     <!--  Mark as read button  -->
-                    <helperControls:SimpleTextButton ButtonText="{Binding MarkAsReadText}" OnButtonTapped="MarkAsRead_Tapped" />
+                    <helperControls:SimpleTextButton ButtonText="{x:Bind MarkAsReadText, Mode=OneWay}" OnButtonTapped="MarkAsRead_Tapped" />
 
                     <!--  View In Context  -->
                     <helperControls:SimpleTextButton ButtonText="view comment in context"
                                                      OnButtonTapped="ViewContext_OnButtonTapped"
-                                                     Visibility="{Binding ShowViewContextUi}" />
+                                                     Visibility="{x:Bind ShowViewContextUi}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
