@@ -51,7 +51,7 @@ namespace Baconit.ContentPanels.Panels
         /// <returns></returns>
         static public bool CanHandlePost(ContentPanelSource source)
         {
-            // See if we can find a imgur or gfycat gif
+            // See if we can find a imgur, gfycat gif, or a normal gif we can send to gfycat.
             if (String.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && String.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) && String.IsNullOrWhiteSpace(GetGifUrl(source.Url)))
             {
                 return false;
@@ -93,6 +93,7 @@ namespace Baconit.ContentPanels.Panels
 
                     if(String.IsNullOrWhiteSpace(gifUrl))
                     {
+                        // If these failed it might just be a gif. try to send it to gfycat for conversion.
                         gifUrl = await ConvertGifUsingGfycat(m_base.Source.Url);
                     }
                 }
