@@ -32,25 +32,44 @@ namespace BaconBackend.Managers
                 return;
             }
 
+            // The current app version.
+            PackageVersion curAppVersion = Package.Current.Id.Version;
+
+            // Check if the current version of the app is larger than the version we 
+            // last checked on. (meaning we were updated)
+            bool forceUpdateDueAppVersion = false;
+            if(LastVersionCheckedOn == null || LastVersionCheckedOn.Major < curAppVersion.Major || LastVersionCheckedOn.Minor < curAppVersion.Minor || LastVersionCheckedOn.Build < curAppVersion.Build || LastVersionCheckedOn.Revision < curAppVersion.Revision)
+            {
+                forceUpdateDueAppVersion = true;
+            }
+
             // Check if we should update
             TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdate;
-            if(timeSinceLastUpdate.TotalHours > c_minHoursBetweenCheck)
+            if(timeSinceLastUpdate.TotalHours > c_minHoursBetweenCheck || forceUpdateDueAppVersion)
             {
                 // Get the new message
                 MessageOfTheDay newMotd = await GetNewMessage();
 
                 // Make sure everything went well
-                if(newMotd != null)
+                if (newMotd != null)
                 {
-                    // Check for an update
-                    if(LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
+                    // Since we successfully got a MOTD update the last update time
+                    // and app version.
+                    LastUpdate = DateTime.Now;                    
+                    LastVersionCheckedOn = new AppVersion()
                     {
-                        // Get the current package version.
-                        PackageVersion curVer = Package.Current.Id.Version;
+                        Major = curAppVersion.Major,
+                        Minor = curAppVersion.Minor,
+                        Build = curAppVersion.Build,
+                        Revision = curAppVersion.Revision
+                    };
 
+                    // Check for a difference
+                    if (LastMotd == null || !newMotd.UniqueId.Equals(LastMotd.UniqueId))
+                    {
                         // There is an update! If we have a version number in the MOTD make sure we are >= the min.
                         if ((newMotd.MinVerMajor == 0)
-                            || (curVer.Major >= newMotd.MinVerMajor && curVer.Minor >= newMotd.MinVerMinor && curVer.Build >= newMotd.MinVerBuild && curVer.Revision >= newMotd.MinVerRev))
+                            || (curAppVersion.Major >= newMotd.MinVerMajor && curAppVersion.Minor >= newMotd.MinVerMinor && curAppVersion.Build >= newMotd.MinVerBuild && curAppVersion.Revision >= newMotd.MinVerRev))
                         {
                             // Make sure we have been opened enough.
                             if (m_baconMan.UiSettingsMan.AppOpenedCount > newMotd.MinOpenTimes)
@@ -72,12 +91,11 @@ namespace BaconBackend.Managers
                                     }
                                 }
 
-                                // Update the message and last updated time
-                                LastUpdate = DateTime.Now;
+                                // Update that we have processed this newest MOTD.
                                 LastMotd = newMotd;
                             }
                         }
-                    }
+                    }             
                 }
             }
         }
@@ -159,6 +177,30 @@ namespace BaconBackend.Managers
             }
         }
         private MessageOfTheDay m_lastMotd = null;
+
+        /// <summary>
+        /// The last version of the app we checked on.
+        /// </summary>
+        public AppVersion LastVersionCheckedOn
+        {
+            get
+            {
+                if (m_LastVersionCheckedOn == null)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("MessageOfTheDayManager.LastVersionCheckedOn"))
+                    {
+                        m_LastVersionCheckedOn = m_baconMan.SettingsMan.ReadFromRoamingSettings<AppVersion>("MessageOfTheDayManager.LastVersionCheckedOn");
+                    }
+                }
+                return m_LastVersionCheckedOn;
+            }
+            private set
+            {
+                m_LastVersionCheckedOn = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<AppVersion>("MessageOfTheDayManager.LastVersionCheckedOn", m_LastVersionCheckedOn);
+            }
+        }
+        private AppVersion m_LastVersionCheckedOn = null;
 
         #endregion
     }

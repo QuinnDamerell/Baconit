@@ -102,6 +102,7 @@
     <Compile Include="Collectors\SearchPostCollector.cs" />
     <Compile Include="Collectors\SearchSubredditCollector.cs" />
     <Compile Include="Collectors\PostCollector.cs" />
+    <Compile Include="DataObjects\AppVersion.cs" />
     <Compile Include="DataObjects\BindableBase.cs" />
     <Compile Include="DataObjects\Comment.cs" />
     <Compile Include="DataObjects\Message.cs" />
