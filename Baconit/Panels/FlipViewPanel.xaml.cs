@@ -1545,7 +1545,7 @@ namespace Baconit.Panels
         {
             if(!App.BaconMan.UiSettingsMan.FlipView_ShowCommentScrollTip)
             {
-                return;
+                //return;
             }
 
             // Never show it again.
@@ -1553,7 +1553,7 @@ namespace Baconit.Panels
 
             // Create the tip UI, add it to the UI and show it.
             m_commentTipPopUp = new TipPopUp();
-            m_commentTipPopUp.Margin = new Thickness(0, 0, 0, 60);
+            m_commentTipPopUp.Margin = new Thickness(0, 0, 0, 90);
             m_commentTipPopUp.VerticalAlignment = VerticalAlignment.Bottom;
             m_commentTipPopUp.TipHideComplete += CommentTipPopUp_TipHideComplete;
             ui_contentRoot.Children.Add(m_commentTipPopUp);
