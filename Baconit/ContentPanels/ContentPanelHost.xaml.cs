@@ -228,7 +228,8 @@ namespace Baconit.ContentPanels
             // Clear out the UI
             ui_contentRoot.Children.Clear();
 
-            // #todo do something with the UI.
+            // Set loading, but disable the spinner.
+            ToggleProgress(true, true);
         }
 
         /// <summary>
@@ -377,13 +378,13 @@ namespace Baconit.ContentPanels
         /// <summary>
         /// Fades in or out the progress UI.
         /// </summary>
-        private void ToggleProgress(bool show)
+        private void ToggleProgress(bool show, bool disableActive = false)
         {
             m_isLoadingShowing = show;
 
             if (show)
             {
-                ui_progressRing.IsActive = show;
+                ui_progressRing.IsActive = !disableActive && show;                
                 VisualStateManager.GoToState(this, "ShowProgressHolder", true);                
             }
             else
@@ -426,7 +427,8 @@ namespace Baconit.ContentPanels
         {
             // If we showed the block hide the UI. Otherwise it will
             // show through when we animate out.
-            if (SetNsfwBlock())
+            // If we are hiding here we want it instant.
+            if (SetNsfwBlock(true))
             {
                 ui_contentRoot.Visibility = Visibility.Collapsed;
             }
@@ -435,7 +437,7 @@ namespace Baconit.ContentPanels
         /// <summary>
         /// Shows or hides the NSFW if it is needed.
         /// </summary>
-        public bool SetNsfwBlock()
+        public bool SetNsfwBlock(bool instantOff = false)
         {
             IContentPanelBase panelBase = m_currentPanelBase;
 
@@ -455,7 +457,16 @@ namespace Baconit.ContentPanels
             else
             {
                 m_isNsfwShowing = false;
-                VisualStateManager.GoToState(this, "HideNsfwBlock", true);
+
+                if (instantOff)
+                {
+                    VisualStateManager.GoToState(this, "HideNsfwBlockInstant", true);
+                }
+                else
+                {
+                    VisualStateManager.GoToState(this, "HideNsfwBlock", true);
+                }
+
                 return false;
             }
         }
@@ -572,8 +583,8 @@ namespace Baconit.ContentPanels
                     ui_contentRoot.Visibility = Visibility.Collapsed;
                 }
 
-                // Update the state of the UI.
-                ToggleGenericMessage(panelBase.HasError, panelBase.ErrorText);
+                // Update the state of the UI. If we are hiding here we want it instant.
+                ToggleGenericMessage(panelBase.HasError, panelBase.ErrorText, null, true);
             }
         }
 
@@ -582,7 +593,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         /// <param name="show"></param>
         /// <param name="message"></param>
-        private void ToggleGenericMessage(bool show, string message = null, string subMessage = null)
+        private void ToggleGenericMessage(bool show, string message = null, string subMessage = null, bool instantOff = false)
         {
             m_isGenericMessageShowing = show;
 
@@ -600,7 +611,15 @@ namespace Baconit.ContentPanels
             else
             {
                 HideShowContentIfNeeded();
-                VisualStateManager.GoToState(this, "HideGenericMessage", true);
+
+                if (instantOff)
+                {
+                    VisualStateManager.GoToState(this, "HideGenericMessageInstant", true);
+                }
+                else
+                {
+                    VisualStateManager.GoToState(this, "HideGenericMessage", true);
+                }
             }
         }
 

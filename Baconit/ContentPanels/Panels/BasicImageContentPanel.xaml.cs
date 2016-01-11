@@ -128,7 +128,7 @@ namespace Baconit.ContentPanels.Panels
         public void OnPrepareContent()
         {
             // Run our work on a background thread.
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 // Get the image Url
                 string imageUrl = ImageManager.GetImageUrl(m_base.Source.Url);
@@ -140,16 +140,12 @@ namespace Baconit.ContentPanels.Panels
                     App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "BasicImageControlNoImageUrl");
 
                     // Jump back to the UI thread
-                    await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-                    {
-                        m_base.FireOnFallbackToBrowser();
-                    });
-
+                    m_base.FireOnFallbackToBrowser();    
                     return;
                 }
 
                 // Make sure we aren't destroyed.
-                if(m_base.IsDestoryed)
+                if (m_base.IsDestoryed)
                 {
                     return;
                 }

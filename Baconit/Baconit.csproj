@@ -182,8 +182,6 @@
     <Compile Include="Interfaces\IContentPanelBase.cs" />
     <Compile Include="Interfaces\IContentPanelHost.cs" />
     <Compile Include="Interfaces\IContentPanelBaseInternal.cs" />
-    <Compile Include="Interfaces\IFlipViewContentControl.cs" />
-    <Compile Include="Interfaces\IFlipViewContentHost.cs" />
     <Compile Include="Interfaces\IMainPage.cs" />
     <Compile Include="Interfaces\IPanel.cs" />
     <Compile Include="Interfaces\IPanelHost.cs" />

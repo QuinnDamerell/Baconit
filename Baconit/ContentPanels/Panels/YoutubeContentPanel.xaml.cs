@@ -93,7 +93,7 @@ namespace Baconit.ContentPanels.Panels
                     if (youTubeUri == null)
                     {
                         // If we failed fallback to the browser.
-                        // m_host.FallbackToWebBrowser(m_post);
+                        m_base.FireOnFallbackToBrowser();
                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
                         return;
                     }

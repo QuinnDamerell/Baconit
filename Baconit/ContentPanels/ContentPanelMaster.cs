@@ -639,9 +639,83 @@ namespace Baconit.ContentPanels
         /// When fired the source given should fall back to a web
         /// browser instead of a complex control.
         /// </summary>
-        public void FallbackToWebrowser(ContentPanelSource source)
+        public async void FallbackToWebrowser(ContentPanelSource source)
         {
-            
+            IContentPanelHost hostToReport = null;
+            IContentPanelBase panelToKill = null;
+
+            // Fire on load complete so if someone else was waiting on us they will 
+            // move on.
+            OnContentLoadComplete(source.Id);
+
+            // Lock
+            lock (m_currentPanelList)
+            {
+                // Make sure we have it.
+                if (m_currentPanelList.ContainsKey(source.Id))
+                {
+                    // Grab the panel to kill and the host to tell.
+                    ContentListElement element = m_currentPanelList[source.Id];
+                    hostToReport = element.Host;
+                    panelToKill = element.PanelBase;
+
+                    // Null the post and update our state
+                    element.PanelBase = null;
+                    element.State = ContentState.Unloaded;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // Remove the panel
+            if (hostToReport != null && panelToKill != null)
+            {
+                await FireOnRemovePanel(hostToReport, panelToKill);
+            }
+
+            // Kill the panel
+            if (panelToKill != null)
+            {
+                await FireOnDestroyContent(panelToKill);
+                panelToKill = null;
+            }
+
+            ContentPanelSource sourceToCreate = null;
+            bool isVisible = false;
+
+            // Now lock again
+            lock (m_currentPanelList)
+            {
+                // Make sure we still have it.
+                if (m_currentPanelList.ContainsKey(source.Id))
+                {
+                    ContentListElement element = m_currentPanelList[source.Id];
+                    if (element.State == ContentState.Unloaded)
+                    {
+                        // Grab the element again and set the new state.
+                        isVisible = element.IsVisible;
+                        element.Source.ForceWeb = true;
+                        sourceToCreate = element.Source;
+                        element.State = ContentState.PendingCreation;
+                    }
+                    else
+                    {
+                        // if we are not in the same state get out of here.
+                        return;
+                    }     
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if(sourceToCreate != null)
+            {
+                BeginLoadContent(sourceToCreate, isVisible);
+            }
         }
 
         #endregion

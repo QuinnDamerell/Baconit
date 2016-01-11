@@ -263,54 +263,58 @@ namespace Baconit.ContentPanels.Panels
             // We default to web page
             Type controlType = typeof(WebPageContentPanel);
 
-            // Try to figure out the type.
-            try
+            // If we are not forcing web find the control type.
+            if (!source.ForceWeb)
             {
-                if (GifImageContentPanel.CanHandlePost(source))
+                // Try to figure out the type.
+                try
                 {
-                    controlType = typeof(GifImageContentPanel);
-                }
-                else if (YoutubeContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(YoutubeContentPanel);
-                }
-                else if (BasicImageContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(BasicImageContentPanel);
-                }
-                else if (MarkdownContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(MarkdownContentPanel);
-                }
-                else if (RedditContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(RedditContentPanel);
-                }
-                else if (CommentSpoilerContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(CommentSpoilerContentPanel);
-                }
-                else if (WindowsAppContentPanel.CanHandlePost(source))
-                {
-                    controlType = typeof(WindowsAppContentPanel);
-                }
-                else
-                {
-                    // This is a web browser
-
-                    // If we are blocking large panels don't allow the
-                    // browser.
-                    if (!canLoadLargePanels)
+                    if (GifImageContentPanel.CanHandlePost(source))
                     {
-                        loadedPanel = false;
+                        controlType = typeof(GifImageContentPanel);
+                    }
+                    else if (YoutubeContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(YoutubeContentPanel);
+                    }
+                    else if (BasicImageContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(BasicImageContentPanel);
+                    }
+                    else if (MarkdownContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(MarkdownContentPanel);
+                    }
+                    else if (RedditContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(RedditContentPanel);
+                    }
+                    else if (CommentSpoilerContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(CommentSpoilerContentPanel);
+                    }
+                    else if (WindowsAppContentPanel.CanHandlePost(source))
+                    {
+                        controlType = typeof(WindowsAppContentPanel);
+                    }
+                    else
+                    {
+                        // This is a web browser
+
+                        // If we are blocking large panels don't allow the
+                        // browser.
+                        if (!canLoadLargePanels)
+                        {
+                            loadedPanel = false;
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                // If we fail here we will fall back to the web browser.
-                App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToQueryCanHandlePost", e);
+                catch (Exception e)
+                {
+                    // If we fail here we will fall back to the web browser.
+                    App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
+                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToQueryCanHandlePost", e);
+                }
             }
 
             // Check if we should still load.

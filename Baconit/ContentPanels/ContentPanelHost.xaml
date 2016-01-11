@@ -36,11 +36,6 @@
                 </VisualState>
                 <VisualState x:Name="HideProgressHolderInstant">
                     <Storyboard Completed="HideProgressHolder_Completed">
-                        <DoubleAnimation Duration="00:00:00.0"
-                                         From="1.0"
-                                         Storyboard.TargetName="ui_progressHolder"
-                                         Storyboard.TargetProperty="Opacity"
-                                         To="0.0"/>
                         <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
                                                        Storyboard.TargetName="ui_progressHolder"
                                                        Storyboard.TargetProperty="Visibility">
@@ -100,6 +95,19 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
+                <VisualState x:Name="HideNsfwBlockInstant">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_nsfwBlockRoot"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.0">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
                 <VisualState x:Name="ShowNsfwBlock">
                     <Storyboard>
                         <DoubleAnimation Duration="00:00:00.5"
@@ -140,6 +148,19 @@
                                                        Storyboard.TargetName="ui_genericMessage"
                                                        Storyboard.TargetProperty="Visibility">
                             <DiscreteObjectKeyFrame KeyTime="00:00:00.3">
+                                <DiscreteObjectKeyFrame.Value>
+                                    <Visibility>Collapsed</Visibility>
+                                </DiscreteObjectKeyFrame.Value>
+                            </DiscreteObjectKeyFrame>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideGenericMessageInstant">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                       Storyboard.TargetName="ui_genericMessage"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="00:00:00.0">
                                 <DiscreteObjectKeyFrame.Value>
                                     <Visibility>Collapsed</Visibility>
                                 </DiscreteObjectKeyFrame.Value>

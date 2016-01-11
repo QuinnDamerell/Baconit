@@ -20,6 +20,7 @@ namespace Baconit.ContentPanels
         public string Subreddit = null;
         public bool IsNSFW = false;
         public bool IsSelf = false;
+        public bool ForceWeb = false;
 
         // Make a private constructor so they can be only created by
         // this class internally.
