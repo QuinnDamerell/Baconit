@@ -219,12 +219,7 @@ namespace BaconBackend.Managers.Background
                 }
 
                 // Make sure the main tile is an iconic tile.
-                m_baconMan.TileMan.EnsureMainTileIsIconic();
-
-                // Update the badge
-                BadgeNumericNotificationContent content = new BadgeNumericNotificationContent();
-                content.Number = (uint)unreadCount;
-                BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(new BadgeNotification(content.GetXml()));
+                m_baconMan.TileMan.UpdateMainTile(unreadCount);
 
                 // Update the band if we have one.
                 if(!updateSliently)

@@ -1,5 +1,7 @@
 ﻿using BaconBackend.DataObjects;
+using NotificationsExtensions.Badges;
 using NotificationsExtensions.Tiles;
+using NotificationsExtensions.Toasts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public bool IsSubredditPinned(string subredditDisplayName)
         {
-            return SecondaryTile.Exists(c_subredditTitleId+subredditDisplayName);
+            return SecondaryTile.Exists(c_subredditTitleId + subredditDisplayName);
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace BaconBackend.Managers
         public async Task<bool> CreateSubredditTile(Subreddit subreddit)
         {
             // If it already exists get out of here.
-            if(IsSubredditPinned(subreddit.DisplayName))
+            if (IsSubredditPinned(subreddit.DisplayName))
             {
                 return true;
             }
@@ -83,9 +85,9 @@ namespace BaconBackend.Managers
             IReadOnlyList<SecondaryTile> tiles = await SecondaryTile.FindAllAsync();
 
             // Find this one
-            foreach(SecondaryTile tile in tiles)
+            foreach (SecondaryTile tile in tiles)
             {
-                if(tile.TileId.Equals(c_subredditTitleId+subreddit.DisplayName))
+                if (tile.TileId.Equals(c_subredditTitleId + subreddit.DisplayName))
                 {
                     return await tile.RequestDeleteAsync();
                 }
@@ -98,8 +100,9 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Makes sure the main app tile is an icon tile type
         /// </summary>
-        public void EnsureMainTileIsIconic()
+        public void UpdateMainTile(int unreadCount)
         {
+            // Setup the main tile as iconic for small and medium
             TileContent content = new TileContent()
             {
                 Visual = new TileVisual()
@@ -117,12 +120,78 @@ namespace BaconBackend.Managers
                         {
                             Icon = new TileImageSource("ms-appx:///Assets/AppAssets/IconicTiles/Iconic200.png"),
                         }
-                    }
+                    },                    
                 }
             };
 
+            // If the user is signed in we will do more for large and wide.
+            if(m_baconMan.UserMan.IsUserSignedIn && m_baconMan.UserMan.CurrentUser != null && !String.IsNullOrWhiteSpace(m_baconMan.UserMan.CurrentUser.Name))
+            {
+                content.Visual.TileWide = new TileBinding()
+                {
+                    Content = new TileBindingContentAdaptive()
+                    {
+                        Children =
+                        {
+                            new TileText()
+                            {
+                                Text = m_baconMan.UserMan.CurrentUser.Name,
+                                Style = TileTextStyle.Caption
+                            },
+                            new TileText()
+                            {
+                                Text = String.Format("{0:N0}", m_baconMan.UserMan.CurrentUser.CommentKarma) + " comment karma",
+                                Style = TileTextStyle.CaptionSubtle
+                            },
+                            new TileText()
+                            {
+                                Text = String.Format("{0:N0}", m_baconMan.UserMan.CurrentUser.LinkKarma) + " link karma",
+                                Style = TileTextStyle.CaptionSubtle
+                            },                           
+                        }
+                    },
+                };
+
+                // If we have messages replace the user name with the message string.
+                if (unreadCount != 0)
+                {
+                    TileText unreadCountText = new TileText()
+                    {
+                        Text = unreadCount + " Unread Inbox Message" + (unreadCount == 1 ? "" : "s"),
+                        Style = TileTextStyle.Body
+                    };
+                    ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = unreadCountText;
+                }
+
+                // Also set the cake day if it is today
+                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                DateTime userCreationTime = origin.AddSeconds(m_baconMan.UserMan.CurrentUser.CreatedUtc).ToLocalTime();
+                TimeSpan elapsed = DateTime.Now - userCreationTime;
+                double fullYears = Math.Floor((elapsed.TotalDays / 365));
+                int daysUntil = (int)(elapsed.TotalDays - (fullYears * 365));
+
+                if(daysUntil == 0)
+                {
+                    // Make the text
+                    TileText cakeDayText = new TileText()
+                    {
+                        Text = "Today is your cake day!",
+                        Style = TileTextStyle.Body
+                    };
+                    ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = cakeDayText;
+                }
+            }  
+
+            // Set large to the be same as wide.
+            content.Visual.TileLarge = content.Visual.TileWide;
+
             // Update the tile
             TileUpdateManager.CreateTileUpdaterForApplication().Update(new TileNotification(content.GetXml()));
+
+            // Update the badge
+            BadgeNumericNotificationContent badgeContent = new BadgeNumericNotificationContent();
+            badgeContent.Number = (uint)unreadCount;
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(new BadgeNotification(badgeContent.GetXml()));
         }
     }
 }

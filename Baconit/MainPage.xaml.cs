@@ -352,7 +352,7 @@ namespace Baconit
             ui_accountHeaderMailBox.Visibility = Visibility.Collapsed;
             ui_accountHeaderKarmaHolder.Visibility = Visibility.Collapsed;
 
-            if (App.BaconMan.UserMan.IsUserSignedIn)
+            if (App.BaconMan.UserMan.IsUserSignedIn && App.BaconMan.UserMan.CurrentUser != null)
             {
                 // If we have mail so the mail icon.
                 if (App.BaconMan.UserMan.CurrentUser.HasMail)
