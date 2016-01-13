@@ -585,12 +585,12 @@ namespace Baconit.Panels
                         }
                     }
 
-                    // Now ad the inserts
-                    int insertIndex = 0;
-                    foreach (Post post in insertList)
+                    // Now ad the inserts, but insert them from the element closest to the visible post to away.
+                    // We want to do this so flipview doesn't keep changing which panels are virtualized as we add panels.
+                    // as possible.
+                    foreach (Post post in insertList.Reverse<Post>())
                     {
-                        m_postsLists.Insert(insertIndex, post);
-                        insertIndex++;
+                        m_postsLists.Insert(0, post);
                     }
 
                     // Clear the deferrals
@@ -1791,7 +1791,7 @@ namespace Baconit.Panels
             await Task.Run(() =>
             {
                 ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, !isVisiblePost);
-            });  
+            });
         }
 
         private void ui_contentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
