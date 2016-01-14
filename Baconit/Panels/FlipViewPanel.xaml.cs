@@ -495,7 +495,16 @@ namespace Baconit.Panels
                             {
                                 if (post.Id.Equals(deferTargetPost))
                                 {
-                                    m_postsLists.Add(post);
+                                    // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
+                                    try
+                                    {
+                                        m_postsLists.Add(post);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot1", e);
+                                        App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
+                                    }                                    
                                 }
 
                                 // Add it to the deferred list, also add the deferred post so we know
@@ -505,7 +514,16 @@ namespace Baconit.Panels
                             else
                             {
                                 // Otherwise, just add it.
-                                m_postsLists.Add(post);
+                                // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
+                                try
+                                {
+                                    m_postsLists.Add(post);
+                                }
+                                catch(Exception e)
+                                {
+                                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot2", e);
+                                    App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
+                                }                  
                             }
                         }
 
@@ -1230,7 +1248,7 @@ namespace Baconit.Panels
                 // Set up the objects for the UI
                 foreach (Post post in m_postsLists)
                 {
-                    //if(post.HeaderSize != currentScrollAera)
+                    if(post.HeaderSize != currentScrollAera)
                     {
                         post.HeaderSize = currentScrollAera;
                     }
