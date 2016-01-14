@@ -98,6 +98,16 @@ namespace Baconit.HelperControls
         /// </summary>
         DispatcherTimer m_previewTimer;
 
+        /// <summary>
+        /// Indicates the last time the text was edited.
+        /// </summary>
+        DateTime m_lastTextEditTime = DateTime.MinValue;
+
+        /// <summary>
+        /// The amount of time from the last edit when we should update the preview again.
+        /// </summary>
+        int m_previewUpdateEditTimeout = 1000;
+
         public CommentBox()
         {
             this.InitializeComponent();
@@ -105,27 +115,26 @@ namespace Baconit.HelperControls
             m_previewTimer = new DispatcherTimer();
             m_previewTimer.Tick += PreviewTimer_Tick;
 
-            // Set the interval. We will use the memory limit as a guess of what the
+            // Set the interval and edit timeout. We will use the memory limit as a guess of what the
             // the device can handle.
-            int intervalMs = 1000;
             ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit / 1024 / 1024;
             if (memoryLimit < 200)
             {
-                intervalMs = 1000;
+                m_previewUpdateEditTimeout = 1000;
             }
             else if (memoryLimit < 450)
             {
-                intervalMs = 500;
+                m_previewUpdateEditTimeout = 1000;
             }
             else if (memoryLimit < 1500)
             {
-                intervalMs = 300;
+                m_previewUpdateEditTimeout = 300;
             }
             else
             {
-                intervalMs = 100;
+                m_previewUpdateEditTimeout = 50;
             }
-            m_previewTimer.Interval = new TimeSpan(0, 0, 0, 0, intervalMs);
+            m_previewTimer.Interval = new TimeSpan(0, 0, 0, 0, m_previewUpdateEditTimeout);
 
             // Hide the box
             VisualStateManager.GoToState(this, "HideCommentBox", false);
@@ -215,6 +224,7 @@ namespace Baconit.HelperControls
             {
                 // Set the text or empty if the id is new.
                 ui_textBox.Text = String.IsNullOrWhiteSpace(editText) ? String.Empty : editText;
+                m_lastTextEditTime = new DateTime(1989,4,19);
                 PreviewTimer_Tick(null, null);
             }
 
@@ -397,17 +407,38 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void PreviewTimer_Tick(object sender, object e)
         {
-            if(!ui_livePreviewBox.Markdown.Equals(ui_textBox.Text))
+            // Make sure we have a new edit.
+            if(!m_lastTextEditTime.Equals(DateTime.MinValue))
             {
-                // Update the markdown text.
-                ui_livePreviewBox.Markdown = ui_textBox.Text;
-
-                // If the entry point is at the bottom of the text box, scroll the preview
-                if (Math.Abs(ui_textBox.SelectionStart - ui_textBox.Text.Length) < 30)
+                TimeSpan timeSinceEdit = DateTime.Now - m_lastTextEditTime;
+                if (timeSinceEdit.TotalMilliseconds > m_previewUpdateEditTimeout)
                 {
-                    ui_livePreviewScroller.ChangeView(null, ui_livePreviewScroller.ScrollableHeight, null);
+                    // Set the edit time so we won't come in again until an update.
+                    // This is safe without locks bc this has to run on the UI thread and
+                    // there is only one UI thread.
+                    m_lastTextEditTime = DateTime.MinValue;
+
+                    // Update the markdown text.
+                    ui_livePreviewBox.Markdown = ui_textBox.Text;
+
+                    // If the entry point is at the bottom of the text box, scroll the preview
+                    if (Math.Abs(ui_textBox.SelectionStart - ui_textBox.Text.Length) < 30)
+                    {
+                        ui_livePreviewScroller.ChangeView(null, ui_livePreviewScroller.ScrollableHeight, null);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Fired whenever text is edited.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void TextBox_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            // Update the last edit time.
+            m_lastTextEditTime = DateTime.Now;
         }
 
         #endregion

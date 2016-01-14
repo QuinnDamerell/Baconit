@@ -233,6 +233,7 @@
                      IsSpellCheckEnabled="True"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Style="{StaticResource AlwaysWhiteTextBoxStyle}"
+                     TextChanging="TextBox_TextChanging"
                      TextWrapping="Wrap" />
 
             <!--  Grid to show the action buttons  -->
