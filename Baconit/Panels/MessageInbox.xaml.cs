@@ -1,5 +1,6 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
+using Baconit.HelperControls;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -160,17 +161,27 @@ namespace Baconit.Panels
 
         #region Click actions
 
+        /// <summary>
+        /// Fired whent the list view selected item is changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MessageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Clear the selection.
             ui_messageList.SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// Fired when a user taps reply on a message in the list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Reply_Tapped(object sender, EventArgs e)
         {
             // Get the message
             Message message = (Message)((FrameworkElement)sender).DataContext;
-            ui_replyBox.ShowBox(message.GetFullName());
+            ui_replyBox.ShowBox(message.GetFullName(), null, message);
 
             // Also if it is unread set it to read
             if(message.IsNew)
@@ -179,6 +190,11 @@ namespace Baconit.Panels
             }
         }
 
+        /// <summary>
+        /// Fired when a user taps marked as read.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MarkAsRead_Tapped(object sender, EventArgs e)
         {
             // Get the message
@@ -188,6 +204,11 @@ namespace Baconit.Panels
             m_collector.ChangeMessageReadStatus(message, !message.IsNew);
         }
 
+        /// <summary>
+        /// Fired when a user taps view context.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ViewContext_OnButtonTapped(object sender, EventArgs e)
         {
             // Get the message
@@ -250,6 +271,55 @@ namespace Baconit.Panels
 
         #endregion
 
+        #region Reply Box
+
+        /// <summary>
+        /// Fired when the comment box is open.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void ReplyBox_OnBoxOpened(object sender, CommentBoxOnOpenedArgs e)
+        {
+            // Scroll the message we are responding into view.
+            ui_messageList.ScrollIntoView((Message)e.Context);
+        }
+
+        /// <summary>
+        /// Fired when a new message has been submitted.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReplyBox_OnCommentSubmitted(object sender, OnCommentSubmittedArgs e)
+        {
+            // Validate the response, this isn't 100% fool proof but it is close.
+            if(e.Response.Contains("\"author\":"))
+            {
+                // We are good, hide the box
+                ui_replyBox.HideBox();
+            }
+            else
+            {
+                ui_replyBox.HideLoadingOverlay();
+                App.BaconMan.MessageMan.ShowMessageSimple("That's Not Good", "We can't send this message right now, reddit returned an unexpected result. Try again later.");
+            }
+        }
+
+        /// <summary>
+        /// Fired when the control changes sizes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // We need to update the max size of the reply box otherwise it will extend out
+            // of the current grid. This is because it is set to auto, which means "you can be as big as you want"
+            // and the grid won't force a size on it.
+            ui_replyBox.MaxHeight = e.NewSize.Height - ui_messageHeader.ActualHeight - ui_contentRoot.Padding.Top;
+        }
+
+        #endregion
+
         public void ToggleProgressBar(bool show)
         {
             if(show)
@@ -274,6 +344,11 @@ namespace Baconit.Panels
             }
         }
 
+        /// <summary>
+        /// Fired when a link is tapped in the markdown.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);

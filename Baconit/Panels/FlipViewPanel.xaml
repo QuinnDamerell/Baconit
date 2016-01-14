@@ -8,12 +8,11 @@
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
-             d:DesignHeight="800"
+             d:DesignHeight="200"
              d:DesignWidth="1280"
              mc:Ignorable="d">
 
     <UserControl.Resources>
-
         <DataTemplate x:Key="FlipViewStoryHeader" x:DataType="dataObjects:Post">
             <Grid Loaded="FlipViewStoryHeader_Loaded">
                 <Grid.RowDefinitions>
@@ -112,10 +111,17 @@
                                     <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
                                     <MenuFlyoutItem Click="SaveImage_Click"
                                                     Text="Save image"
-                                                    Visibility="{x:Bind ShowSaveImageMenu, Mode=OneWay}" />
+                                                    Visibility="{x:Bind ShowSaveImageMenu}" />
                                     <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
                                     <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
+                                    <MenuFlyoutSeparator Visibility="{x:Bind DeletePostVisibility}" />
+                                    <MenuFlyoutItem Click="DeletePost_Click"
+                                                    Text="Delete post"
+                                                    Visibility="{x:Bind DeletePostVisibility}" />
+                                    <MenuFlyoutItem Click="EditPost_Click"
+                                                    Text="Edit post"
+                                                    Visibility="{x:Bind EditPostVisibility}" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
                         </helperControls:CircleIconButton>
@@ -418,18 +424,18 @@
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
-                                    Tapped="CommentReply_Tapped">
+                                    Tapped="CommentButton3_Tapped">
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
-                                           Text="reply" />
+                                           Text="{x:Bind CommentButton3Text}" />
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
-                                    Tapped="CommentUser_Tapped">
+                                    Tapped="CommentButton4_Tapped">
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
-                                           Text="user" />
+                                           Text="{x:Bind CommentButton4Text}" />
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
@@ -464,10 +470,10 @@
     <!--  The main content root  -->
     <Grid x:Name="ui_contentRoot"
           Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          SizeChanged="ui_contentRoot_SizeChanged">
+          SizeChanged="ContentRoot_SizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
+            <RowDefinition x:Name="ui_commentBoxRowDef" Height="auto" />
         </Grid.RowDefinitions>
 
         <!--  The main flip view root, gives us the horizontal flipping action  -->
@@ -520,9 +526,10 @@
             The comment reply box; due to some odd bug this must live out side of the flip view or the system will
             not position the UI correclty when the keyboard deploys and the text box will be covered.
         -->
-        <helperControls:CommentBox x:Name="ui_commmentBox"
+        <helperControls:CommentBox x:Name="ui_commentBox"
                                    Grid.Row="1"
-                                   VerticalAlignment="Bottom"
+                                   OnCommentSubmitted="CommentBox_OnCommentSubmitted"
+                                   OnBoxOpened="CommentBox_OnBoxOpened"
                                    SizeChanged="CommentBox_SizeChanged"
                                    x:DeferLoadStrategy="Lazy" />
     </Grid>

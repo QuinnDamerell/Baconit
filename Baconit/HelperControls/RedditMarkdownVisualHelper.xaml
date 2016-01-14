@@ -15,69 +15,104 @@
                       VerticalScrollMode="Disabled" />
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition x:Name="ui_test" Width="*" />
+                <ColumnDefinition x:Name="ui_fullscreenColDef" Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Width="40"
-                    Height="40"
+            <Button Height="35"                    
                     Margin="0,0,4,0"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
                     Click="Bold_Click"
                     Content="B"
                     FontWeight="Bold" />
             <Button Grid.Column="1"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="Italic_Click"
                     Content="I"
+                    FontFamily="Times New Roman"
                     FontStyle="Italic" />
             <Button Grid.Column="2"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="Link_Click"
                     Content="&#xE167;"
-                    FontFamily="Segoe UI Symbol" />
+                    FontFamily="Segoe UI Symbol"
+                    Padding="0" />
             <Button Grid.Column="3"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="Quote_Click"
-                    Content="&quot;" />
+                    Content="&quot;"
+                    FontFamily="Georgia"
+                    FontSize="28"
+                    Padding="0,7,0,0" />
             <Button Grid.Column="4"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="Code_Click"
-                    Content="&lt;&gt;" />
+                    Content="&lt;&gt;"
+                    FontSize="16"
+                    FontWeight="Medium"
+                    Padding="0,0,0,4" />
             <Button Grid.Column="5"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="List_Click"
                     Content="&#xE14C;"
-                    FontFamily="Segoe UI Symbol" />
+                    FontFamily="Segoe UI Symbol"
+                    FontSize="15"
+                    FontWeight="Medium"
+                    Padding="0,0,0,0" />
             <Button Grid.Column="6"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="NumberedList_Click"
-                    Content="1." />
+                    Content="1."
+                    FontSize="14" />
             <Button Grid.Column="7"
-                    Width="40"
-                    Height="40"
+                    Height="35"
                     Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
                     Click="NewLine_Click"
                     Content="&#x21B5;"
-                    FontFamily="Segoe UI Symbol" />
+                    FontFamily="Segoe UI Symbol"
+                    FontSize="22"
+                    Padding="0,-2,0,8" />
+            <Button x:Name="ui_fullscreen"
+                    Grid.Column="8"
+                    Height="35"
+                    Margin="4,0,4,0"
+                    HorizontalAlignment="Stretch"
+                    Click="Fullscreen_Click"
+                    FontFamily="Segoe UI Symbol"
+                    FontSize="10"
+                    Padding="0,1,0,0">
+                <Button.Content>
+                    <SymbolIcon x:Name="ui_fullscreenSymbol"
+                                RenderTransformOrigin="0.5,0.5"
+                                Symbol="FullScreen">
+                        <SymbolIcon.RenderTransform>
+                            <ScaleTransform ScaleX="0.55" ScaleY="0.55" />
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+                </Button.Content>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

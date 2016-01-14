@@ -35,7 +35,20 @@ namespace BaconBackend.DataObjects
         /// The comment's body text, in Markdown.
         /// </summary>
         [JsonProperty(PropertyName = "body")]
-        public string Body { get; set; }
+        public string Body
+        {
+            get
+            {
+                return m_Body;
+            }
+            set
+            {
+                m_Body = value;
+                NotifyPropertyChanged(nameof(Body));
+            }
+        }
+        [JsonIgnore]
+        string m_Body;
 
         /// <summary>
         /// The tree of comments replied to this one.
@@ -517,6 +530,57 @@ namespace BaconBackend.DataObjects
                 return $"{Score} points";
             }
         }
+
+        /// <summary>
+        /// Indicates if this comment is from the user.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsCommentOwnedByUser
+        {
+            get
+            {
+                return m_isCommentOwnedByUser;
+            }
+            set
+            {
+                m_isCommentOwnedByUser = value;
+                NotifyPropertyChanged(nameof(CommentButton3Text));
+                NotifyPropertyChanged(nameof(CommentButton4Text));
+            }
+
+        }
+        [JsonIgnore]
+        bool m_isCommentOwnedByUser = false;
+
+        /// <summary>
+        /// Text that is shown on the UI for comment button 3
+        /// </summary>
+        [JsonIgnore]
+        public string CommentButton3Text
+        {
+            get
+            {
+                return IsCommentOwnedByUser ? "edit" : "reply";
+            }
+        }
+
+        /// <summary>
+        /// Text that is shown on the UI for comment button 4
+        /// </summary>
+        [JsonIgnore]
+        public string CommentButton4Text
+        {
+            get
+            {
+                return IsCommentOwnedByUser ? "delete" : "user";
+            }
+        }
+
+        /// <summary>
+        /// Indicates if the comment has been deleted or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsDeleted = false;
 
         /// <summary>
         /// Construct a new empty comment.

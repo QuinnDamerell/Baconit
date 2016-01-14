@@ -30,46 +30,116 @@ namespace Baconit.HelperControls
         public double BoxHeight;
     }
 
+    /// <summary>
+    /// Event args for the comment box opened event.
+    /// </summary>
+    public class CommentBoxOnOpenedArgs : EventArgs
+    {
+        public object Context;
+        public string RedditId;
+    }
+
+    /// <summary>
+    /// Args for the comment submitted event.
+    /// </summary>
+    public class OnCommentSubmittedArgs : EventArgs
+    {
+        public string Response;
+        public string RedditId;
+        public object Context;
+        public bool IsEdit;
+    }
+
     public sealed partial class CommentBox : UserControl
     {
+        /// <summary>
+        /// Fired when a comment is submitted and posted. Fired
+        /// if the post fails or succeeds.
+        /// </summary>
+        public event EventHandler<OnCommentSubmittedArgs> OnCommentSubmitted
+        {
+            add { m_onCommentSubmitted.Add(value); }
+            remove { m_onCommentSubmitted.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<OnCommentSubmittedArgs>> m_onCommentSubmitted = new SmartWeakEvent<EventHandler<OnCommentSubmittedArgs>>();
+
+        /// <summary>
+        /// Fired after the box has been opened.
+        /// </summary>
+        public event EventHandler<CommentBoxOnOpenedArgs> OnBoxOpened
+        {
+            add { m_onBoxOpened.Add(value); }
+            remove { m_onBoxOpened.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>> m_onBoxOpened = new SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>>();
+
         /// <summary>
         /// Hold the current commenting id
         /// </summary>
         string m_itemRedditId = "";
 
         /// <summary>
-        /// Holds the post that is the parent of the comment;
+        /// Context for the current comment.
         /// </summary>
-        Post m_parentPost;
+        object m_context = null;
+
+        /// <summary>
+        /// Indicates if this is an edit or not.
+        /// </summary>
+        bool m_isEdit = false;
 
         /// <summary>
         /// Indicate if we are open or not.
         /// </summary>
-        public bool IsOpen { get { return m_isOpen; } }
-        bool m_isOpen = false;
+        public bool IsOpen { get; private set; }
 
         /// <summary>
-        /// Indicates if the live preview is open.
+        /// A timer used to update the preview
         /// </summary>
-        bool m_isShowingLivePreview = false;
+        DispatcherTimer m_previewTimer;
 
         public CommentBox()
         {
             this.InitializeComponent();
 
+            m_previewTimer = new DispatcherTimer();
+            m_previewTimer.Tick += PreviewTimer_Tick;
+
+            // Set the interval. We will use the memory limit as a guess of what the
+            // the device can handle.
+            int intervalMs = 1000;
+            ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit / 1024 / 1024;
+            if (memoryLimit < 200)
+            {
+                intervalMs = 1000;
+            }
+            else if (memoryLimit < 450)
+            {
+                intervalMs = 500;
+            }
+            else if (memoryLimit < 1500)
+            {
+                intervalMs = 300;
+            }
+            else
+            {
+                intervalMs = 100;
+            }
+            m_previewTimer.Interval = new TimeSpan(0, 0, 0, 0, intervalMs);
+
             // Hide the box
             VisualStateManager.GoToState(this, "HideCommentBox", false);
             VisualStateManager.GoToState(this, "HideOverlay", false);
-            ToggleLivePreview(false, false);
         }
 
         #region Animation Logic
 
         /// <summary>
-        /// Called when the comment box should be opened, this is used by the message inbox to send messages.
+        /// Called when the comment box should be shown. This take the reddit id of the thing
+        /// commenting on and also any text that might have exited before.
         /// </summary>
         /// <param name="redditId"></param>
-        public void ShowBox(string redditId)
+        public void ShowBox(string redditId, string editText = null, object context = null)
         {
             // Make sure we are logged in
             if (!App.BaconMan.UserMan.IsUserSignedIn)
@@ -83,15 +153,8 @@ namespace Baconit.HelperControls
                 return;
             }
 
-            // Make sure we can comment on it
-            if (!redditId.StartsWith("t1_") && !redditId.StartsWith("t4_"))
-            {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "OpenedWithoutRedditId");
-                return;
-            }
-
             // Do the pre-checks
-            if (!ShowBoxInternalPreWork(redditId))
+            if (!ShowBoxInternalPreWork(redditId, editText, context))
             {
                 return;
             }
@@ -103,54 +166,11 @@ namespace Baconit.HelperControls
             ShowBoxInternal();
         }
 
-
-        /// <summary>
-        /// Called when the comment box should be opened
-        /// </summary>
-        /// <param name="redditId"></param>
-        public void ShowBox(Post parentPost, string redditId)
-        {
-            // Make sure we are logged in
-            if(!App.BaconMan.UserMan.IsUserSignedIn)
-            {
-                App.BaconMan.MessageMan.ShowSigninMessage("comment");
-                return;
-            }
-
-            if(parentPost == null || String.IsNullOrWhiteSpace(redditId))
-            {
-                return;
-            }
-
-            // Make sure we can comment on it
-            if(!redditId.StartsWith("t1_") && !redditId.StartsWith("t3_"))
-            {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "OpenedWithOutComment");
-                return;
-            }
-
-            // Do the pre-checks
-            if(!ShowBoxInternalPreWork(redditId))
-            {
-                return;
-            }
-
-            // Hang on to the commenting id.
-            m_itemRedditId = redditId;
-            m_parentPost = parentPost;
-
-            // Do common code
-            ShowBoxInternal();
-        }
-
         /// <summary>
         /// Common code for show box
         /// </summary>
         private void ShowBoxInternal()
         {
-            // Hide the preview
-            ToggleLivePreview(false, false);
-
             // Report
             App.BaconMan.TelemetryMan.ReportEvent(this, "CommentBoxOpened");
 
@@ -164,22 +184,38 @@ namespace Baconit.HelperControls
         /// <summary>
         /// Common code for show box
         /// </summary>
-        private bool ShowBoxInternalPreWork(string newRedditId)
+        private bool ShowBoxInternalPreWork(string newRedditId, string editText, object context)
         {
             // If we are already open ignore this request.
             lock (this)
             {
-                if (m_isOpen)
+                if (IsOpen)
                 {
                     return false;
                 }
-                m_isOpen = true;
+                IsOpen = true;
             }
 
+            // Start the preview timer
+            m_previewTimer.Start();
+
+            // Mark if this is an edit. Note if the string is empty we will
+            // consider an edit for things like self posts with no text yet.
+            bool wasPastOpenEdit = m_isEdit;
+            m_isEdit = editText != null;
+
+            // Set the current context
+            m_context = context;
+
+            // Update the button text
+            ui_sendButton.Content = m_isEdit ? "Update" : "Send";
+
             // If we are opening to a new item clear the text
-            if (!m_itemRedditId.Equals(newRedditId))
+            if (!m_itemRedditId.Equals(newRedditId) || wasPastOpenEdit != m_isEdit)
             {
-                ui_textBox.Text = "";
+                // Set the text or empty if the id is new.
+                ui_textBox.Text = String.IsNullOrWhiteSpace(editText) ? String.Empty : editText;
+                PreviewTimer_Tick(null, null);
             }
 
             return true;
@@ -188,12 +224,21 @@ namespace Baconit.HelperControls
         /// <summary>
         /// Called when the box should be hidden
         /// </summary>
-        public void HideBox()
+        public void HideBox(bool isDoneWithComment = false)
         {
             // Indicate we are closed.
             lock (this)
             {
-                m_isOpen = false;
+                IsOpen = false;
+            }
+
+            // Stop the preview timer
+            m_previewTimer.Stop();
+
+            // If we are done clear the reddit comment.
+            if (isDoneWithComment)
+            {
+                m_itemRedditId = String.Empty;
             }
 
             // Hide the box
@@ -203,9 +248,68 @@ namespace Baconit.HelperControls
             // accidentally.
         }
 
+        /// <summary>
+        /// Public hides the overlay if opened.
+        /// </summary>
+        public void HideLoadingOverlay()
+        {
+            VisualStateManager.GoToState(this, "HideOverlay", true);
+        }
+
+        /// <summary>
+        /// Fired when the overlay is hidden.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HideOverlay_Completed(object sender, object e)
         {
             ui_sendingOverlayProgress.IsActive = false;
+        }
+
+        /// <summary>
+        /// Fired when the box hide is complete
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HideCommentBox_Completed(object sender, object e)
+        {
+            // Make sure the overlay is hidden
+            VisualStateManager.GoToState(this, "HideOverlay", true);
+
+            // Remove full screen.
+            ToggleFullscreen(false);
+        }
+
+        /// <summary>
+        /// Fired when the show is complete
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowCommentBox_Completed(object sender, object e)
+        {
+            // Fire the event.
+            CommentBoxOnOpenedArgs args = new CommentBoxOnOpenedArgs()
+            {
+                Context = m_context,
+                RedditId = m_itemRedditId
+            };
+            m_onBoxOpened.Raise(this, args);
+        }
+
+        /// <summary>
+        /// Fired when the button holder changes sizes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Since we want these to be *, but also float to the center, but also stretch the button we have to do
+            // this manually. Figure out how large the button should be, and then set it.
+
+            double computedSize = ui_cancelButtonCol.ActualWidth - (ui_cancelButton.Margin.Left + ui_cancelButton.Margin.Right);
+            ui_cancelButton.Width = computedSize < 200 ? computedSize : 200;
+            computedSize = ui_sendButtonCol.ActualWidth - (ui_sendButton.Margin.Left + ui_sendButton.Margin.Right);
+            ui_sendButton.Width = computedSize < 200 ? computedSize : 200;
         }
 
         #endregion
@@ -217,7 +321,7 @@ namespace Baconit.HelperControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Close_OnIconTapped(object sender, EventArgs e)
+        private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             HideBox();
         }
@@ -227,10 +331,11 @@ namespace Baconit.HelperControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Send_OnIconTapped(object sender, EventArgs e)
+        private async void Send_Click(object sender, RoutedEventArgs e)
         {
+            // Make sure we have a string unless we are editing a post selftext, then we can have an empty comment.
             string comment = ui_textBox.Text;
-            if(String.IsNullOrWhiteSpace(comment))
+            if(String.IsNullOrWhiteSpace(comment) && !m_itemRedditId.StartsWith("t3_") && !m_isEdit)
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("\"Silence is a source of great strength.\" - Lao Tzu", "Except on reddit. Go on, say something.");
                 return;
@@ -241,112 +346,113 @@ namespace Baconit.HelperControls
             VisualStateManager.GoToState(this, "ShowOverlay", true);
 
             // Try to send the comment
-            string response = await Task.Run(() => MiscellaneousHelper.SendRedditComment(App.BaconMan, m_itemRedditId, comment));
+            string response = await Task.Run(() => MiscellaneousHelper.SendRedditComment(App.BaconMan, m_itemRedditId, comment, m_isEdit));
 
-            // If we have a post send the status to the collector
-            bool wasSuccess = false;
-            if (m_parentPost != null)
+            if (response != null)
             {
-                // Get the comment collector for this post.
-                CommentCollector collector = CommentCollector.GetCollector(m_parentPost, App.BaconMan);
-
-                // Tell the collector of the change, this will show any message boxes needed.
-                wasSuccess = await Task.Run(() => collector.AddNewUserComment(response, m_itemRedditId));
+                // Now fire the event that a comment was submitted.
+                try
+                {
+                    OnCommentSubmittedArgs args = new OnCommentSubmittedArgs()
+                    {
+                        Response = response,
+                        IsEdit = m_isEdit,
+                        RedditId = m_itemRedditId,
+                        Context = m_context,
+                    };
+                    m_onCommentSubmitted.Raise(this, args);
+                }
+                catch (Exception ex)
+                {
+                    App.BaconMan.MessageMan.DebugDia("failed to fire OnCommentSubmitted", ex);
+                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
+                }
             }
             else
             {
-                // If we are here we are a message. Validate for ourselves.
-                // #todo, make this validation better, add capta support. Both responses to messages and post replies will have "author"
-                if(!String.IsNullOrWhiteSpace(response) && response.Contains("author"))
-                {
-                    wasSuccess = true;
-                }
-                else
-                {
-                    wasSuccess = false;
-                    App.BaconMan.MessageMan.ShowMessageSimple("That's Not Right", "We can't send this message right now, check your Internet connection");
-                }
-            }
-
-
-            if(wasSuccess)
-            {
-                // Clear the reddit id so we won't open back up with the
-                // same text
-                m_itemRedditId = "";
-
-                // Hide the comment box.
-                HideBox();
-            }
-            else
-            {
-                // Hide the overlay
-                VisualStateManager.GoToState(this, "HideOverlay", true);
+                // The network call failed.
+                App.BaconMan.MessageMan.ShowMessageSimple("Can't Submit", "We can't seem to submit this right now, check your internet connection.");
+                HideLoadingOverlay();
             }
         }
 
         #endregion
 
-        #region Real Time Preview
+        #region Markdown Preview
 
-        private void ToggleLivePreview_OnIconTapped(object sender, EventArgs e)
-        {
-            ToggleLivePreview(!m_isShowingLivePreview);
-        }
-
-        private void ToggleLivePreview_TextTapped(object sender, TappedRoutedEventArgs e)
-        {
-            ToggleLivePreview(!m_isShowingLivePreview);
-        }
-
-        public void ToggleLivePreview(bool show, bool animate = true)
-        {
-            // Set the bool
-            m_isShowingLivePreview = show;
-
-            // Set the text only if we are showing or not animating.
-            if (show || !animate)
-            {
-                TextBox_TextChanged(null, null);
-            }
-
-            if (show)
-            {
-                // Show
-                VisualStateManager.GoToState(this, "ShowLivePreview", animate);
-            }
-            else
-            {
-                // Hide
-                VisualStateManager.GoToState(this, "HideLivePreview", animate);
-            }
-        }
-
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (m_isShowingLivePreview)
-            {
-                // Set the text
-                ui_livePreviewBox.Markdown = ui_textBox.Text;
-
-                // If the entry point is at the bottom of the text box, scroll the preview
-                if(Math.Abs(ui_textBox.SelectionStart - ui_textBox.Text.Length) < 30)
-                {
-                    ui_livePreviewScroller.ChangeView(null, ui_livePreviewScroller.ScrollableHeight, null);
-                }
-            }
-            else
-            {
-                ui_livePreviewBox.Markdown = "";
-            }
-        }
-
-        #endregion
-
+        /// <summary>
+        /// Fired when a link is tapped in the markdown.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LivePreviewBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
         }
+
+        /// <summary>
+        /// Fired when the preview timer ticks.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PreviewTimer_Tick(object sender, object e)
+        {
+            if(!ui_livePreviewBox.Markdown.Equals(ui_textBox.Text))
+            {
+                // Update the markdown text.
+                ui_livePreviewBox.Markdown = ui_textBox.Text;
+
+                // If the entry point is at the bottom of the text box, scroll the preview
+                if (Math.Abs(ui_textBox.SelectionStart - ui_textBox.Text.Length) < 30)
+                {
+                    ui_livePreviewScroller.ChangeView(null, ui_livePreviewScroller.ScrollableHeight, null);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Visual Helper
+
+        /// <summary>
+        /// Fired when the visual helper is tapped.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, OnHelperTappedArgs e)
+        {
+            if(e.Type == VisualHelperTypes.Fullscreen)
+            {
+                ToggleFullscreen(ui_visualHelper.FullscreenStatus == VisualHelperFullscreenStatus.GotoFullscreen);
+            }
+            else
+            {
+                RedditMarkdownVisualHelper.DoEdit(ui_textBox, e.Type);
+            }
+        }
+
+        #endregion
+
+        #region Full Screen Logic
+
+        public void ToggleFullscreen(bool goToFullscreen)
+        {
+            if (goToFullscreen)
+            {
+                ui_visualHelper.FullscreenStatus = VisualHelperFullscreenStatus.RestoreFromFullscreen;
+                // Figure out about how high the box should be. We should shoot over, it might make the animation look a little odd but it will be ok.
+                ui_animFullscreenTextBoxGoTo.To = this.MaxHeight - (this.ActualHeight - ui_textBox.ActualHeight + (208 - ui_livePreviewGrid.ActualHeight));
+                VisualStateManager.GoToState(this, "GoFullscreen", true);
+            }
+            else
+            {
+                ui_visualHelper.FullscreenStatus = VisualHelperFullscreenStatus.GotoFullscreen;
+                // Grab the actual height right now to animate back into.
+                ui_animFullscreenTextBoxRestore.From = ui_textBox.ActualHeight;
+                VisualStateManager.GoToState(this, "RestoreFullscreen", true);
+            }
+        }
+
+        #endregion
     }
 }

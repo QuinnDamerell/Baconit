@@ -450,12 +450,12 @@ namespace Baconit.Panels
                                         // so just update the UI values
                                         if (comment.Id.Equals(replacePair.Value.Id))
                                         {
-                                            m_post.Comments[i].Author = comment.Author;
-                                            m_post.Comments[i].Score = comment.Score;
-                                            m_post.Comments[i].TimeString = comment.TimeString;
-                                            m_post.Comments[i].CollapsedCommentCount = comment.CollapsedCommentCount;
-                                            m_post.Comments[i].Body = comment.Body;
-                                            m_post.Comments[i].Likes = comment.Likes;
+                                            m_post.Comments[i].Author = replacePair.Value.Author;
+                                            m_post.Comments[i].Score = replacePair.Value.Score;
+                                            m_post.Comments[i].TimeString = replacePair.Value.TimeString;
+                                            m_post.Comments[i].CollapsedCommentCount = replacePair.Value.CollapsedCommentCount;
+                                            m_post.Comments[i].Body = replacePair.Value.Body;
+                                            m_post.Comments[i].Likes = replacePair.Value.Likes;
                                         }
                                         else
                                         {
@@ -532,6 +532,22 @@ namespace Baconit.Panels
             {
                 ExpandCommentsFromComment(comment);
             });
+        }
+
+        /// <summary>
+        /// Called when is added or edited
+        /// </summary>
+        public bool CommentAddedOrEdited(string parentOrOrgionalId, OnCommentSubmittedArgs args)
+        {
+            return ((CommentCollector)m_commentCollector.GetCollector()).CommentAddedOrEdited(parentOrOrgionalId, args.Response, args.IsEdit);
+        }
+
+        /// <summary>
+        /// Called when the comment should be deleted
+        /// </summary>
+        public void CommentDeleteRequest(Comment comment)
+        {
+            ((CommentCollector)m_commentCollector.GetCollector()).CommentDeleteRequest(comment);
         }
 
         #endregion

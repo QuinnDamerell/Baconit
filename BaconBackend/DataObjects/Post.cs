@@ -889,6 +889,52 @@ namespace BaconBackend.DataObjects
         bool m_flipViewShowLoadingMoreComments = false;
 
         /// <summary>
+        /// Indicates if the post is owned by the current user.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsPostOwnedByUser
+        {
+            get
+            {
+                return m_isPostOwnedByUser;
+            }
+            set
+            {
+                if (SetProperty(ref m_isPostOwnedByUser, value))
+                {
+                    OnPropertyChanged(nameof(DeletePostVisibility));
+                    OnPropertyChanged(nameof(EditPostVisibility));
+                }
+            }
+        }
+        [JsonIgnore]
+        bool m_isPostOwnedByUser = false;
+
+        /// <summary>
+        /// Used by the flip view to indicate if this post can be deleted by this user.
+        /// </summary>
+        [JsonIgnore]
+        public Visibility DeletePostVisibility
+        {
+            get
+            {
+                return IsPostOwnedByUser ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Used by the flip view to indicate if this post can be edited by this user.
+        /// </summary>
+        [JsonIgnore]
+        public Visibility EditPostVisibility
+        {
+            get
+            {
+                return IsPostOwnedByUser && IsSelf ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
         /// Shows or hides the loading more progress bar for comments.
         /// </summary>
         [JsonIgnore]

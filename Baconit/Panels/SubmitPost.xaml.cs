@@ -1,6 +1,7 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Managers;
+using Baconit.HelperControls;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -227,83 +228,8 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, HelperControls.OnHelperTappedArgs e)
         {
-            int selStart = ui_postUrlTextBox.SelectionStart;
-            int selLength = ui_postUrlTextBox.SelectionLength;
-            string curText = ui_postUrlTextBox.Text;
-            string insertNewLine = null;
-
-            // Depending on the type see what we can do.
-            switch (e.Type)
-            {
-                case HelperControls.VisualHelperTypes.Bold:
-                    if(selLength != 0)
-                    {
-                        // Wrap the selected text
-                        ui_postUrlTextBox.Text = curText.Insert(selStart + selLength, "**").Insert(selStart, "**");
-                    }
-                    else
-                    {
-                        // Or add to the end
-                        ui_postUrlTextBox.Text = curText + " **example**";
-                    }
-                    break;
-                case HelperControls.VisualHelperTypes.Italic:
-                    if (selLength != 0)
-                    {
-                        // Wrap the selected text
-                        ui_postUrlTextBox.Text = curText.Insert(selStart + selLength, "*").Insert(selStart, "*");
-                    }
-                    else
-                    {
-                        // Or add to the end
-                        ui_postUrlTextBox.Text = curText + " *example*";
-                    }
-                    break;
-                case HelperControls.VisualHelperTypes.Link:
-                    if (selLength != 0)
-                    {
-                        // Wrap the selected text
-                        ui_postUrlTextBox.Text = curText.Insert(selStart + selLength, ")[http://www.example.com]").Insert(selStart, "{");
-                    }
-                    else
-                    {
-                        // Or add to the end
-                        ui_postUrlTextBox.Text = curText + " [example](http://www.example.com)";
-                    }
-                    break;
-                case HelperControls.VisualHelperTypes.NewLine:
-                    int injectPos = selStart;
-                    // Inject the new line at the current pos
-                    ui_postUrlTextBox.Text = curText.Insert(injectPos, "  \r\n");
-                    // Move the selection to the end of insert
-                    ui_postUrlTextBox.SelectionStart = injectPos + 3;
-                    break;
-                case HelperControls.VisualHelperTypes.Quote:
-                    insertNewLine = "> ";
-                    break;
-                case HelperControls.VisualHelperTypes.List:
-                    insertNewLine = "* ";
-                    break;
-                case HelperControls.VisualHelperTypes.NumberedList:
-                    insertNewLine = "1. ";
-                    break;
-                case HelperControls.VisualHelperTypes.Code:
-                    insertNewLine = "    ";
-                    break;
-
-            }
-
-            // If the insert on new line is not null we need to find the last new line and
-            // insert the text.
-            if(insertNewLine != null)
-            {
-                int searchStart = selStart == curText.Length ? selStart - 1 : selStart;
-                int indexLastNewLine = curText.LastIndexOf('\n', searchStart);
-                ui_postUrlTextBox.Text = curText.Insert(indexLastNewLine + 1, insertNewLine);
-            }
-
-            // When we leave focus the text box again so we don't press enter on the key again
-            ui_postUrlTextBox.Focus(FocusState.Programmatic);
+            // Do the edit.
+            RedditMarkdownVisualHelper.DoEdit(ui_postTitleTextBox, e.Type);
         }
 
         /// <summary>

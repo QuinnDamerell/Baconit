@@ -2,8 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataObjects="using:BaconBackend.DataObjects"
              xmlns:helperControls="using:Baconit.HelperControls"
-             xmlns:dataObjects="using:BaconBackend.DataObjects"             
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
@@ -64,7 +64,9 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot"
+          Background="#333333"
+          SizeChanged="ContentRoot_SizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -72,7 +74,9 @@
         </Grid.RowDefinitions>
 
         <!--  Message Header  -->
-        <Grid Grid.Row="0" Padding="12">
+        <Grid x:Name="ui_messageHeader"
+              Grid.Row="0"
+              Padding="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
@@ -129,6 +133,8 @@
 
         <helperControls:CommentBox x:Name="ui_replyBox"
                                    Grid.Row="2"
-                                   VerticalAlignment="Bottom" />
+                                   VerticalAlignment="Bottom"
+                                   OnBoxOpened="ReplyBox_OnBoxOpened"
+                                   OnCommentSubmitted="ReplyBox_OnCommentSubmitted" />
     </Grid>
 </UserControl>

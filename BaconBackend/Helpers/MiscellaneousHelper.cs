@@ -157,7 +157,7 @@ namespace BaconBackend.Helpers
         /// Called when the user is trying to comment on something.
         /// </summary>
         /// <returns>Returns the json returned or a null string if failed.</returns>
-        public static async Task<string> SendRedditComment(BaconManager baconMan, string redditIdCommentingOn, string comment)
+        public static async Task<string> SendRedditComment(BaconManager baconMan, string redditIdCommentingOn, string comment, bool isEdit = false)
         {
             string returnString = null;
             try
@@ -167,8 +167,10 @@ namespace BaconBackend.Helpers
                 postData.Add(new KeyValuePair<string, string>("thing_id", redditIdCommentingOn));
                 postData.Add(new KeyValuePair<string, string>("text", comment));
 
+                string apiString = isEdit ? "api/editusertext" : "api/comment";
+
                 // Make the call
-                returnString = await baconMan.NetworkMan.MakeRedditPostRequestAsString("api/comment", postData);
+                returnString = await baconMan.NetworkMan.MakeRedditPostRequestAsString(apiString, postData);
             }
             catch (Exception e)
             {
@@ -176,7 +178,7 @@ namespace BaconBackend.Helpers
                 baconMan.MessageMan.DebugDia("failed to send message", e);
             }
             return returnString;
-        }
+        }      
 
         /// <summary>
         /// Gets a reddit user.
@@ -209,6 +211,37 @@ namespace BaconBackend.Helpers
                 baconMan.MessageMan.DebugDia("failed to search for user", e);
             }
             return foundUser;
+        }
+
+        /// <summary>
+        /// Attempts to delete a post.
+        /// </summary>
+        /// <param name="baconMan"></param>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeletePost(BaconManager baconMan, string postId)
+        {
+            string returnString = null;
+            try
+            {
+                // Build the data to send
+                List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+                postData.Add(new KeyValuePair<string, string>("id", "t3_"+postId));   
+
+                // Make the call
+                returnString = await baconMan.NetworkMan.MakeRedditPostRequestAsString("api/del", postData);
+
+                if(returnString.Equals("{}"))
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to delete post", e);
+                baconMan.MessageMan.DebugDia("failed to delete post", e);
+            }
+            return false;
         }
 
         /// <summary>

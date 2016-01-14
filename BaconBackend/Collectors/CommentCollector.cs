@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.UI.Core;
 
 namespace BaconBackend.Collectors
 {
@@ -181,7 +183,6 @@ namespace BaconBackend.Collectors
         /// <param name="comments">Commetns to be formatted</param>
         override protected void ApplyCommonFormatting(ref List<Comment> comments)
         {
-            // #Todo
             foreach(Comment comment in comments)
             {
                 // Set The time
@@ -195,6 +196,37 @@ namespace BaconBackend.Collectors
 
                 // Set if this post is from the op
                 comment.IsCommentFromOp = m_post != null && comment.Author.Equals(m_post.Author);
+
+                // Set if this comment is from the current user
+                if (m_baconMan.UserMan.IsUserSignedIn && m_baconMan.UserMan.CurrentUser != null)
+                {
+                    comment.IsCommentOwnedByUser = m_baconMan.UserMan.CurrentUser.Name.Equals(comment.Author, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used to add a comment is edited by the user.
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <param name="comment"></param>
+        private void UpdateComment(Comment newComment)
+        {
+            // First get the guts of the list helper.
+            List<Element<Comment>> currentElements = GetListHelperElements();
+
+            // Here is a hard one. To edit the comment in to the comment tree we need to run through
+            // the current elements and figure out where it goes.
+            int insertedPos = 0;
+            bool wasSuccess = InjectCommentRecursive(ref currentElements, newComment.Id, newComment, true, ref insertedPos);
+
+            if(wasSuccess)
+            {
+                // Fire the updated event to show on the UI.
+                FireCollectionUpdated(insertedPos, new List<Comment> { newComment }, false, false);
+
+                // Fire collection state changed
+                FireStateChanged(1);
             }
         }
 
@@ -228,18 +260,21 @@ namespace BaconBackend.Collectors
                 // Here is a hard one. To inject the comment in to the comment tree we need to run through
                 // the current elements and figure out where it goes.
                 int insertedPos = 0;
-                string searchingId = parentId.Substring(3);
-                bool wasSuccess = InjectCommentRecursive(ref currentElements, searchingId, comment, ref insertedPos);
+                string parentIdWithoutType = parentId.Substring(3);
+                bool wasSuccess = InjectCommentRecursive(ref currentElements, parentIdWithoutType, comment, false, ref insertedPos);
 
-                // Fire the updated event to show on the UI.
-                FireCollectionUpdated(insertedPos, new List<Comment> { comment }, false, true);
+                if(wasSuccess)
+                {
+                    // Fire the updated event to show on the UI.
+                    FireCollectionUpdated(insertedPos, new List<Comment> { comment }, false, true);
 
-                // Fire collection state changed
-                FireStateChanged(1);
+                    // Fire collection state changed
+                    FireStateChanged(1);
+                }
             }
         }
 
-        private bool InjectCommentRecursive(ref List<Element<Comment>> elementList, string searchingParent, Comment comment, ref int insertedPos)
+        private bool InjectCommentRecursive(ref List<Element<Comment>> elementList, string searchingParent, Comment comment, bool isEdit, ref int insertedPos)
         {
             // Search through this tear
             for(int i = 0; i < elementList.Count; i++)
@@ -251,28 +286,43 @@ namespace BaconBackend.Collectors
                 Element<Comment> element = elementList[i];
                 if (element.Data.Id.Equals(searchingParent))
                 {
-                    // We found you dad! (or mom, why not)
-
-                    // Make sure it can have children
-                    if(element.Data.Replies == null)
+                    if(isEdit)
                     {
-                        element.Data.Replies = new RootElement<Comment>();
-                        element.Data.Replies.Data = new ElementList<Comment>();
-                        element.Data.Replies.Data.Children = new List<Element<Comment>>();
+                        // Give this comment the replies of the old one.
+                        comment.Replies = element.Data.Replies;
+                        comment.CommentDepth = element.Data.CommentDepth;
+
+                        // Update the comment
+                        element.Data = comment;
+
+                        // Subtract one since we are replacing not inserting after.
+                        insertedPos--;
                     }
+                    else
+                    {
+                        // We found you dad! (or mom, why not)
 
-                    // Set the comment depth
-                    comment.CommentDepth = element.Data.CommentDepth + 1;
+                        // Make sure it can have children
+                        if (element.Data.Replies == null)
+                        {
+                            element.Data.Replies = new RootElement<Comment>();
+                            element.Data.Replies.Data = new ElementList<Comment>();
+                            element.Data.Replies.Data.Children = new List<Element<Comment>>();
+                        }
 
-                    // Add it!
-                    element.Data.Replies.Data.Children.Insert(0, new Element<Comment>() { Data = comment, Kind = "t1" });
+                        // Set the comment depth
+                        comment.CommentDepth = element.Data.CommentDepth + 1;
+
+                        // Add it!
+                        element.Data.Replies.Data.Children.Insert(0, new Element<Comment>() { Data = comment, Kind = "t1" });
+                    }
 
                     // Return success!
                     return true;
                 }
 
                 // If no match ask his kids.
-                if (element.Data.Replies != null && InjectCommentRecursive(ref element.Data.Replies.Data.Children, searchingParent, comment, ref insertedPos))
+                if (element.Data.Replies != null && InjectCommentRecursive(ref element.Data.Replies.Data.Children, searchingParent, comment, isEdit, ref insertedPos))
                 {
                     return true;
                 }
@@ -365,56 +415,94 @@ namespace BaconBackend.Collectors
         }
 
         /// <summary>
-        /// Called when the user is trying to comment on something.
+        /// Called when the user added a comment or edit an existing comment.
         /// </summary>
         /// <returns></returns>
-        public bool AddNewUserComment(string jsonResponse, string redditIdCommentingOn)
+        public bool CommentAddedOrEdited(string parentOrOrgionalId, string serverResponse, bool isEdit)
         {
-            try
+            // Assume if we can find author we are successful. Not sure if that is safe or not... :)
+            if (!String.IsNullOrWhiteSpace(serverResponse) && serverResponse.Contains("\"author\""))
             {
-                // Assume if we can find author we are successful. Not sure if that is safe or not... :)
-                if(jsonResponse.Contains("\"author\""))
+                // Do the next part in a try catch so if we fail we will still report success since the
+                // message was sent to reddit.
+                try
                 {
-                    // Do the next part in a try catch so if we fail we will still report success since the
-                    // message was sent to reddit.
-                    try
+                    // Try to parse out the new comment
+                    int dataPos = serverResponse.IndexOf("\"data\":");
+                    int dataStartPos = serverResponse.IndexOf('{', dataPos + 7);
+                    int dataEndPos = serverResponse.IndexOf("}", dataStartPos);
+                    string commentData = serverResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
+
+                    // Parse the new comment
+                    Comment newComment = JsonConvert.DeserializeObject<Comment>(commentData);
+
+                    if (isEdit)
                     {
-                        // Try to parse out the new comment
-                        int dataPos = jsonResponse.IndexOf("\"data\":");
-                        int dataStartPos = jsonResponse.IndexOf('{', dataPos + 7);
-                        int dataEndPos = jsonResponse.IndexOf("}", dataStartPos);
-                        string commentData = jsonResponse.Substring(dataStartPos, (dataEndPos - dataStartPos +1));
-
-                        // Parse the new comment
-                        Comment newComment = JsonConvert.DeserializeObject<Comment>(commentData);
-
+                        UpdateComment(newComment);
+                    }
+                    else
+                    {
                         // Inject the new comment
-                        InjectComment(redditIdCommentingOn, newComment);
-                    }
-                    catch(Exception e)
-                    {
-                        // We fucked up adding the comment to the UI.
-                        m_baconMan.MessageMan.DebugDia("Failed injecting comment", e);
-                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "AddCommentSuccessButAddUiFailed");
+                        InjectComment(parentOrOrgionalId, newComment);
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    // Reddit returned something wrong
-                    m_baconMan.MessageMan.ShowMessageSimple("That's not right", "Sorry we can't post your comment right now, reddit returned and unexpected message.");
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
-                    return false;
+                    // We fucked up adding the comment to the UI.
+                    m_baconMan.MessageMan.DebugDia("Failed injecting comment", e);
+                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "AddCommentSuccessButAddUiFailed");
                 }
+
+                // If we get to adding to the UI return true because reddit has the comment.
+                return true;
             }
-            catch (Exception e)
+            else
             {
-                // Networking fail
-                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "Sorry we can't post your comment right now, we can't seem to make a network connection.");
-                m_baconMan.MessageMan.DebugDia("failed to send comment", e);
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToSendComment");
+                // Reddit returned something wrong
+                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "Sorry we can't post your comment right now, reddit returned and unexpected message.");
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
                 return false;
             }
-            return true;
+        }   
+        
+        /// <summary>
+        /// Called when a comment should be deleted
+        /// </summary>
+        /// <param name="commentId"></param>
+        public void CommentDeleteRequest(Comment comment)
+        {
+            // Start a task to delete the comment
+            new Task(async () =>
+            {
+                try
+                {
+                    // Build the data
+                    List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+                    postData.Add(new KeyValuePair<string, string>("id", "t1_" + comment.Id));
+
+                    // Make the call
+                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString("/api/del", postData);
+
+                    // Do some super simple validation
+                    if (str != "{}")
+                    {
+                        throw new Exception("Failed to delete comment! The response indicated a failure");
+                    }
+
+                    // If successful, mark it as deleted in the UI.
+                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                    {
+                        comment.Body = "[deleted]";
+                        comment.IsDeleted = true;
+                        UpdateComment(comment);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    m_baconMan.MessageMan.DebugDia("failed to vote!", ex);
+                    m_baconMan.MessageMan.ShowMessageSimple("That's Not Right", "Something went wrong while trying to delete your comment, check your internet connection.");
+                }
+            }).Start();
         }
 
         #endregion

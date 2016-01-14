@@ -133,13 +133,23 @@ namespace Baconit.Panels
         /// </summary>
         string m_uniqueId = String.Empty;
 
+        /// <summary>
+        /// Holds a reference to the current lists.
+        /// </summary>
+        List<WeakReference<EndDetectingListView>> m_currentListViews = new List<WeakReference<EndDetectingListView>>();
+
+
         public FlipViewPanel()
         {
             this.InitializeComponent();
 
             // Create a unique id for this
             m_uniqueId = DateTime.Now.Ticks.ToString();
+
+            // Setup a listener for size changes
+            this.SizeChanged += FlipViewPanel_SizeChanged;
         }
+
 
         /// <summary>
         /// Fired when the panel is being created.
@@ -761,17 +771,45 @@ namespace Baconit.Panels
         }
 
         /// <summary>
+        /// Fired when the user taps delete post.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void DeletePost_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post.
+            Post post = (Post)((FrameworkElement)sender).DataContext;
+
+            // Confirm
+            bool? doIt = await App.BaconMan.MessageMan.ShowYesNoMessage("Delete Post", "Are you sure you want to?");
+
+            if(doIt.HasValue && doIt.Value)
+            {
+                // Delete it.
+                m_collector.DeletePost(post);
+            }
+        }
+
+        /// <summary>
+        /// Fired when the user taps edit post.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditPost_Click(object sender, RoutedEventArgs e)
+        {
+            Post post = (Post)((FrameworkElement)sender).DataContext;
+            ShowCommentBox("t3_" + post.Id, post.Selftext, post);
+        }
+
+        /// <summary>
         /// Called when the user wants to comment on the post
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void PostCommentOn_OnIconTapped(object sender, EventArgs e)
         {
-            // Important! Call find name so the deferred loaded element is created!
-            FindName("ui_commmentBox");
             Post post = (Post)((FrameworkElement)sender).DataContext;
-            ui_commmentBox.Visibility = Visibility.Visible;
-            ui_commmentBox.ShowBox(post, "t3_"+post.Id);
+            ShowCommentBox("t3_" + post.Id, null, post);
         }
 
         /// <summary>
@@ -835,9 +873,9 @@ namespace Baconit.Panels
             m_collector.MarkPostRead((Post)ui_flipView.SelectedItem, ui_flipView.SelectedIndex);
 
             // Hide the comment box if shown
-            if (ui_commmentBox != null)
+            if (ui_commentBox != null)
             {
-                ui_commmentBox.HideBox();
+                ui_commentBox.HideBox();
             }
 
             // Reset the scroll pos
@@ -1223,9 +1261,9 @@ namespace Baconit.Panels
             }
 
             // If the comment box is open remove the height of it.
-            if (ui_commmentBox != null && ui_commmentBox.IsOpen)
+            if (ui_commentBox != null && ui_commentBox.IsOpen)
             {
-                screenSize -= (int)ui_commmentBox.ActualHeight;
+                screenSize -= (int)ui_commentBox.ActualHeight;
             }
 
             // If post is null back out here.
@@ -1250,26 +1288,6 @@ namespace Baconit.Panels
             return screenSize;
         }
 
-        /// <summary>
-        /// Fired when the comment box changes states.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CommentBox_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // We do this so we jump the UI ever time the comment box is open.
-            // see the description on m_hasDeferredHeaderSizeUpdate for a full story.
-            if (e.NewSize.Height > 0 && m_lastKnownScrollOffset > 30)
-            {
-                m_hasDeferredHeaderSizeUpdate = true;
-            }
-            else
-            {
-                // Fire a header size change to fix them up.
-                SetHeaderSizes();
-            }
-        }
-
         private void EndDetectingListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             EndDetectingListView listview = sender as EndDetectingListView;
@@ -1288,6 +1306,9 @@ namespace Baconit.Panels
 
             // Set the threshold to 0 so we always get notifications
             list.EndOfListDetectionThrehold = 0.0;
+
+            // Add this list to our current lists.
+            m_currentListViews.Add(new WeakReference<EndDetectingListView>(list));
         }
 
         #endregion
@@ -1331,7 +1352,7 @@ namespace Baconit.Panels
             }
         }
 
-        private void CommentReply_Tapped(object sender, TappedRoutedEventArgs e)
+        private void CommentButton3_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Animate the text
             AnimateText((FrameworkElement)sender);
@@ -1339,33 +1360,25 @@ namespace Baconit.Panels
             // Get the comment
             Comment comment = (sender as FrameworkElement).DataContext as Comment;
 
-            // Get the parent post
-            Post post = null;
-            string lookingForPostId = comment.LinkId.Substring(3);
-            lock(m_postsLists)
+            if(comment.IsDeleted)
             {
-                foreach(Post searchPost in m_postsLists)
-                {
-                    if(searchPost.Id.Equals(lookingForPostId))
-                    {
-                        post = searchPost;
-                        break;
-                    }
-                }
-            }
-
-            if(post == null)
-            {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentReplyTriedToFindParentPostButFailed");
+                App.BaconMan.MessageMan.ShowMessageSimple("LET IT GO!", "You can't edit a deleted comment!");
                 return;
             }
 
-            // Show the comment box, call find element to make sure this is created.
-            FindName("ui_commmentBox");
-            ui_commmentBox.ShowBox(post, "t1_" +comment.Id);
+            if (comment.IsCommentOwnedByUser)
+            {
+                // Edit
+                ShowCommentBox("t1_" + comment.Id, comment.Body, comment);
+            }
+            else
+            {
+                // Reply
+                ShowCommentBox("t1_" + comment.Id, null, comment);
+            }
         }
 
-        private void CommentUser_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void CommentButton4_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Animate the text
             AnimateText((FrameworkElement)sender);
@@ -1373,11 +1386,29 @@ namespace Baconit.Panels
             // Get the comment
             Comment comment = (sender as FrameworkElement).DataContext as Comment;
 
-            // Navigate to the user
-            Dictionary<string, object> args = new Dictionary<string, object>();
-            args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
-            m_host.Navigate(typeof(UserProfile), comment.Author, args);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFromComment");
+            if(comment.IsCommentOwnedByUser)
+            {
+                // Delete the comment
+                bool? response = await App.BaconMan.MessageMan.ShowYesNoMessage("Delete Comment", "Are you sure?");
+
+                if(response.HasValue && response.Value)
+                {
+                    // Find the manager
+                    FlipViewPostCommentManager manager = FindCommentManager(comment.LinkId);
+                    if (manager != null)
+                    {
+                        manager.CommentDeleteRequest(comment);
+                    }
+                }
+            }
+            else
+            {
+                // Navigate to the user
+                Dictionary<string, object> args = new Dictionary<string, object>();
+                args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
+                m_host.Navigate(typeof(UserProfile), comment.Author, args);
+                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFromComment");
+            }
         }
 
         private void CommentMore_Tapped(object sender, TappedRoutedEventArgs e)
@@ -1778,6 +1809,176 @@ namespace Baconit.Panels
 
         #endregion
 
+        #region Comment Box
+
+        /// <summary>
+        /// Shows the comment box
+        /// </summary>
+        private void ShowCommentBox(string redditId, string editText, object context)
+        {
+            // Important! Call find name so the deferred loaded element is created!
+            FindName("ui_commentBox");
+            ui_commentBox.Visibility = Visibility.Visible;
+            ui_commentBox.ShowBox(redditId, editText, context);
+            SetCommentBoxHeight(this.ActualHeight);
+        }
+
+        /// <summary>
+        /// Fired when the comment box changes states.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommentBox_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // We do this so we jump the UI ever time the comment box is open.
+            // see the description on m_hasDeferredHeaderSizeUpdate for a full story.
+            if (e.NewSize.Height > 0 && m_lastKnownScrollOffset > 30)
+            {
+                m_hasDeferredHeaderSizeUpdate = true;
+            }
+            else
+            {
+                // Fire a header size change to fix them up.
+                SetHeaderSizes();
+            }
+        }
+
+        /// <summary>
+        /// Fired when the control changes sizes. If this happens we need to update
+        /// the max height of the comment box if we have one.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FlipViewPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetCommentBoxHeight(e.NewSize.Height);
+        }
+
+        /// <summary>
+        /// Sets the comment box's max height
+        /// </summary>
+        /// <param name="height"></param>
+        private void SetCommentBoxHeight(double height)
+        {
+            // We have to set the max height because the grid row is set to auto.
+            // With auto the box will keep expanding as large as possible because
+            // it isn't bound by the grid.
+            if (ui_commentBox != null)
+            {
+                ui_commentBox.MaxHeight = height;
+            }
+        }
+
+        /// <summary>
+        /// Fired when the comment box is done opening.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommentBox_OnBoxOpened(object sender, CommentBoxOnOpenedArgs e)
+        {
+            // We want to scroll the comment we are working off of into view.
+            if(e.RedditId.StartsWith("t1_"))
+            {
+                Comment comment = (Comment)e.Context;
+                foreach (WeakReference<EndDetectingListView> weakList in m_currentListViews)
+                {
+                    EndDetectingListView currentList = null;
+                    weakList.TryGetTarget(out currentList);
+                    if(currentList != null)
+                    {
+                        Post post = (Post)currentList.DataContext;
+                        if (post.Id.Equals(comment.LinkId.Substring(3)))
+                        {
+                            currentList.ScrollIntoView(comment);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fired when the comment in the comment box was submitted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CommentBox_OnCommentSubmitted(object sender, OnCommentSubmittedArgs e)
+        {
+            bool wasActionSuccessful = false;
+
+            if(e.RedditId.StartsWith("t3_"))
+            {
+                Post post = (Post)e.Context;
+
+                if(post != null)
+                {
+                    if (e.IsEdit)
+                    {
+                        // We edited selftext
+                        wasActionSuccessful = m_collector.EditSelfPost(post, e.Response);
+
+                        if(wasActionSuccessful)
+                        {
+                            // If we are successful to update the UI we will remove the post
+                            // and reallow it.
+                            ContentPanelMaster.Current.RemoveAllowedContent(post.Id);
+                            ContentPanelSource soruce = ContentPanelSource.CreateFromPost(post);
+                            ContentPanelMaster.Current.AddAllowedContent(soruce, m_uniqueId);
+                        }
+                    }
+                    else
+                    {
+                        // We added a new comment
+                        FlipViewPostCommentManager manager = FindCommentManager(post.Id);
+                        if (manager != null)
+                        {
+                            wasActionSuccessful = manager.CommentAddedOrEdited("t3_"+post.Id, e);
+                        }
+                        else
+                        {
+                            App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitManagerObjNull");
+                        }
+                    }
+                }
+                else
+                {
+                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitPostObjNull");
+                }
+            }
+            else if(e.RedditId.StartsWith("t1_"))
+            {
+                Comment comment = (Comment)e.Context;
+                if(comment != null)
+                {
+                    // Comment added or edited.
+                    FlipViewPostCommentManager manager = FindCommentManager(comment.LinkId);
+                    if (manager != null)
+                    {
+                        wasActionSuccessful = manager.CommentAddedOrEdited("t1_"+comment.Id, e);
+                    }
+                    else
+                    {
+                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitManagerObjNull");
+                    }
+                }
+                else
+                {
+                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitCommentObjNull");
+                }
+            }
+
+            // Hide the box if good
+            if(wasActionSuccessful)
+            {
+                ui_commentBox.HideBox(true);
+            }
+            else
+            {
+                ui_commentBox.HideLoadingOverlay();
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Sets the post content. For now all we give the flip view control is the URL
         /// and it must figure out the rest on it's own.
@@ -1794,7 +1995,13 @@ namespace Baconit.Panels
             });
         }
 
-        private void ui_contentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+
+        /// <summary>
+        /// Fired when the content root changes sizes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             SetHeaderSizes();
         }

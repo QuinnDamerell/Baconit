@@ -1,11 +1,13 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Managers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
@@ -369,7 +371,7 @@ namespace BaconBackend.Collectors
             }
 
             // Make the call to save or hide the post
-            bool success = await MiscellaneousHelper.SaveOrHideRedditItem(m_baconMan, "t3_" + collectionPost.Id, save, hide);
+            bool success = await Task.Run(() => MiscellaneousHelper.SaveOrHideRedditItem(m_baconMan, "t3_" + collectionPost.Id, save, hide));
 
             if (!success)
             {
@@ -391,6 +393,103 @@ namespace BaconBackend.Collectors
             {
                 // Fire off that a update happened.
                 FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+            }
+        }
+
+        /// <summary>
+        /// Edits the text of a self post.
+        /// </summary>
+        /// <param name="post"></param>
+        public bool EditSelfPost(Post post, string serverResponse)
+        {
+            // Assume if we can find author we are successful. Not sure if that is safe or not... :)
+            if (!String.IsNullOrWhiteSpace(serverResponse) && serverResponse.Contains("\"author\""))
+            {
+                // Do the next part in a try catch so if we fail we will still report success since the
+                // message was sent to reddit.
+                // NOTE: YES THIS IS VERY BAD CODE.
+                try
+                {
+                    // Try to parse out the new selftext.
+                    int dataPos = serverResponse.IndexOf("\"selftext\":");
+                    int dataStartPos = serverResponse.IndexOf('"', dataPos + 11);
+
+                    // Find the end of the string. We must ignore any \\\" because those are escaped (\\) \" from the comment.
+                    int dataEndPos = dataStartPos;
+                    while(dataEndPos < serverResponse.Length)
+                    {
+                        // Find the next "
+                        dataEndPos = serverResponse.IndexOf('"', dataEndPos + 1);
+
+                        // Check that this wasn't after \
+                        if(serverResponse[dataEndPos - 1] != '\\')
+                        {
+                            // We found a " without the \ before it!
+                            break;
+                        }
+                    }
+
+                    // Now get the string.
+                    string newSelfText = serverResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
+
+                    // Remove the starting and ending "
+                    newSelfText = newSelfText.Substring(1, newSelfText.Length - 2);
+
+                    newSelfText = Regex.Unescape(newSelfText);   
+
+                    // Using the post and suggested index, find the real post and index
+                    Post collectionPost = post;
+                    int postPosition = 0;
+                    FindPostInCurrentCollection(ref collectionPost, ref postPosition);
+
+                    if (collectionPost == null)
+                    {
+                        // We didn't find it.
+                        return true;
+                    }
+
+                    // Update the collection and post selftext. It is important to also update the post because
+                    // we will use that to refresh the UI instantly.
+                    post.Selftext = newSelfText;
+                    collectionPost.Selftext = newSelfText;
+
+                    // Fire off that a update happened.
+                    FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);                   
+                }
+                catch (Exception e)
+                {
+                    // We fucked up updating the UI for the post edit.
+                    m_baconMan.MessageMan.DebugDia("Failed updating selftext in UI", e);
+                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedUpdatingSelftextInUI");
+                }
+
+                // If the response was ok always return true.
+                return true;
+            }
+            else
+            {
+                // Reddit returned something wrong
+                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, reddit returned and unexpected message.");
+                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Called when we should delete a post from this user.
+        /// </summary>
+        public async void DeletePost(Post post)
+        {
+            // Try to delete it.
+            bool success = await Task.Run(()=> MiscellaneousHelper.DeletePost(m_baconMan, post.Id));
+
+            if(success)
+            {
+                m_baconMan.MessageMan.ShowMessageSimple("Bye Bye", "Your post has been deleted.");
+            }
+            else
+            {
+                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, check your Internet connection.");
             }
         }
 
@@ -484,6 +583,12 @@ namespace BaconBackend.Collectors
 
                 // Set if we should show the save image or not
                 post.ShowSaveImageMenu = String.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+
+                // Set if this is owned by the current user
+                if(m_baconMan.UserMan.IsUserSignedIn && m_baconMan.UserMan.CurrentUser != null)
+                {
+                    post.IsPostOwnedByUser = post.Author.Equals(m_baconMan.UserMan.CurrentUser.Name, StringComparison.OrdinalIgnoreCase);
+                }
 
                 // Check if it has been read
                 if (ReadPostsList.ContainsKey(post.Id))
