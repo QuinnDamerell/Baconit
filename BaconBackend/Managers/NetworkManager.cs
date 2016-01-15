@@ -44,6 +44,10 @@ namespace BaconBackend.Managers
             if(m_baconMan.UserMan.IsUserSignedIn)
             {
                 string accessToken = await m_baconMan.UserMan.GetAccessToken();
+                if(String.IsNullOrWhiteSpace(accessToken))
+                {
+                    throw new Exception("Failed to get (most likely refresh) the access token");
+                }
                 var byteArray = Encoding.UTF8.GetBytes(accessToken);
                 var authHeader = "bearer " + accessToken;
                 return await MakeGetRequest("https://oauth.reddit.com/" + apiUrl, authHeader);
@@ -94,7 +98,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public async Task<IHttpContent> MakeGetRequest(string url, string authHeader = "")
         {
-            if(url == "")
+            if(String.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }
@@ -108,7 +112,7 @@ namespace BaconBackend.Managers
                 message.Headers["Authorization"] = authHeader;
             }
             HttpResponseMessage response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
-            if(response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable || 
+            if(response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable ||
                 response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
                 response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
                 response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
@@ -127,7 +131,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public async Task<IHttpContent> MakePostRequest(string url, List<KeyValuePair<string, string>> postData, string authHeader = "")
         {
-            if (url == "")
+            if (String.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }
@@ -150,7 +154,7 @@ namespace BaconBackend.Managers
               response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
               response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
               response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
-            { 
+            {
                 throw new ServiceDownException();
             }
             return response.Content;
@@ -163,7 +167,7 @@ namespace BaconBackend.Managers
         /// <returns>IBuffer with the content</returns>
         public async Task<IBuffer> MakeRawGetRequest(string url)
         {
-            if (url == "")
+            if (String.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }

@@ -125,8 +125,8 @@ namespace BaconBackend.Managers
                     // Try to refresh
                     try
                     {
-                        await RefreshAccessToken(AccessTokenData.RefreshToken, true);
-                        m_tokenRefreshFailed = false;
+                        AccessTokenResult result = await RefreshAccessToken(AccessTokenData.RefreshToken, true);
+                        m_tokenRefreshFailed = result == null;
                     }
                     catch (Exception e)
                     {
@@ -226,7 +226,7 @@ namespace BaconBackend.Managers
                     }
 
                     // Check the code
-                    if(code == "")
+                    if(String.IsNullOrWhiteSpace(code))
                     {
                         return new UserManager.SignInResult()
                         {
