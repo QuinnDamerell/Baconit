@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -26,6 +27,19 @@ namespace Baconit.ContentPanels.Panels
         const float MAX_ZOOM_FACTOR = 5.0f;
 
         /// <summary>
+        /// Possible states of the image
+        /// </summary>
+        enum ImageState
+        {
+            Unloaded,
+            Normal,
+            NormalSizeUpdating,
+            EnteringFullscreen,
+            Fullscreen,
+            ExitingFullscreen,
+        }
+
+        /// <summary>
         /// Holds a reference to our base.
         /// </summary>
         IContentPanelBaseInternal m_base;
@@ -41,11 +55,6 @@ namespace Baconit.ContentPanels.Panels
         float m_minZoomFactor = 1.0f;
 
         /// <summary>
-        /// Indicates if we should ignore scrolling changes.
-        /// </summary>
-        bool m_ignoreZoomChanges = false;
-
-        /// <summary>
         /// Holds the current size of the control.
         /// </summary>
         Size m_currentControlSize;
@@ -58,7 +67,17 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a reference to the image's memory source.
         /// </summary>
-        InMemoryRandomAccessStream m_imageSourceStream = null; 
+        InMemoryRandomAccessStream m_imageSourceStream = null;
+
+        /// <summary>
+        /// Indicates the current state of the image
+        /// </summary>
+        ImageState m_state = ImageState.Unloaded;
+
+        /// <summary>
+        /// The scale factor of the current device.
+        /// </summary>
+        double m_deviceScaleFactor;
 
 
         public BasicImageContentPanel(IContentPanelBaseInternal panelBase)
@@ -71,6 +90,11 @@ namespace Baconit.ContentPanels.Panels
 
             // Set the max zoom for the scroller
             ui_scrollViewer.MaxZoomFactor = MAX_ZOOM_FACTOR;
+
+            // Get the current scale factor. Why 0.001? If we don't add that we kill the app
+            // with a layout loop. I think this is a platform bug so we need it for now. If you don't
+            // believe me remove it and see what happens.
+            m_deviceScaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel + 0.001;
         }
 
         /// <summary>
@@ -276,17 +300,16 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Image_Loaded(object sender, RoutedEventArgs e)
+        private async void Image_Loaded(object sender, RoutedEventArgs e)
         {
-            // Ignore zoom changes and update the zoom factors
-            m_ignoreZoomChanges = true;
-
-            SetScrollerZoomFactors();
-
-            m_ignoreZoomChanges = false;
+            // Update the zoom if needed
+            await SetScrollerZoomFactors(null);
 
             // Hide the loading screen
             m_base.FireOnLoading(false);
+
+            // Set that we are loaded
+            m_state = ImageState.Normal;
         }
 
         /// <summary>
@@ -294,7 +317,7 @@ namespace Baconit.ContentPanels.Panels
         /// screen. Unless useFulsize is set.
         /// </summary>
         /// <param name="useFullSize"></param>
-        public void ReloadImage(bool useFullsize)
+        public async Task ReloadImage(bool useFullsize)
         {
             // Don't worry about this if we are destroyed.
             if (m_base.IsDestoryed)
@@ -365,14 +388,58 @@ namespace Baconit.ContentPanels.Panels
             // Set the decode size.
             bitmapImage.DecodePixelHeight = decodeHeight;
             bitmapImage.DecodePixelWidth = decodeWidth;
-            bitmapImage.DecodePixelType = DecodePixelType.Physical;
+
+            // If we have memory to play with use logical pixels for decode. This will cause the image to decode to the
+            // logical size, meaning the physical pixels will actually be the screen resolution. If we choose physical pixels
+            // the image will decode to the width of the control in physical pixels, so the image size to control size will be one to one.
+            // But since this is scaled, the control size is something like 3 physical pixels for each logical pixel, so the image is lower res
+            // if we use physical.
+            bitmapImage.DecodePixelType = App.BaconMan.MemoryMan.MemoryPressure < MemoryPressureStates.Medium ? DecodePixelType.Logical : DecodePixelType.Physical;
 
             // Set the source.
             stream.Seek(0);
             bitmapImage.SetSource(stream);
 
+            // Grab the past image size.
+            Size oldImageSizeLogical;
+            if(m_image.Source != null)
+            {
+                BitmapImage currentImage = (BitmapImage)m_image.Source;
+                if(currentImage != null)
+                {
+                    oldImageSizeLogical.Width = currentImage.PixelWidth;
+                    oldImageSizeLogical.Height = currentImage.PixelHeight;
+
+                    // Convert to logical pixels if this value is in physical.
+                    if(bitmapImage.DecodePixelType == DecodePixelType.Logical && (currentImage.DecodePixelHeight != 0 || currentImage.DecodePixelWidth != 0))
+                    {
+                        oldImageSizeLogical.Width /= m_deviceScaleFactor;
+                        oldImageSizeLogical.Height /= m_deviceScaleFactor;
+                    }
+                }           
+            }
+
             // Set the image.
             m_image.Source = bitmapImage;
+
+            // If the size of this image and the current image are different we need to update
+            // the zoom factors.
+            if(m_lastImageSetSize.Width != oldImageSizeLogical.Width || m_lastImageSetSize.Height != oldImageSizeLogical.Height)
+            {
+                // Get the current image size also.
+                Size currentImageSizeLogical;
+                currentImageSizeLogical.Width = bitmapImage.PixelWidth;
+                currentImageSizeLogical.Height = bitmapImage.PixelHeight;
+
+                // Convert to logical pixels if this value is in physical.
+                if (bitmapImage.DecodePixelType == DecodePixelType.Logical && (bitmapImage.DecodePixelHeight != 0 || bitmapImage.DecodePixelWidth != 0))
+                {
+                    currentImageSizeLogical.Width /= m_deviceScaleFactor;
+                    currentImageSizeLogical.Height /= m_deviceScaleFactor;
+                }
+
+                await SetScrollerZoomFactors(currentImageSizeLogical, oldImageSizeLogical);
+            } 
         }
 
         #endregion
@@ -431,9 +498,9 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        private async void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            if (m_ignoreZoomChanges)
+            if (m_state != ImageState.Normal)
             {
                 return;
             }
@@ -441,11 +508,24 @@ namespace Baconit.ContentPanels.Panels
             // If the zooms don't match go full screen
             if (Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) > .001)
             {
+                // Set the state and hide the image, we do this make the transition smoother.
+                m_state = ImageState.EnteringFullscreen;
+                VisualStateManager.GoToState(this, "HideImage", true);
+                ui_scrollViewer.Visibility = Visibility.Collapsed;
+
+                // wait a second for the vis change to apply
+                await Task.Delay(10);           
+
                 // Load the image full screen if not already.
-                ReloadImage(true);
+                await ReloadImage(true);
 
                 // Try to go full screen
                 m_base.FireOnFullscreenChanged(true);
+
+                // Restore the state
+                ui_scrollViewer.Visibility = Visibility.Visible;
+                VisualStateManager.GoToState(this, "ShowImage", true);
+                m_state = ImageState.Fullscreen;
             }
         }
 
@@ -454,9 +534,9 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        private async void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            if (m_ignoreZoomChanges)
+            if (m_state != ImageState.Fullscreen)
             {
                 return;
             }
@@ -464,11 +544,30 @@ namespace Baconit.ContentPanels.Panels
             // If the two zoom factors are close enough, leave full screen.
             if (Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) < .001)
             {
-                // Load the image as screen size.
-                ReloadImage(false);
+                // Set the state and hide the image, we do this make the transition smoother.
+                m_state = ImageState.ExitingFullscreen;
+                ui_scrollViewer.Visibility = Visibility.Collapsed;
+                VisualStateManager.GoToState(this, "HideImage", true);
+
+                // wait a second for the vis change to apply
+                await Task.Delay(10);
 
                 // Try to leave full screen.
                 m_base.FireOnFullscreenChanged(false);
+
+                // Load the image as screen size.
+                await ReloadImage(false);
+
+                // This is kind of shitty, but since the image resizes when loaded at an unknown time
+                // shortly after the zoomer will not center the image. So sleep for a second and then fire
+                // the zoom again.
+                await Task.Delay(50);
+                ui_scrollViewer.ChangeView(0, 0, m_minZoomFactor);
+
+                // Restore the state
+                m_state = ImageState.Normal;
+                ui_scrollViewer.Visibility = Visibility.Visible;
+                VisualStateManager.GoToState(this, "ShowImage", true);
             }
         }
 
@@ -501,33 +600,37 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
+        private async void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if(m_base.IsFullscreen)
-            {
-                return;
-            }
-
             // Grab the new size.
             m_currentControlSize = e.NewSize;
 
-            // Resize the image.
-            ReloadImage(false);
+            if(m_state == ImageState.Unloaded)
+            {
+                // If we are unloaded call this to ensure the image it loading.
+                await ReloadImage(false);
+            }
+            else if(m_state == ImageState.Normal)
+            {
+                // Only reload the image if the size is larger than the current image.
+                if (m_lastImageSetSize.Height < m_currentControlSize.Height && m_lastImageSetSize.Width < m_currentControlSize.Width)
+                {
+                    // Resize the image.
+                    await ReloadImage(false);
+                }
 
-            bool previousIgnoreState = m_ignoreZoomChanges;
+                m_state = ImageState.NormalSizeUpdating;
 
-            // Ignore zoom changes and update the zoom factors
-            m_ignoreZoomChanges = true;
+                await SetScrollerZoomFactors(null);
 
-            SetScrollerZoomFactors();
-
-            m_ignoreZoomChanges = previousIgnoreState;
+                m_state = ImageState.Normal;
+            }
         }
 
         /// <summary>
         /// Called when we should update the scroller zoom factor.
         /// </summary>
-        private void SetScrollerZoomFactors()
+        private async Task SetScrollerZoomFactors(Size? oldImageSize)
         {
             // If we don't have a size yet ignore.
             if (m_image == null || m_image.ActualHeight == 0 || m_image.ActualWidth == 0)
@@ -540,13 +643,14 @@ namespace Baconit.ContentPanels.Panels
                 Width = m_image.ActualWidth,
                 Height = m_image.ActualHeight
             };
-            SetScrollerZoomFactors(imageSize);
+            await SetScrollerZoomFactors(imageSize, oldImageSize);
         }
 
         /// <summary>
         /// Called when we should update the scroller zoom factor.
+        /// NOTE!! The input sizes should be in logical pixels not physical
         /// </summary>
-        private async void SetScrollerZoomFactors(Size imageSize)
+        private async Task SetScrollerZoomFactors(Size imageSize, Size? oldImageSize)
         {
             if (imageSize == null || imageSize.Height == 0 || imageSize.Width == 0 || ui_scrollViewer.ActualHeight == 0 || ui_scrollViewer.ActualWidth == 0)
             {
@@ -573,9 +677,34 @@ namespace Baconit.ContentPanels.Panels
             // Set the zoomer to the min size for the zoom
             ui_scrollViewer.MinZoomFactor = m_minZoomFactor;
 
+            float newZoomFactor = 0;
+            double? offset = null;
+            if(m_state == ImageState.EnteringFullscreen && oldImageSize.HasValue)
+            {
+                // If we have an image we want to keep the image in the same place
+                // This means we need to take the current zoom and the old image size
+                // to figure out what the new zoom should be to not move the image.
+                Size oldImageSizeValue = oldImageSize.Value;
+
+                float differenceRatio = (float)(oldImageSizeValue.Width / imageSize.Width);
+                newZoomFactor = ui_scrollViewer.ZoomFactor * differenceRatio;
+            }
+            else
+            {
+                // If we don't have an image already set the zoom to the min zoom.
+                newZoomFactor = m_minZoomFactor;
+                offset = 0;
+            }
+
+            // Do a check to make sure the zoom level is ok.
+            if (newZoomFactor < 0.1)
+            {
+                newZoomFactor = 0.1f;
+            }
+
             // Set the zoom size, we need to delay for a bit so it actually applies.
             await Task.Delay(1);
-            ui_scrollViewer.ChangeView(null, null, m_minZoomFactor, true);
+            ui_scrollViewer.ChangeView(offset, offset, newZoomFactor, true);
         }
 
         #endregion
