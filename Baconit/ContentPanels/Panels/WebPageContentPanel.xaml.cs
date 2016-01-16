@@ -98,7 +98,7 @@ namespace Baconit.ContentPanels.Panels
             {
                 DestroyWebView();
             }
-        }     
+        }
 
         /// <summary>
         /// Called when a new host is added.
@@ -199,7 +199,7 @@ namespace Baconit.ContentPanels.Panels
         }
         private void NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
-            m_base.FireOnError(true, "This web page failed to load");
+            m_base.FireOnError(true, "This web page having trouble loading");
         }
 
         private void NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
@@ -306,7 +306,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void FullScreenHolder_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ToggleFullScreen(!m_base.IsFullscreen);            
+            ToggleFullScreen(!m_base.IsFullscreen);
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace Baconit.ContentPanels.Panels
             ui_fullScreenIcon.Symbol = m_base.IsFullscreen ? Symbol.BackToWindow : Symbol.FullScreen;
 
             // Set our manipulation mode to capture all input
-            ManipulationMode = m_base.IsFullscreen ? ManipulationModes.All : ManipulationModes.System;            
+            ManipulationMode = m_base.IsFullscreen ? ManipulationModes.All : ManipulationModes.System;
 
             return didAction;
         }

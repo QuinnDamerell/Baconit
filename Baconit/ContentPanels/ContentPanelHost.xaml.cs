@@ -31,6 +31,14 @@ namespace Baconit.ContentPanels
         public bool GoFullScreen { get; set; }
     }
 
+    /// <summary>
+    /// Args for OnContentLoadRequestArgs
+    /// </summary>
+    public class OnContentLoadRequestArgs : EventArgs
+    {
+        public string SourceId { get; set; }
+    }
+
 
     public sealed partial class ContentPanelHost : UserControl, IContentPanelHost
     {
@@ -65,6 +73,11 @@ namespace Baconit.ContentPanels
         bool m_isGenericMessageShowing = false;
 
         /// <summary>
+        /// Indicates if we are showing the content load message.
+        /// </summary>
+        bool m_isShowingContentLoadBlock = false;
+
+        /// <summary>
         /// Keeps track of when the host was created.
         /// </summary>
         DateTime m_hostCreationTime = DateTime.Now;
@@ -89,6 +102,16 @@ namespace Baconit.ContentPanels
         }
         SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>> m_onToggleFullscreen = new SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>>();
 
+        /// <summary>
+        /// Fired when the user taps the content load request message.
+        /// </summary>
+        public event EventHandler<OnContentLoadRequestArgs> OnContentLoadRequest
+        {
+            add { m_onContentLoadRequest.Add(value); }
+            remove { m_onContentLoadRequest.Remove(value); }
+        }
+        SmartWeakEvent<EventHandler<OnContentLoadRequestArgs>> m_onContentLoadRequest = new SmartWeakEvent<EventHandler<OnContentLoadRequestArgs>>();
+
 
         public ContentPanelHost()
         {
@@ -96,6 +119,9 @@ namespace Baconit.ContentPanels
 
             // Note the time.
             m_hostCreationTime = DateTime.Now;
+
+            // Do this now if we need to.
+            ShowContentLoadBlockIfNeeded();
         }
 
         #region Panel Registration
@@ -116,6 +142,9 @@ namespace Baconit.ContentPanels
                     ContentPanelMaster.Current.RegisterForPanel(this, sourceId);
                 });
             }
+
+            // show content block if we need to.
+            ShowContentLoadBlockIfNeeded();
         }
 
         /// <summary>
@@ -258,7 +287,7 @@ namespace Baconit.ContentPanels
             if(panelBase != null)
             {
                 ToggleProgress(panelBase.IsLoading);
-            }            
+            }
         }
 
         /// <summary>
@@ -349,7 +378,7 @@ namespace Baconit.ContentPanels
                 {
                     ContentPanelMaster.Current.OnPanelVisibliltyChanged(sourceId, isVisible);
                 });
-            }   
+            }
         }
 
         #endregion
@@ -384,8 +413,8 @@ namespace Baconit.ContentPanels
 
             if (show)
             {
-                ui_progressRing.IsActive = !disableActive && show;                
-                VisualStateManager.GoToState(this, "ShowProgressHolder", true);                
+                ui_progressRing.IsActive = !disableActive && show;
+                VisualStateManager.GoToState(this, "ShowProgressHolder", true);
             }
             else
             {
@@ -574,6 +603,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         private void SetupGenericMessage()
         {
+            bool setError = false;
             IContentPanelBase panelBase = m_currentPanelBase;
             if (panelBase != null)
             {
@@ -585,7 +615,26 @@ namespace Baconit.ContentPanels
 
                 // Update the state of the UI. If we are hiding here we want it instant.
                 ToggleGenericMessage(panelBase.HasError, panelBase.ErrorText, null, true);
+                setError = panelBase.HasError;
             }
+        }
+
+        /// <summary>
+        /// Called if we should show the content block.
+        /// </summary>
+        private bool ShowContentLoadBlockIfNeeded()
+        {
+            // If we are blocking content show the request block.
+            m_isShowingContentLoadBlock = !App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction;
+            if (m_isShowingContentLoadBlock)
+            {
+                // Show the message
+                ToggleGenericMessage(true, "Tap anywhere to load content", "You can change this behavior in the settings", true);
+
+                // Hide loading.
+                ToggleProgress(false, true);
+            }
+            return m_isShowingContentLoadBlock;
         }
 
         /// <summary>
@@ -630,25 +679,44 @@ namespace Baconit.ContentPanels
         /// <param name="e"></param>
         private async void GenericMessage_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            try
+            // If we are showing the content load fire it.
+            if (m_isShowingContentLoadBlock)
             {
-                // Get the url, when we are unloaded we will not have a panel base
-                // thus we have to get the source from the master.
-                string url;
-                if(m_currentPanelBase != null)
+                OnContentLoadRequestArgs args = new OnContentLoadRequestArgs()
                 {
-                    url = m_currentPanelBase.Source.Url;
-                }
-                else
-                {
-                    // This could be null (but never should be), but if so we are fucked anyways.
-                    url = ContentPanelMaster.Current.GetSource(SourceId).Url;
-                }
+                    SourceId = SourceId
+                };
+                m_onContentLoadRequest.Raise(this, args);
 
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
+                // Set bars
+                m_isShowingContentLoadBlock = false;
+                ToggleGenericMessage(false);
+
+                // Show loading
+                ToggleProgress(true);
             }
-            catch (Exception)
-            { }
+            else
+            {
+                try
+                {
+                    // Get the url, when we are unloaded we will not have a panel base
+                    // thus we have to get the source from the master.
+                    string url;
+                    if (m_currentPanelBase != null)
+                    {
+                        url = m_currentPanelBase.Source.Url;
+                    }
+                    else
+                    {
+                        // This could be null (but never should be), but if so we are fucked anyways.
+                        url = ContentPanelMaster.Current.GetSource(SourceId).Url;
+                    }
+
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
+                }
+                catch (Exception)
+                { }
+            }
         }
 
         #endregion

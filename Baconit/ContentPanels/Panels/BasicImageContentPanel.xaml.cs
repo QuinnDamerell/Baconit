@@ -35,6 +35,7 @@ namespace Baconit.ContentPanels.Panels
             Normal,
             NormalSizeUpdating,
             EnteringFullscreen,
+            EnteringFullscreenComplete,
             Fullscreen,
             ExitingFullscreen,
         }
@@ -164,7 +165,7 @@ namespace Baconit.ContentPanels.Panels
                     App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "BasicImageControlNoImageUrl");
 
                     // Jump back to the UI thread
-                    m_base.FireOnFallbackToBrowser();    
+                    m_base.FireOnFallbackToBrowser();
                     return;
                 }
 
@@ -280,8 +281,11 @@ namespace Baconit.ContentPanels.Panels
                     // Add a loaded listener so we can size the image when loaded
                     m_image.Loaded += Image_Loaded;
 
+                    // We don't want to wait on this.
+#pragma warning disable CS4014
                     // Set the image.
                     ReloadImage(false);
+#pragma warning restore CS4014
 
                     // Set the image into the UI.
                     ui_scrollViewer.Content = m_image;
@@ -363,7 +367,7 @@ namespace Baconit.ContentPanels.Panels
                 m_lastImageSetSize.Width = m_currentControlSize.Width;
                 m_lastImageSetSize.Height = m_currentControlSize.Height;
             }
-            
+
             // Get the decode height and width.
             int decodeWidth = 0;
             int decodeHeight = 0;
@@ -383,7 +387,7 @@ namespace Baconit.ContentPanels.Panels
             }
 
             // Create a bitmap and
-            BitmapImage bitmapImage = new BitmapImage();     
+            BitmapImage bitmapImage = new BitmapImage();
 
             // Set the decode size.
             bitmapImage.DecodePixelHeight = decodeHeight;
@@ -416,7 +420,7 @@ namespace Baconit.ContentPanels.Panels
                         oldImageSizeLogical.Width /= m_deviceScaleFactor;
                         oldImageSizeLogical.Height /= m_deviceScaleFactor;
                     }
-                }           
+                }
             }
 
             // Set the image.
@@ -439,7 +443,7 @@ namespace Baconit.ContentPanels.Panels
                 }
 
                 await SetScrollerZoomFactors(currentImageSizeLogical, oldImageSizeLogical);
-            } 
+            }
         }
 
         #endregion
@@ -506,7 +510,7 @@ namespace Baconit.ContentPanels.Panels
             }
 
             // If the zooms don't match go full screen
-            if (Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) > .001)
+            if (!AreCloseEnoughToEqual(m_minZoomFactor, ui_scrollViewer.ZoomFactor))
             {
                 // Set the state and hide the image, we do this make the transition smoother.
                 m_state = ImageState.EnteringFullscreen;
@@ -514,7 +518,7 @@ namespace Baconit.ContentPanels.Panels
                 ui_scrollViewer.Visibility = Visibility.Collapsed;
 
                 // wait a second for the vis change to apply
-                await Task.Delay(10);           
+                await Task.Delay(10);
 
                 // Load the image full screen if not already.
                 await ReloadImage(true);
@@ -525,7 +529,14 @@ namespace Baconit.ContentPanels.Panels
                 // Restore the state
                 ui_scrollViewer.Visibility = Visibility.Visible;
                 VisualStateManager.GoToState(this, "ShowImage", true);
-                m_state = ImageState.Fullscreen;
+
+                // wait a second the scroll to apply. If we don't ViewChanged might
+                // get fired before the zoom has happened.
+                await Task.Delay(50);
+
+                // Set that we are done.
+                m_state = ImageState.EnteringFullscreenComplete;
+
             }
         }
 
@@ -536,13 +547,19 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private async void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            if (m_state != ImageState.Fullscreen)
+            // If we are done entering full screen set the var and return.
+            if(m_state == ImageState.EnteringFullscreenComplete)
+            {
+                m_state = ImageState.Fullscreen;
+                return; ;
+            }
+            else if (m_state != ImageState.Fullscreen)
             {
                 return;
             }
 
             // If the two zoom factors are close enough, leave full screen.
-            if (Math.Abs(m_minZoomFactor - ui_scrollViewer.ZoomFactor) < .001)
+            if (AreCloseEnoughToEqual(m_minZoomFactor, ui_scrollViewer.ZoomFactor))
             {
                 // Set the state and hide the image, we do this make the transition smoother.
                 m_state = ImageState.ExitingFullscreen;
@@ -562,12 +579,20 @@ namespace Baconit.ContentPanels.Panels
                 // shortly after the zoomer will not center the image. So sleep for a second and then fire
                 // the zoom again.
                 await Task.Delay(50);
-                ui_scrollViewer.ChangeView(0, 0, m_minZoomFactor);
 
-                // Restore the state
-                m_state = ImageState.Normal;
-                ui_scrollViewer.Visibility = Visibility.Visible;
-                VisualStateManager.GoToState(this, "ShowImage", true);
+                // This can fail if we are out of view now.
+                try
+                {
+                    ui_scrollViewer.ChangeView(0, 0, m_minZoomFactor);
+
+                    // Restore the state
+                    m_state = ImageState.Normal;
+                    ui_scrollViewer.Visibility = Visibility.Visible;
+
+                    VisualStateManager.GoToState(this, "ShowImage", true);
+                }
+                catch(Exception)
+                { }
             }
         }
 
@@ -668,6 +693,13 @@ namespace Baconit.ContentPanels.Panels
             float horzZoomFactor = (float)(ui_scrollViewer.ActualWidth / imageSize.Width);
             m_minZoomFactor = Math.Min(vertZoomFactor, horzZoomFactor);
 
+            // For some reason, if the zoom factor is larger than 1 we set
+            //it to 1 and everything is correct.
+            if(m_minZoomFactor > 1)
+            {
+                m_minZoomFactor = 1;
+            }
+
             // Do a check to make sure the zoom level is ok.
             if (m_minZoomFactor < 0.1)
             {
@@ -685,9 +717,22 @@ namespace Baconit.ContentPanels.Panels
                 // This means we need to take the current zoom and the old image size
                 // to figure out what the new zoom should be to not move the image.
                 Size oldImageSizeValue = oldImageSize.Value;
-
                 float differenceRatio = (float)(oldImageSizeValue.Width / imageSize.Width);
                 newZoomFactor = ui_scrollViewer.ZoomFactor * differenceRatio;
+
+                // For some reason, if the zoom factor is larger than 1 we set
+                //it to 1 and everything is correct.
+                if (newZoomFactor > 1)
+                {
+                    newZoomFactor = 1;
+                }
+
+                // Make sure we aren't too close to our min zoom.
+                if (AreCloseEnoughToEqual(newZoomFactor, m_minZoomFactor))
+                {
+                    // If so make it a little more so we don't instantly jump out of full screen.
+                    newZoomFactor += 0.002f;
+                }
             }
             else
             {
@@ -709,5 +754,15 @@ namespace Baconit.ContentPanels.Panels
 
         #endregion
 
+        /// <summary>
+        /// Indicates if two floats are close enough.
+        /// </summary>
+        /// <param name="num1"></param>
+        /// <param name="num2"></param>
+        /// <returns></returns>
+        private bool AreCloseEnoughToEqual(float num1, float num2)
+        {
+            return Math.Abs(num1 - num2) < .001;
+        }
     }
 }

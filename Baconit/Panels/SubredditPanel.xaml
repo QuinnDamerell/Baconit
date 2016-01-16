@@ -94,23 +94,23 @@
                         <TextBlock Margin="0,0,10,0"
                                    HorizontalAlignment="Left"
                                    Foreground="#939393"
-                                   Text="{x:Bind SubTextLine1}"
+                                   Text="{x:Bind SubTextLine1, Mode=OneWay}"
                                    TextTrimming="WordEllipsis" />
                         <StackPanel Margin="0,0,10,0"
                                     HorizontalAlignment="Left"
                                     Orientation="Horizontal">
                             <TextBlock Height="27"
-                                       Margin="{x:Bind NewCommentMargin}"
-                                       Foreground="{x:Bind NewCommentColor}"
-                                       Text="{x:Bind NewCommentText}" />
+                                       Margin="{x:Bind NewCommentMargin, Mode=OneWay}"
+                                       Foreground="{x:Bind NewCommentColor, Mode=OneWay}"
+                                       Text="{x:Bind NewCommentText, Mode=OneWay}" />
                             <StackPanel Height="27" Orientation="Horizontal">
                                 <TextBlock Margin="0,0,4,0"
                                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                           Text="{x:Bind SubTextLine2PartOne}"
+                                           Text="{x:Bind SubTextLine2PartOne, Mode=OneWay}"
                                            TextTrimming="WordEllipsis" />
                                 <TextBlock Margin="0"
                                            Foreground="{x:Bind DarkenedAccentColorBrush}"
-                                           Text="{x:Bind SubTextLine2PartTwo}"
+                                           Text="{x:Bind SubTextLine2PartTwo, Mode=OneWay}"
                                            TextTrimming="WordEllipsis" />
                             </StackPanel>
                         </StackPanel>

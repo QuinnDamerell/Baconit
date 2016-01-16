@@ -67,6 +67,12 @@ namespace Baconit.HelperControls
         {
             // Hide it
             VisualStateManager.GoToState(this, "HideDialog", true);
+
+            // Fire this if we have a sender.
+            if(sender != null)
+            {
+                App.BaconMan.TelemetryMan.ReportEvent(this, "ClosedWithCloseButton");
+            }
         }
 
         /// <summary>
@@ -92,29 +98,12 @@ namespace Baconit.HelperControls
         private async void Review_Clicked(object sender, RoutedEventArgs e)
         {
             // Open the store
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store:reviewapp?appid=" + CurrentApp.AppId));
+            // #todo if our app package ever changes change this!!!
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9wzdncrfj0bc"));
 
             // Send telemetry
             App.BaconMan.TelemetryMan.ReportEvent(this, "StoreReviewOpened");
             m_wasReviewGiven = true;
-
-            // Close the box
-            Close_OnIconTapped(null, null);
-        }
-
-        /// <summary>
-        /// Open the user voice page for features
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Feedback_Clicked(object sender, RoutedEventArgs e)
-        {
-            // Go to the subreddit.
-            App.BaconMan.ShowGlobalContent("/r/baconit");
-
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "FeedbackSubredditOpened");
-            m_wasFeedbackGiven = true;
 
             // Close the box
             Close_OnIconTapped(null, null);

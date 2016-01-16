@@ -78,6 +78,11 @@ namespace Baconit
         /// </summary>
         bool m_hadDeferredInboxNavigate = false;
 
+        /// <summary>
+        /// The time the review was left.
+        /// </summary>
+        DateTime m_reviewLeaveTime = DateTime.MaxValue;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -232,6 +237,16 @@ namespace Baconit
         private void App_OnResuming(object sender, object e)
         {
             UpdateTrendingSubreddits();
+
+            if(!m_reviewLeaveTime.Equals(DateTime.MinValue))
+            {
+                TimeSpan timeSinceReviewLeave = DateTime.Now - m_reviewLeaveTime;
+                if(timeSinceReviewLeave.TotalMinutes < 5)
+                {
+                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
+                }
+                m_reviewLeaveTime = DateTime.MinValue;
+            }
         }
 
         /// <summary>
@@ -936,10 +951,30 @@ namespace Baconit
         /// Fired when someone wants to show the global content presenter
         /// </summary>
         /// <param name="link">What to show</param>
-        public void ShowGlobalContent(string link)
+        public async void ShowGlobalContent(string link)
         {
             // Validate that the link can't be opened by the subreddit viewer
             RedditContentContainer container = MiscellaneousHelper.TryToFindRedditContentInLink(link);
+
+            // If this is our special rate link, show rate and review.
+            if(!String.IsNullOrWhiteSpace(link) && link.ToLower().Equals("ratebaconit"))
+            {
+                // Open the store
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    try
+                    {
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9wzdncrfj0bc"));
+                    }
+                    catch (Exception) { }
+                });
+
+                // Show a dialog. This will only work on devices that can show many windows.
+                // So also set the time and if we restore fast enough we will show the dialog also
+                App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
+                m_reviewLeaveTime = DateTime.Now;
+                return;
+            }
 
             // Make sure we got a response and it isn't a website
             if (container != null && container.Type != RedditContentType.Website)
@@ -1081,7 +1116,7 @@ namespace Baconit
         public async void CheckShowReviewAndFeedback()
         {
             // Check to see if we should show the review message.
-            if(App.BaconMan.UiSettingsMan.AppOpenedCount > App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy)
+            if (App.BaconMan.UiSettingsMan.AppOpenedCount > App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy)
             {
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {

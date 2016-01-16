@@ -107,5 +107,10 @@ namespace Baconit.Panels.SettingsPanels
                 App.BaconMan.MessageMan.ShowMessageSimple("Restart", "The UI will not be removed until the app is restarted.");
             }
         }
+
+        private void RateAndReviewReset_Click(object sender, RoutedEventArgs e)
+        {
+            App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy = 0;
+        }
     }
 }

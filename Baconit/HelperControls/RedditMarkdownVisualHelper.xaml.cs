@@ -176,17 +176,27 @@ namespace Baconit.HelperControls
         public static void DoEdit(TextBox textBox, VisualHelperTypes editType)
         {
             // First refocus the text box since the user clicked a button.
-            // We need to do this quickly so the virt keyboard doesn't move. 
+            // We need to do this quickly so the virt keyboard doesn't move.
             textBox.Focus(FocusState.Programmatic);
 
             // Get some vars
             int selStart = textBox.SelectionStart;
             int selLength = textBox.SelectionLength;
+            int newLineSelOffset = 0;
             string curText = textBox.Text;
             string insertNewLine = null;
             string insertAtEnd = null;
             bool isLink = false;
             bool hasExampleText = false;
+
+            // For some reason the SelectionStart count /r/n as 1 instead of two. So add one for each /r/n we find.
+            for(int count = 0; count < selStart + newLineSelOffset; count++)
+            {
+                if(curText[count] == '\r' && count + 1 < curText.Length && curText[count + 1] == '\n')
+                {
+                    newLineSelOffset++;
+                }
+            }
 
             // Depending on the type see what we can do.
             switch (editType)
@@ -195,7 +205,7 @@ namespace Baconit.HelperControls
                     if (selLength != 0)
                     {
                         // Wrap the selected text
-                        textBox.Text = curText.Insert(selStart + selLength, "**").Insert(selStart, "**");
+                        textBox.Text = curText.Insert(selStart + newLineSelOffset + selLength, "**").Insert(selStart + newLineSelOffset, "**");
                     }
                     else
                     {
@@ -208,7 +218,7 @@ namespace Baconit.HelperControls
                     if (selLength != 0)
                     {
                         // Wrap the selected text
-                        textBox.Text = curText.Insert(selStart + selLength, "*").Insert(selStart, "*");
+                        textBox.Text = curText.Insert(selStart + newLineSelOffset + selLength, "*").Insert(selStart + newLineSelOffset, "*");
                     }
                     else
                     {
@@ -221,7 +231,7 @@ namespace Baconit.HelperControls
                     if (selLength != 0)
                     {
                         // Wrap the selected text
-                        textBox.Text = curText.Insert(selStart + selLength, $"]({c_exampleUrl})").Insert(selStart, "[");
+                        textBox.Text = curText.Insert(selStart + newLineSelOffset + selLength, $"]({c_exampleUrl})").Insert(selStart + newLineSelOffset, "[");
                     }
                     else
                     {
@@ -231,11 +241,11 @@ namespace Baconit.HelperControls
                     isLink = true;
                     break;
                 case HelperControls.VisualHelperTypes.NewLine:
-                    int injectPos = selStart;
+                    int injectPos = selStart + newLineSelOffset;
                     // Inject the new line at the current pos
                     textBox.Text = curText.Insert(injectPos, "  \r\n");
                     // Move the selection to the end of insert
-                    textBox.SelectionStart = injectPos + 3;
+                    textBox.SelectionStart = injectPos + 3 - newLineSelOffset;
                     break;
                 case HelperControls.VisualHelperTypes.Quote:
                     insertNewLine = "> ";
@@ -257,14 +267,48 @@ namespace Baconit.HelperControls
             if (insertNewLine != null)
             {
                 // Search for a new line.
-                int searchStart = selStart == curText.Length ? selStart - 1 : selStart;
+                int offsetSelStart = selStart + newLineSelOffset;
+                int searchStart = offsetSelStart == curText.Length ? offsetSelStart - 1 : offsetSelStart;
+
+                // Try to find it the new line before the cursor
                 int indexLastNewLine = curText.LastIndexOf('\n', searchStart);
+
+                // We need to make sure there are two new lines before this block
+                int searchNewlineCount = indexLastNewLine - 1;
+                while (searchNewlineCount > 0)
+                {
+                    // If we find an /r just move on.
+                    if(curText[searchNewlineCount] == '\r')
+                    {
+                        searchNewlineCount--;
+                        continue;
+                    }
+                    // If we find an /n we are good.
+                    else if (curText[searchNewlineCount] == '\n')
+                    {
+                        break;
+                    }
+                    // If it is anything else we need to add it.
+                    else
+                    {
+                        insertNewLine = "\r\n" + insertNewLine;
+                        break;
+                    }
+                }
 
                 // Insert the text
                 textBox.Text = curText.Insert(indexLastNewLine + 1, insertNewLine);
 
-                // Move the cur to the end.
-                textBox.SelectionStart = indexLastNewLine + 1 + insertNewLine.Length;
+                // If where we ended up inserting was after where the selection was move it to the end.
+                if(indexLastNewLine == -1 || (offsetSelStart + insertNewLine.Length) < indexLastNewLine)
+                {
+                    textBox.SelectionStart = offsetSelStart - newLineSelOffset + insertNewLine.Length;
+                }
+                else
+                {
+                    // If not move it back to where it was + our what we inserted.
+                    textBox.SelectionStart = selStart + insertNewLine.Length;
+                }
             }
 
             // If this isn't null we have something to add at the end of the current text.
@@ -282,11 +326,11 @@ namespace Baconit.HelperControls
             // If we added a link try to select the example url
             if (isLink)
             {
-                int urlStart = textBox.Text.IndexOf(c_exampleUrl);
+                int urlStart = textBox.Text.LastIndexOf(c_exampleUrl);
                 if(urlStart != -1 && textBox.Text.Length > urlStart + c_exampleUrl.Length)
                 {
                     // +7 -7 so we don't selected the http://
-                    textBox.SelectionStart = urlStart + 7;
+                    textBox.SelectionStart = urlStart + 7 - newLineSelOffset;
                     textBox.SelectionLength = c_exampleUrl.Length - 7;
                 }
             }
@@ -296,13 +340,13 @@ namespace Baconit.HelperControls
             {
                 // Note we could accidentally select the word "example" anywhere in the text box...
                 // but that's ok for now.
-                int exampleStart = textBox.Text.IndexOf(c_exampleText);
+                int exampleStart = textBox.Text.LastIndexOf(c_exampleText);
                 if (exampleStart != -1 && textBox.Text.Length > exampleStart + c_exampleText.Length)
                 {
-                    textBox.SelectionStart = exampleStart;
+                    textBox.SelectionStart = exampleStart - newLineSelOffset;
                     textBox.SelectionLength = c_exampleText.Length;
                 }
-            }            
+            }
         }
 
         #endregion

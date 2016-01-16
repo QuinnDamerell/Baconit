@@ -504,7 +504,7 @@ namespace Baconit.Panels
                                     {
                                         App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot1", e);
                                         App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
-                                    }                                    
+                                    }
                                 }
 
                                 // Add it to the deferred list, also add the deferred post so we know
@@ -523,7 +523,7 @@ namespace Baconit.Panels
                                 {
                                     App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot2", e);
                                     App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
-                                }                  
+                                }
                             }
                         }
 
@@ -766,7 +766,7 @@ namespace Baconit.Panels
                 args.Request.Data.Properties.ContentSourceWebLink = new Uri(m_sharePost.Url, UriKind.Absolute);
                 args.Request.Data.Properties.Title = "A Reddit Post Shared From Baconit";
                 args.Request.Data.Properties.Description = m_sharePost.Title;
-                args.Request.Data.SetText($"Check this out! \r\n\r\n{m_sharePost.Title}\r\n\r\n{m_sharePost.Url}");
+                args.Request.Data.SetText($" \r\n\r\n{m_sharePost.Title}\r\n\r\n{m_sharePost.Url}");
                 m_sharePost = null;
                 App.BaconMan.TelemetryMan.ReportEvent(this, "PostShared");
             }
@@ -1329,6 +1329,34 @@ namespace Baconit.Panels
             m_currentListViews.Add(new WeakReference<EndDetectingListView>(list));
         }
 
+
+        /// <summary>
+        /// Scrolls to the top of the list view for a post.
+        /// </summary>
+        /// <param name="postId"></param>
+        private void ScrollCommentsToTop(string postId)
+        {
+            lock(m_currentListViews)
+            {
+                // Loop through the possible lists.
+                foreach (WeakReference<EndDetectingListView> weakList in m_currentListViews)
+                {
+                    EndDetectingListView currentList = null;
+                    weakList.TryGetTarget(out currentList);
+                    if (currentList != null)
+                    {
+                        // Check the post
+                        Post post = (Post)currentList.DataContext;
+                        if (post.Id.Equals(postId))
+                        {
+                            currentList.ScrollIntoView(null);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Comment Click Listeners
@@ -1710,7 +1738,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void FlipViewContentControl_OnToggleFullscreen(object sender, OnToggleFullScreenEventArgs e)
+        private void ContentPanelHost_OnToggleFullscreen(object sender, OnToggleFullScreenEventArgs e)
         {
             // Get the post
             Post post = ((Post)((FrameworkElement)sender).DataContext);
@@ -1724,7 +1752,39 @@ namespace Baconit.Panels
                 ToggleHeader(post);
             }
 
-            // #todo scroll comments to the top so they aren't visible?
+            // Scroll the header into view
+            ScrollCommentsToTop(post.Id);
+        }
+
+        /// <summary>
+        /// Fired when the user has tapped the panel requesting the content to load.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ContentPanelHost_OnContentLoadRequest(object sender, OnContentLoadRequestArgs e)
+        {
+            // Find the post
+            Post post = null;
+            lock(m_postsLists)
+            {
+                foreach(Post search in m_postsLists)
+                {
+                    if(search.Id.Equals(e.SourceId))
+                    {
+                        post = search;
+                        break;
+                    }
+                }
+            }
+
+            // Send off a command to load it.
+            if(post != null)
+            {
+                await Task.Run(() =>
+                {
+                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, false);
+                });
+            }
         }
 
         /// <summary>
@@ -2007,10 +2067,14 @@ namespace Baconit.Panels
             // Set that the post is visible if it is
             post.IsPostVisible = isVisiblePost;
 
-            await Task.Run(() =>
+            // Only load the content if we are doing it with out action. (most of the time)
+            if (App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction)
             {
-                ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, !isVisiblePost);
-            });
+                await Task.Run(() =>
+                {
+                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, !isVisiblePost);
+                });
+            }
         }
 
 

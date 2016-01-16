@@ -229,7 +229,7 @@ namespace Baconit.Panels
         private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, HelperControls.OnHelperTappedArgs e)
         {
             // Do the edit.
-            RedditMarkdownVisualHelper.DoEdit(ui_postTitleTextBox, e.Type);
+            RedditMarkdownVisualHelper.DoEdit(ui_postUrlTextBox, e.Type);
         }
 
         /// <summary>

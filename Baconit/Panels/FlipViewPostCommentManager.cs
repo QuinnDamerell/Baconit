@@ -576,7 +576,7 @@ namespace Baconit.Panels
                 args.Request.Data.Properties.ContentSourceWebLink = new Uri(commentLink, UriKind.Absolute);
                 args.Request.Data.Properties.Title = "A Reddit Post Shared From Baconit";
                 args.Request.Data.Properties.Description = shareBody;
-                args.Request.Data.SetText($"Check this out! \r\n\r\n{shareBody}\r\n\r\n{commentLink}");
+                args.Request.Data.SetText($" \r\n\r\n{shareBody}\r\n\r\n{commentLink}");
                 m_shareComment = null;
                 App.BaconMan.TelemetryMan.ReportEvent(this, "CommentShared");
             }

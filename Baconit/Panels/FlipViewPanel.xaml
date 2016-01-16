@@ -295,7 +295,8 @@
 
                     <!--  The post content control  -->
                     <contentPanel:ContentPanelHost IsVisible="{x:Bind IsPostVisible, Mode=OneWay}"
-                                                   OnToggleFullscreen="FlipViewContentControl_OnToggleFullscreen"
+                                                   OnContentLoadRequest="ContentPanelHost_OnContentLoadRequest"
+                                                   OnToggleFullscreen="ContentPanelHost_OnToggleFullscreen"
                                                    SourceId="{x:Bind Id}" />
 
                     <!--  The post header control  -->
@@ -528,8 +529,8 @@
         -->
         <helperControls:CommentBox x:Name="ui_commentBox"
                                    Grid.Row="1"
-                                   OnCommentSubmitted="CommentBox_OnCommentSubmitted"
                                    OnBoxOpened="CommentBox_OnBoxOpened"
+                                   OnCommentSubmitted="CommentBox_OnCommentSubmitted"
                                    SizeChanged="CommentBox_SizeChanged"
                                    x:DeferLoadStrategy="Lazy" />
     </Grid>

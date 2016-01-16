@@ -37,12 +37,17 @@
                        Text="Show app memory overlay"
                        TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_showMemoryOverlay" Toggled="ShowMemoryOverlay_Toggled" />
-            
-              <TextBlock Margin="0,12,0,0" x:Name="ui_numberPagesCleanedUp"
+
+            <Button Margin="0,12,0,12"
+                    Click="RateAndReviewReset_Click"
+                    Content="Reset rate and review counter" />
+
+            <TextBlock x:Name="ui_numberPagesCleanedUp"
+                       Margin="0,12,0,0"
                        Text="Pages cleaned up for memory pressure: 0"
                        TextWrapping="Wrap" />
 
-            
+
         </StackPanel>
     </Grid>
 </UserControl>

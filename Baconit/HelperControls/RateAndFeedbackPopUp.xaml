@@ -99,7 +99,7 @@
 
                 <VisualState x:Name="ShowCloseButton">
                     <Storyboard>
-                        <DoubleAnimation BeginTime="0:0:6.0"
+                        <DoubleAnimation BeginTime="0:0:4.0"
                                          Duration="00:00:00.3"
                                          From="0"
                                          Storyboard.TargetName="ui_closeButton"
@@ -132,19 +132,12 @@
                                Style="{ThemeResource TitleTextBlockStyle}"
                                Text="Share the ❤" />
                     <TextBlock Margin="12,12,12,0"
-                               Text="We love hearing your feedback so we can continue to make Baconit even better. Please consider showing your support by taking a few seconds to leave us a review in the store."
+                               Text="Enjoying Baconit? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!"
                                TextWrapping="Wrap" />
-                    <Button Margin="12"
+                    <Button Margin="12,24,12,24"
                             HorizontalAlignment="Stretch"
                             Click="Review_Clicked"
-                            Content="leave a review" />
-                    <TextBlock Margin="12,12,12,0"
-                               Text="Or are we missing a something you love? Tell us on our subreddit and we will work on adding it just for you. Submit a new idea or vote on ideas from others."
-                               TextWrapping="Wrap" />
-                    <Button Margin="12,12,12,24"
-                            HorizontalAlignment="Stretch"
-                            Click="Feedback_Clicked"
-                            Content="visit the subreddit" />
+                            Content="leave a quick review" />
                 </StackPanel>
             </Grid>
 
