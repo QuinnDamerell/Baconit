@@ -194,7 +194,7 @@
         </VisualStateManager.VisualStateGroups>
 
         <!--  Holds the main content  -->
-        <Grid x:Name="ui_contentRoot" Visibility="Collapsed" />
+        <Grid x:Name="ui_contentRoot" Opacity="0" />
 
         <!--  The Progress UI  -->
         <Grid x:Name="ui_progressHolder" Background="#191919">

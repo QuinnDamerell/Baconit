@@ -81,7 +81,7 @@ namespace Baconit
         /// <summary>
         /// The time the review was left.
         /// </summary>
-        DateTime m_reviewLeaveTime = DateTime.MaxValue;
+        DateTime m_reviewLeaveTime = DateTime.MinValue;
 
         public MainPage()
         {

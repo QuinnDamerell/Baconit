@@ -22,7 +22,7 @@
             <VisualStateGroup x:Name="ImageVisibiltiy">
                 <VisualState x:Name="HideImage">
                     <Storyboard>
-                        <DoubleAnimation Duration="00:00:00.2"
+                        <DoubleAnimation Duration="00:00:00.1"
                                          From="1.0"
                                          Storyboard.TargetName="ui_scrollViewer"
                                          Storyboard.TargetProperty="Opacity"
@@ -36,7 +36,7 @@
 
                 <VisualState x:Name="ShowImage">
                     <Storyboard>
-                        <DoubleAnimation Duration="00:00:00.5"
+                        <DoubleAnimation Duration="00:00:00.1"
                                          From="0.0"
                                          Storyboard.TargetName="ui_scrollViewer"
                                          Storyboard.TargetProperty="Opacity"
@@ -44,7 +44,7 @@
                             <DoubleAnimation.EasingFunction>
                                 <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>                    
+                        </DoubleAnimation>
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>

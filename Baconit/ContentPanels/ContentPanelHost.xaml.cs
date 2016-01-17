@@ -205,6 +205,12 @@ namespace Baconit.ContentPanels
                 await UnRegisterPanel(oldValue);
             }
 
+            // If we are full screen clear it.
+            if(IsFullscreen)
+            {
+                OnFullscreenChanged(false);
+            }
+
             // Register the new content
             if(!String.IsNullOrWhiteSpace(newId))
             {
@@ -271,7 +277,7 @@ namespace Baconit.ContentPanels
                 // If we don't have content yet show the loading screen.
                 if(m_currentPanelBase == null)
                 {
-                    ui_contentRoot.Visibility = Visibility.Collapsed;
+                    ui_contentRoot.Opacity = 0;
                     ToggleProgress(true);
                 }
             }
@@ -353,6 +359,14 @@ namespace Baconit.ContentPanels
                 // the nsfw block for this subreddit.
                 SetNsfwBlock();
             }
+            else
+            {
+                // If we are full screen clear it.
+                if (IsFullscreen)
+                {
+                    OnFullscreenChanged(false);
+                }
+            }
 
             // Fire the event on the panel if we have one.
             IContentPanelBase panelBase = m_currentPanelBase;
@@ -393,10 +407,11 @@ namespace Baconit.ContentPanels
             IContentPanelBase panelBase = m_currentPanelBase;
             if (panelBase != null)
             {
-                // If we are turning on either collapse the content.
+                // If we are turning on loading make the content transparent.
+                // Note is is important to not collapse, or the content might not load.
                 if (panelBase.IsLoading)
                 {
-                    ui_contentRoot.Visibility = Visibility.Collapsed;
+                    ui_contentRoot.Opacity = 0;
                 }
 
                 // Update the state of loading.
@@ -457,9 +472,10 @@ namespace Baconit.ContentPanels
             // If we showed the block hide the UI. Otherwise it will
             // show through when we animate out.
             // If we are hiding here we want it instant.
+
             if (SetNsfwBlock(true))
             {
-                ui_contentRoot.Visibility = Visibility.Collapsed;
+                ui_contentRoot.Opacity = 0;
             }
         }
 
@@ -607,10 +623,11 @@ namespace Baconit.ContentPanels
             IContentPanelBase panelBase = m_currentPanelBase;
             if (panelBase != null)
             {
-                // If we are turning on either collapse the content.
+                // If we are turning on collapse the content.
+                // Note is is important to not collapse, or the content might not load.
                 if (panelBase.HasError)
                 {
-                    ui_contentRoot.Visibility = Visibility.Collapsed;
+                    ui_contentRoot.Opacity = 0;
                 }
 
                 // Update the state of the UI. If we are hiding here we want it instant.
@@ -728,7 +745,7 @@ namespace Baconit.ContentPanels
         {
             if(!m_isNsfwShowing && !m_isLoadingShowing && !m_isGenericMessageShowing)
             {
-                ui_contentRoot.Visibility = Visibility.Visible;
+                ui_contentRoot.Opacity = 1;
             }
         }
     }
