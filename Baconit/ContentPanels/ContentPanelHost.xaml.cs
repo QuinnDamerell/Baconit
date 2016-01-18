@@ -3,6 +3,7 @@ using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -263,8 +264,8 @@ namespace Baconit.ContentPanels
             // Clear out the UI
             ui_contentRoot.Children.Clear();
 
-            // Set loading, but disable the spinner.
-            ToggleProgress(true, true);
+            // Set loading.
+            ToggleProgress(true, false);
         }
 
         /// <summary>
