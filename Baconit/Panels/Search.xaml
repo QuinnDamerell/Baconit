@@ -43,14 +43,14 @@
                                Visibility="{x:Bind ShowMinorText}" />
 
                     <!--
-                        Note: we set IsHitTestVisible to false so people don't select text
-                        instead of tapping the item. This isn't ideal but the markdown box can't do any better right now.
+                        Note: we set IsTextSelectionEnabled to false so people don't select text
+                        instead of tapping the item.
                     -->
                     <universalMarkdown:MarkdownTextBlock Grid.Row="2"
                                                          Foreground="#999999"
-                                                         IsHitTestVisible="False"
+                                                         IsTextSelectionEnabled="False"
                                                          Markdown="{x:Bind MarkdownText}"
-                                                         Visibility="{x:Bind ShowMarkdownText}" />
+                                                         Visibility="{x:Bind ShowMarkdownText}" OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped"/>
 
                     <TextBlock Grid.Row="3"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"

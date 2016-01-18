@@ -116,6 +116,10 @@ namespace Baconit.ContentPanels.Panels
                             headerText = "This post links to a reddit post";
                             minorText = $"Tap anywhere to view it";
                             break;
+                        case RedditContentType.User:
+                            headerText = "This post links to a reddit user page";
+                            minorText = $"Tap anywhere to view {m_content.User}";
+                            break;
                         case RedditContentType.Website:
                             // This shouldn't happen
                             App.BaconMan.MessageMan.DebugDia("Got website back when prepare on reddit content control");

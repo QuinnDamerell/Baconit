@@ -1020,6 +1020,11 @@ namespace Baconit
                     commentArgs.Add(PanelManager.NAV_ARGS_FORCE_COMMENT_ID, container.Comment);
                     m_panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post + container.Comment, commentArgs);
                     break;
+                case RedditContentType.User:
+                    Dictionary<string, object> userArgs = new Dictionary<string, object>();
+                    userArgs.Add(PanelManager.NAV_ARGS_USER_NAME, container.User);
+                    m_panelManager.Navigate(typeof(UserProfile), container.User, userArgs);
+                    break;
             }
         }
 

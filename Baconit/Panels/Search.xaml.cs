@@ -789,5 +789,16 @@ namespace Baconit.Panels
         }
 
         #endregion
+
+        /// <summary>
+        /// Fired when a link in the content is tapped.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        {
+            // Show the link
+            App.BaconMan.ShowGlobalContent(e.Link);
+        }
     }
 }

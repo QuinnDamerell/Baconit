@@ -34,6 +34,10 @@ namespace BaconBackend.Helpers
         /// </summary>
         Comment,
         /// <summary>
+        /// A user.
+        /// </summary>
+        User,
+        /// <summary>
         /// A URL linking somewhere other than reddit.
         /// </summary>
         Website
@@ -56,6 +60,10 @@ namespace BaconBackend.Helpers
         /// The subreddit this content links to, if the type is a subreddit.
         /// </summary>
         public string Subreddit;
+        /// <summary>
+        /// The user this content links to, if the type is a user.
+        /// </summary>
+        public string User;
         /// <summary>
         /// The post this content links to, if the type is a reddit post
         /// </summary>
@@ -483,6 +491,44 @@ namespace BaconBackend.Helpers
                     {
                         Type = RedditContentType.Subreddit,
                         Subreddit = displayName
+                    };
+                }
+            }
+            // Try to find /u/ or u/ links
+            if (urlLower.StartsWith("/u/") || urlLower.StartsWith("u/"))
+            {
+                // Get the display name
+                int userStart = urlLower.IndexOf("u/");
+                userStart += 2;
+
+                // Try to find the next / after the subreddit if it exists
+                int subEnd = urlLower.IndexOf("/", userStart);
+                if (subEnd == -1)
+                {
+                    subEnd = urlLower.Length;
+                }
+
+                // Get the name.
+                string displayName = urlLower.Substring(userStart, subEnd - userStart).Trim();
+
+                // Make sure we don't have trailing arguments other than a /, if we do we should handle this as we content.
+                string trimedLowerUrl = urlLower.TrimEnd();
+                if (trimedLowerUrl.Length - subEnd > 1)
+                {
+                    // Make a web link for this
+                    containter = new RedditContentContainer()
+                    {
+                        Type = RedditContentType.Website,
+                        Website = $"https://reddit.com/{url}"
+                    };
+                }
+                else
+                {
+                    // We are good, make the user link.
+                    containter = new RedditContentContainer()
+                    {
+                        Type = RedditContentType.User,
+                        User = displayName
                     };
                 }
             }
