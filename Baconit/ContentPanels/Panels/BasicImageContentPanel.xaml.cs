@@ -349,28 +349,34 @@ namespace Baconit.ContentPanels.Panels
                 m_lastImageSetSize.Height = m_currentControlSize.Height;
             }
 
-            // Get the decode height and width.
-            int decodeWidth = 0;
-            int decodeHeight = 0;
-            if (!useFullsize)
-            {
-                int controlWidth = (int)m_currentControlSize.Width;
-                int controlHeight = (int)m_currentControlSize.Height;
-                if (controlWidth < controlHeight)
-                {
-                    decodeWidth = controlWidth;
-                }
-                else
-                {
-                    decodeHeight = controlHeight;
-                }
-            }
+
 
             // Create a bitmap and
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.CreateOptions = BitmapCreateOptions.None;
             bitmapImage.ImageOpened += BitmapImage_ImageOpened;
             bitmapImage.ImageFailed += BitmapImage_ImageFailed;
+
+            // Set the source.
+            stream.Seek(0);
+            bitmapImage.SetSource(stream);
+
+            // Get the decode height and width.
+            int decodeWidth = 0;
+            int decodeHeight = 0;
+            if (!useFullsize)
+            {
+                double widthRatio = bitmapImage.PixelWidth / m_currentControlSize.Width;
+                double heightRatio = bitmapImage.PixelHeight / m_currentControlSize.Height;
+                if (widthRatio > heightRatio)
+                {
+                    decodeWidth = (int)m_currentControlSize.Width;
+                }
+                else
+                {
+                    decodeHeight = (int)m_currentControlSize.Height;
+                }
+            }
 
             // Set the decode size.
             bitmapImage.DecodePixelHeight = decodeHeight;
@@ -395,9 +401,7 @@ namespace Baconit.ContentPanels.Panels
                 }
             }
 
-            // Set the source.
-            stream.Seek(0);
-            bitmapImage.SetSource(stream);
+
 
             // Set the image.
             m_image.Source = bitmapImage;
