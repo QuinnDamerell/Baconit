@@ -49,6 +49,12 @@
                           Margin="0,0,0,8"
                           Toggled="PreLoadComments_Toggled" />
 
+
+            <TextBlock Text="Auto minimize story header in comments" TextWrapping="Wrap" />
+            <ToggleSwitch x:Name="ui_minimizeStoryHeader"
+                          Margin="0,0,0,8"
+                          Toggled="MinimizeStoryHeader_Toggled" />
+
             <TextBlock Text="Don't load post content until tapped" TextWrapping="Wrap" />
             <ToggleSwitch x:Name="ui_disablePostLoad"
                           Margin="0,0,0,8"

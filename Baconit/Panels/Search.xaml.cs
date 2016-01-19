@@ -2,6 +2,7 @@
 using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using Baconit.Interfaces;
+using Baconit.Panels.FlipView;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

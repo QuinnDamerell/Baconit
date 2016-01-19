@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Baconit.Panels.FlipView.FlipViewPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:contentPanel="using:Baconit.ContentPanels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dataObjects="using:BaconBackend.DataObjects"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels.FlipView"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:universalMarkdown="using:UniversalMarkdown"
+             d:DesignHeight="200"
+             d:DesignWidth="1280"
+             mc:Ignorable="d">
+
+    <!--  The main content root  -->
+    <Grid x:Name="ui_contentRoot"
+          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          SizeChanged="ContentRoot_SizeChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <!--  The main flip view root, gives us the horizontal flipping action  -->
+        <FlipView x:Name="ui_flipView" SelectionChanged="FlipView_SelectionChanged">
+            <FlipView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </FlipView.ItemsPanel>
+
+            <FlipView.ItemTemplate>
+                <DataTemplate x:DataType="local:FlipViewPostItem">
+                    <local:FlipViewPostPanel IsVisible="{x:Bind IsVisible, Mode=OneWay}"
+                                             LoadComments="{x:Bind LoadComments, Mode=OneWay}"
+                                             OnContentLoadRequest="FlipViewPostPanel_OnContentLoadRequest"
+                                             OnOpenCommentBox="FlipViewPostPanel_OnOpenCommentBox"
+                                             PanelContext="{x:Bind Context, Mode=OneWay}" />
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+
+        <!--
+            The comment reply box; due to some odd bug this must live out side of the flip view or the system will
+            not position the UI correclty when the keyboard deploys and the text box will be covered.
+        -->
+        <helperControls:CommentBox x:Name="ui_commentBox"
+                                   Grid.Row="1"
+                                   OnBoxOpened="CommentBox_OnBoxOpened"
+                                   OnCommentSubmitted="CommentBox_OnCommentSubmitted"
+                                   x:DeferLoadStrategy="Lazy" />
+    </Grid>
+</UserControl>

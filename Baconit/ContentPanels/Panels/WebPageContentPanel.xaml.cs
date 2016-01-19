@@ -199,7 +199,7 @@ namespace Baconit.ContentPanels.Panels
         }
         private void NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
-            m_base.FireOnError(true, "This web page having trouble loading");
+            m_base.FireOnError(true, "This web page is broken");
         }
 
         private void NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)

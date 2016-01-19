@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="Baconit.Panels.FlipViewPanel"
+﻿<UserControl x:Class="Baconit.Panels.FlipView.FlipViewPostPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:contentPanel="using:Baconit.ContentPanels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dataObjects="using:BaconBackend.DataObjects"
              xmlns:helperControls="using:Baconit.HelperControls"
-             xmlns:local="using:Baconit.Panels"
+             xmlns:local="using:Baconit.Panels.FlipView"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
              d:DesignHeight="200"
@@ -13,8 +13,81 @@
              mc:Ignorable="d">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="FlipViewStoryHeader" x:DataType="dataObjects:Post">
-            <Grid Loaded="FlipViewStoryHeader_Loaded">
+        <DataTemplate x:Key="FlipViewStoryHeader" x:DataType="local:FlipViewPostItem">
+            <Grid Loaded="StoryHeader_Loaded">
+                <Grid.RenderTransform>
+                    <TranslateTransform x:Name="ui_headerBodyTransform" />
+                </Grid.RenderTransform>
+
+                <!--  Header animations  -->
+                <Grid.Resources>
+                    <Storyboard x:Name="ui_storyCollapseHeader">
+                        <DoubleAnimation x:Name="ui_animHeaderBodyTranslate"
+                                         Duration="0:0:0.7"
+                                         Storyboard.TargetName="ui_headerBodyTransform"
+                                         Storyboard.TargetProperty="Y">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+
+                        <DoubleAnimation x:Name="ui_animHeaderTitleTranslate"
+                                         Duration="0:0:1.1"
+                                         Storyboard.TargetName="ui_headerTitleTransform"
+                                         Storyboard.TargetProperty="Y">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+
+                        <DoubleAnimation x:Name="ui_animHeaderSubtextTranslate"
+                                         Duration="0:0:0.95"
+                                         Storyboard.TargetName="ui_headerSubtextTransform"
+                                         Storyboard.TargetProperty="Y">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+
+                        <DoubleAnimation x:Name="ui_animHeaderIconsTranslate"
+                                         Duration="0:0:0.8"
+                                         Storyboard.TargetName="ui_headerIconsTransform"
+                                         Storyboard.TargetProperty="Y">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation x:Name="ui_animHeaderFullscreenButtonRotate"
+                                         Duration="0:0:0.8"
+                                         Storyboard.TargetName="ui_headerFullscreenButtonRotate"
+                                         Storyboard.TargetProperty="Angle">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+
+                    <Storyboard x:Name="ui_storyCollapseHeaderHeight">
+                        <DoubleAnimation x:Name="ui_animHeaderHeightCollapse"
+                                         Duration="0:0:0.8"
+                                         EnableDependentAnimation="True"
+                                         Storyboard.TargetName="ui_storyHeaderBlock"
+                                         Storyboard.TargetProperty="MaxHeight">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation x:Name="ui_animHeaderHeightButtonRotate"
+                                         Duration="0:0:0.8"
+                                         Storyboard.TargetName="ui_headerFullscreenButtonRotate"
+                                         Storyboard.TargetProperty="Angle">
+                            <DoubleAnimation.EasingFunction>
+                                <QuinticEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </Grid.Resources>
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -22,7 +95,9 @@
                 </Grid.RowDefinitions>
 
                 <!--  Story Header Block  -->
-                <Grid Background="#333333" Visibility="{x:Bind FlipviewHeaderVisibility, Mode=OneWay}">
+                <Grid x:Name="ui_storyHeaderBlock"
+                      Background="#333333"
+                      Visibility="{x:Bind Context.Post.FlipviewHeaderVisibility, Mode=OneWay}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
@@ -32,9 +107,13 @@
                     <!--  Story title  -->
                     <TextBlock Margin="8,8,8,2"
                                HorizontalAlignment="Center"
-                               Text="{x:Bind Title}"
+                               Text="{x:Bind Context.Post.Title}"
                                TextAlignment="Center"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform x:Name="ui_headerTitleTransform" />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
 
                     <!--  Story subtext  -->
                     <StackPanel Grid.Row="1"
@@ -42,16 +121,20 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="ui_headerSubtextTransform" />
+                        </StackPanel.RenderTransform>
+
                         <TextBlock TextTrimming="WordEllipsis">
-                            <Run Foreground="#939393" Text="{x:Bind Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Score, Mode=OneWay}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#939393" Text="{x:Bind FlipViewSecondary}" />
+                            <Run Foreground="#939393" Text="{x:Bind Context.Post.Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Score, Mode=OneWay}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#939393" Text="{x:Bind Context.Post.FlipViewSecondary}" />
                         </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind StickyVisibility}">
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.StickyVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" />
                         </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind FlairVisibility}">
-                            <Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind LinkFlairText}" />
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.FlairVisibility}">
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.LinkFlairText}" />
                         </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind GildedVisibility}">
+                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.GildedVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#DDB152" Text="gilded" />
                         </TextBlock>
                     </StackPanel>
@@ -60,6 +143,9 @@
                     <Grid Grid.Row="2"
                           Margin="8,2,8,2"
                           HorizontalAlignment="Center">
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="ui_headerIconsTransform" />
+                        </Grid.RenderTransform>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="auto" />
@@ -73,13 +159,13 @@
                         <!--  Up Vote Icon  -->
                         <helperControls:CircleIconButton Grid.Column="0"
                                                          OnIconTapped="UpVote_Tapped"
-                                                         VoteBrush="{x:Bind UpVoteColor, Mode=OneWay}"
+                                                         VoteBrush="{x:Bind Context.Post.UpVoteColor, Mode=OneWay}"
                                                          VoteStatus="Up" />
 
                         <!--  Down Vote Icon  -->
                         <helperControls:CircleIconButton Grid.Column="1"
                                                          OnIconTapped="DownVote_Tapped"
-                                                         VoteBrush="{x:Bind DownVoteColor, Mode=OneWay}"
+                                                         VoteBrush="{x:Bind Context.Post.DownVoteColor, Mode=OneWay}"
                                                          VoteStatus="Down" />
 
                         <!--  Comment Icon  -->
@@ -96,7 +182,7 @@
                         <helperControls:CircleIconButton Grid.Column="4"
                                                          FontIconGlyph="&#xE700;"
                                                          OnIconTapped="MenuPost_Tapped"
-                                                         Visibility="{x:Bind FlipViewMenuButton, Mode=OneWay}" />
+                                                         Visibility="{x:Bind Context.PostMenuIconVisibility, Mode=OneWay}" />
 
                         <!--  More Icon  -->
                         <helperControls:CircleIconButton Grid.Column="5"
@@ -104,24 +190,24 @@
                                                          SymbolIcon="More">
                             <FlyoutBase.AttachedFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
-                                    <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind IsHiddenMenuText, Mode=OneWay}" />
+                                    <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind Context.Post.IsSavedMenuText, Mode=OneWay}" />
+                                    <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind Context.Post.IsHiddenMenuText, Mode=OneWay}" />
                                     <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
                                     <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
                                     <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
                                     <MenuFlyoutItem Click="SaveImage_Click"
                                                     Text="Save image"
-                                                    Visibility="{x:Bind ShowSaveImageMenu}" />
+                                                    Visibility="{x:Bind Context.Post.ShowSaveImageMenu}" />
                                     <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
                                     <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
-                                    <MenuFlyoutSeparator Visibility="{x:Bind DeletePostVisibility}" />
+                                    <MenuFlyoutSeparator Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="DeletePost_Click"
                                                     Text="Delete post"
-                                                    Visibility="{x:Bind DeletePostVisibility}" />
+                                                    Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="EditPost_Click"
                                                     Text="Edit post"
-                                                    Visibility="{x:Bind EditPostVisibility}" />
+                                                    Visibility="{x:Bind Context.Post.EditPostVisibility}" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
                         </helperControls:CircleIconButton>
@@ -144,8 +230,8 @@
                                  Margin="0,0,0,2"
                                  VerticalAlignment="Bottom"
                                  Background="Transparent"
-                                 IsIndeterminate="{x:Bind FlipViewShowLoadingMoreComments, Mode=OneWay}"
-                                 Visibility="{x:Bind FlipViewShowLoadingMoreCommentsVis, Mode=OneWay}" />
+                                 IsIndeterminate="{x:Bind Context.Post.FlipViewShowLoadingMoreComments, Mode=OneWay}"
+                                 Visibility="{x:Bind Context.Post.FlipViewShowLoadingMoreCommentsVis, Mode=OneWay}" />
 
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Margin="8,4,2,0"
@@ -159,7 +245,7 @@
                         </SymbolIcon>
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="#989898"
-                                   Text="{x:Bind NumComments, Mode=OneWay}" />
+                                   Text="{x:Bind Context.Post.NumComments, Mode=OneWay}" />
                     </StackPanel>
 
                     <!--  Sort Header  -->
@@ -186,7 +272,7 @@
                                    Text="Sort:" />
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{x:Bind CommentCurrentSortTypeString, Mode=OneWay}" />
+                                   Text="{x:Bind Context.Post.CommentCurrentSortTypeString, Mode=OneWay}" />
                         <TextBlock Margin="1,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
@@ -218,7 +304,7 @@
                                    Text="Count:" />
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="{x:Bind CurrentCommentShowingCount, Mode=OneWay}" />
+                                   Text="{x:Bind Context.Post.CurrentCommentShowingCount, Mode=OneWay}" />
                         <TextBlock Margin="1,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
@@ -258,7 +344,7 @@
                                      FontSize="12"
                                      Text="&#xE0E5;" />
                                 <TextBlock.RenderTransform>
-                                    <RotateTransform Angle="{x:Bind HeaderCollpaseToggleAngle, Mode=OneWay}" />
+                                    <RotateTransform x:Name="ui_headerFullscreenButtonRotate" Angle="180" />
                                 </TextBlock.RenderTransform>
                             </TextBlock>
                         </Button.Content>
@@ -271,7 +357,7 @@
                       Height="36"
                       Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                       Tapped="ViewEntireThread_Tapped"
-                      Visibility="{x:Bind FlipViewShowEntireThreadMessage, Mode=OneWay}">
+                      Visibility="{x:Bind Context.Post.FlipViewShowEntireThreadMessage, Mode=OneWay}">
                     <TextBlock Margin="8"
                                Text="Tap here to view the entire thread"
                                TextWrapping="Wrap" />
@@ -279,25 +365,24 @@
             </Grid>
         </DataTemplate>
 
-
-        <DataTemplate x:Key="FlipViewListHeaderItem" x:DataType="dataObjects:Post">
+        <DataTemplate x:Key="FlipViewListHeaderItem" x:DataType="local:FlipViewPostItem">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <Grid Height="{x:Bind HeaderSize, Mode=OneWay}">
+                <Grid Height="{x:Bind Context.HeaderSize, Mode=OneWay}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
 
                     <!--  The post content control  -->
-                    <contentPanel:ContentPanelHost IsVisible="{x:Bind IsPostVisible, Mode=OneWay}"
+                    <contentPanel:ContentPanelHost IsVisible="{x:Bind IsVisible, Mode=OneWay}"
                                                    OnContentLoadRequest="ContentPanelHost_OnContentLoadRequest"
                                                    OnToggleFullscreen="ContentPanelHost_OnToggleFullscreen"
-                                                   SourceId="{x:Bind Id}" />
+                                                   SourceId="{x:Bind Context.Post.Id}" />
 
                     <!--  The post header control  -->
                     <ContentControl Grid.Row="2"
@@ -307,14 +392,13 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="FlipViewListFooterItem" x:DataType="dataObjects:Post">
+        <DataTemplate x:Key="FlipViewListFooterItem" x:DataType="local:FlipViewPostItem">
             <Grid>
                 <helperControls:CommentsLoadingFooter Height="80"
-                                                      ShowErrorText="{x:Bind ShowCommentsErrorMessage, Mode=OneWay}"
-                                                      ShowLoading="{x:Bind ShowCommentLoadingMessage, Mode=OneWay}" />
+                                                      ShowErrorText="{x:Bind Context.Post.ShowCommentsErrorMessage, Mode=OneWay}"
+                                                      ShowLoading="{x:Bind Context.Post.ShowCommentLoadingMessage, Mode=OneWay}" />
             </Grid>
         </DataTemplate>
-
 
         <DataTemplate x:Name="CommentListItemTemplate" x:DataType="dataObjects:Comment">
             <!--  Note the 15 padding on the right keeps us off the scrollbar on desktop  -->
@@ -470,68 +554,38 @@
 
     <!--  The main content root  -->
     <Grid x:Name="ui_contentRoot"
-          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          Background="#191919"
           SizeChanged="ContentRoot_SizeChanged">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition x:Name="ui_commentBoxRowDef" Height="auto" />
-        </Grid.RowDefinitions>
 
-        <!--  The main flip view root, gives us the horizontal flipping action  -->
-        <FlipView x:Name="ui_flipView" SelectionChanged="FlipView_SelectionChanged">
-            <FlipView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </FlipView.ItemsPanel>
+        <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
+        <helperControls:EndDetectingListView x:Name="ui_listView"
+                                             EndOfListDetectionThrehold="0.0"
+                                             FooterTemplate="{StaticResource FlipViewListFooterItem}"
+                                             HeaderTemplate="{StaticResource FlipViewListHeaderItem}"
+                                             ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                             ItemTemplate="{StaticResource CommentListItemTemplate}"
+                                             OnListEndDetectedEvent="List_OnListEndDetectedEvent"
+                                             SelectionChanged="EndDetectingListView_SelectionChanged"
+                                             Style="{StaticResource ListViewStyle}">
 
-            <FlipView.ItemTemplate>
-                <DataTemplate x:DataType="dataObjects:Post">
-                    <Grid>
-                        <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
-                        <helperControls:EndDetectingListView FooterTemplate="{StaticResource FlipViewListFooterItem}"
-                                                             HeaderTemplate="{StaticResource FlipViewListHeaderItem}"
-                                                             ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                                                             ItemTemplate="{StaticResource CommentListItemTemplate}"
-                                                             ItemsSource="{x:Bind Comments, Mode=OneWay}"
-                                                             Loaded="EndDetectingListView_Loaded"
-                                                             ScrollViewer.VerticalScrollBarVisibility="{x:Bind VerticalScrollBarVisibility, Mode=OneWay}"
-                                                             SelectionChanged="EndDetectingListView_SelectionChanged"
-                                                             Style="{StaticResource ListViewStyle}">
+            <!--  This animates the comments in and out when hidden  -->
+            <ListView.ItemContainerTransitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <AddDeleteThemeTransition />
+                </TransitionCollection>
+            </ListView.ItemContainerTransitions>
+        </helperControls:EndDetectingListView>
 
-                            <!--  This animates the comments in and out when hidden  -->
-                            <ListView.ItemContainerTransitions>
-                                <TransitionCollection>
-                                    <EntranceThemeTransition IsStaggeringEnabled="True" />
-                                    <AddDeleteThemeTransition />
-                                </TransitionCollection>
-                            </ListView.ItemContainerTransitions>
-                        </helperControls:EndDetectingListView>
-
-                        <!--  The sticky header for flip view  -->
-                        <!--
-                            Fun trick, we initally set the visibilty to visible with a -3000 margin so the UI loads and renders
-                            off screen so it is ready when we want to show it. Otherwise it 'pops' in.
-                        -->
-                        <ContentControl Margin="{x:Bind FlipViewStickyHeaderMargin, Mode=OneWay}"
-                                        VerticalAlignment="Top"
-                                        HorizontalContentAlignment="Stretch"
-                                        ContentTemplate="{StaticResource FlipViewStoryHeader}"
-                                        Visibility="{x:Bind FlipViewStickyHeaderVis, Mode=OneWay}" />
-                    </Grid>
-                </DataTemplate>
-            </FlipView.ItemTemplate>
-        </FlipView>
-
+        <!--  The sticky header for flip view  -->
         <!--
-            The comment reply box; due to some odd bug this must live out side of the flip view or the system will
-            not position the UI correclty when the keyboard deploys and the text box will be covered.
+            Fun trick, we initally set the visibilty to visible with a -3000 margin so the UI loads and renders
+            off screen so it is ready when we want to show it. Otherwise it 'pops' in.\
         -->
-        <helperControls:CommentBox x:Name="ui_commentBox"
-                                   Grid.Row="1"
-                                   OnBoxOpened="CommentBox_OnBoxOpened"
-                                   OnCommentSubmitted="CommentBox_OnCommentSubmitted"
-                                   SizeChanged="CommentBox_SizeChanged"
-                                   x:DeferLoadStrategy="Lazy" />
+        <ContentControl x:Name="ui_stickyHeader"
+                        Margin="0, -3000, 0, 0"
+                        VerticalAlignment="Top"
+                        HorizontalContentAlignment="Stretch"
+                        ContentTemplate="{StaticResource FlipViewStoryHeader}" />
     </Grid>
 </UserControl>

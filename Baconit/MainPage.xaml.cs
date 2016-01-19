@@ -8,6 +8,7 @@ using BaconBackend.Managers.Background;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
 using Baconit.Panels;
+using Baconit.Panels.FlipView;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

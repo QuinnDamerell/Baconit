@@ -511,6 +511,34 @@ namespace BaconBackend.Managers
         }
         private bool? m_flipView_ShowCommentScrollTip = null;
 
+        /// <summary>
+        /// If the user wants us to minimize the story header.
+        /// </summary>
+        public bool FlipView_MinimizeStoryHeader
+        {
+            get
+            {
+                if (!m_flipView_MinimizeStoryHeader.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_MinimizeStoryHeader"))
+                    {
+                        m_flipView_MinimizeStoryHeader = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_MinimizeStoryHeader");
+                    }
+                    else
+                    {
+                        m_flipView_MinimizeStoryHeader = true;
+                    }
+                }
+                return m_flipView_MinimizeStoryHeader.Value;
+            }
+            set
+            {
+                m_flipView_MinimizeStoryHeader = value;
+                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.FlipView_MinimizeStoryHeader", m_flipView_MinimizeStoryHeader.Value);
+            }
+        }
+        private bool? m_flipView_MinimizeStoryHeader = null;
+
         #endregion
 
         #region Developer

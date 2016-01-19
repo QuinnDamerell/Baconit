@@ -5,6 +5,7 @@ using Baconit.HelperControls;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,23 @@ namespace Baconit.Panels
     public class FlipViewPostCommentManager
     {
         DeferredCollector<Comment> m_commentCollector;
+
+        /// <summary>
+        /// The current post for the comment manager
+        /// </summary>
+        Post m_post;
+
+        /// <summary>
+        /// The current comments.
+        /// </summary>
+        public ObservableCollection<Comment> Comments
+        {
+            get
+            {
+                return m_comments;
+            }
+        }
+        ObservableCollection<Comment> m_comments = new ObservableCollection<Comment>();
 
         /// <summary>
         /// Holds a full list of the comments, even collapsed comments
@@ -38,14 +56,6 @@ namespace Baconit.Panels
         /// </summary>
         bool m_showThreadSubset = false;
 
-        /// <summary>
-        /// The current post for the comment manager
-        /// </summary>
-        public Post Post
-        {
-            get { return m_post; }
-        }
-        Post m_post;
 
         public FlipViewPostCommentManager(ref Post post, string targetComment, bool showThreadSubset)
         {
@@ -64,7 +74,7 @@ namespace Baconit.Panels
             }
 
             // This post might have comments if opened already in flip view. Clear them out if it does.
-            m_post.Comments.Clear();
+            Comments.Clear();
 
             if (!m_post.HaveCommentDefaultsBeenSet)
             {
@@ -213,6 +223,15 @@ namespace Baconit.Panels
         }
 
         /// <summary>
+        /// Returns if we are only showing a subset of the comments.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsOnlyShowingSubset()
+        {
+            return m_commentCollector.GetState() == DeferredLoadState.Subset;
+        }
+
+        /// <summary>
         /// Called when we need more posts because we are scrolling down.
         /// </summary>
         public async void RequestMorePosts()
@@ -227,7 +246,7 @@ namespace Baconit.Panels
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     // Only show the loading if the current number of comments is 0
-                    if(m_post.Comments.Count == 0)
+                    if(Comments.Count == 0)
                     {
                         m_post.ShowCommentLoadingMessage = Visibility.Visible;
                     }
@@ -238,7 +257,7 @@ namespace Baconit.Panels
         public void PrepareForDeletion()
         {
             // Clear out, we are going to be deleted
-            m_post.Comments.Clear();
+            Comments.Clear();
 
             if(m_fullCommentList != null)
             {
@@ -263,7 +282,7 @@ namespace Baconit.Panels
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     // Check if we have any comments
-                    if(e.NewPostCount == 0 && m_post.Comments.Count == 0)
+                    if(e.NewPostCount == 0 && Comments.Count == 0)
                     {
                         m_post.ShowCommentLoadingMessage = Visibility.Visible;
                         m_post.ShowCommentsErrorMessage = "No Comments";
@@ -296,7 +315,7 @@ namespace Baconit.Panels
                 int insertIndex = e.StartingPosition;
 
                 // Lock the list
-                lock (m_post.Comments)
+                lock (Comments)
                 {
                     lock(m_fullCommentList)
                     {
@@ -310,29 +329,29 @@ namespace Baconit.Panels
                             for (int i = 0; i < e.ChangedItems.Count; i++)
                             {
                                 Comment newComment = e.ChangedItems[i];
-                                Comment currentComment = i >= m_post.Comments.Count ? null : m_post.Comments[i];
+                                Comment currentComment = i >= Comments.Count ? null : Comments[i];
 
                                 if (currentComment == null)
                                 {
-                                    m_post.Comments.Add(newComment);
+                                    Comments.Add(newComment);
                                 }
                                 else
                                 {
                                     if (newComment.Id.Equals(currentComment.Id))
                                     {
                                         // Update the comment
-                                        m_post.Comments[i].Author = newComment.Author;
-                                        m_post.Comments[i].Score = newComment.Score;
-                                        m_post.Comments[i].TimeString = newComment.TimeString;
-                                        m_post.Comments[i].CollapsedCommentCount = newComment.CollapsedCommentCount;
-                                        m_post.Comments[i].Body = newComment.Body;
-                                        m_post.Comments[i].Likes = newComment.Likes;
-                                        m_post.Comments[i].ShowFullComment = true;
+                                        Comments[i].Author = newComment.Author;
+                                        Comments[i].Score = newComment.Score;
+                                        Comments[i].TimeString = newComment.TimeString;
+                                        Comments[i].CollapsedCommentCount = newComment.CollapsedCommentCount;
+                                        Comments[i].Body = newComment.Body;
+                                        Comments[i].Likes = newComment.Likes;
+                                        Comments[i].ShowFullComment = true;
                                     }
                                     else
                                     {
                                         // Replace it
-                                        m_post.Comments[i] = newComment;
+                                        Comments[i] = newComment;
                                     }
                                 }
 
@@ -341,9 +360,9 @@ namespace Baconit.Panels
                             }
 
                             // Trim off anything that shouldn't be here anymore
-                            while (m_post.Comments.Count > e.ChangedItems.Count)
+                            while (Comments.Count > e.ChangedItems.Count)
                             {
-                                m_post.Comments.RemoveAt(m_post.Comments.Count - 1);
+                                Comments.RemoveAt(Comments.Count - 1);
                             }
                         }
                         else
@@ -398,7 +417,7 @@ namespace Baconit.Panels
                                     m_fullCommentList.Add(comment);
 
                                     // If we are adding it to the end of the main list it is safe to add it to the end of the UI list.
-                                    m_post.Comments.Add(comment);
+                                    Comments.Add(comment);
                                 }
                                 insertIndex++;
                             }
@@ -409,20 +428,20 @@ namespace Baconit.Panels
                                 // If the key is empty string we are inserting into the head
                                 if (String.IsNullOrWhiteSpace(insertPair.Key))
                                 {
-                                    m_post.Comments.Insert(0, insertPair.Value);
+                                    Comments.Insert(0, insertPair.Value);
                                 }
                                 else
                                 {
                                     // Try to find the parent comment.
-                                    for (int i = 0; i < m_post.Comments.Count; i++)
+                                    for (int i = 0; i < Comments.Count; i++)
                                     {
-                                        Comment comment = m_post.Comments[i];
+                                        Comment comment = Comments[i];
                                         if (comment.Id.Equals(insertPair.Key))
                                         {
                                             // We found the parent, it is not collapsed we should insert this comment after it.
                                             if (comment.ShowFullComment)
                                             {
-                                                m_post.Comments.Insert(i + 1, insertPair.Value);
+                                                Comments.Insert(i + 1, insertPair.Value);
                                             }
 
                                             // We are done, break out of this parent search.
@@ -441,26 +460,26 @@ namespace Baconit.Panels
                                 // Try to find the comment we will replace; Note if is very important that we start at the current replace point
                                 // because this comment might have been added before this count already due to a perviouse replace. In that case
                                 // we don't want to accidentally find that one instead of this one.
-                                for (int i = replaceCount; i < m_post.Comments.Count; i++)
+                                for (int i = replaceCount; i < Comments.Count; i++)
                                 {
-                                    Comment comment = m_post.Comments[i];
+                                    Comment comment = Comments[i];
                                     if (comment.Id.Equals(replacePair.Key))
                                     {
                                         // If the id is the same we are updating. If we replace the comment the UI will freak out,
                                         // so just update the UI values
                                         if (comment.Id.Equals(replacePair.Value.Id))
                                         {
-                                            m_post.Comments[i].Author = replacePair.Value.Author;
-                                            m_post.Comments[i].Score = replacePair.Value.Score;
-                                            m_post.Comments[i].TimeString = replacePair.Value.TimeString;
-                                            m_post.Comments[i].CollapsedCommentCount = replacePair.Value.CollapsedCommentCount;
-                                            m_post.Comments[i].Body = replacePair.Value.Body;
-                                            m_post.Comments[i].Likes = replacePair.Value.Likes;
+                                            Comments[i].Author = replacePair.Value.Author;
+                                            Comments[i].Score = replacePair.Value.Score;
+                                            Comments[i].TimeString = replacePair.Value.TimeString;
+                                            Comments[i].CollapsedCommentCount = replacePair.Value.CollapsedCommentCount;
+                                            Comments[i].Body = replacePair.Value.Body;
+                                            Comments[i].Likes = replacePair.Value.Likes;
                                         }
                                         else
                                         {
                                             // Replace the comment with this one
-                                            m_post.Comments[i] = replacePair.Value;
+                                            Comments[i] = replacePair.Value;
                                         }
 
                                         // We are done, break out of the search for the match.
@@ -597,19 +616,19 @@ namespace Baconit.Panels
             int killedComment = 0;
 
             // Lock the list
-            lock (m_post.Comments)
+            lock (Comments)
             {
                 // Go through all of the comments
-                for (int i = 0; i < m_post.Comments.Count; i++)
+                for (int i = 0; i < Comments.Count; i++)
                 {
                     // If found level is set we have already seen the comment
                     if (foundLevel != -1)
                     {
                         // If this comment is higher than the root collapse kill it
-                        if (m_post.Comments[i].CommentDepth > foundLevel)
+                        if (Comments[i].CommentDepth > foundLevel)
                         {
                             // Remove it
-                            m_post.Comments.RemoveAt(i);
+                            Comments.RemoveAt(i);
                             i--;
 
                             // Update kill count
@@ -627,7 +646,7 @@ namespace Baconit.Panels
                     }
 
                     // If we are here we haven't found the comment yet.
-                    else if (m_post.Comments[i].Id.Equals(comment.Id))
+                    else if (Comments[i].Id.Equals(comment.Id))
                     {
                         // We found it! Note the level
                         foundLevel = comment.CommentDepth;
@@ -643,20 +662,20 @@ namespace Baconit.Panels
         public void ExpandCommentsFromComment(Comment comment)
         {
             // Lock the list
-            lock (m_post.Comments)
+            lock (Comments)
             {
                 lock (m_fullCommentList)
                 {
                     // First, we need to find where in the UI we need to add comments
                     int inserationPoint = -1;
                     int expandRootLevel = 0;
-                    for (int i = 0; i < m_post.Comments.Count; i++)
+                    for (int i = 0; i < Comments.Count; i++)
                     {
-                        if (m_post.Comments[i].Id.Equals(comment.Id))
+                        if (Comments[i].Id.Equals(comment.Id))
                         {
                             // We found it!
                             inserationPoint = i;
-                            expandRootLevel = m_post.Comments[i].CommentDepth;
+                            expandRootLevel = Comments[i].CommentDepth;
                             break;
                         }
                     }
@@ -688,7 +707,7 @@ namespace Baconit.Panels
                         }
 
                         // Insert this comment into the UI list
-                        m_post.Comments.Insert(inserationPoint, m_fullCommentList[i]);
+                        Comments.Insert(inserationPoint, m_fullCommentList[i]);
                         inserationPoint++;
                     }
 

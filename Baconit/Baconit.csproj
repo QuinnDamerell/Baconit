@@ -148,6 +148,7 @@
       <DependentUpon>CommentsLoadingFooter.xaml</DependentUpon>
     </Compile>
     <Compile Include="HelperControls\EndDetectingListView.cs" />
+    <Compile Include="HelperControls\ExtendedVisualStateManger.cs" />
     <Compile Include="HelperControls\GlobalContentPresenter.xaml.cs">
       <DependentUpon>GlobalContentPresenter.xaml</DependentUpon>
     </Compile>
@@ -191,7 +192,12 @@
     <Compile Include="PanelManager.xaml.cs">
       <DependentUpon>PanelManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Panels\FlipViewPostCommentManager.cs" />
+    <Compile Include="Panels\FlipView\FlipViewPostCommentManager.cs" />
+    <Compile Include="Panels\FlipView\FlipViewPostContext.cs" />
+    <Compile Include="Panels\FlipView\FlipViewPostItem.cs" />
+    <Compile Include="Panels\FlipView\FlipViewPostPanel.xaml.cs">
+      <DependentUpon>FlipViewPostPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\MessageInbox.xaml.cs">
       <DependentUpon>MessageInbox.xaml</DependentUpon>
     </Compile>
@@ -222,7 +228,7 @@
     <Compile Include="Panels\SettingsPanels\SubredditViewSettings.xaml.cs">
       <DependentUpon>SubredditViewSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Panels\FlipViewPanel.xaml.cs">
+    <Compile Include="Panels\FlipView\FlipViewPanel.xaml.cs">
       <DependentUpon>FlipViewPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Panels\LoginPanel.xaml.cs">
@@ -418,9 +424,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Panels\FlipViewPanel.xaml">
+    <Page Include="Panels\FlipView\FlipViewPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\FlipView\FlipViewPostPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\LoginPanel.xaml">
       <Generator>MSBuild:Compile</Generator>

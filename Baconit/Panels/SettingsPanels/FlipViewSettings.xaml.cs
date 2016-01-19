@@ -58,6 +58,7 @@ namespace Baconit.Panels.SettingsPanels
             ui_flipViewNsfwType.SelectedIndex = (int)App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType;
             ui_disablePostLoad.IsOn = !App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction;
             ui_preloadPost.IsOn = App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent;
+            ui_minimizeStoryHeader.IsOn = App.BaconMan.UiSettingsMan.FlipView_MinimizeStoryHeader;
 
             m_takeChangeAction = true;
         }
@@ -124,6 +125,16 @@ namespace Baconit.Panels.SettingsPanels
             }
 
             App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction = !ui_disablePostLoad.IsOn;
+        }
+
+        private void MinimizeStoryHeader_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!m_takeChangeAction)
+            {
+                return;
+            }
+
+            App.BaconMan.UiSettingsMan.FlipView_MinimizeStoryHeader = ui_minimizeStoryHeader.IsOn;
         }
     }
 }

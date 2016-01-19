@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using Baconit.HelperControls;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
+using Baconit.Panels.FlipView;
 
 namespace Baconit.Panels
 {

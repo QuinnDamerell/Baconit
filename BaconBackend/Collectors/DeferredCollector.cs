@@ -9,6 +9,15 @@ using Windows.UI.Core;
 namespace BaconBackend.Collectors
 {
     /// <summary>
+    /// Indicates the state of this collector
+    /// </summary>
+    public enum DeferredLoadState
+    {
+        Subset,
+        All
+    };
+
+    /// <summary>
     /// Used to support deferred loading of items from a collector. We get all of the items at once,
     /// but only return a subset of them at a time.
     /// NOTE! This collector will not work for collections that support extending!
@@ -16,15 +25,6 @@ namespace BaconBackend.Collectors
     /// <typeparam name="T"></typeparam>
     public class DeferredCollector<T>
     {
-        /// <summary>
-        /// Indicates the state of this collector
-        /// </summary>
-        enum DeferredLoadState
-        {
-            Subset,
-            All
-        };
-
         /// <summary>
         /// Fired when the state of the collector is changing.
         /// </summary>
@@ -81,6 +81,15 @@ namespace BaconBackend.Collectors
             // Tell the collector to update, when it returns we will only take a subset of
             // the results.
             return m_collector.Update(forceUpdate, requestCount);
+        }
+
+        /// <summary>
+        /// Gets the current state of the deferred collector.
+        /// </summary>
+        /// <returns></returns>
+        public DeferredLoadState GetState()
+        {
+            return m_state;
         }
 
         /// <summary>

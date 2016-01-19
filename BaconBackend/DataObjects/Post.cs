@@ -308,25 +308,6 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public string FlipViewSecondary { get; set; }
 
-
-        /// <summary>
-        /// Used by flip view to indicate when the post is visible
-        /// </summary>
-        [JsonIgnore]
-        public bool IsPostVisible
-        {
-            get
-            {
-                return m_isPostVisible;
-            }
-            set
-            {
-                SetProperty(ref m_isPostVisible, value);
-            }
-        }
-        [JsonIgnore]
-        bool m_isPostVisible = false;
-
         /// <summary>
         /// Used by subreddit view to show unread comment count
         /// </summary>
@@ -617,60 +598,6 @@ namespace BaconBackend.DataObjects
 
         #region FlipView Vars
 
-        /// <summary>
-        /// The number of pixels the UI needs to display the post's header.
-        /// </summary>
-        [JsonIgnore]
-        public int HeaderSize
-        {
-            get
-            {
-                return m_headerSize;
-            }
-            set
-            {
-                SetProperty(ref m_headerSize, value);
-            }
-        }
-        [JsonIgnore]
-        int m_headerSize = 500;
-
-        /// <summary>
-        /// The list of comments on this post.
-        /// </summary>
-        [JsonIgnore]
-        public ObservableCollection<Comment> Comments
-        {
-            get
-            {
-                return m_comments;
-            }
-            set
-            {
-                SetProperty(ref m_comments, value);
-            }
-        }
-        [JsonIgnore]
-        ObservableCollection<Comment> m_comments = new ObservableCollection<Comment>();
-
-        /// <summary>
-        /// The visibility of the scroll bar depending on if the any comments are loaded.
-        /// </summary>
-        [JsonIgnore]
-        public ScrollBarVisibility VerticalScrollBarVisibility
-        {
-            get
-            {
-                return m_verticalScrollBarVisibility;
-            }
-            set
-            {
-                SetProperty(ref m_verticalScrollBarVisibility, value);
-            }
-        }
-        [JsonIgnore]
-        ScrollBarVisibility m_verticalScrollBarVisibility = ScrollBarVisibility.Hidden;
-
 
         /// <summary>
         /// The visibility of "Loading Comments", depending on if the comments have loaded yet.
@@ -725,43 +652,6 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         Visibility m_flipViewMenuButton = Visibility.Collapsed;
-
-        /// <summary>
-        /// The visibility of the post's header as sticky to the top of the flip view.
-        /// Note!!! The default should be visible so the FlipViewStickyHeaderMargin trick works!
-        /// </summary>
-        [JsonIgnore]
-        public Visibility FlipViewStickyHeaderVis
-        {
-            get
-            {
-                return m_flipViewStickyHeaderVis;
-            }
-            set
-            {
-                SetProperty(ref m_flipViewStickyHeaderVis, value);
-            }
-        }
-        [JsonIgnore]
-        Visibility m_flipViewStickyHeaderVis = Visibility.Visible;
-
-        /// <summary>
-        /// Fun trick, this is used to make the flipview sticky header render off screen so it is ready when we want
-        /// to show it. We use -3000 to make sure it is way off screen.
-        /// </summary>
-        public Thickness FlipViewStickyHeaderMargin
-        {
-            get
-            {
-                return m_flipViewStickyHeaderMargin;
-            }
-            set
-            {
-                SetProperty(ref m_flipViewStickyHeaderMargin, value);
-            }
-        }
-        [JsonIgnore]
-        Thickness m_flipViewStickyHeaderMargin = new Thickness(0,-3000,0,0);
 
         /// <summary>
         /// The visibility of the button to show all comments on a post.
@@ -829,25 +719,6 @@ namespace BaconBackend.DataObjects
         }
         [JsonIgnore]
         Visibility m_flipviewHeaderVisibility = Visibility.Visible;
-
-        /// <summary>
-        /// The current angle of the header toggle button
-        /// </summary>
-        [JsonIgnore]
-        public int HeaderCollpaseToggleAngle
-        {
-            get
-            {
-                return m_headerCollpaseToggleAngle;
-            }
-            set
-            {
-                SetProperty(ref m_headerCollpaseToggleAngle, value);
-            }
-        }
-        [JsonIgnore]
-        int m_headerCollpaseToggleAngle = 180;
-
 
         /// <summary>
         /// Indicates how many comments we are showing
