@@ -567,6 +567,12 @@ namespace BaconBackend.Managers.Background
                             targetImageSize = new Size(310, 128);
                         }
                     }
+                    else if(type == UpdateTypes.Desktop && DeviceHelper.CurrentDevice() == DeviceTypes.Mobile)
+                    {
+                        // If we are desktop on mobile we want to do a bit larger than the screen res because
+                        // there is a sliding image animation when you switch to all apps. Lets make the width 30% larger.
+                        targetImageSize.Width *= 1.3;
+                    }
 
                     // Resize the image to fit nicely
                     InMemoryRandomAccessStream image = await ResizeImage(response.ImageStream, targetImageSize);
@@ -678,16 +684,19 @@ namespace BaconBackend.Managers.Background
                
             uint outputHeight = imageHeight;
             uint outputWidth = imageWidth;
+            bool centerOnX = false;
 
             if (widthRatio < heightRatio)
             {
                 outputHeight = (uint)(imageHeight / widthRatio);
                 outputWidth = (uint)requiredSize.Width;
+                centerOnX = false;
             }
             else
             {
                 outputWidth = (uint)(imageWidth / heightRatio);
                 outputHeight = (uint)requiredSize.Height;
+                centerOnX = true;
             }
 
             // Make an output stream and an encoder
@@ -700,6 +709,20 @@ namespace BaconBackend.Managers.Background
             BitmapBounds bound = new BitmapBounds();
             bound.Height = (uint)requiredSize.Height;
             bound.Width = (uint)requiredSize.Width;
+
+            // Choose Fant for quality over perf.
+            enc.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
+
+            if(centerOnX)
+            {
+                int width = ((int)outputWidth / 2) - ((int)bound.Width / 2);
+                bound.X = (uint)(width > 0 ? width : 0);
+            }
+            else
+            {
+                int height = ((int)outputHeight / 2) - ((int)bound.Height / 2);
+                bound.Y = (uint)(height > 0 ? height : 0);
+            }
             enc.BitmapTransform.Bounds = bound;
 
             // Do it
