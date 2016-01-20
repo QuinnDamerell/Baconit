@@ -16,11 +16,12 @@ namespace Baconit.Panels.FlipView
     /// </summary>
     public class FlipViewPostContext : BindableBase
     {
-        public FlipViewPostContext(IPanelHost host, PostCollector collector, Post post)
+        public FlipViewPostContext(IPanelHost host, PostCollector collector, Post post, string targetComment)
         {
             Post = post;
             Collector = collector;
             Host = host;
+            TargetComment = targetComment;
         }
 
         public Post Post { get; set; }
@@ -28,6 +29,8 @@ namespace Baconit.Panels.FlipView
         public PostCollector Collector { get; set; }
 
         public IPanelHost Host { get; set; }
+
+        public string TargetComment { get; set; }
 
 
         #region UI Vars
@@ -62,7 +65,7 @@ namespace Baconit.Panels.FlipView
                 SetProperty(ref m_postMenuIcon, value);
             }
         }
-        Visibility m_postMenuIcon = Visibility.Collapsed;        
+        Visibility m_postMenuIcon = Visibility.Collapsed;
 
         #endregion
     }

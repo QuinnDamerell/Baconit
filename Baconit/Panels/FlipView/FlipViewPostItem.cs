@@ -15,9 +15,9 @@ namespace Baconit.Panels.FlipView
     /// </summary>
     class FlipViewPostItem : BindableBase
     {
-        public FlipViewPostItem(IPanelHost host, PostCollector collector, Post post)
+        public FlipViewPostItem(IPanelHost host, PostCollector collector, Post post, string targetComment)
         {
-            Context = new FlipViewPostContext(host, collector, post);
+            Context = new FlipViewPostContext(host, collector, post, targetComment);
             IsVisible = false;
         }
 

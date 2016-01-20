@@ -37,7 +37,7 @@ namespace Baconit.Panels.FlipView
         public Action<object, CommentBoxOnOpenedArgs> CommentBoxOpened;
         public Func<object, OnCommentSubmittedArgs, bool> CommentBoxSubmitted;
     }
-    
+
     public sealed partial class FlipViewPostPanel : UserControl
     {
         const int c_hiddenCommentHeaderHeight = 36;
@@ -52,11 +52,6 @@ namespace Baconit.Panels.FlipView
         /// Holds the current comment manager.
         /// </summary>
         FlipViewPostCommentManager m_commentManager = null;
-
-        /// <summary>
-        /// Indicates if we have a header size change that we haven't updated yet.
-        /// </summary>
-        bool m_hasDeferredHeaderSizeUpdate = false;
 
         /// <summary>
         /// The last known scroll position.
@@ -75,7 +70,7 @@ namespace Baconit.Panels.FlipView
 
         /// <summary>
         /// Indicates if the user has overwritten full screen.
-        /// </summary> 
+        /// </summary>
         bool? m_fullScreenOverwrite = null;
 
         /// <summary>
@@ -250,6 +245,12 @@ namespace Baconit.Panels.FlipView
                 PreFetchPostComments();
             }
 
+            // If we have a target comment show the UI now.
+            if(!String.IsNullOrWhiteSpace(newContext.TargetComment))
+            {
+                newContext.Post.FlipViewShowEntireThreadMessage = Visibility.Visible;
+            }
+
             // Setup the UI for the new context
             SetupListViewForNewContext();
             SetupHeaderForNewContext();
@@ -322,7 +323,7 @@ namespace Baconit.Panels.FlipView
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
                     App.BaconMan.TelemetryMan.ReportEvent(this, "OpenInBrowser");
                 }
-            }         
+            }
         }
 
         private void More_Tapped(object sender, EventArgs e)
@@ -372,7 +373,7 @@ namespace Baconit.Panels.FlipView
                 }
                 Clipboard.SetContent(data);
                 App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
-            } 
+            }
         }
 
         private void CopyPermalink_Click(object sender, RoutedEventArgs e)
@@ -384,7 +385,7 @@ namespace Baconit.Panels.FlipView
                 data.SetText("http://www.reddit.com" + context.Post.Permalink);
                 Clipboard.SetContent(data);
                 App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
-            }        
+            }
         }
 
         private void SaveImage_Click(object sender, RoutedEventArgs e)
@@ -394,7 +395,7 @@ namespace Baconit.Panels.FlipView
             {
                 App.BaconMan.ImageMan.SaveImageLocally(context.Post.Url);
                 App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
-            }          
+            }
         }
 
         // I threw up a little while I wrote this.
@@ -413,7 +414,7 @@ namespace Baconit.Panels.FlipView
                     DataTransferManager.ShowShareUI();
                     App.BaconMan.TelemetryMan.ReportEvent(this, "SharePostTapped");
                 }
-            }           
+            }
         }
 
         private void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
@@ -468,7 +469,7 @@ namespace Baconit.Panels.FlipView
                     // Delete it.
                     context.Collector.DeletePost(context.Post);
                 }
-            }      
+            }
         }
 
         /// <summary>
@@ -532,7 +533,7 @@ namespace Baconit.Panels.FlipView
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, context.Post.Author);
                 context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);
                 App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFlipView");
-            }     
+            }
         }
 
         #endregion
@@ -566,7 +567,7 @@ namespace Baconit.Panels.FlipView
 
             // Create a comment manager for the post
             Post refPost = context.Post;
-            m_commentManager = new FlipViewPostCommentManager(ref refPost, "", false);//m_targetComment, showThreadSubset);
+            m_commentManager = new FlipViewPostCommentManager(ref refPost, context.TargetComment, showThreadSubset);
 
             // Set the comment list to the list view
             ui_listView.ItemsSource = m_commentManager.Comments;
@@ -588,7 +589,7 @@ namespace Baconit.Panels.FlipView
             {
                 m_commentManager.PrepareForDeletion();
                 m_commentManager = null;
-            }  
+            }
         }
 
         /// <summary>
@@ -608,9 +609,6 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private void ViewEntireThread_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // Get the post and the manager
-            Post post = ((Post)((FrameworkElement)sender).DataContext);
-
             // First remove the current comment manager
             ClearCommentManger();
 
@@ -698,7 +696,7 @@ namespace Baconit.Panels.FlipView
 
             // If we have a differed header update and we are near the top (not showing the header)
             // do the update now. For a full story see the comment on m_hasDeferredHeaderSizeUpdate
-            if (m_hasDeferredHeaderSizeUpdate && !showHeader)
+            if (currentScrollAera != context.HeaderSize && context.HeaderSize + 80 > e.ListScrollTotalDistance && e.ScrollDirection == ScrollDirection.Up)
             {
                 SetHeaderSize();
             }
@@ -715,11 +713,9 @@ namespace Baconit.Panels.FlipView
                 if (m_commentManager.IsOnlyShowingSubset())
                 {
                     m_commentManager.RequestMorePosts();
-                }               
+                }
             }
         }
-
-        bool headerVis = true;
 
         /// <summary>
         /// Fired when a item is selected, just clear it.
@@ -985,6 +981,12 @@ namespace Baconit.Panels.FlipView
             m_fullScreenOverwrite = null;
             m_isfullScreenOverwriteUser = null;
             ToggleFullscreen(false, true);
+
+            if (m_storyHeader != null)
+            {
+                Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
+                headerGrid.MaxHeight = double.PositiveInfinity;
+            }
         }
 
         /// <summary>
@@ -1059,60 +1061,86 @@ namespace Baconit.Panels.FlipView
                     {
                         return;
                     }
-                }               
+                }
             }
             m_isFullscreen = goFullscreen;
 
-            // Get our elements for the sticky header
-            Storyboard storyboard = (Storyboard)m_stickyHeader.FindName("ui_storyCollapseHeader");
-            DoubleAnimation animBody = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderBodyTranslate");
-            DoubleAnimation animTitle = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderTitleTranslate");
-            DoubleAnimation animSubtext = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
-            DoubleAnimation animIcons = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderIconsTranslate");
-            DoubleAnimation animFullscreenButton = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderFullscreenButtonRotate");            
-            Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
-
-            // Stop any past animations.
-            if (storyboard.GetCurrentState() != ClockState.Stopped)
+            if (IsVisible)
             {
-                storyboard.Stop();
+                // Get our elements for the sticky header
+                Storyboard storyboard = (Storyboard)m_stickyHeader.FindName("ui_storyCollapseHeader");
+                DoubleAnimation animBody = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderBodyTranslate");
+                DoubleAnimation animTitle = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderTitleTranslate");
+                DoubleAnimation animSubtext = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
+                DoubleAnimation animIcons = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderIconsTranslate");
+                DoubleAnimation animFullscreenButton = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderFullscreenButtonRotate");
+                Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
+
+                // Stop any past animations.
+                if (storyboard.GetCurrentState() != ClockState.Stopped)
+                {
+                    storyboard.Stop();
+                }
+
+                // Setup the animations.
+                double animTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
+                double animFrom = goFullscreen ? 0 : -stickyGrid.ActualHeight;
+                animBody.To = animTo;
+                animBody.From = animFrom;
+                animTitle.To = animTo;
+                animTitle.From = animFrom;
+                animSubtext.To = animTo;
+                animSubtext.From = animFrom;
+                animIcons.To = animTo;
+                animIcons.From = animFrom;
+                animFullscreenButton.To = goFullscreen ? 0 : 180;
+                animFullscreenButton.From = goFullscreen ? 180 : 0;
+
+                // For the normal header
+                Storyboard storyNormal = (Storyboard)m_storyHeader.FindName("ui_storyCollapseHeaderHeight");
+                Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
+                DoubleAnimation animNormal = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightCollapse");
+                DoubleAnimation animNormalFullscreenButton = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightButtonRotate");
+
+                // Stop any past animations.
+                if (storyNormal.GetCurrentState() != ClockState.Stopped)
+                {
+                    storyNormal.Stop();
+                }
+
+                // Set the normal animations.
+                animNormal.To = goFullscreen ? 0 : headerGrid.ActualHeight;
+                animNormal.From = goFullscreen ? headerGrid.ActualHeight : 0;
+                animNormalFullscreenButton.To = goFullscreen ? 0 : 180;
+                animNormalFullscreenButton.From = goFullscreen ? 180 : 0;
+
+                // Play the animations.
+                storyboard.Begin();
+                storyNormal.Begin();
             }
-
-            // Setup the animations.
-            double animTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
-            double animFrom = goFullscreen ? 0 : -stickyGrid.ActualHeight;
-            animBody.To = animTo;
-            animBody.From = animFrom;
-            animTitle.To = animTo;
-            animTitle.From = animFrom;
-            animSubtext.To = animTo;
-            animSubtext.From = animFrom;
-            animIcons.To = animTo;
-            animIcons.From = animFrom;
-            animFullscreenButton.To = goFullscreen ? 0 : 180;
-            animFullscreenButton.From = goFullscreen ? 180 : 0;
-
-            // For the normal header
-            Storyboard storyNormal = (Storyboard)m_storyHeader.FindName("ui_storyCollapseHeaderHeight");
-            Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
-            DoubleAnimation animNormal = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightCollapse");
-            DoubleAnimation animNormalFullscreenButton = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightButtonRotate");
-
-            // Stop any past animations.
-            if (storyNormal.GetCurrentState() != ClockState.Stopped)
+            else
             {
-                storyNormal.Stop();
+                // If not visible, just reset the UI.
+
+                // For the normal header set the size and the button
+                Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
+                RotateTransform headerFullscreenButtonRotate = (RotateTransform)m_storyHeader.FindName("ui_headerFullscreenButtonRotate");
+                headerFullscreenButtonRotate.Angle = goFullscreen ? 0 : 180;
+                headerGrid.MaxHeight = goFullscreen ? double.NaN : headerGrid.ActualHeight;
+
+
+                // For the sticky header reset the transforms.
+                TranslateTransform titleTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerTitleTransform");
+                TranslateTransform subtextTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerSubtextTransform");
+                TranslateTransform iconTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerIconsTransform");
+                TranslateTransform bodyTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerBodyTransform");
+                Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
+                double setTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
+                titleTrans.Y = setTo;
+                subtextTrans.Y = setTo;
+                iconTrans.Y = setTo;
+                bodyTrans.Y = setTo;
             }
-
-            // Set the normal animations.
-            animNormal.To = goFullscreen ? 0 : headerGrid.ActualHeight;
-            animNormal.From = goFullscreen ? headerGrid.ActualHeight : 0;
-            animNormalFullscreenButton.To = goFullscreen ? 0 : 180;
-            animNormalFullscreenButton.From = goFullscreen ? 180 : 0;        
-
-            // Play the animations.
-            storyboard.Begin();
-            storyNormal.Begin();
         }
 
         /// <summary>
@@ -1309,15 +1337,11 @@ namespace Baconit.Panels.FlipView
                 screenSize += c_hiddenShowAllCommentsHeight;
             }
 
-            // If we are not hiding the large header also add the height of the comment bar so it will be off screen by default
-            // or if we are full screen from the flip control.
-            if (context.Post.FlipviewHeaderVisibility == Visibility.Visible)
-            {
-                screenSize += c_hiddenCommentHeaderHeight;
-            }
+            // Add a the comment header size.
+            screenSize += c_hiddenCommentHeaderHeight;
 
             // If we are full screen account for the header being gone.
-            if(m_isFullscreen)
+            if (m_isFullscreen)
             {
                 Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
                 screenSize += (int)headerGrid.ActualHeight;
@@ -1335,13 +1359,10 @@ namespace Baconit.Panels.FlipView
         {
             // We do this so we jump the UI ever time the comment box is open.
             // see the description on m_hasDeferredHeaderSizeUpdate for a full story.
-            // This isn't 100% correct, but we are looking for comment box changes. 
+            // This isn't 100% correct, but we are looking for comment box changes.
             // So if the width doesn't change assume it is the comment box.
-            if (e.PreviousSize.Width == e.NewSize.Width && m_lastKnownScrollOffset > 30)
-            {
-                m_hasDeferredHeaderSizeUpdate = true;
-            }
-            else
+            int currentScrollArea = GetCurrentScrollArea();
+            if (m_lastKnownScrollOffset < currentScrollArea)
             {
                 // Fire a header size change to fix them up.
                 SetHeaderSize();
@@ -1350,7 +1371,7 @@ namespace Baconit.Panels.FlipView
 
         #endregion
 
-        #region Comment Box    
+        #region Comment Box
 
         /// <summary>
         /// Shows the comment box

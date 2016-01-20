@@ -95,9 +95,7 @@
                 </Grid.RowDefinitions>
 
                 <!--  Story Header Block  -->
-                <Grid x:Name="ui_storyHeaderBlock"
-                      Background="#333333"
-                      Visibility="{x:Bind Context.Post.FlipviewHeaderVisibility, Mode=OneWay}">
+                <Grid x:Name="ui_storyHeaderBlock" Background="#333333">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
@@ -554,9 +552,8 @@
 
     <!--  The main content root  -->
     <Grid x:Name="ui_contentRoot"
-          Background="#191919"
+          Background="#121212"
           SizeChanged="ContentRoot_SizeChanged">
-
         <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
         <helperControls:EndDetectingListView x:Name="ui_listView"
                                              EndOfListDetectionThrehold="0.0"

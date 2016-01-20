@@ -154,12 +154,12 @@ namespace BaconBackend.DataObjects
                 return m_likes;
             }
             set
-            {                
+            {
                 if (this.SetProperty(ref this.m_likes, value))
                 {
                     this.OnPropertyChanged(nameof(DownVoteColor));
                     this.OnPropertyChanged(nameof(UpVoteColor));
-                }           
+                }
             }
         }
         [JsonIgnore]
@@ -380,7 +380,7 @@ namespace BaconBackend.DataObjects
             set
             {
                 m_titleTextColor = value;
-                OnPropertyChanged(nameof(TitleTextBrush)); 
+                OnPropertyChanged(nameof(TitleTextBrush));
             }
         }
         [JsonIgnore]
@@ -696,29 +696,6 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         string m_commentingOnId = "";
 
-        /// <summary>
-        /// Used by flip view to cache the size of the header
-        /// </summary>
-        [JsonIgnore]
-        public double FlipViewHeaderHeight = 0;
-
-        /// <summary>
-        /// Flip view post header visibility
-        /// </summary>
-        [JsonIgnore]
-        public Visibility FlipviewHeaderVisibility
-        {
-            get
-            {
-                return m_flipviewHeaderVisibility;
-            }
-            set
-            {
-                SetProperty(ref m_flipviewHeaderVisibility, value);               
-            }
-        }
-        [JsonIgnore]
-        Visibility m_flipviewHeaderVisibility = Visibility.Visible;
 
         /// <summary>
         /// Indicates how many comments we are showing

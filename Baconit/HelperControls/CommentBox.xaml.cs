@@ -421,8 +421,18 @@ namespace Baconit.HelperControls
                     // Update the markdown text.
                     ui_livePreviewBox.Markdown = ui_textBox.Text;
 
+                    // For some reason the SelectionStart count /r/n as 1 instead of two. So add one for each /r/n we find.
+                    int selectionStart = ui_textBox.SelectionStart;
+                    for (int count = 0; count < selectionStart; count++)
+                    {
+                        if (ui_textBox.Text[count] == '\r' && count + 1 < ui_textBox.Text.Length && ui_textBox.Text[count + 1] == '\n')
+                        {
+                            selectionStart++;
+                        }
+                    }
+
                     // If the entry point is at the bottom of the text box, scroll the preview
-                    if (Math.Abs(ui_textBox.SelectionStart - ui_textBox.Text.Length) < 30)
+                    if (Math.Abs(selectionStart - ui_textBox.Text.Length) < 30)
                     {
                         ui_livePreviewScroller.ChangeView(null, ui_livePreviewScroller.ScrollableHeight, null);
                     }

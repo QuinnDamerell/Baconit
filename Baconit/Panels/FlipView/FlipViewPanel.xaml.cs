@@ -81,7 +81,7 @@ namespace Baconit.Panels.FlipView
         /// Indicates that there is a target comment we are trying to get to.
         /// </summary>
         string m_targetComment = "";
-        
+
         /// <summary>
         /// Holds a reference to the loading overlay if there is one.
         /// </summary>
@@ -439,7 +439,7 @@ namespace Baconit.Panels.FlipView
                                     // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
                                     try
                                     {
-                                        m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post));
+                                        m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                                     }
                                     catch (Exception e)
                                     {
@@ -458,7 +458,7 @@ namespace Baconit.Panels.FlipView
                                 // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
                                 try
                                 {
-                                    m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post));
+                                    m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                                 }
                                 catch(Exception e)
                                 {
@@ -540,7 +540,7 @@ namespace Baconit.Panels.FlipView
                             else
                             {
                                 // If not add it to the end.
-                                m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post));
+                                m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                             }
                         }
                     }
@@ -550,7 +550,7 @@ namespace Baconit.Panels.FlipView
                     // as possible.
                     foreach (Post post in insertList.Reverse<Post>())
                     {
-                        m_postsLists.Insert(0, new FlipViewPostItem(m_host, m_collector, post));
+                        m_postsLists.Insert(0, new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                     }
 
                     // Clear the deferrals
@@ -563,7 +563,7 @@ namespace Baconit.Panels.FlipView
                     UpdatePanelContent();
                 });
             });
-        }  
+        }
 
         #region Flippping Logic
 
@@ -716,8 +716,8 @@ namespace Baconit.Panels.FlipView
             });
         }
 
-        #endregion    
-        
+        #endregion
+
         #region Full Screen Loading
 
         /// <summary>
@@ -853,7 +853,7 @@ namespace Baconit.Panels.FlipView
                 {
                     ui_commentBox.HideLoadingOverlay();
                 }
-            }        
+            }
         }
 
         /// <summary>
@@ -867,7 +867,9 @@ namespace Baconit.Panels.FlipView
             // it isn't bound by the grid.
             if (ui_commentBox != null)
             {
-                ui_commentBox.MaxHeight = height;
+                // -1 is needed to work around a layout cycle bug
+                // https://github.com/QuinnDamerell/Baconit/issues/54
+                ui_commentBox.MaxHeight = height - 1;
             }
         }
 
@@ -878,7 +880,7 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            SetCommentBoxHeight(e.NewSize.Height - 1);
+            SetCommentBoxHeight(e.NewSize.Height);
         }
 
         #endregion

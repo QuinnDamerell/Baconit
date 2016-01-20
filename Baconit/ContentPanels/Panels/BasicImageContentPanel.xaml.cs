@@ -1,6 +1,7 @@
 ﻿using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -45,7 +46,7 @@ namespace Baconit.ContentPanels.Panels
         /// The calculated min zoom factor for this image.
         /// </summary>
         float m_minZoomFactor = 1.0f;
-        
+
         /// <summary>
         /// Holds the current size of the control.
         /// </summary>
@@ -207,7 +208,7 @@ namespace Baconit.ContentPanels.Panels
                             bmpImage.ImageOpened -= BitmapImage_ImageOpened;
                             bmpImage.ImageFailed -= BitmapImage_ImageFailed;
                         }
-                    }   
+                    }
 
                     // Kill the image
                     m_image.Source = null;
@@ -340,8 +341,6 @@ namespace Baconit.ContentPanels.Panels
                 m_lastImageSetSize.Height = m_currentControlSize.Height;
             }
 
-
-
             // Create a bitmap and
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.CreateOptions = BitmapCreateOptions.None;
@@ -392,8 +391,6 @@ namespace Baconit.ContentPanels.Panels
                 }
             }
 
-
-
             // Set the image.
             m_image.Source = bitmapImage;
             return true;
@@ -427,7 +424,7 @@ namespace Baconit.ContentPanels.Panels
             catch(Exception)
             {
                 return;
-            } 
+            }
 
             // wait a little bit before we set the new state so things can settle.
             await Task.Delay(50);
@@ -630,7 +627,7 @@ namespace Baconit.ContentPanels.Panels
 
                 // if we didn't resize the image just set the new zoom.
                 if (!didImageResize)
-                {                    
+                {
                     m_state = ImageState.NormalSizeUpdating;
 
                     await SetScrollerZoomFactors();
@@ -650,20 +647,35 @@ namespace Baconit.ContentPanels.Panels
             {
                 return;
             }
-            
+
             // Get the image and the size.
             BitmapImage bitmapImage = (BitmapImage)m_image.Source;
             Size imageSize = new Size(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
 
-            // If we are using logical pixels and have a decode width or height we want to 
+            // No matter what they pixel type, the scroller always seems to look at decoded pixel values
+            // and not the real sizes. So we need to make this size match the decoded size.
+            if (bitmapImage.DecodePixelWidth != 0)
+            {
+                double ratio = ((double)bitmapImage.PixelWidth) / ((double)bitmapImage.DecodePixelWidth);
+                imageSize.Width /= ratio;
+                imageSize.Height /= ratio;
+            }
+            else if (bitmapImage.DecodePixelHeight != 0)
+            {
+                double ratio = ((double)bitmapImage.PixelHeight) / ((double)bitmapImage.DecodePixelHeight);
+
+                imageSize.Width /= ratio;
+                imageSize.Height /= ratio;
+            }
+
+            // If we are using logical pixels and have a decode width or height we want to
             // scale the actual height and width down. We must do this because the scroller
             // expects logical pixels.
-            if (bitmapImage.DecodePixelType == DecodePixelType.Logical && (bitmapImage.DecodePixelHeight != 0 || bitmapImage.DecodePixelWidth != 0))
+            if (bitmapImage.DecodePixelType == DecodePixelType.Logical)// && (bitmapImage.DecodePixelHeight != 0 || bitmapImage.DecodePixelWidth != 0))
             {
-                imageSize.Width /= m_deviceScaleFactor;
-                imageSize.Height /= m_deviceScaleFactor;
+
             }
-                    
+
             await SetScrollerZoomFactors(imageSize);
         }
 

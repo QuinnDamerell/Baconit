@@ -316,7 +316,10 @@ namespace Baconit
                     if (m_subreddits.Count > insertCount && m_subreddits[insertCount].Id.Equals(newSubreddit.Id))
                     {
                         // If they are the same just update it
-                        m_subreddits[insertCount] = newSubreddit;
+                        m_subreddits[insertCount].DisplayName = newSubreddit.DisplayName;
+                        m_subreddits[insertCount].FavIconUri = newSubreddit.FavIconUri;
+                        m_subreddits[insertCount].IsFavorite = newSubreddit.IsFavorite;
+                        m_subreddits[insertCount].Title = newSubreddit.Title;
                     }
                     // (subreddit insert) If the next element in the new list is the same as the current element in the old list, insert.
                     else if (m_subreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(m_subreddits[insertCount].Id))
