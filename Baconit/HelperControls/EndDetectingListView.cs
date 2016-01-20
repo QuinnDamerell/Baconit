@@ -17,7 +17,7 @@ namespace Baconit.HelperControls
     /// </summary>
     public enum ScrollDirection
     {
-        WiggleRoomUp, // Used to indicate when we are going up but might not want to react.
+        Null, // Indicates we haven't moved enough to have a direction.
         Up,
         Down
     }
@@ -122,7 +122,7 @@ namespace Baconit.HelperControls
             // Detect a small changes and make them null
             if(Math.Abs(m_lastValue - m_listeningScrollBar.Value) < 1)
             {
-                direction = ScrollDirection.WiggleRoomUp;
+                direction = ScrollDirection.Null;
             }
             m_lastValue = m_listeningScrollBar.Value;
 
@@ -131,7 +131,7 @@ namespace Baconit.HelperControls
             // jump back and forth when on a small point.
             if (direction == ScrollDirection.Up && (m_lastDirectionChangeValue - m_lastValue) < 50)
             {
-                direction = ScrollDirection.WiggleRoomUp;
+                direction = ScrollDirection.Null;
             }
             else if(direction == ScrollDirection.Down)
             {

@@ -668,7 +668,7 @@ namespace Baconit.Panels.FlipView
             // also only want to do this logic if we are scrolling down. On the way back up we need to unminimize 
             // (if the user forced us to be mini) before we hit the real header or things will be wack.
             int headerAniamtionDistance = currentScrollAera;
-            if(m_isFullscreen && e.ScrollDirection == ScrollDirection.Down)
+            if(m_isFullscreen && e.ScrollDirection != ScrollDirection.Up)
             {
                 Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
                 headerAniamtionDistance -= (int)headerGrid.ActualHeight;
