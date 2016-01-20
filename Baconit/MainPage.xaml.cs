@@ -1149,7 +1149,7 @@ namespace Baconit
 
                 // If we showed the UI update the value to the next time we should annoy them.
                 // If they leave a review we will make this huge.
-                App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy += 40;
+                App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy += 120;
             }
         }
 
