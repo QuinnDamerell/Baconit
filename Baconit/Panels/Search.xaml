@@ -48,7 +48,7 @@
                     -->
                     <universalMarkdown:MarkdownTextBlock Grid.Row="2"
                                                          Foreground="#999999"
-                                                         IsHitTestVisible="False"
+                                                         IsTextSelectionEnabled="False"
                                                          Markdown="{x:Bind MarkdownText}"
                                                          OnMarkdownLinkTapped="MarkdownTextBlock_OnMarkdownLinkTapped"
                                                          Visibility="{x:Bind ShowMarkdownText}" />

@@ -133,7 +133,7 @@
                         <!--  Note we have to enable depedent animation, but it is ok here  -->
                         <DoubleAnimation Duration="00:00:00.5"
                                          EnableDependentAnimation="True"
-                                         From="0"
+                                         From="20"
                                          Storyboard.TargetName="ui_livePreviewGrid"
                                          Storyboard.TargetProperty="MinHeight"
                                          To="208">
@@ -162,7 +162,7 @@
                                          From="208"
                                          Storyboard.TargetName="ui_livePreviewGrid"
                                          Storyboard.TargetProperty="MinHeight"
-                                         To="0">
+                                         To="20">
                             <DoubleAnimation.EasingFunction>
                                 <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
@@ -203,15 +203,17 @@
 
             <!--  Live markdown grid  -->
             <Grid x:Name="ui_livePreviewGrid"
+                  MinHeight="20"
                   MaxHeight="208"
                   Background="{StaticResource BaconitAccentColorLevel4Brush}">
                 <ScrollViewer x:Name="ui_livePreviewScroller"
+                              Padding="18,6,18,6"
                               Style="{StaticResource ScrollViewerStyle}"
                               VerticalScrollBarVisibility="Auto"
                               ZoomMode="Disabled">
                     <!--  the live preview box  -->
                     <universalMarkdown:MarkdownTextBlock x:Name="ui_livePreviewBox"
-                                                         Margin="18,6,18,6"
+                                                         MinHeight="20"
                                                          OnMarkdownLinkTapped="LivePreviewBox_OnMarkdownLinkTapped" />
                 </ScrollViewer>
             </Grid>
