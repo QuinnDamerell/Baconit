@@ -934,8 +934,6 @@ namespace Baconit.Panels.FlipView
                     ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, false);
                 });
             }
-
-            ShowCommentBox("t3_tefafs", null, new object());
         }
 
         /// <summary>

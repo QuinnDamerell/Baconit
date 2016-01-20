@@ -1,6 +1,7 @@
 ﻿using BaconBackend.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -117,12 +118,18 @@ namespace Baconit.HelperControls
             // Calculate the percent and fire when it meets the threshold
             double scrollPercentage = m_listeningScrollBar.Value / m_listeningScrollBar.Maximum;
             ScrollDirection direction = m_lastValue > m_listeningScrollBar.Value ? ScrollDirection.Up : ScrollDirection.Down;
+
+            // Detect a small changes and make them null
+            if(Math.Abs(m_lastValue - m_listeningScrollBar.Value) < 1)
+            {
+                direction = ScrollDirection.WiggleRoomUp;
+            }
             m_lastValue = m_listeningScrollBar.Value;
 
             // We need to account for some play in the numbers when it comes to this, don't report a
             // direction of up until we move up 50px from the last down position. This prevents us from
             // jump back and forth when on a small point.
-            if(direction == ScrollDirection.Up && (m_lastDirectionChangeValue - m_lastValue) < 50)
+            if (direction == ScrollDirection.Up && (m_lastDirectionChangeValue - m_lastValue) < 50)
             {
                 direction = ScrollDirection.WiggleRoomUp;
             }

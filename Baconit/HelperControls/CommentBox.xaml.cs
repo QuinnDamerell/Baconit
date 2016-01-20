@@ -118,17 +118,17 @@ namespace Baconit.HelperControls
             // Set the interval and edit timeout. We will use the memory limit as a guess of what the
             // the device can handle.
             ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit / 1024 / 1024;
-            if (memoryLimit < 200)
+            if (memoryLimit < 250)
             {
-                m_previewUpdateEditTimeout = 1000;
+                m_previewUpdateEditTimeout = 500;
             }
             else if (memoryLimit < 450)
             {
-                m_previewUpdateEditTimeout = 1000;
+                m_previewUpdateEditTimeout = 200;
             }
             else if (memoryLimit < 1500)
             {
-                m_previewUpdateEditTimeout = 300;
+                m_previewUpdateEditTimeout = 100;
             }
             else
             {

@@ -664,9 +664,11 @@ namespace Baconit.Panels.FlipView
             ui_stickyHeader.Visibility = showHeader ? Visibility.Visible : Visibility.Collapsed;
 
             // Get the distance for the animation header to move. We need to account for the header
-            // size here because when we move from full screen to not it will toggle.
+            // size here because when we move from full screen to not it will toggle. This is very touchy, we 
+            // also only want to do this logic if we are scrolling down. On the way back up we need to unminimize 
+            // (if the user forced us to be mini) before we hit the real header or things will be wack.
             int headerAniamtionDistance = currentScrollAera;
-            if(m_isFullscreen)
+            if(m_isFullscreen && e.ScrollDirection == ScrollDirection.Down)
             {
                 Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
                 headerAniamtionDistance -= (int)headerGrid.ActualHeight;
@@ -690,7 +692,7 @@ namespace Baconit.Panels.FlipView
             else
             {
                 // If we are the top force it.
-                ToggleFullscreen(false, e.ListScrollTotalDistance < 10);
+                ToggleFullscreen(false, true);
             }
 
 
