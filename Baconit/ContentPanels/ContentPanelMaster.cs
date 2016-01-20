@@ -49,6 +49,7 @@ namespace Baconit.ContentPanels
         {
             public ContentState State = ContentState.NotAllowed;
             public IContentPanelHost Host = null;
+            public List<IContentPanelHost> PastHosts = new List<IContentPanelHost>();
             public IContentPanelBase PanelBase = null;
             public ContentPanelSource Source;
             public string Group;
@@ -471,7 +472,6 @@ namespace Baconit.ContentPanels
             // Used to hold the host we will tell is unloaded.
             IContentPanelHost fireUnloadedHost = null;
 
-
             // Check to see if the panel exists
             lock (m_currentPanelList)
             {
@@ -501,10 +501,13 @@ namespace Baconit.ContentPanels
                     }
                     else
                     {
-                        // We already have a host, grab the host so we can kill it
-                        // but make sure to null it so the post doesn't load while we are killing it.
+                        // Grab the host and null it so we can tell it that it has been removed
+                        // and nothing will go to it. 
                         pastHost = element.Host;
                         element.Host = null;
+
+                        // We want to add it to the panel list so we can restore it if the current host leaves.
+                        element.PastHosts.Insert(0, pastHost);
 
                         // If the control is already created remove it from the old host.
                         if (element.State == ContentState.Created)
@@ -581,6 +584,33 @@ namespace Baconit.ContentPanels
                 // The host can also be null if we are in the process of switching.
                 if (element.Host == null || !element.Host.Id.Equals(host.Id))
                 {
+                    // Try to find the panel in our back stack.
+                    IContentPanelHost removeStackHost = null;
+                    foreach (IContentPanelHost stackHost in element.PastHosts)
+                    {
+                        if(stackHost.Id.Equals(host.Id))
+                        {
+                            removeStackHost = stackHost;
+                            break;
+                        }
+                    }
+
+                    // If found remove it, if it is in this stack it isn't registered anywhere.
+                    if(removeStackHost != null)
+                    {
+                        element.PastHosts.Remove(removeStackHost);
+                    }
+                    else
+                    {
+                        // This is odd, report it.
+                        App.BaconMan.MessageMan.DebugDia("panel removed that wasn't active or in the panel stack");
+                        if (Debugger.IsAttached)
+                        {
+                            Debugger.Break();
+                        }
+                    }
+
+                    // Get out of here.
                     return;
                 }
 
@@ -593,6 +623,9 @@ namespace Baconit.ContentPanels
                 await FireOnRemovePanel(host, removePanelBase);
             }
 
+            IContentPanelHost restoreHost = null;
+            string restoreHostId = null;
+
             // Now actually clear the host
             lock (m_currentPanelList)
             {
@@ -602,16 +635,34 @@ namespace Baconit.ContentPanels
                     return;
                 }
 
+                // Remove the current host.
                 ContentListElement element = m_currentPanelList[panelId];
                 element.Host = null;
 
-                // If we the state isn't allowed delete this entry because
-                // no one wants it.
-                if(element.State == ContentState.NotAllowed)
+                // If we have a past host restore it.
+                if(element.PastHosts.Count > 0)
+                {
+                    // Get the host
+                    restoreHost = element.PastHosts[0];
+                    element.PastHosts.RemoveAt(0);
+
+                    // Get the ID
+                    restoreHostId = element.Source.Id;
+                }
+
+                // If we the state isn't allowed and we don't have a host to restore
+                // delete this entry because no one wants it.
+                if(element.State == ContentState.NotAllowed && restoreHost == null)
                 {
                     m_currentPanelList.Remove(panelId);
                 }
             }
+
+            // If we have a panel to restore call register on it.
+            if(restoreHost != null && !String.IsNullOrWhiteSpace(restoreHostId))
+            {
+                RegisterForPanel(restoreHost, restoreHostId);
+            }            
         }
 
         /// <summary>
