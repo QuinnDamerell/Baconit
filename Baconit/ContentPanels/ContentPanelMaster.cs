@@ -624,7 +624,6 @@ namespace Baconit.ContentPanels
             }
 
             IContentPanelHost restoreHost = null;
-            string restoreHostId = null;
 
             // Now actually clear the host
             lock (m_currentPanelList)
@@ -645,9 +644,6 @@ namespace Baconit.ContentPanels
                     // Get the host
                     restoreHost = element.PastHosts[0];
                     element.PastHosts.RemoveAt(0);
-
-                    // Get the ID
-                    restoreHostId = element.Source.Id;
                 }
 
                 // If we the state isn't allowed and we don't have a host to restore
@@ -659,9 +655,9 @@ namespace Baconit.ContentPanels
             }
 
             // If we have a panel to restore call register on it.
-            if(restoreHost != null && !String.IsNullOrWhiteSpace(restoreHostId))
+            if(restoreHost != null)
             {
-                RegisterForPanel(restoreHost, restoreHostId);
+                RegisterForPanel(restoreHost, panelId);
             }            
         }
 
