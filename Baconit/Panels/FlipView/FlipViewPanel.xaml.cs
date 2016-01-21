@@ -63,14 +63,14 @@ namespace Baconit.Panels.FlipView
         IPanelHost m_host;
 
         /// <summary>
-        /// The list of posts that back the flip view
+        /// The list of posts that are actually in flip view.
         /// </summary>
-        ObservableCollection<FlipViewPostItem> m_postsLists = new ObservableCollection<FlipViewPostItem>();
+        ObservableCollection<FlipViewPostItem> m_activePostsLists = new ObservableCollection<FlipViewPostItem>();
 
         /// <summary>
-        /// This list holds posts that we defer loaded if we have any.
+        /// All of the current posts.
         /// </summary>
-        List<Post> m_deferredPostList = new List<Post>();
+        List<FlipViewPostItem> m_postsLists = new List<FlipViewPostItem>();
 
         /// <summary>
         /// Indicates that there is a target post we are trying to get to.
@@ -88,10 +88,14 @@ namespace Baconit.Panels.FlipView
         LoadingOverlay m_loadingOverlay = null;
 
         /// <summary>
-        /// Used to defer the first comments loading so we give the UI time to load before we start
-        /// the intense work of loading comments.
+        /// Indicates what the current selected index is.
         /// </summary>
-        bool m_isFirstPostLoad = true;
+        int m_currentSelectedIndex = -1;
+
+        /// <summary>
+        /// Indicates what the current update thread is.
+        /// </summary>
+        long m_currentViewUpdateId = 0;
 
         /// <summary>
         /// Holds a unique id for this flipview.
@@ -350,6 +354,8 @@ namespace Baconit.Panels.FlipView
             UpdatePosts(args.StartingPosition, args.ChangedItems);
         }
 
+        #region Active Post List Managment
+
         /// <summary>
         /// Update the posts in flip view. Staring at the index given and going until the list is empty.
         /// </summary>
@@ -357,213 +363,249 @@ namespace Baconit.Panels.FlipView
         /// <param name="newPosts"></param>
         private async void UpdatePosts(int startingPos, List<Post> newPosts)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+            // First, update the current post list we have.
+            lock(m_postsLists)
             {
-                Visibility flipViewMenuVis = m_host.CurrentScreenMode() == ScreenMode.Single ? Visibility.Visible : Visibility.Collapsed;
+                // Setup the starting index
+                int insertIndex = startingPos;
 
-                bool deferLoadPosts = false;
-                // Grab the list lock
-                lock (m_postsLists)
+                // Set up the objects for the UI
+                foreach (Post post in newPosts)
                 {
-                    // If we are currently in a deferred scenario then we need to handle updates
-                    // differently since the list won't match the list that is expected
-                    if(m_deferredPostList.Count != 0)
+                    // Check if we are adding or inserting.
+                    bool isReplace = insertIndex < m_postsLists.Count;
+
+                    if (isReplace)
                     {
-                        if (m_postsLists.Count > 0 && newPosts.Count > 0 &&
-                            m_postsLists[0].Context.Post.Id.Equals(newPosts[0].Id))
+                        if (m_postsLists[insertIndex].Context.Post.Id.Equals(post.Id))
                         {
-                            // The current post is updated, so update it.
                             // We can't replace the time because flip view will freak out
                             // so just update whatever UI we need to update.
-                            m_postsLists[0].Context.Post.Likes = newPosts[0].Likes;
-                            m_postsLists[0].Context.Post.SubTextLine1 = newPosts[0].SubTextLine1;
-                            m_postsLists[0].Context.Post.SubTextLine2PartOne = newPosts[0].SubTextLine2PartOne;
-                            m_postsLists[0].Context.Post.SubTextLine2PartTwo = newPosts[0].SubTextLine2PartTwo;
-                            m_postsLists[0].Context.Post.Domain = newPosts[0].Domain;
-                            m_postsLists[0].Context.Post.Score = newPosts[0].Score;
-                        }
-
-                        // We have done all we want to do, leave now.
-                        return;
-                    }
-
-                    // If the list is currently empty we want to only load the first element and defer the rest of the
-                    // elements. If the target post is -1 we load the first element, if not we load it only.
-                    deferLoadPosts = m_postsLists.Count == 0;
-                    string deferTargetPost = m_targetPost;
-                    m_targetPost = null;
-                    if (deferLoadPosts)
-                    {
-                        // If we are doing a defer make sure we have a target
-                        if (String.IsNullOrWhiteSpace(deferTargetPost) && newPosts.Count > 0)
-                        {
-                            deferTargetPost = newPosts[0].Id;
-                        }
-                    }
-
-                    // Now setup the post update
-                    int insertIndex = startingPos;
-
-                    // Set up the objects for the UI
-                    foreach (Post post in newPosts)
-                    {
-                        // Check if we are adding or inserting.
-                        bool isReplace = insertIndex < m_postsLists.Count;
-
-                        if (isReplace)
-                        {
-                            if (m_postsLists[insertIndex].Context.Post.Id.Equals(post.Id))
-                            {
-                                // We can't replace the time because flip view will freak out
-                                // so just update whatever UI we need to update.
-                                m_postsLists[insertIndex].Context.Post.Likes = post.Likes;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine1 = post.SubTextLine1;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine2PartOne = post.SubTextLine2PartOne;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine2PartTwo = post.SubTextLine2PartTwo;
-                                m_postsLists[insertIndex].Context.Post.Domain = post.Domain;
-                                m_postsLists[insertIndex].Context.Post.Score = post.Score;
-                            }
-                            else
-                            {
-                                // Replace the entire post if it brand new
-                                m_postsLists[insertIndex].Context.Post = post;
-                            }
+                            m_postsLists[insertIndex].Context.Post.Likes = post.Likes;
+                            m_postsLists[insertIndex].Context.Post.SubTextLine1 = post.SubTextLine1;
+                            m_postsLists[insertIndex].Context.Post.SubTextLine2PartOne = post.SubTextLine2PartOne;
+                            m_postsLists[insertIndex].Context.Post.SubTextLine2PartTwo = post.SubTextLine2PartTwo;
+                            m_postsLists[insertIndex].Context.Post.Domain = post.Domain;
+                            m_postsLists[insertIndex].Context.Post.Score = post.Score;
                         }
                         else
                         {
-                            // If we are deferring posts only add the target
-                            if (deferLoadPosts)
-                            {
-                                if (post.Id.Equals(deferTargetPost))
-                                {
-                                    // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
-                                    try
-                                    {
-                                        m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot1", e);
-                                        App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
-                                    }
-                                }
-
-                                // Add it to the deferred list, also add the deferred post so we know
-                                // where it is in the list.
-                                m_deferredPostList.Add(post);
-                            }
-                            else
-                            {
-                                // Otherwise, just add it.
-                                // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
-                                try
-                                {
-                                    m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
-                                }
-                                catch(Exception e)
-                                {
-                                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot2", e);
-                                    App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
-                                }
-                            }
+                            // Replace the entire post if it brand new
+                            m_postsLists[insertIndex].Context.Post = post;
                         }
-
-                        // Set the menu button
-                        post.FlipViewMenuButton = flipViewMenuVis;
-
-                        // Add one to the insert index
-                        insertIndex++;
                     }
-
-                    // If the item source hasn't been set yet do it now.
-                    if (ui_flipView.ItemsSource == null)
+                    else
                     {
-                        ui_flipView.ItemsSource = m_postsLists;
+                        m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                     }
-                }
 
-                // Hide the loading overlay if it is visible
-                HideFullScreenLoading();
-            });
-        }
-
-        /// <summary>
-        /// If we have deferred post this will add them
-        /// </summary>
-        public async void DoDeferredPostUpdate()
-        {
-            // Check if we have work to do.
-            lock(m_postsLists)
-            {
-                if(m_deferredPostList.Count == 0)
-                {
-                    return;
+                    insertIndex++;
                 }
             }
 
-            // Otherwise, sleep for a little to let the UI settle down.
-            await Task.Delay(1000);
-
-            // Now kick off a UI thread on low to do the update.
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
+            // Now see if our current post list is empty, if so this is a first load
+            FlipViewPostItem targetItem = null;
+            lock (m_activePostsLists)
             {
                 lock(m_postsLists)
                 {
-                    // Ensure we sill have work do to.
-                    if (m_deferredPostList.Count == 0)
+                    if (m_activePostsLists.Count == 0)
                     {
-                        return;
-                    }
-
-                    bool addBefore = true;
-                    string deferredPostId = m_postsLists.Count > 0 ? m_postsLists[0].Context.Post.Id : String.Empty;
-                    List<Post> insertList = new List<Post>();
-
-                    foreach(Post post in m_deferredPostList)
-                    {
-                        // If this is the post don't do anything but indicate we should add after
-                        if(post.Id.Equals(deferredPostId))
+                        // Find our target post
+                        string targetPost = m_targetPost;
+                        m_targetPost = null;
+                        if (String.IsNullOrWhiteSpace(targetPost) && m_postsLists.Count > 0)
                         {
-                            addBefore = false;
+                            targetPost = m_postsLists[0].Context.Post.Id;
                         }
-                        else
+
+                        // Find the post
+                        
+                        foreach (FlipViewPostItem item in m_postsLists)
                         {
-                            // If we are adding before add it before
-                            if(addBefore)
+                            if(item.Context.Post.Id.Equals(targetPost))
                             {
-                                // #todo BUG! This is a fun work around. If we insert posts here about 5% of the time the app will
-                                // crash due to a bug in the platform. Since the exception is in the system we don't get a chance to handle it
-                                // we just die.
-                                // So, add these to another list and add them after.
-                                insertList.Add(post);
-                            }
-                            else
-                            {
-                                // If not add it to the end.
-                                m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
+                                targetItem = item;
+                                break;
                             }
                         }
+                        if(targetItem == null && m_postsLists.Count > 0)
+                        {
+                            targetItem = m_postsLists[0];
+                        }
                     }
+                }         
+            }
 
-                    // Now ad the inserts, but insert them from the element closest to the visible post to away.
-                    // We want to do this so flipview doesn't keep changing which panels are virtualized as we add panels.
-                    // as possible.
-                    foreach (Post post in insertList.Reverse<Post>())
-                    {
-                        m_postsLists.Insert(0, new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
-                    }
-
-                    // Clear the deferrals
-                    m_deferredPostList.Clear();
-                }
-
-                // And preload the content for the next post, but again defer this since it is a background task.
+            if(targetItem != null)
+            {
+                // Async to set the post.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
-                    UpdatePanelContent();
+                    // Lock the post list
+                    lock (m_activePostsLists)
+                    {
+                        // set the item
+                        m_activePostsLists.Add(targetItem);
+
+                        // Set the list to the UI.
+                        ui_flipView.ItemsSource = m_activePostsLists;
+                    }
+
+                    // Hide loading if it is up.
+                    HideFullScreenLoading();
                 });
-            });
+            }            
         }
+
+        /// <summary>
+        /// Updates the content in all of the panels in flipview.
+        /// </summary>
+        private async void UpdatePanelContent(long thisUpdateId)
+        {
+            FlipViewPostItem startingItem = null;
+            lock(m_activePostsLists)
+            {
+                if(m_activePostsLists.Count == 1)
+                {
+                    startingItem = m_activePostsLists[0];
+                }
+            }
+
+            // Special case for the first load. 
+            if (startingItem != null)
+            {
+                // Set the content for the first post now.
+                await SetPostContent(startingItem, true);
+
+                // Check we are still the current update thread.
+                if (m_currentViewUpdateId != thisUpdateId) return;
+
+                // Wait a bit
+                await Task.Delay(300);
+
+                // Check we are still the current update thread.
+                if (m_currentViewUpdateId != thisUpdateId) return;
+
+                // Prefetch comments
+                startingItem.LoadComments = true;
+
+                // Check we are still the current update thread.
+                if (m_currentViewUpdateId != thisUpdateId) return;
+
+                // Wait a bit
+                await Task.Delay(300);
+            }
+
+
+
+
+            //// Create a list we need to set to the UI.
+            //List<Tuple<FlipViewPostItem, bool>> setToUiList = new List<Tuple<FlipViewPostItem, bool>>();
+            //List<FlipViewPostItem> clearList = new List<FlipViewPostItem>();
+            //bool extendCollection = false;
+
+            //// Get the min and max number of posts to load.
+            //int minContentLoad = ui_flipView.SelectedIndex;
+            //int maxContentLoad = ui_flipView.SelectedIndex;
+            //if (App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
+            //{
+            //    maxContentLoad++;
+            //}
+
+            //// Lock the list
+            //lock (m_postsLists)
+            //{
+            //    for (int i = 0; i < m_postsLists.Count; i++)
+            //    {
+            //        FlipViewPostItem item = m_postsLists[i];
+            //        if (i >= minContentLoad && i <= maxContentLoad)
+            //        {
+            //            // Add the post to the list of posts to set. We have to do this outside of the lock
+            //            // because we might delay while doing it.
+            //            setToUiList.Add(new Tuple<FlipViewPostItem, bool>(item, ui_flipView.SelectedIndex == i));
+            //        }
+            //        else
+            //        {
+            //            // Add the post to the list of posts to clear. We have to do this outside of the lock
+            //            // because we might delay while doing it.
+            //            clearList.Add(item);
+            //        }
+            //    }
+
+            //    // Check if we should load more posts. Note we want to check how many post the
+            //    // collector has because this gets called when the m_postList is being built, thus
+            //    // the count will be wrong.
+            //    if (m_postsLists.Count > 5 && m_collector.GetCurrentPosts().Count < maxContentLoad + 4)
+            //    {
+            //        extendCollection = true;
+            //    }
+            //}
+
+            //// Extend if we should
+            //if (extendCollection)
+            //{
+            //    m_collector.ExtendCollection(25);
+            //}
+
+            //// Now that we are out of lock set the items we want to set.
+            //foreach (Tuple<FlipViewPostItem, bool> tuple in setToUiList)
+            //{
+            //    // We found an item to show or prelaod, do it.
+            //    await SetPostContent(tuple.Item1, tuple.Item2);
+
+            //    // If this is the first post to load delay for a while to give the UI time to setup.
+            //    if (m_isFirstPostLoad)
+            //    {
+            //        m_isFirstPostLoad = false;
+            //        await Task.Delay(1000);
+            //    }
+
+            //    // After the delay tell the post to prefetch the comments if we are visible.
+            //    if (tuple.Item2)
+            //    {
+            //        tuple.Item1.LoadComments = true;
+            //    }
+            //}
+
+            //// Now set them all to not be visible and clear
+            //// the comments.
+            //foreach (FlipViewPostItem item in clearList)
+            //{
+            //    item.IsVisible = false;
+            //    item.LoadComments = false;
+            //}
+
+            //// Kick off a background thread to clear out what we don't want.
+            //await Task.Run(() =>
+            //{
+            //    // Get all of our content.
+            //    List<string> allContent = ContentPanelMaster.Current.GetAllAllowedContentForGroup(m_uniqueId);
+
+            //    // Find the ids that should be cleared and clear them.
+            //    List<string> removeId = new List<string>();
+            //    foreach (string contentId in allContent)
+            //    {
+            //        bool found = false;
+            //        foreach (Tuple<FlipViewPostItem, bool> tuple in setToUiList)
+            //        {
+            //            if (tuple.Item1.Context.Post.Id.Equals(contentId))
+            //            {
+            //                found = true;
+            //                break;
+            //            }
+            //        }
+
+            //        if (!found)
+            //        {
+            //            // If we didn't find it clear it.
+            //            ContentPanelMaster.Current.RemoveAllowedContent(contentId);
+            //        }
+            //    }
+            //});
+        }
+
+        #endregion
 
         #region Flippping Logic
 
@@ -574,10 +616,13 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private async void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ui_flipView.SelectedIndex == -1)
+            if(ui_flipView.SelectedIndex == -1 || ui_flipView.SelectedIndex == m_currentSelectedIndex)
             {
                 return;
             }
+
+            // Set the current index.
+            m_currentSelectedIndex = ui_flipView.SelectedIndex;
 
             // Mark the item read.
             m_collector.MarkPostRead(((FlipViewPostItem)ui_flipView.SelectedItem).Context.Post, ui_flipView.SelectedIndex);
@@ -585,12 +630,15 @@ namespace Baconit.Panels.FlipView
             // Hide the comment box if open
             HideCommentBoxIfOpen();
 
+            // Set the current update id.
+            m_currentViewUpdateId = DateTime.Now.Ticks;
+
             // If the index is 0 we are most likely doing a first load, so we want to
             // set the panel content instantly so we get the loading UI as fast a possible.
             if (ui_flipView.SelectedIndex == 0)
             {
                 // Update the posts
-                UpdatePanelContent();
+                UpdatePanelContent(m_currentViewUpdateId);
             }
             else
             {
@@ -598,122 +646,9 @@ namespace Baconit.Panels.FlipView
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
                     // Update the posts
-                    UpdatePanelContent();
+                    UpdatePanelContent(m_currentViewUpdateId);
                 });
             }
-
-            // Now if we have deferred post add them
-            DoDeferredPostUpdate();
-        }
-
-        /// <summary>
-        /// Updates the content in all of the panels in flipview.
-        /// </summary>
-        private async void UpdatePanelContent()
-        {
-            // Create a list we need to set to the UI.
-            List<Tuple<FlipViewPostItem, bool>> setToUiList = new List<Tuple<FlipViewPostItem, bool>>();
-            List<FlipViewPostItem> clearList = new List<FlipViewPostItem>();
-            bool extendCollection = false;
-
-            // Get the min and max number of posts to load.
-            int minContentLoad = ui_flipView.SelectedIndex;
-            int maxContentLoad = ui_flipView.SelectedIndex;
-            if (App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
-            {
-                maxContentLoad++;
-            }
-
-            // Lock the list
-            lock (m_postsLists)
-            {
-                for (int i = 0; i < m_postsLists.Count; i++)
-                {
-                    FlipViewPostItem item = m_postsLists[i];
-                    if (i >= minContentLoad && i <= maxContentLoad)
-                    {
-                        // Add the post to the list of posts to set. We have to do this outside of the lock
-                        // because we might delay while doing it.
-                        setToUiList.Add(new Tuple<FlipViewPostItem, bool>(item, ui_flipView.SelectedIndex == i));
-                    }
-                    else
-                    {
-                        // Add the post to the list of posts to clear. We have to do this outside of the lock
-                        // because we might delay while doing it.
-                        clearList.Add(item);
-                    }
-                }
-
-                // Check if we should load more posts. Note we want to check how many post the
-                // collector has because this gets called when the m_postList is being built, thus
-                // the count will be wrong.
-                if(m_postsLists.Count > 5 && m_collector.GetCurrentPosts().Count < maxContentLoad + 4)
-                {
-                    extendCollection = true;
-                }
-            }
-
-            // Extend if we should
-            if(extendCollection)
-            {
-                m_collector.ExtendCollection(25);
-            }
-
-            // Now that we are out of lock set the items we want to set.
-            foreach(Tuple<FlipViewPostItem, bool> tuple in setToUiList)
-            {
-                // We found an item to show or prelaod, do it.
-                await SetPostContent(tuple.Item1, tuple.Item2);
-
-                // If this is the first post to load delay for a while to give the UI time to setup.
-                if (m_isFirstPostLoad)
-                {
-                    m_isFirstPostLoad = false;
-                    await Task.Delay(1000);
-                }
-
-                // After the delay tell the post to prefetch the comments if we are visible.
-                if (tuple.Item2)
-                {
-                    tuple.Item1.LoadComments = true;
-                }
-            }
-
-            // Now set them all to not be visible and clear
-            // the comments.
-            foreach (FlipViewPostItem item in clearList)
-            {
-                item.IsVisible = false;
-                item.LoadComments = false;
-            }
-
-            // Kick off a background thread to clear out what we don't want.
-            await Task.Run(() =>
-            {
-                // Get all of our content.
-                List<string> allContent = ContentPanelMaster.Current.GetAllAllowedContentForGroup(m_uniqueId);
-
-                // Find the ids that should be cleared and clear them.
-                List<string> removeId = new List<string>();
-                foreach (string contentId in allContent)
-                {
-                    bool found = false;
-                    foreach (Tuple<FlipViewPostItem, bool> tuple in setToUiList)
-                    {
-                        if (tuple.Item1.Context.Post.Id.Equals(contentId))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                    {
-                        // If we didn't find it clear it.
-                        ContentPanelMaster.Current.RemoveAllowedContent(contentId);
-                    }
-                }
-            });
         }
 
         #endregion
