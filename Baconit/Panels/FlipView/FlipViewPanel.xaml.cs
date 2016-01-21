@@ -478,24 +478,18 @@ namespace Baconit.Panels.FlipView
                 // Set the content for the first post now.
                 await SetPostContent(startingItem, true);
 
-                // Check we are still the current update thread.
-                if (m_currentViewUpdateId != thisUpdateId) return;
-
                 // Wait a bit
                 await Task.Delay(300);
-
-                // Check we are still the current update thread.
-                if (m_currentViewUpdateId != thisUpdateId) return;
 
                 // Prefetch comments
                 startingItem.LoadComments = true;
 
-                // Check we are still the current update thread.
-                if (m_currentViewUpdateId != thisUpdateId) return;
-
                 // Wait a bit
                 await Task.Delay(300);
             }
+
+            // Check we are still the current update thread.
+            if (m_currentViewUpdateId != thisUpdateId) return;
 
 
 
