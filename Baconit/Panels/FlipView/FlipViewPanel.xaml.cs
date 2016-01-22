@@ -65,7 +65,7 @@ namespace Baconit.Panels.FlipView
         /// <summary>
         /// The list of posts that back the flip view
         /// </summary>
-        ObservableCollection<FlipViewPostItem> m_postsLists = new ObservableCollection<FlipViewPostItem>();
+        test<FlipViewPostItem> m_postsLists = new test<FlipViewPostItem>();
 
         /// <summary>
         /// This list holds posts that we defer loaded if we have any.
@@ -509,15 +509,19 @@ namespace Baconit.Panels.FlipView
             {
                 lock(m_postsLists)
                 {
+                    m_postsLists.CollectionChanged += M_postsLists_CollectionChanged;
+
                     // Ensure we sill have work do to.
                     if (m_deferredPostList.Count == 0)
                     {
                         return;
                     }
 
+                    DateTime start = DateTime.Now;
+
                     bool addBefore = true;
                     string deferredPostId = m_postsLists.Count > 0 ? m_postsLists[0].Context.Post.Id : String.Empty;
-                    List<Post> insertList = new List<Post>();
+                    List<FlipViewPostItem> insertList = new List<FlipViewPostItem>();
 
                     foreach(Post post in m_deferredPostList)
                     {
@@ -535,7 +539,7 @@ namespace Baconit.Panels.FlipView
                                 // crash due to a bug in the platform. Since the exception is in the system we don't get a chance to handle it
                                 // we just die.
                                 // So, add these to another list and add them after.
-                                insertList.Add(post);
+                                insertList.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
                             }
                             else
                             {
@@ -545,13 +549,18 @@ namespace Baconit.Panels.FlipView
                         }
                     }
 
+                    DateTime mid = DateTime.Now;
+
                     // Now ad the inserts, but insert them from the element closest to the visible post to away.
                     // We want to do this so flipview doesn't keep changing which panels are virtualized as we add panels.
                     // as possible.
-                    foreach (Post post in insertList.Reverse<Post>())
-                    {
-                        m_postsLists.Insert(0, new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
-                    }
+                    //foreach (Post post in insertList.Reverse<Post>())
+                    //{
+
+                    //}
+                    m_postsLists.InsertRange(0, insertList);
+
+                    Debug.WriteLine($"after {(mid - start).TotalMilliseconds} before {(DateTime.Now - mid).TotalMilliseconds}" );
 
                     // Clear the deferrals
                     m_deferredPostList.Clear();
@@ -565,6 +574,11 @@ namespace Baconit.Panels.FlipView
             });
         }
 
+        private void M_postsLists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+
+        }
+
         #region Flippping Logic
 
         /// <summary>
@@ -574,7 +588,7 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private async void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ui_flipView.SelectedIndex == -1)
+            if(ui_flipView.SelectedIndex == -1 || ui_flipView.SelectedItem == null)
             {
                 return;
             }

@@ -172,6 +172,7 @@
     <Compile Include="HelperControls\SubredditSideBar.xaml.cs">
       <DependentUpon>SubredditSideBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperControls\test.cs" />
     <Compile Include="HelperControls\TipPopUp.xaml.cs">
       <DependentUpon>TipPopUp.xaml</DependentUpon>
     </Compile>
