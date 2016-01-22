@@ -1,11 +1,13 @@
 ﻿using BaconBackend;
 using Baconit.Interfaces;
+using HockeyApp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -65,6 +67,7 @@ namespace Baconit
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
+            HockeyClient.Current.Configure("e5847d68bf5e4eb29d96141bc7bde423");
 
             // Init the app
             this.InitializeComponent();
@@ -192,6 +195,12 @@ namespace Baconit
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+            // Up load any crash reports if we have them.
+            Task.Run(async () =>
+            {
+                await HockeyClient.Current.SendCrashesAsync(true);
+            });
         }
 
         /// <summary>
