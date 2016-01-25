@@ -94,7 +94,7 @@ namespace Baconit.ContentPanels.Panels
                     {
                         // If we failed fallback to the browser.
                         m_base.FireOnFallbackToBrowser();
-                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
+                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
                         return;
                     }
 

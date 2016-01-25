@@ -172,7 +172,7 @@ namespace BaconBackend.Managers.Background
             catch(Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to set background image", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to set background image", e);
             }
         }
 
@@ -216,7 +216,7 @@ namespace BaconBackend.Managers.Background
             catch (Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to set background image", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to set background image", e);
             }
         }
 
@@ -286,7 +286,7 @@ namespace BaconBackend.Managers.Background
                     if (!wasSuccess)
                     {
                         m_baconMan.TelemetryMan.ReportLog(this, "Image update failed", SeverityLevel.Error);
-                        m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, type == UpdateTypes.LockScreen ? "LockscreenImageUpdateFailed" : "DesktopImageUpdateFailed");
+                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, type == UpdateTypes.LockScreen ? "LockscreenImageUpdateFailed" : "DesktopImageUpdateFailed");
                     }
                     else
                     {
@@ -460,7 +460,7 @@ namespace BaconBackend.Managers.Background
             }
             catch(Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToDeleteCacheImages", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToDeleteCacheImages", e);
             }
 
             // Setup the vars
@@ -583,7 +583,7 @@ namespace BaconBackend.Managers.Background
                 catch (Exception e)
                 {
                     m_baconMan.MessageMan.DebugDia("Failed to write background image", e);
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "Failed to write background image", e);
+                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to write background image", e);
                 }
             }
 

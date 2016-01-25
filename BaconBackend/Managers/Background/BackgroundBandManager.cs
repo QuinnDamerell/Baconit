@@ -115,7 +115,7 @@ namespace BaconBackend.Managers.Background
                 catch(Exception e)
                 {
                     m_baconMan.MessageMan.DebugDia("failed to update band message", e);
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToUpdateBandMessages", e);
+                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToUpdateBandMessages", e);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace BaconBackend.Managers.Background
                                 if (!await bandClient.TileManager.AddTileAsync(tile))
                                 {
                                     m_baconMan.MessageMan.DebugDia("failed to create tile");
-                                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToCreateTileOnBand");
+                                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToCreateTileOnBand");
                                     wasSuccess = false;
                                 }
                             }
@@ -203,7 +203,7 @@ namespace BaconBackend.Managers.Background
                             if (!await bandClient.TileManager.RemoveTileAsync(baconitTile))
                             {
                                 m_baconMan.MessageMan.DebugDia("failed to remove tile");
-                                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToRemoveTileOnBand");
+                                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToRemoveTileOnBand");
                                 wasSuccess = false;
                             }
                         }

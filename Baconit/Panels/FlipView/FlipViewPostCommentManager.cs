@@ -631,7 +631,7 @@ namespace Baconit.Panels
             else
             {
                 args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShareCommentHelperCommentNoShareComment");
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShareCommentHelperCommentNoShareComment");
             }
         }
 
