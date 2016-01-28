@@ -123,7 +123,7 @@ namespace Baconit.ContentPanels.Panels
                         case RedditContentType.Website:
                             // This shouldn't happen
                             App.BaconMan.MessageMan.DebugDia("Got website back when prepare on reddit content control");
-                            App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "GotWebsiteOnPrepareRedditContent");
+                            App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "GotWebsiteOnPrepareRedditContent");
                             break;
                     }
                 }

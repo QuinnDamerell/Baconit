@@ -357,7 +357,7 @@ namespace Baconit
             }
             catch(Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "UpdateSubredditListFailed", e);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "UpdateSubredditListFailed", e);
                 App.BaconMan.MessageMan.DebugDia("UpdateSubredditListFailed", e);
             }
         }

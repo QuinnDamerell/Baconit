@@ -432,7 +432,7 @@ namespace Baconit.Panels.FlipView
             else
             {
                 args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShareFilpViewPostNoSharePost");
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShareFilpViewPostNoSharePost");
             }
         }
 
@@ -1054,12 +1054,13 @@ namespace Baconit.Panels.FlipView
             }
 
             // Make sure the user hasn't overwritten this.
-            if(m_fullScreenOverwrite.HasValue)
+            bool? localOverwriteValue = m_fullScreenOverwrite;
+            if (localOverwriteValue.HasValue)
             {
                 // If we are being force and the overwrite isn't from the user skip this.
-                if(!force || (m_isfullScreenOverwriteUser.HasValue && !m_isfullScreenOverwriteUser.Value))
+                if(!force || (localOverwriteValue.HasValue && !localOverwriteValue.Value))
                 {
-                    if (m_fullScreenOverwrite.Value != goFullscreen)
+                    if (localOverwriteValue.Value != goFullscreen)
                     {
                         return;
                     }
@@ -1067,81 +1068,106 @@ namespace Baconit.Panels.FlipView
             }
             m_isFullscreen = goFullscreen;
 
-            if (IsVisible)
+            string traceString = "";
+            try
             {
-                // Get our elements for the sticky header
-                Storyboard storyboard = (Storyboard)m_stickyHeader.FindName("ui_storyCollapseHeader");
-                DoubleAnimation animBody = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderBodyTranslate");
-                DoubleAnimation animTitle = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderTitleTranslate");
-                DoubleAnimation animSubtext = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
-                DoubleAnimation animIcons = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderIconsTranslate");
-                DoubleAnimation animFullscreenButton = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderFullscreenButtonRotate");
-                Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
-
-                // Stop any past animations.
-                if (storyboard.GetCurrentState() != ClockState.Stopped)
+                if (IsVisible)
                 {
-                    storyboard.Stop();
+                    // Get our elements for the sticky header
+                    Storyboard storyboard = (Storyboard)m_stickyHeader.FindName("ui_storyCollapseHeader");
+                    DoubleAnimation animBody = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderBodyTranslate");
+                    DoubleAnimation animTitle = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderTitleTranslate");
+                    DoubleAnimation animSubtext = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
+                    DoubleAnimation animIcons = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderIconsTranslate");
+                    DoubleAnimation animFullscreenButton = (DoubleAnimation)m_stickyHeader.FindName("ui_animHeaderFullscreenButtonRotate");
+                    Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
+
+                    traceString += " gotstickelement ";
+
+                    // Stop any past animations.
+                    if (storyboard.GetCurrentState() != ClockState.Stopped)
+                    {
+                        storyboard.Stop();
+                    }
+
+                    traceString += $" settingStickAnim height [{stickyGrid.ActualHeight}[ ";
+
+                    // Setup the animations.
+                    double animTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
+                    double animFrom = goFullscreen ? 0 : -stickyGrid.ActualHeight;
+                    animBody.To = animTo;
+                    animBody.From = animFrom;
+                    animTitle.To = animTo;
+                    animTitle.From = animFrom;
+                    animSubtext.To = animTo;
+                    animSubtext.From = animFrom;
+                    animIcons.To = animTo;
+                    animIcons.From = animFrom;
+                    animFullscreenButton.To = goFullscreen ? 0 : 180;
+                    animFullscreenButton.From = goFullscreen ? 180 : 0;
+
+                    traceString += " gettingnormalHeader ";
+
+                    // For the normal header
+                    Storyboard storyNormal = (Storyboard)m_storyHeader.FindName("ui_storyCollapseHeaderHeight");
+                    Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
+                    DoubleAnimation animNormal = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightCollapse");
+                    DoubleAnimation animNormalFullscreenButton = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightButtonRotate");
+
+                    traceString += " stoppingclock ";
+
+                    // Stop any past animations.
+                    if (storyNormal.GetCurrentState() != ClockState.Stopped)
+                    {
+                        storyNormal.Stop();
+                    }
+
+                    traceString += " settingnormalheaders ";
+
+                    // Set the normal animations.
+                    animNormal.To = goFullscreen ? 0 : headerGrid.ActualHeight;
+                    animNormal.From = goFullscreen ? headerGrid.ActualHeight : 0;
+                    animNormalFullscreenButton.To = goFullscreen ? 0 : 180;
+                    animNormalFullscreenButton.From = goFullscreen ? 180 : 0;
+
+                    traceString += " play ";
+
+
+                    // Play the animations.
+                    storyboard.Begin();
+                    storyNormal.Begin();
                 }
-
-                // Setup the animations.
-                double animTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
-                double animFrom = goFullscreen ? 0 : -stickyGrid.ActualHeight;
-                animBody.To = animTo;
-                animBody.From = animFrom;
-                animTitle.To = animTo;
-                animTitle.From = animFrom;
-                animSubtext.To = animTo;
-                animSubtext.From = animFrom;
-                animIcons.To = animTo;
-                animIcons.From = animFrom;
-                animFullscreenButton.To = goFullscreen ? 0 : 180;
-                animFullscreenButton.From = goFullscreen ? 180 : 0;
-
-                // For the normal header
-                Storyboard storyNormal = (Storyboard)m_storyHeader.FindName("ui_storyCollapseHeaderHeight");
-                Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
-                DoubleAnimation animNormal = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightCollapse");
-                DoubleAnimation animNormalFullscreenButton = (DoubleAnimation)m_storyHeader.FindName("ui_animHeaderHeightButtonRotate");
-
-                // Stop any past animations.
-                if (storyNormal.GetCurrentState() != ClockState.Stopped)
+                else
                 {
-                    storyNormal.Stop();
+                    // If not visible, just reset the UI.
+
+                    traceString += " gettingElements ";
+
+                    // For the normal header set the size and the button
+                    Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
+                    RotateTransform headerFullscreenButtonRotate = (RotateTransform)m_storyHeader.FindName("ui_headerFullscreenButtonRotate");
+                    headerFullscreenButtonRotate.Angle = goFullscreen ? 0 : 180;
+                    headerGrid.MaxHeight = goFullscreen ? double.NaN : headerGrid.ActualHeight;
+
+                    traceString += $" SettingElements height[{headerGrid.ActualHeight}] ";
+
+                    // For the sticky header reset the transforms.
+                    TranslateTransform titleTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerTitleTransform");
+                    TranslateTransform subtextTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerSubtextTransform");
+                    TranslateTransform iconTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerIconsTransform");
+                    TranslateTransform bodyTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerBodyTransform");
+                    Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
+                    double setTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
+                    titleTrans.Y = setTo;
+                    subtextTrans.Y = setTo;
+                    iconTrans.Y = setTo;
+                    bodyTrans.Y = setTo;
                 }
-
-                // Set the normal animations.
-                animNormal.To = goFullscreen ? 0 : headerGrid.ActualHeight;
-                animNormal.From = goFullscreen ? headerGrid.ActualHeight : 0;
-                animNormalFullscreenButton.To = goFullscreen ? 0 : 180;
-                animNormalFullscreenButton.From = goFullscreen ? 180 : 0;
-
-                // Play the animations.
-                storyboard.Begin();
-                storyNormal.Begin();
             }
-            else
+            catch(Exception e)
             {
-                // If not visible, just reset the UI.
-
-                // For the normal header set the size and the button
-                Grid headerGrid = (Grid)m_storyHeader.FindName("ui_storyHeaderBlock");
-                RotateTransform headerFullscreenButtonRotate = (RotateTransform)m_storyHeader.FindName("ui_headerFullscreenButtonRotate");
-                headerFullscreenButtonRotate.Angle = goFullscreen ? 0 : 180;
-                headerGrid.MaxHeight = goFullscreen ? double.NaN : headerGrid.ActualHeight;
-
-
-                // For the sticky header reset the transforms.
-                TranslateTransform titleTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerTitleTransform");
-                TranslateTransform subtextTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerSubtextTransform");
-                TranslateTransform iconTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerIconsTransform");
-                TranslateTransform bodyTrans = (TranslateTransform)m_storyHeader.FindName("ui_headerBodyTransform");
-                Grid stickyGrid = (Grid)m_stickyHeader.FindName("ui_storyHeaderBlock");
-                double setTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
-                titleTrans.Y = setTo;
-                subtextTrans.Y = setTo;
-                iconTrans.Y = setTo;
-                bodyTrans.Y = setTo;
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, $"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
+                App.BaconMan.MessageMan.DebugDia($"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
             }
         }
 
@@ -1452,13 +1478,13 @@ namespace Baconit.Panels.FlipView
                         }
                         else
                         {
-                            App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitManagerObjNull");
+                            App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
                         }
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitPostObjNull");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitPostObjNull");
                 }
             }
             else if (e.RedditId.StartsWith("t1_"))
@@ -1474,12 +1500,12 @@ namespace Baconit.Panels.FlipView
                     }
                     else
                     {
-                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitManagerObjNull");
+                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "CommentSubmitCommentObjNull");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitCommentObjNull");
                 }
             }
 

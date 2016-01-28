@@ -182,7 +182,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to send comment", e);
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to send comment", e);
                 baconMan.MessageMan.DebugDia("failed to send message", e);
             }
             return returnString;
@@ -215,7 +215,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to search for user", e);
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to search for user", e);
                 baconMan.MessageMan.DebugDia("failed to search for user", e);
             }
             return foundUser;
@@ -246,7 +246,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to delete post", e);
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to delete post", e);
                 baconMan.MessageMan.DebugDia("failed to delete post", e);
             }
             return false;
@@ -294,13 +294,13 @@ namespace BaconBackend.Helpers
                 }
                 else
                 {
-                    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to save or hide item, unknown response");
+                    baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to save or hide item, unknown response");
                     baconMan.MessageMan.DebugDia("failed to save or hide item, unknown response");
                 }
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to save or hide item", e);
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to save or hide item", e);
                 baconMan.MessageMan.DebugDia("failed to save or hide item", e);
             }
             return wasSuccess;
@@ -368,20 +368,20 @@ namespace BaconBackend.Helpers
                         string enumName = Enum.GetName(typeof(SubmitNewPostErrors), i).ToLower(); ;
                         if (responseLower.Contains(enumName))
                         {
-                            baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; error: "+ enumName);
+                            baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post; error: "+ enumName);
                             baconMan.MessageMan.DebugDia("failed to submit post; error: "+ enumName);
                             return new SubmitNewPostResponse() { Success = false, RedditError = (SubmitNewPostErrors)i};
                         }
                     }
 
-                    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post; unknown reddit error: ");
+                    baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post; unknown reddit error: ");
                     baconMan.MessageMan.DebugDia("failed to submit post; unknown reddit error");
                     return new SubmitNewPostResponse() { Success = false, RedditError = SubmitNewPostErrors.UNKNOWN };
                 }
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post", e);
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post", e);
                 baconMan.MessageMan.DebugDia("failed to submit post", e);
                 return new SubmitNewPostResponse() { Success = false };
             }
@@ -411,7 +411,7 @@ namespace BaconBackend.Helpers
             //}
             //catch (Exception e)
             //{
-            //    baconMan.TelemetryMan.ReportUnExpectedEvent("MisHelper", "failed to submit post", e);
+            //    baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post", e);
             //    baconMan.MessageMan.DebugDia("failed to submit post", e);
             //    return new SubmitNewPostResponse() { Success = false };
             //}

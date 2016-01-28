@@ -121,7 +121,7 @@ namespace BaconBackend.Managers
             catch(Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("failed to get motd", e);
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToGetMotd", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToGetMotd", e);
             }
 
             return null;

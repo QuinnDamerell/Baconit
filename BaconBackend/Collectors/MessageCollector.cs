@@ -110,7 +110,7 @@ namespace BaconBackend.Collectors
                 catch (Exception ex)
                 {
                     m_baconMan.MessageMan.DebugDia("failed to set message status!", ex);
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "failedToSetMessageRead", ex);
+                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToSetMessageRead", ex);
                 }
             });
         }

@@ -112,7 +112,7 @@ namespace Baconit.HelperControls
             }
             catch (Exception ex)
             {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "MOTDLinkFailedToOpen", ex);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "MOTDLinkFailedToOpen", ex);
                 App.BaconMan.MessageMan.DebugDia("MOTDLinkFailedToOpen", ex);
             }
         }

@@ -191,7 +191,7 @@ namespace BaconBackend.Managers
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "failed to get subreddit", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to get subreddit", e);
                 m_baconMan.MessageMan.DebugDia("failed to get subreddit", e);
             }
 
@@ -257,13 +257,13 @@ namespace BaconBackend.Managers
                 }
 
                 // Report the error
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToSubscribeToSubredditWebRequestFailed");
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSubscribeToSubredditWebRequestFailed");
                 m_baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit, reddit returned an expected value");
                 return false;
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToSubscribeToSubreddit", e);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSubscribeToSubreddit", e);
                 m_baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit", e);
             }
             return false;

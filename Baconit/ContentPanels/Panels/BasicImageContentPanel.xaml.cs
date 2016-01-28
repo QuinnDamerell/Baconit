@@ -153,7 +153,7 @@ namespace Baconit.ContentPanels.Panels
                 if (String.IsNullOrWhiteSpace(imageUrl))
                 {
                     // This is bad, we should be able to get the url.
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "BasicImageControlNoImageUrl");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
 
                     // Jump back to the UI thread
                     m_base.FireOnFallbackToBrowser();
@@ -254,7 +254,7 @@ namespace Baconit.ContentPanels.Panels
             {
                 if (!response.Success)
                 {
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "BasicImageControlNoImageUrl");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
                     m_base.FireOnFallbackToBrowser();
                     return;
                 }

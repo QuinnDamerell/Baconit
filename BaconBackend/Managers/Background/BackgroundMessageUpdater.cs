@@ -232,7 +232,7 @@ namespace BaconBackend.Managers.Background
             }
             catch (Exception ex)
             {
-                m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "messageUpdaterFailed", ex);
+                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "messageUpdaterFailed", ex);
                 m_baconMan.MessageMan.DebugDia("failed to update message notifications", ex);
             }
 
