@@ -244,8 +244,7 @@ namespace Baconit.ContentPanels.Panels
             {
                 // Try to find the ID
                 string youtubeVideoId = String.Empty;
-                string postUrl = WebUtility.HtmlDecode(source.Url);
-                string urlLower = postUrl.ToLower();
+                string urlLower = source.Url.ToLower();
                 if (urlLower.Contains("youtube.com"))
                 {
                     // Check for an attribution link
@@ -255,9 +254,9 @@ namespace Baconit.ContentPanels.Panels
                         // We need to parse out the video id
                         // looks like this attribution_link?a=bhvqtDGQD6s&amp;u=%2Fwatch%3Fv%3DrK0D1ehO7CA%26feature%3Dshare
                         int uIndex = urlLower.IndexOf("u=", attribution);
-                        string encodedUrl = postUrl.Substring(uIndex + 2);
-                        postUrl = WebUtility.UrlDecode(encodedUrl);
-                        urlLower = postUrl.ToLower();
+                        string encodedUrl = source.Url.Substring(uIndex + 2);
+                        string decodedUrl = WebUtility.UrlDecode(encodedUrl);
+                        urlLower = decodedUrl.ToLower();
                         // At this point urlLower should be something like "v=jfkldfjl&feature=share"
                     }
 
@@ -271,7 +270,7 @@ namespace Baconit.ContentPanels.Panels
                         }
                         // Important! Since this might be case sensitive use the original url!
                         beginId += 2;
-                        youtubeVideoId = postUrl.Substring(beginId, endId - beginId);
+                        youtubeVideoId = source.Url.Substring(beginId, endId - beginId);
                     }
                 }
                 else if (urlLower.Contains("youtu.be"))
@@ -293,7 +292,7 @@ namespace Baconit.ContentPanels.Panels
                         }
                         // Important! Since this might be case sensitive use the original url!
                         beginId++;
-                        youtubeVideoId = postUrl.Substring(beginId, endId - beginId);
+                        youtubeVideoId = source.Url.Substring(beginId, endId - beginId);
                     }
                 }
 

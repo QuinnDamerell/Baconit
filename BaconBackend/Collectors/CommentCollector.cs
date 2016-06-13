@@ -190,10 +190,6 @@ namespace BaconBackend.Collectors
                 DateTime postTime = origin.AddSeconds(comment.CreatedUtc).ToLocalTime();
                 comment.TimeString = TimeToTextHelper.TimeElapseToText(postTime) + " ago";
 
-                // Decode the body
-                comment.Body = WebUtility.HtmlDecode(comment.Body);
-                comment.AuthorFlairText = WebUtility.HtmlDecode(comment.AuthorFlairText);
-
                 // Set if this post is from the op
                 comment.IsCommentFromOp = m_post != null && comment.Author.Equals(m_post.Author);
 

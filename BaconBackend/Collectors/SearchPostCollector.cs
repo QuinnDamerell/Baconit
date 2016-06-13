@@ -88,9 +88,6 @@ namespace BaconBackend.Collectors
         {
             foreach (Post post in posts)
             {
-                // Do some simple formatting
-                post.Title = WebUtility.HtmlDecode(post.Title);
-
                 // Set The time
                 DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 DateTime postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
