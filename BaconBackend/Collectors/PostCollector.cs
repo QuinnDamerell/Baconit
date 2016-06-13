@@ -570,14 +570,6 @@ namespace BaconBackend.Collectors
                 // Set the second line for flipview
                 post.FlipViewSecondary = showSubreddit ? $"r/{post.Subreddit.ToLower()}" : TimeToTextHelper.TimeElapseToText(postTime) + " ago";
 
-                // Escape the title, flair, and selftext
-                post.Title = WebUtility.HtmlDecode(post.Title);
-                post.LinkFlairText = WebUtility.HtmlDecode(post.LinkFlairText);
-                if (!String.IsNullOrEmpty(post.Selftext))
-                {
-                    post.Selftext = WebUtility.HtmlDecode(post.Selftext);
-                }
-
                 // Set the title size
                 post.TitleMaxLines = m_baconMan.UiSettingsMan.SubredditList_ShowFullTitles ? 99 : 2;
 
