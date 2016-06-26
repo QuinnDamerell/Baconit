@@ -162,10 +162,15 @@ namespace Baconit
                 defaultDisplayName = m_subredditFirstNavOverwrite;
             }
 
+            SortTypes defaultSortType = App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType;
+            SortTimeTypes defaultSortTime = App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType;
+
             // Navigate to the start
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, defaultDisplayName);
-            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, defaultSortType);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME, defaultSortTime);
+            m_panelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + defaultSortType + defaultSortTime, args);
             m_panelManager.Navigate(typeof(WelcomePanel), "WelcomePanel");
 
             // Update the trending subreddits
@@ -826,9 +831,15 @@ namespace Baconit
         /// <param name="subreddit"></param>
         private void NavigateToSubreddit(Subreddit subreddit)
         {
+            SortTypes defaultSortType = App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType;
+            SortTimeTypes defaultSortTime = App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType;
+
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName.ToLower());
-            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot, SortTimeTypes.Week), args);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT, defaultSortType);
+            args.Add(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME, defaultSortTime);
+            
+            m_panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(defaultSortType, defaultSortTime), args);
         }
 
         #endregion
