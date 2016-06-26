@@ -570,7 +570,9 @@ namespace BaconBackend.Collectors
                 // Set the second line for flipview
                 post.FlipViewSecondary = showSubreddit ? $"r/{post.Subreddit.ToLower()}" : TimeToTextHelper.TimeElapseToText(postTime) + " ago";
 
-                // Escape the title, flair, and selftext
+                // HTML Decode url, title, flair, and selftext. Does anything else need decoding?
+                // Adding raw_json=1 parameter to requests may be a better alternative.
+                post.Url = WebUtility.HtmlDecode(post.Url);
                 post.Title = WebUtility.HtmlDecode(post.Title);
                 post.LinkFlairText = WebUtility.HtmlDecode(post.LinkFlairText);
                 if (!String.IsNullOrEmpty(post.Selftext))
