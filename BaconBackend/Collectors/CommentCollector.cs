@@ -423,14 +423,8 @@ namespace BaconBackend.Collectors
                 // message was sent to reddit.
                 try
                 {
-                    // Try to parse out the new comment
-                    int dataPos = serverResponse.IndexOf("\"data\":");
-                    int dataStartPos = serverResponse.IndexOf('{', dataPos + 7);
-                    int dataEndPos = serverResponse.IndexOf("}", dataStartPos);
-                    string commentData = serverResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
-
                     // Parse the new comment
-                    Comment newComment = JsonConvert.DeserializeObject<Comment>(commentData);
+                    Comment newComment = MiscellaneousHelper.ParseOutRedditDataElement<Comment>(serverResponse).Result;
 
                     if (isEdit)
                     {

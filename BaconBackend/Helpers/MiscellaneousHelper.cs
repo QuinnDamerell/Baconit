@@ -200,19 +200,8 @@ namespace BaconBackend.Helpers
                 // Make the call
                 string jsonResponse = await baconMan.NetworkMan.MakeRedditGetRequestAsString($"user/{userName}/about/.json");
 
-                // Try to parse out the user
-                int dataPos = jsonResponse.IndexOf("\"data\":");
-                if (dataPos == -1) return null;
-                int dataStartPos = jsonResponse.IndexOf('{', dataPos + 7);
-                if (dataPos == -1) return null;
-                // There can be nested { } in the data we want
-                int dataEndPos = jsonResponse.LastIndexOf('}');
-                if (dataPos == -1) return null;
-
-                string userData = jsonResponse.Substring(dataStartPos, (dataEndPos - dataStartPos));
-
                 // Parse the new user
-                foundUser = await Task.Run(() => JsonConvert.DeserializeObject<User>(userData));
+                foundUser = await MiscellaneousHelper.ParseOutRedditDataElement<User>(jsonResponse);
             }
             catch (Exception e)
             {
@@ -421,30 +410,23 @@ namespace BaconBackend.Helpers
 
 
         /// <summary>
-        /// Attempts to parse out a reddit object from a reddit data object.
+        /// Attempts to parse out a reddit object from a generic reddit response
+        /// json containing a data object.
         /// </summary>
         /// <param name="originalJson"></param>
         /// <returns></returns>
-        public static string ParseOutRedditDataElement(string originalJson)
+        public static async Task<T> ParseOutRedditDataElement<T>(BaconManager baconMan, string originalJson)
         {
             try
             {
-                // Try to parse out the object
-                int dataPos = originalJson.IndexOf("\"data\":");
-                if (dataPos == -1) return null;
-                int dataStartPos = originalJson.IndexOf('{', dataPos + 7);
-                if (dataPos == -1) return null;
-                // "data" is a property of the initial object, so the substring
-                // for "data" should not have the } that closes the initial Json.
-                // The } of the original object is always the last character.
-                return originalJson.Substring(dataStartPos, (originalJson.Length - dataStartPos - 1));
+                DataContainer<T> dataContainer = await Task.Run(() => JsonConvert.DeserializeObject<DataContainer<T>>(originalJson));
+                return dataContainer.Data;
             }
-            catch(Exception)
+            catch(Exception e)
             {
-
+                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to parse data element", e);
             }
-
-            return null;
+            return default(T);
         }
 
         /// <summary>

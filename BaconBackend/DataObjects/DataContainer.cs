@@ -11,16 +11,18 @@ using Windows.UI.Xaml.Media;
 
 namespace BaconBackend.DataObjects 
 {
+    /// <summary>
+    /// A generic Reddit json response containing a data object.
+    /// </summary>
     [JsonObject(MemberSerialization.OptOut)]
-    public class SubredditAbout
+    public class DataContainer<T>
     {
 
         /// <summary>
-        /// The reddit's "About JSON" contains the Subreddit property as a
-        /// object labeled "data"
+        /// Object labeled "data" from the response
         /// </summary>
         [JsonProperty(PropertyName = "data")]
-        public Subreddit SubredditInfo { get; set; }
+        public T Data { get; set; }
 
         /// <summary>
         /// The reddit json kind string

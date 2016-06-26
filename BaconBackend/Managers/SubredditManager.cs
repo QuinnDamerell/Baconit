@@ -178,7 +178,6 @@ namespace BaconBackend.Managers
         /// <returns>Returns null if the subreddit get fails.</returns>
         public async Task<Subreddit> GetSubredditFromWebByDisplayName(string displayName)
         {
-            SubredditAbout subredditData = null;
             Subreddit foundSubreddit = null;
             try
             {
@@ -186,8 +185,7 @@ namespace BaconBackend.Managers
                 string jsonResponse = await m_baconMan.NetworkMan.MakeRedditGetRequestAsString($"/r/{displayName}/about/.json");
 
                 // Parse the new subreddit
-                subredditData = await Task.Run(() => JsonConvert.DeserializeObject<SubredditAbout>(jsonResponse));
-                foundSubreddit = subredditData.SubredditInfo;
+                foundSubreddit = await MiscellaneousHelper.ParseOutRedditDataElement<Subreddit>(jsonResponse);
             }
             catch (Exception e)
             {
