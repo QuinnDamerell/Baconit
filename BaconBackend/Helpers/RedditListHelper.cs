@@ -261,8 +261,7 @@ namespace BaconBackend.Helpers
         private async Task<IHttpContent> MakeRequest(int limit, string after)
         {
             string optionalEnding = String.IsNullOrWhiteSpace(m_optionalGetArgs) ? String.Empty : "&"+ m_optionalGetArgs;
-            string url = m_baseUrl + $"?limit={limit}" + (String.IsNullOrWhiteSpace(after) ? "" : $"&after={after}") +
-                "&raw_json=1" + optionalEnding;
+            string url = m_baseUrl + $"?limit={limit}&raw_json=1" + (String.IsNullOrWhiteSpace(after) ? String.Empty : $"&after={after}") + optionalEnding;
             return await m_networkMan.MakeRedditGetRequest(url);
         }
     }
