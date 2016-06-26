@@ -1014,7 +1014,7 @@ namespace Baconit
                 // Check that we are good.
                 if (currentPanel == null)
                 {
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "MemoryCleanupCurrentPanelNull");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemoryCleanupCurrentPanelNull");
                     return;
                 }
 

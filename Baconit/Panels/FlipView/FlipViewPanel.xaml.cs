@@ -443,7 +443,7 @@ namespace Baconit.Panels.FlipView
                                     }
                                     catch (Exception e)
                                     {
-                                        App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot1", e);
+                                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "mPostListAddFailedSpot1", e);
                                         App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
                                     }
                                 }
@@ -462,7 +462,7 @@ namespace Baconit.Panels.FlipView
                                 }
                                 catch(Exception e)
                                 {
-                                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "mPostListAddFailedSpot2", e);
+                                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "mPostListAddFailedSpot2", e);
                                     App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
                                 }
                             }

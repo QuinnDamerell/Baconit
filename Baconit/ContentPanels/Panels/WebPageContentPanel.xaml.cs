@@ -141,7 +141,7 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToMakeUriInWebControl", e);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToMakeUriInWebControl", e);
                 m_base.FireOnError(true, "This web page failed to load");
             }
 
@@ -225,7 +225,7 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception ex)
             {
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToNavReadingMode", ex);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToNavReadingMode", ex);
             }
 
             App.BaconMan.TelemetryMan.ReportEvent(this, "ReadingModeEnabled");

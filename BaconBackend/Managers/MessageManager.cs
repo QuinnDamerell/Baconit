@@ -37,7 +37,7 @@ namespace BaconBackend.Managers
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowMessage", e);
+                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage", e);
                 }
             });
         }
@@ -83,7 +83,7 @@ namespace BaconBackend.Managers
                 }
                 catch(Exception e)
                 {
-                    m_baconMan.TelemetryMan.ReportUnExpectedEvent(this, "FailedToShowMessage",e);
+                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage",e);
                 }
             });
         }

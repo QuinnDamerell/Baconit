@@ -117,7 +117,7 @@ namespace Baconit.Panels
                 else
                 {
                     App.BaconMan.MessageMan.ShowMessageSimple("Something Went Wrong", "We can't log you in right now, try again later.");
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "LoginFailedUnknown");
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "LoginFailedUnknown");
                 }
             }
         }

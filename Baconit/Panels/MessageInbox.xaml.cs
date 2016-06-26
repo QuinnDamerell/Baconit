@@ -250,7 +250,7 @@ namespace Baconit.Panels
             {
                 App.BaconMan.MessageMan.DebugDia("failed to parse message context", ex);
                 App.BaconMan.MessageMan.ShowMessageSimple("Oops", "Something is wrong and we can't show this context right now.");
-                App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "failedToParseMessageContextString", ex);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToParseMessageContextString", ex);
                 return;
             }
 

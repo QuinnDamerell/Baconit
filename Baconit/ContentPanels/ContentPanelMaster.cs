@@ -624,7 +624,6 @@ namespace Baconit.ContentPanels
             }
 
             IContentPanelHost restoreHost = null;
-            string restoreHostId = null;
 
             // Now actually clear the host
             lock (m_currentPanelList)
@@ -645,9 +644,6 @@ namespace Baconit.ContentPanels
                     // Get the host
                     restoreHost = element.PastHosts[0];
                     element.PastHosts.RemoveAt(0);
-
-                    // Get the ID
-                    restoreHostId = element.Source.Id;
                 }
 
                 // If we the state isn't allowed and we don't have a host to restore
@@ -659,9 +655,9 @@ namespace Baconit.ContentPanels
             }
 
             // If we have a panel to restore call register on it.
-            if(restoreHost != null && !String.IsNullOrWhiteSpace(restoreHostId))
+            if(restoreHost != null)
             {
-                RegisterForPanel(restoreHost, restoreHostId);
+                RegisterForPanel(restoreHost, panelId);
             }            
         }
 
@@ -986,7 +982,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnPanelAvailable failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnPanelAvailableFailed", e);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnPanelAvailableFailed", e);
                 }
             });
         }
@@ -1011,7 +1007,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnRemovePanel failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnRemovePanelFailed", e);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnRemovePanelFailed", e);
                 }
             });
         }
@@ -1032,7 +1028,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnRemovePanel failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnRemovePanelFailed", e);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnRemovePanelFailed", e);
                 }
             });
         }
@@ -1055,7 +1051,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnContentPreloading failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnContentPreloadingFailed", e);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnContentPreloadingFailed", e);
                 }
             });
         }
@@ -1077,7 +1073,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnPanelUnloaded failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "FireOnPanelUnloadedFailed", e);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnPanelUnloadedFailed", e);
                 }
             });
         }

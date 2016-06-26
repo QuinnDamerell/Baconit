@@ -375,7 +375,7 @@ namespace Baconit.HelperControls
                 catch (Exception ex)
                 {
                     App.BaconMan.MessageMan.DebugDia("failed to fire OnCommentSubmitted", ex);
-                    App.BaconMan.TelemetryMan.ReportUnExpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
+                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
                 }
             }
             else

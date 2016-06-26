@@ -38,7 +38,7 @@ namespace BaconBackend.Managers
         /// Reports an event that might need to be looked at, an unexpected event.
         /// </summary>
         /// <param name="eventName"></param>
-        public void ReportUnExpectedEvent(object component, string eventName, Exception excpetion = null)
+        public void ReportUnexpectedEvent(object component, string eventName, Exception excpetion = null)
         {
             TelemetryClient client = new TelemetryClient();
             EventTelemetry eventT = new EventTelemetry();
