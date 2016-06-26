@@ -34,8 +34,7 @@ namespace BaconBackend.Collectors
             foreach (Subreddit subreddit in subreddits)
             {
                 // Do some simple formatting
-                subreddit.Title = WebUtility.HtmlDecode(subreddit.Title);
-                subreddit.PublicDescription = WebUtility.HtmlDecode(subreddit.PublicDescription.Trim());
+                subreddit.PublicDescription =subreddit.PublicDescription.Trim();
 
                 // Do a quick and dirty replace for double new lines. This doesn't work for triple or tabs.
                 subreddit.PublicDescription = subreddit.PublicDescription.Replace("\n\n", "\n");

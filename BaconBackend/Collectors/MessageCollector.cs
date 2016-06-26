@@ -35,10 +35,6 @@ namespace BaconBackend.Collectors
         {
             foreach(Message message in messages)
             {
-                // Decode
-                message.Subject = WebUtility.HtmlDecode(message.Subject);
-                message.Body = WebUtility.HtmlDecode(message.Body);
-
                 // Set the first line
                 message.HeaderFirst = message.Subject;
 
