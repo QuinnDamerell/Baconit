@@ -185,7 +185,7 @@ namespace BaconBackend.Managers
                 string jsonResponse = await m_baconMan.NetworkMan.MakeRedditGetRequestAsString($"/r/{displayName}/about/.json");
 
                 // Parse the new subreddit
-                foundSubreddit = await MiscellaneousHelper.ParseOutRedditDataElement<Subreddit>(jsonResponse);
+                foundSubreddit = await MiscellaneousHelper.ParseOutRedditDataElement<Subreddit>(m_baconMan, jsonResponse);
             }
             catch (Exception e)
             {

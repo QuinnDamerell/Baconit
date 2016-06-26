@@ -201,7 +201,7 @@ namespace BaconBackend.Helpers
                 string jsonResponse = await baconMan.NetworkMan.MakeRedditGetRequestAsString($"user/{userName}/about/.json");
 
                 // Parse the new user
-                foundUser = await MiscellaneousHelper.ParseOutRedditDataElement<User>(jsonResponse);
+                foundUser = await MiscellaneousHelper.ParseOutRedditDataElement<User>(baconMan, jsonResponse);
             }
             catch (Exception e)
             {
