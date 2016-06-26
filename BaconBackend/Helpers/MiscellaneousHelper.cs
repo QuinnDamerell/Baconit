@@ -205,10 +205,11 @@ namespace BaconBackend.Helpers
                 if (dataPos == -1) return null;
                 int dataStartPos = jsonResponse.IndexOf('{', dataPos + 7);
                 if (dataPos == -1) return null;
-                int dataEndPos = jsonResponse.IndexOf("}", dataStartPos);
+                // There can be nested { } in the data we want
+                int dataEndPos = jsonResponse.LastIndexOf('}');
                 if (dataPos == -1) return null;
 
-                string userData = jsonResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
+                string userData = jsonResponse.Substring(dataStartPos, (dataEndPos - dataStartPos));
 
                 // Parse the new user
                 foundUser = await Task.Run(() => JsonConvert.DeserializeObject<User>(userData));
