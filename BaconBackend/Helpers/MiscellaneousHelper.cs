@@ -411,16 +411,92 @@ namespace BaconBackend.Helpers
 
         /// <summary>
         /// Attempts to parse out a reddit object from a generic reddit response
-        /// json containing a data object.
+        /// json containing a data object. We can't do a generic DataObject here because
+        /// the function handles data blocks that are in various depths in the json.
         /// </summary>
         /// <param name="originalJson"></param>
         /// <returns></returns>
         public static async Task<T> ParseOutRedditDataElement<T>(BaconManager baconMan, string originalJson)
         {
+            // TODO make this async. If I try to Task.Run(()=> the parse the task returns but the
+            // await never resumes... idk why.
             try
             {
-                DataContainer<T> dataContainer = await Task.Run(() => JsonConvert.DeserializeObject<DataContainer<T>>(originalJson));
-                return dataContainer.Data;
+                // Try to parse out the data object
+                int dataPos = originalJson.IndexOf("\"data\":");
+                if (dataPos == -1)
+                {
+                    return default(T);
+                }
+                int dataStartPos = originalJson.IndexOf('{', dataPos + 7);
+                if (dataStartPos == -1)
+                {
+                     return default(T);
+                }
+                // There can be nested { } in the data we want
+                // To do this optimally, we will just look for the close manually.
+                int dataEndPos = dataStartPos + 1;
+                int depth = 0;
+                bool isInText = false;
+                while (dataEndPos < originalJson.Length)
+                {
+                    // If we find a " make sure we ignore everything.
+                    if(originalJson[dataEndPos] == '"')
+                    {
+                        if(isInText)
+                        {
+                            // If we are in a text block look if it is an escape.
+                            // If it isn't an escape, end the text block.
+                            if(originalJson[dataEndPos - 1] != '\\')
+                            {
+                                isInText = false;
+                            }
+                        }
+                        else
+                        {
+                            // We entered text.
+                            isInText = true;
+                        }
+                    }
+
+                    // If not in a text block, look for {}
+                    if(!isInText)
+                    {
+                        // If we find an open +1 to depth
+                        if (originalJson[dataEndPos] == '{')
+                        {
+                            depth++;
+                        }
+                        // If we find and end..
+                        else if (originalJson[dataEndPos] == '}')
+                        {
+                            // If we have no depth we are done.
+                            if (depth == 0)
+                            {
+                                break;
+                            }
+                            // Otherwise take one off.
+                            else
+                            {
+                                depth--;
+                            }
+                        }
+                    }
+                              
+                    dataEndPos++;
+                }
+
+                // Make sure we didn't fail.
+                if(depth != 0)
+                {
+                    return default(T);
+                }
+                
+                // Move past the last }
+                dataEndPos++;
+
+                string dataBlock = originalJson.Substring(dataStartPos, (dataEndPos - dataStartPos));
+                return JsonConvert.DeserializeObject<T>(dataBlock);
             }
             catch(Exception e)
             {
