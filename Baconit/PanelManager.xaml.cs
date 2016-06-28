@@ -1231,19 +1231,34 @@ namespace Baconit
         /// <param name="color"></param>
         public async Task<double> SetStatusBar(Color? color = null, double opacity = 1)
         {
+            // This is broken into two functions to work around an OS bug. On some builds of windows
+            // the StatusBar object cant be found at all, so if we try to make one on the stack before
+            // we check if it exits.
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
             {
-                StatusBar statusbar = StatusBar.GetForCurrentView();
-                if (statusbar != null)
+                return await SetStatusBar_Internal(color, opacity);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Same as the function above, used to work around a bug.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="opacity"></param>
+        /// <returns></returns>
+        private async Task<double> SetStatusBar_Internal(Color? color = null, double opacity = 1)
+        {
+            StatusBar statusbar = StatusBar.GetForCurrentView();
+            if (statusbar != null)
+            {
+                if (color.HasValue)
                 {
-                    if (color.HasValue)
-                    {
-                        statusbar.BackgroundColor = color.Value;
-                    }
-                    statusbar.BackgroundOpacity = opacity;
-                    await statusbar.ShowAsync();
-                    return statusbar.OccludedRect.Height;
+                    statusbar.BackgroundColor = color.Value;
                 }
+                statusbar.BackgroundOpacity = opacity;
+                await statusbar.ShowAsync();
+                return statusbar.OccludedRect.Height;
             }
             return 0;
         }

@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baconit", "Baconit\Baconit.csproj", "{904F56DA-B11C-43DC-9EB9-417501E79437}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C79AC423-5427-4379-AB5B-11F531B5229C} = {C79AC423-5427-4379-AB5B-11F531B5229C}
+		{760D26FA-938B-4B0A-9C87-915ADAED244D} = {760D26FA-938B-4B0A-9C87-915ADAED244D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaconBackend", "BaconBackend\BaconBackend.csproj", "{760D26FA-938B-4B0A-9C87-915ADAED244D}"
 EndProject
