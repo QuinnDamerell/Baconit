@@ -1,4 +1,5 @@
 ﻿using BaconBackend;
+using BaconBackend.Helpers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,9 @@ namespace Baconit
         /// </summary>
         public App()
         {
+
+            //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(true);
+
             // Setup the exception handler first
             this.UnhandledException += OnUnhandledException;
 
@@ -129,6 +133,13 @@ namespace Baconit
                 {
                     BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = true;
                 }
+            }
+
+            // If we are on Xbox disable the blank border around the app. Ideally we would give the user the option to re-enable this.
+            if(DeviceHelper.CurrentDevice() == DeviceTypes.Xbox)
+            {
+                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+                Windows.UI.ViewManagement.ApplicationViews
             }
 
             // Grab the accent color and make our custom accent color brushes.

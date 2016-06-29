@@ -11,6 +11,7 @@ namespace BaconBackend.Helpers
     {
         Desktop,
         Mobile,
+        Xbox,
         Other
     }
 
@@ -25,6 +26,8 @@ namespace BaconBackend.Helpers
                     return DeviceTypes.Desktop;
                 case "Windows.Mobile":
                     return DeviceTypes.Mobile;
+                case "Windows.Xbox":
+                    return DeviceTypes.Xbox;
                 default:
                     return DeviceTypes.Other;
 
