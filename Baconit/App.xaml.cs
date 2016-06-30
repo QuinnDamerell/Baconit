@@ -139,7 +139,6 @@ namespace Baconit
             if(DeviceHelper.CurrentDevice() == DeviceTypes.Xbox)
             {
                 Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
-                Windows.UI.ViewManagement.ApplicationViews
             }
 
             // Grab the accent color and make our custom accent color brushes.
