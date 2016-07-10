@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="9020QuinnDamerell.Baconit" Publisher="CN=0E9109BC-07EF-4673-BFC9-D5C280E44460" Version="4.9.1.0" />
+  <Identity Name="63002SalvatoreDev.Cheedit" Publisher="CN=SalvatoreDev" Version="1.1.2.0" />
   <mp:PhoneIdentity PhoneProductId="a941e755-1dc4-4a35-9f20-ca3d8d0beaaa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Baconit</DisplayName>
-    <PublisherDisplayName>Quinn Damerell</PublisherDisplayName>
+    <DisplayName>Cheedit</DisplayName>
+    <PublisherDisplayName>SalvatoreDev</PublisherDisplayName>
     <Logo>Assets\AppAssets\StoreLogo\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,9 +15,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Baconit.App">
-      <uap:VisualElements DisplayName="Baconit" Square150x150Logo="Assets\AppAssets\Square150x150\Square150.png" Square44x44Logo="Assets\AppAssets\Square44x44\Square44.png" Description="Baconit is a free, beautiful, open source, reddit client rewritten from the ground up for all Windows 10 devices. Baconit is the highest rated reddit client on Windows and is known for its power, design, functionality, and quality." BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Cheedit" Square150x150Logo="Assets\AppAssets\Square150x150\Square150.png" Square44x44Logo="Assets\AppAssets\Square44x44\Square44.png" Description="Cheedit is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. &#xD;&#xA;The main focus is on optimization as well great Windows 10 focused features!" BackgroundColor="transparent">
         <uap:LockScreen Notification="badge" BadgeLogo="Assets\AppAssets\BadgeLogo\96.png" />
-        <uap:DefaultTile Wide310x150Logo="Assets\AppAssets\Wide310x310\Wide310.png" ShortName="Baconit" Square71x71Logo="Assets\AppAssets\Square71x71\Square71.png" Square310x310Logo="Assets\AppAssets\Square310x310\Square210.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\AppAssets\Wide310x310\Wide310.png" ShortName="Cheedit" Square71x71Logo="Assets\AppAssets\Square71x71\Square71.png" Square310x310Logo="Assets\AppAssets\Square310x310\Square210.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
@@ -28,15 +28,15 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="baconit">
+          <uap:Protocol Name="cheedit">
             <uap:Logo>Assets\AppAssets\Square44x44\Square44.png</uap:Logo>
-            <uap:DisplayName>Baconit</uap:DisplayName>
+            <uap:DisplayName>Cheedit</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="reddit">
             <uap:Logo>Assets\AppAssets\Square44x44\Square44.png</uap:Logo>
-            <uap:DisplayName>Baconit</uap:DisplayName>
+            <uap:DisplayName>Cheedit</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="BaconBackground.BackgroundEntry">

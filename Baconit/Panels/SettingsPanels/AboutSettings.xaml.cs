@@ -84,36 +84,15 @@ namespace Baconit.Panels.SettingsPanels
            
         }
 
-        private void Facebook_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            OpenGlobalPresenter("http://facebook.com/Baconit");
-            
-        }
 
-        private void Website_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            OpenGlobalPresenter("http://baconit.quinndamerell.com/");
-           
-        }
-
-        private void Twitter_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            OpenGlobalPresenter("http://twitter.com/BaconitWP");
-            
-        }
 
         private void ShowSource_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            OpenGlobalPresenter("http://github.com/QuinnDamerell/Baconit");
+            OpenGlobalPresenter("https://github.com/vitorgrs/Cheedit");
            
         }
 
-        private void OpenBaconitSub_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //#todo make this open in app when we support it
-            OpenGlobalPresenter("http://reddit.com/r/Baconit");
-            
-        }
+        
 
         private void Logo_Tapped(object sender, TappedRoutedEventArgs e)
         {

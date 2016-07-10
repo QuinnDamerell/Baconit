@@ -55,7 +55,7 @@
                     <StackPanel Grid.Column="1">
                         <TextBlock Margin="8,-10,8,0"
                                    FontSize="32"
-                                   Text="Baconit" />
+                                   Text="Cheedit" />
                         <TextBlock x:Name="ui_buildString"
                                    Margin="8,0,0,0"
                                    Text="Build:" />
@@ -65,7 +65,8 @@
 
                 <TextBlock Grid.Row="1"
                            Margin="12"
-                           Text="Baconit is an open source reddit client for Windows 10. Baconit was born in the mind of Quinn Damerell back in 2010 and originally ran on Windows Phone 7.1. The community embraced Baconit and helped it grow to be the highest rated app in the Windows Phone store. In 2015 it was announced that Baconit would be rewritten from the ground up for the new Windows 10 platform and open sourced. The Windows 10 version of Baconit went live November 13th, 2015. Many thanks to all who have contributed."
+                           Text="Cheedit is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+The main focus is on optimization as well great Windows 10 focused features!"
                            TextWrapping="Wrap" />
 
                 <Grid Grid.Row="2"
@@ -82,40 +83,13 @@
                     <TextBlock Text="Check out the source code" />
                 </Grid>
 
-                <Grid Grid.Row="4"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="OpenBaconitSub_Tapped">
-                    <TextBlock Text="Baconit's subreddit" />
-                </Grid>
+                
 
-                <Grid Grid.Row="5"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Website_Tapped">
-                    <TextBlock Text="Baconit's website" />
-                </Grid>
+                
 
-                <Grid Grid.Row="6"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Facebook_Tapped">
-                    <TextBlock Text="Facebook" />
-                </Grid>
+            
 
-                <Grid Grid.Row="7"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Twitter_Tapped">
-                    <TextBlock Text="Twitter" />
-                </Grid>
-
-                <HyperlinkButton Grid.Row="7"
-                                 Margin="11,6"
-                                 VerticalAlignment="Bottom"
-                                 Content="QuinnDamerell.com"
-                                 Foreground="White"
-                                 NavigateUri="http://www.quinndamerell.com" />
+                
             </Grid>
         </Grid>
 
