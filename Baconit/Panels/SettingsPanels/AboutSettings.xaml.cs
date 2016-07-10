@@ -92,6 +92,8 @@ namespace Baconit.Panels.SettingsPanels
            
         }
 
+        
+
         private void Logo_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Start the snow
@@ -100,31 +102,6 @@ namespace Baconit.Panels.SettingsPanels
             // Navigate to developer settings
             m_host.Navigate(typeof(DeveloperSettings), "DeveloperSettings");
         }
-
-        private void Facebook_Tapped(object sender, TappedRoutedEventArgs e)
-
-        {
-            OpenGlobalPresenter("http://facebook.com/Baconit");
-        }
-
-        private void Website_Tapped(object sender, TappedRoutedEventArgs e)
-
-        {
-            OpenGlobalPresenter("http://baconit.quinndamerell.com/");
-        }
-
-        private void Twitter_Tapped(object sender, TappedRoutedEventArgs e)
-
-        {
-            OpenGlobalPresenter("http://twitter.com/BaconitWP");
-        }
-
-        private void OpenBaconitSub_Tapped(object sender, TappedRoutedEventArgs e)
-
-        {
-            OpenGlobalPresenter("http://reddit.com/r/Baconit");
-        }
-
 
         private void OpenGlobalPresenter(string url)
         {

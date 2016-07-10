@@ -86,11 +86,6 @@ namespace BaconBackend.Managers
             });
         }
 
-        public void ShowMessageSimple(string v)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Shows a yes no dialog with a message.
         /// MUST BE CALLED FROM THE UI THREAD!
