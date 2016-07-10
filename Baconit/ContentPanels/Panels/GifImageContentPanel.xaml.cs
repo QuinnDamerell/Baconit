@@ -105,7 +105,6 @@ namespace Baconit.ContentPanels.Panels
                     if (String.IsNullOrWhiteSpace(gifUrl))
                     {
                         m_base.FireOnFallbackToBrowser();
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowGifAfterConfirm");
                         return;
                     }
 
@@ -382,7 +381,6 @@ namespace Baconit.ContentPanels.Panels
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("failed to get image from gfycat", e);
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FaileGfyCatApiCall", e);
             }
 
             return String.Empty;
@@ -441,7 +439,6 @@ namespace Baconit.ContentPanels.Panels
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("failed to convert gif via gfycat", e);
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "GfyCatConvertFailed", e);
             }
 
             return String.Empty;

@@ -321,7 +321,6 @@ namespace BaconBackend.Managers
                     }
                     catch(Exception ex)
                     {
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSaveImageLocallyCallback", ex);
                         m_baconMan.MessageMan.DebugDia("failed to save image locally in callback", ex);
                     }
                 };
@@ -329,7 +328,6 @@ namespace BaconBackend.Managers
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSaveImageLocally", e);
                 m_baconMan.MessageMan.DebugDia("failed to save image locally", e);
             }
         }

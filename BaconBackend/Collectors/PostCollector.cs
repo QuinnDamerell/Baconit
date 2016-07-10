@@ -460,7 +460,6 @@ namespace BaconBackend.Collectors
                 {
                     // We fucked up updating the UI for the post edit.
                     m_baconMan.MessageMan.DebugDia("Failed updating selftext in UI", e);
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedUpdatingSelftextInUI");
                 }
 
                 // If the response was ok always return true.
@@ -470,7 +469,6 @@ namespace BaconBackend.Collectors
             {
                 // Reddit returned something wrong
                 m_baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, reddit returned and unexpected message.");
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
                 return false;
             }
         }

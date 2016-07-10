@@ -982,7 +982,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnPanelAvailable failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnPanelAvailableFailed", e);
+                  
                 }
             });
         }
@@ -1007,7 +1007,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnRemovePanel failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnRemovePanelFailed", e);
+                   
                 }
             });
         }
@@ -1028,7 +1028,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnRemovePanel failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnRemovePanelFailed", e);
+                  
                 }
             });
         }
@@ -1051,7 +1051,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnContentPreloading failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnContentPreloadingFailed", e);
+                    
                 }
             });
         }
@@ -1073,7 +1073,7 @@ namespace Baconit.ContentPanels
                 catch (Exception e)
                 {
                     App.BaconMan.MessageMan.DebugDia("FireOnPanelUnloaded failed", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FireOnPanelUnloadedFailed", e);
+                   
                 }
             });
         }

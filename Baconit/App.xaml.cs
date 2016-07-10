@@ -64,11 +64,7 @@ namespace Baconit
             // Now setup the baconman
             BaconMan = new BaconManager(false);
 
-            // Now telemetry
-            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session);
+           
 
             // Init the app
             this.InitializeComponent();

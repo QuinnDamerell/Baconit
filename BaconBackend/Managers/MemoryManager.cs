@@ -285,7 +285,6 @@ namespace BaconBackend.Managers
             catch(Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("Memory report fire failed", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemeoryReportFiredFailed", e);
             }
         }
 
@@ -309,7 +308,6 @@ namespace BaconBackend.Managers
             catch (Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("Memory cleanup fire failed", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemeoryCleanupFiredFailed", e);
             }
         }
     }

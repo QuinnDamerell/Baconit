@@ -99,7 +99,6 @@ namespace BaconBackend.Managers
                     }
                     catch(Exception e)
                     {
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to register background task", e);
                         m_baconMan.MessageMan.DebugDia("failed to register background task", e);
                     }
                 }

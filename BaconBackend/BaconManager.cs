@@ -119,7 +119,7 @@ namespace BaconBackend
         /// <summary>
         /// Manages all app telemetry
         /// </summary>
-        public TelemetryManager TelemetryMan { get; }
+      
 
         /// <summary>
         /// Manages all background tasks
@@ -170,7 +170,6 @@ namespace BaconBackend
             NetworkMan = new NetworkManager(this);
             MessageMan = new MessageManager(this);
             UiSettingsMan = new UiSettingManager(this);
-            TelemetryMan = new TelemetryManager();
             BackgroundMan = new BackgroundManager(this);
             MotdMan = new MessageOfTheDayManager(this);
             TileMan = new TileManager(this);

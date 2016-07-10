@@ -1,4 +1,5 @@
 ﻿using BaconBackend.DataObjects;
+using NotificationsExtensions;
 using NotificationsExtensions.Badges;
 using NotificationsExtensions.Tiles;
 using NotificationsExtensions.Toasts;
@@ -133,20 +134,20 @@ namespace BaconBackend.Managers
                     {
                         Children =
                         {
-                            new TileText()
+                            new AdaptiveText()
                             {
                                 Text = m_baconMan.UserMan.CurrentUser.Name,
-                                Style = TileTextStyle.Caption
+                                HintStyle = AdaptiveTextStyle.Caption
                             },
-                            new TileText()
+                            new AdaptiveText()
                             {
                                 Text = String.Format("{0:N0}", m_baconMan.UserMan.CurrentUser.CommentKarma) + " comment karma",
-                                Style = TileTextStyle.CaptionSubtle
+                                HintStyle = AdaptiveTextStyle.CaptionSubtle
                             },
-                            new TileText()
+                            new AdaptiveText()
                             {
                                 Text = String.Format("{0:N0}", m_baconMan.UserMan.CurrentUser.LinkKarma) + " link karma",
-                                Style = TileTextStyle.CaptionSubtle
+                                HintStyle = AdaptiveTextStyle.CaptionSubtle
                             },                           
                         }
                     },
@@ -155,10 +156,10 @@ namespace BaconBackend.Managers
                 // If we have messages replace the user name with the message string.
                 if (unreadCount != 0)
                 {
-                    TileText unreadCountText = new TileText()
+                    AdaptiveText unreadCountText = new AdaptiveText()
                     {
                         Text = unreadCount + " Unread Inbox Message" + (unreadCount == 1 ? "" : "s"),
-                        Style = TileTextStyle.Body
+                        HintStyle = AdaptiveTextStyle.Body
                     };
                     ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = unreadCountText;
                 }
@@ -173,10 +174,10 @@ namespace BaconBackend.Managers
                 if(daysUntil == 0)
                 {
                     // Make the text
-                    TileText cakeDayText = new TileText()
+                    AdaptiveText cakeDayText = new AdaptiveText()
                     {
                         Text = "Today is your cake day!",
-                        Style = TileTextStyle.Body
+                        HintStyle = AdaptiveTextStyle.Body
                     };
                     ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = cakeDayText;
                 }

@@ -153,8 +153,7 @@ namespace Baconit.Panels
             // Show a message
             App.BaconMan.MessageMan.ShowMessageSimple("Failed To Load", "Check your Internet connection.");
 
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "UserProfileFailedToLoad");
+            
 
             bool wentBack = false;
             do
@@ -358,7 +357,7 @@ namespace Baconit.Panels
             // Reset the selected index
             ui_postList.SelectedIndex = -1;
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "UserProfilePostOpened");
+          
         }
 
         /// <summary>
@@ -392,7 +391,7 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(textBlock);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "UserProfilePostSort");
+            
         }
 
         /// <summary>
@@ -628,8 +627,7 @@ namespace Baconit.Panels
             // Reset the selected index
             ui_commentList.SelectedIndex = -1;
 
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "UserProfileCommentOpened");
+           
         }
 
         /// <summary>
@@ -673,7 +671,7 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(textBlock);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "UserProfileCommentSort");
+            
         }
 
         /// <summary>

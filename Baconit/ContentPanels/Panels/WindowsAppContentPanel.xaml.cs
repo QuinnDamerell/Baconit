@@ -154,7 +154,7 @@ namespace Baconit.ContentPanels.Panels
                 catch (Exception ex)
                 {
                     App.BaconMan.MessageMan.DebugDia("failed to parse app id", ex);
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "FailedToParseAppId");
+                   
                 }
 
                 // If we failed use the web browser

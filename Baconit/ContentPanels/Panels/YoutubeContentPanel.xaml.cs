@@ -94,7 +94,7 @@ namespace Baconit.ContentPanels.Panels
                     {
                         // If we failed fallback to the browser.
                         m_base.FireOnFallbackToBrowser();
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
+                       
                         return;
                     }
 
@@ -222,7 +222,7 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception)
             {
-                App.BaconMan.TelemetryMan.ReportEvent("YoutubeString", "Failed to find youtube video");
+              
             }
 
             return null;
@@ -300,7 +300,7 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception)
             {
-                App.BaconMan.TelemetryMan.ReportEvent("YoutubeString", "Failed to find youtube video");
+               
             }
             return null;
         }

@@ -182,7 +182,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to send comment", e);
+                
                 baconMan.MessageMan.DebugDia("failed to send message", e);
             }
             return returnString;
@@ -205,7 +205,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to search for user", e);
+               
                 baconMan.MessageMan.DebugDia("failed to search for user", e);
             }
             return foundUser;
@@ -236,7 +236,7 @@ namespace BaconBackend.Helpers
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to delete post", e);
+               
                 baconMan.MessageMan.DebugDia("failed to delete post", e);
             }
             return false;
@@ -284,13 +284,13 @@ namespace BaconBackend.Helpers
                 }
                 else
                 {
-                    baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to save or hide item, unknown response");
+                   
                     baconMan.MessageMan.DebugDia("failed to save or hide item, unknown response");
                 }
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to save or hide item", e);
+               
                 baconMan.MessageMan.DebugDia("failed to save or hide item", e);
             }
             return wasSuccess;
@@ -358,20 +358,20 @@ namespace BaconBackend.Helpers
                         string enumName = Enum.GetName(typeof(SubmitNewPostErrors), i).ToLower(); ;
                         if (responseLower.Contains(enumName))
                         {
-                            baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post; error: "+ enumName);
+                           
                             baconMan.MessageMan.DebugDia("failed to submit post; error: "+ enumName);
                             return new SubmitNewPostResponse() { Success = false, RedditError = (SubmitNewPostErrors)i};
                         }
                     }
 
-                    baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post; unknown reddit error: ");
+                  
                     baconMan.MessageMan.DebugDia("failed to submit post; unknown reddit error");
                     return new SubmitNewPostResponse() { Success = false, RedditError = SubmitNewPostErrors.UNKNOWN };
                 }
             }
             catch (Exception e)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to submit post", e);
+              
                 baconMan.MessageMan.DebugDia("failed to submit post", e);
                 return new SubmitNewPostResponse() { Success = false };
             }
@@ -498,9 +498,9 @@ namespace BaconBackend.Helpers
                 string dataBlock = originalJson.Substring(dataStartPos, (dataEndPos - dataStartPos));
                 return JsonConvert.DeserializeObject<T>(dataBlock);
             }
-            catch(Exception e)
+            catch(Exception)
             {
-                baconMan.TelemetryMan.ReportUnexpectedEvent("MisHelper", "failed to parse data element", e);
+               
             }
             return default(T);
         }

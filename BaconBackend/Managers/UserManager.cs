@@ -168,7 +168,6 @@ namespace BaconBackend.Managers
             catch (Exception ex)
             {
                 m_baconMan.MessageMan.DebugDia("Failed to notify user listener of update", ex);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to fire OnUserUpdated", ex);
             }
         }
 

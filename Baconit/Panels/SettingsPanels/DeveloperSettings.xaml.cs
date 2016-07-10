@@ -52,7 +52,7 @@ namespace Baconit.Panels.SettingsPanels
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
             m_takeAction = false;
-            App.BaconMan.TelemetryMan.ReportEvent(this, "DevSettingsOpened");
+           
             ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.Developer_Debug;
             ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport;
             ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay;

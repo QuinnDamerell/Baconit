@@ -86,7 +86,6 @@ namespace BaconBackend.Managers
             catch(Exception e)
             {
                 m_baconMan.MessageMan.DebugDia("failed to write setting " + name, e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToWriteSetting" + name, e);
             }            
         }
 

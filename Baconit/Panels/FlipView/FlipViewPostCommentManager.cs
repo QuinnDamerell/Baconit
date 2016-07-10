@@ -626,12 +626,12 @@ namespace Baconit.Panels
                 args.Request.Data.Properties.Description = shareBody;
                 args.Request.Data.SetText($" \r\n\r\n{shareBody}\r\n\r\n{commentLink}");
                 m_shareComment = null;
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CommentShared");
+                
             }
             else
             {
                 args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShareCommentHelperCommentNoShareComment");
+              
             }
         }
 

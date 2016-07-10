@@ -448,7 +448,7 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "PostHeldOpenedContextMenu");
+           
         }
 
         private void Post_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -458,21 +458,20 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "RightClickedOpenedContextMenu");
+           
         }
 
         private void SavePost_Click(object sender, RoutedEventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.SaveOrHidePost(post, !post.IsSaved, null);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "PostSavedTapped");
+          
         }
 
         private void HidePost_Click(object sender, RoutedEventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.SaveOrHidePost(post, null, !post.IsHidden);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
         }
 
         private void CopyLink_Click(object sender, RoutedEventArgs e)
@@ -489,7 +488,6 @@ namespace Baconit.Panels
                 data.SetText(post.Url);
             }
             Clipboard.SetContent(data);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         private void CopyPermalink_Click(object sender, RoutedEventArgs e)
@@ -499,7 +497,6 @@ namespace Baconit.Panels
             DataPackage data = new DataPackage();
             data.SetText("http://www.reddit.com" + post.Permalink);
             Clipboard.SetContent(data);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         private void ViewUser_Click(object sender, RoutedEventArgs e)
@@ -509,7 +506,7 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
             m_host.Navigate(typeof(UserProfile), post.Author, args);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditNavToUser");
+           
         }
 
         private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)

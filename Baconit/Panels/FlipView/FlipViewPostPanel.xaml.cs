@@ -321,7 +321,7 @@ namespace Baconit.Panels.FlipView
                 if (!String.IsNullOrWhiteSpace(url))
                 {
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "OpenInBrowser");
+                 
                 }
             }
         }
@@ -334,7 +334,7 @@ namespace Baconit.Panels.FlipView
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "MoreTapped");
+           
         }
 
         private void SavePost_Click(object sender, RoutedEventArgs e)
@@ -343,7 +343,7 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 context.Collector.SaveOrHidePost(context.Post, !context.Post.IsSaved, null);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "SavePostTapped");
+                
             }
         }
 
@@ -353,7 +353,7 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 context.Collector.SaveOrHidePost(context.Post, null, !context.Post.IsHidden);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
+               
             }
         }
 
@@ -372,7 +372,7 @@ namespace Baconit.Panels.FlipView
                     data.SetText(context.Post.Url);
                 }
                 Clipboard.SetContent(data);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
+               
             }
         }
 
@@ -384,7 +384,6 @@ namespace Baconit.Panels.FlipView
                 DataPackage data = new DataPackage();
                 data.SetText("http://www.reddit.com" + context.Post.Permalink);
                 Clipboard.SetContent(data);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
             }
         }
 
@@ -394,7 +393,6 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 App.BaconMan.ImageMan.SaveImageLocally(context.Post.Url);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
             }
         }
 
@@ -412,7 +410,7 @@ namespace Baconit.Panels.FlipView
                     DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
                     dataTransferManager.DataRequested += DataTransferManager_DataRequested;
                     DataTransferManager.ShowShareUI();
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "SharePostTapped");
+                   
                 }
             }
         }
@@ -427,12 +425,12 @@ namespace Baconit.Panels.FlipView
                 args.Request.Data.Properties.Description = m_sharePost.Title;
                 args.Request.Data.SetText($"\r\n\r\n{m_sharePost.Title}\r\n\r\n{m_sharePost.Url}");
                 m_sharePost = null;
-                App.BaconMan.TelemetryMan.ReportEvent(this, "PostShared");
+               
             }
             else
             {
                 args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShareFilpViewPostNoSharePost");
+               
             }
         }
 
@@ -514,7 +512,7 @@ namespace Baconit.Panels.FlipView
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, context.Post.Subreddit);
                 context.Host.Navigate(typeof(SubredditPanel), context.Post.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToSubredditFlipView");
+                
             }
         }
 
@@ -532,7 +530,7 @@ namespace Baconit.Panels.FlipView
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, context.Post.Author);
                 context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFlipView");
+                
             }
         }
 
@@ -840,7 +838,7 @@ namespace Baconit.Panels.FlipView
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
                 context.Host.Navigate(typeof(UserProfile), comment.Author, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFromComment");
+                
             }
         }
 
@@ -856,7 +854,7 @@ namespace Baconit.Panels.FlipView
                 FlyoutBase.ShowAttachedFlyout(element);
             }
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentMoreTapped");
+            
         }
 
         private void CommentSave_Click(object sender, RoutedEventArgs e)
@@ -867,7 +865,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.Save_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSaveTapped");
+            
         }
 
         private void CommentShare_Click(object sender, RoutedEventArgs e)
@@ -878,7 +876,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.Share_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentShareTapped");
+            
         }
 
         private void CommentPermalink_Click(object sender, RoutedEventArgs e)
@@ -889,7 +887,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.CopyPermalink_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentPermalinkTapped");
+           
         }
 
         private void CommentCollapse_Tapped(object sender, TappedRoutedEventArgs e)
@@ -1166,7 +1164,7 @@ namespace Baconit.Panels.FlipView
             }
             catch(Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, $"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
+              
                 App.BaconMan.MessageMan.DebugDia($"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
             }
         }
@@ -1205,7 +1203,7 @@ namespace Baconit.Panels.FlipView
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSortTapped");
+            
         }
 
         /// <summary>
@@ -1478,13 +1476,13 @@ namespace Baconit.Panels.FlipView
                         }
                         else
                         {
-                            App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
+                            
                         }
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitPostObjNull");
+                    
                 }
             }
             else if (e.RedditId.StartsWith("t1_"))
@@ -1500,12 +1498,12 @@ namespace Baconit.Panels.FlipView
                     }
                     else
                     {
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
+                        
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitCommentObjNull");
+                   
                 }
             }
 

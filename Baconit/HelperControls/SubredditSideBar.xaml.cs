@@ -174,8 +174,6 @@ namespace Baconit.HelperControls
                 return;
             }
 
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditSubscribeTapped");
 
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
             bool subscribe = ui_subscribeButton.Content.Equals("subscribe");
@@ -224,8 +222,7 @@ namespace Baconit.HelperControls
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
             bool pin = ui_pinToStartButton.Content.Equals("pin to start");
 
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubPinToStartTapped");
+           
 
             // Update the button now so the UI responds
             SetPinButton(pin);
@@ -266,7 +263,7 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void SearchSubreddit_Click(object sender, RoutedEventArgs e)
         {
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubSidebarSearchTapped");
+           
 
             Dictionary<string, object> args = new Dictionary<string, object>();
             // If this is an artificial subreddit make the name "" so we just search all posts.
@@ -289,8 +286,7 @@ namespace Baconit.HelperControls
                 return;
             }
 
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SidebarSubmitPostTapped");
+           
 
             Dictionary<string, object> args = new Dictionary<string, object>();
             if (!m_currentSubreddit.IsArtifical && !m_currentSubreddit.DisplayName.Equals("frontpage") && !m_currentSubreddit.DisplayName.Equals("all"))

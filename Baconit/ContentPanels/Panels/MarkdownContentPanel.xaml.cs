@@ -136,7 +136,6 @@ namespace Baconit.ContentPanels.Panels
             if (e.WasError)
             {
                 m_base.FireOnFallbackToBrowser();
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMarkdown", e.Exception);
             }
             else
             {

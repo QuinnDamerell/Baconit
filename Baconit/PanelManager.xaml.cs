@@ -329,8 +329,7 @@ namespace Baconit
                     }
                 }
 
-                // Report the new panel being shown.
-                App.BaconMan.TelemetryMan.ReportPageView(m_panelStack.Last().Panel.GetType().Name);
+                
 
                 // Get the type of the leaving panel
                 PanelType leavingPanelType = GetPanelType(leavingStackItem.Panel);
@@ -513,8 +512,7 @@ namespace Baconit
                 // Note if this existing the panel will be in the list twice!
                 m_panelStack.Add(navigateToPanel);
 
-                // Report the view
-                App.BaconMan.TelemetryMan.ReportPageView(navigateToPanel.Panel.GetType().Name);
+               
 
                 // Check if there is someone we should ask to reduce memory
                 if(m_panelStack.Count > (c_numberOfHistoryPagesBeforeMemoryReduce + 1))
@@ -1014,7 +1012,7 @@ namespace Baconit
                 // Check that we are good.
                 if (currentPanel == null)
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemoryCleanupCurrentPanelNull");
+                   
                     return;
                 }
 

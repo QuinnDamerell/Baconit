@@ -135,7 +135,6 @@
     <Compile Include="Managers\SettingsManager.cs" />
     <Compile Include="Managers\DraftManager.cs" />
     <Compile Include="Managers\SubredditManager.cs" />
-    <Compile Include="Managers\TelemetryManager.cs" />
     <Compile Include="Managers\TileManager.cs" />
     <Compile Include="Managers\UiSettingManager.cs" />
     <Compile Include="Managers\UserManager.cs" />

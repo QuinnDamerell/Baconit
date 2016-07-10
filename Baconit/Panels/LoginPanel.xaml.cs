@@ -84,7 +84,6 @@ namespace Baconit.Panels
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            App.BaconMan.TelemetryMan.ReportEvent(this, "LoginButtonClicked");
             DateTime loginBegin = DateTime.Now;
 
             // Change the UI
@@ -95,8 +94,6 @@ namespace Baconit.Panels
 
             if(result.WasSuccess)
             {
-                App.BaconMan.TelemetryMan.ReportEvent(this, "LoginSuccess");
-                App.BaconMan.TelemetryMan.ReportPerfEvent(this,"LoginTime", loginBegin);
                 ShowWelcomeAndLeave();
             }
             else
@@ -106,18 +103,16 @@ namespace Baconit.Panels
 
                 if (result.WasErrorNetwork)
                 {
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "LoginFailedNetworkError");
-                    App.BaconMan.MessageMan.ShowMessageSimple("Check Your Connection", "We can't talk to reddit right now, check your internet connection.");
+                  App.BaconMan.MessageMan.ShowMessageSimple("Check Your Connection", "We can't talk to reddit right now, check your internet connection.");
                 }
                 if(result.WasUserCanceled)
                 {
-                    // Don't do anything, they know what they did.
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "LoginFailedUserCancled");
+                   
                 }
                 else
                 {
                     App.BaconMan.MessageMan.ShowMessageSimple("Something Went Wrong", "We can't log you in right now, try again later.");
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "LoginFailedUnknown");
+                  
                 }
             }
         }
