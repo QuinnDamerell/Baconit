@@ -55,7 +55,7 @@
                     <StackPanel Grid.Column="1">
                         <TextBlock Margin="8,-10,8,0"
                                    FontSize="32"
-                                   Text="Cheedit" />
+                                   Text="Reddunt" />
                         <TextBlock x:Name="ui_buildString"
                                    Margin="8,0,0,0"
                                    Text="Build:" />
@@ -65,7 +65,7 @@
 
                 <TextBlock Grid.Row="1"
                            Margin="12"
-                           Text="Cheedit is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+                           Text="Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
 The main focus is on optimization as well great Windows 10 focused features!"
                            TextWrapping="Wrap" />
 

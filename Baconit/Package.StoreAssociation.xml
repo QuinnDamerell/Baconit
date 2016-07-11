@@ -358,14 +358,15 @@
     <Language Code="zu-za" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>63002SalvatoreDev.Cheedit</MainPackageIdentityName>
+    <MainPackageIdentityName>63002SalvatoreDev.Reddunt</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>Cheedit</ReservedName>
+      <ReservedName>Reddunt</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>63002SalvatoreDev.AquecedorTabajara</MainPackageIdentityName>
+    <MainPackageIdentityName>63002SalvatoreDev.Cheedit</MainPackageIdentityName>
     <MainPackageIdentityName>63002SalvatoreDev.Snapchat</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NBLGGH6JTH5" />
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NBLGGH4SR27" />
 </StoreAssociation>

@@ -88,7 +88,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void ShowSource_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            OpenGlobalPresenter("https://github.com/vitorgrs/Cheedit");
+            OpenGlobalPresenter("https://github.com/vitorgrs/Reddunt");
            
         }
 
