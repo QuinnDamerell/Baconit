@@ -1,6 +1,7 @@
 ﻿using BaconBackend;
 using BaconBackend.Helpers;
 using Baconit.Interfaces;
+using Microsoft.HockeyApp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

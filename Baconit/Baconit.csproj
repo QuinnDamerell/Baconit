@@ -17,8 +17,8 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Baconit_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>81F86CBDC487D30B7172081874693E087A15299F</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>41C33DA0CB56D1D214ECE4756C643F206010CEF2</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
@@ -98,7 +98,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="Baconit_StoreKey.pfx" />
     <None Include="Baconit_TemporaryKey.pfx" />
     <None Include="project.json" />
     <None Include="Service References\Application Insights\ConnectedService.json" />
@@ -256,63 +255,57 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-100.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-125.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-150.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-200.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-400.png" />
-    <Content Include="Assets\AppAssets\BandIcons\BandImage24.png" />
-    <Content Include="Assets\AppAssets\BandIcons\BandImage46.png" />
-    <Content Include="Assets\AppAssets\IconicTiles\Iconic144.png" />
-    <Content Include="Assets\AppAssets\IconicTiles\Iconic200.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-100.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-125.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-150.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-200.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-100_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-125_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-150_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-200_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-400_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-16.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-16_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-24.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-256.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-256_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-48.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-48_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-400.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-100.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-125.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-150.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-200.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-400.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-100.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-125.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-150.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-200.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-400.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-125.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-150.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Logo.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-100.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-125.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-150.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-200.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-400.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-125.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-150.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-16.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-16_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-24.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-256.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-256_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-32.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-32_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-48.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-48_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-400.png" />
     <Content Include="Assets\FlipView\MenuIcon.png" />
     <Content Include="Assets\FlipView\UpCarret.png" />
     <Content Include="Assets\MainPage\BaconitLogo.png" />
