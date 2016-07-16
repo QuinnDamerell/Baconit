@@ -103,7 +103,7 @@ namespace Baconit.Panels
                     break;
                 case 6:
                 case 7:
-                    App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");
+                    App.BaconMan.ShowGlobalContent("https://github.com/vitorgrs/Reddunt/wiki/Reddunt-Privacy-Policy");
                     break;
                 case 8:
                     m_host.Navigate(typeof(AboutSettings), "AboutSettings");
