@@ -292,7 +292,7 @@
 
                 <!--  Custom App bar  -->
                 <Grid Grid.Row="2"
-                      Background="#1F1F1F"
+                      Background="#171717"
                       Padding="4">
                     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>

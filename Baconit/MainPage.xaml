@@ -62,9 +62,8 @@
 
 
         <SplitView x:Name="ui_splitView"
-                   PaneBackground="#1F1F1F"
                    PaneClosed="SplitView_PaneClosed"
-                   SizeChanged="SplitView_SizeChanged">
+                   SizeChanged="SplitView_SizeChanged" RequestedTheme="Default">
             <SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -127,6 +126,7 @@
                                           Background="#01000000"
                                           Padding="12,0,0,0"
                                           Tapped="Favorite_Tapped">
+
                                         <Image Width="20"
                                                Height="20"
                                                Source="{Binding FavIconUri}" />

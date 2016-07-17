@@ -309,7 +309,7 @@ namespace Baconit
                     Subreddit newSubreddit = newSubreddits[newListCount];
 
                     // Set some UI properties.
-                    newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
+                    newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms -appx:///Assets/MainPage/NotFavoriteIcon.png";
                     newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
 
                     // If the two are the same, just update them.
