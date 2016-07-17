@@ -712,11 +712,12 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppBarSideBarOpen_OnIconTapped(object sender, EventArgs e)
+        private void AppBarSideBarOpen_OnIconTapped(object sender, TappedRoutedEventArgs e)
         {
             // Make sure we have a sub
             if(m_subreddit == null)
             {
+
                 return;
             }
 
@@ -729,6 +730,8 @@ namespace Baconit.Panels
             // Show the blocking UI
             ShowFullScreenLoading(false);
         }
+
+
 
         /// <summary>
         /// Fired when the subreddit panel is closed.
@@ -826,12 +829,12 @@ namespace Baconit.Panels
             });
         }
 
-        private void MenuButton_Click(object sender, EventArgs e)
+        private void MenuButton_Click(object sender, TappedRoutedEventArgs e)
         {
             m_host.ToggleMenu(true);
         }
 
-        private void Refresh_Click(object sender, EventArgs e)
+        private void Refresh_Click(object sender, TappedRoutedEventArgs e)
         {
             // Kick off an update.
             m_collector.Update(true);
