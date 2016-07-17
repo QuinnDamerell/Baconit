@@ -302,10 +302,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        /// <summary>
-        /// The color this comment's downvote button should be in the UI.
-        /// It is accented if and only if the user has downvoted this comment.
-        /// </summary>
+        
+        // It is accented if and only if the user has downvoted this comment.
+        
         [JsonIgnore]
         public SolidColorBrush DownVoteColor
         {
@@ -313,7 +312,7 @@ namespace BaconBackend.DataObjects
             {
                 if (Likes.HasValue && !Likes.Value)
                 {
-                    return GetAccentBrush();
+                    return new SolidColorBrush(Color.FromArgb(255, 223, 35, 41));
                 }
                 else
                 {
@@ -322,14 +321,7 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        
-        
-
-
-        /// <summary>
-        /// The color this comment's upvote button should be in the UI.
-        /// It is accented if and only if the user has upvoted this comment.
-        /// </summary>
+        // It is accented if and only if the user has downvoted this comment.
         [JsonIgnore]
         public SolidColorBrush UpVoteColor
         {
@@ -337,10 +329,11 @@ namespace BaconBackend.DataObjects
             {
                 if (Likes.HasValue && Likes.Value)
                 {
-                    return GetAccentBrush();
+                    return new SolidColorBrush(Color.FromArgb(255, 57, 163, 26));
+                    
                 }
                 else
-                {
+                { 
                     return new SolidColorBrush(s_colorGray);
                 }
             }
@@ -418,6 +411,8 @@ namespace BaconBackend.DataObjects
                 }
             }
         }
+
+        
 
         /// <summary>
         /// The visibility of this comment uncollapsed.
