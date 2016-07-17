@@ -73,14 +73,22 @@ The main focus is on optimization as well great Windows 10 focused features!"
                       Margin="12"
                       Background="Transparent"
                       Tapped="RateAndReview_Tapped">
-                    <TextBlock Text="Rate and review" />
+                    <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
+                        <Underline>
+                            Rate and review at Windows Store
+                        </Underline>
+                    </TextBlock>
                 </Grid>
 
                 <Grid Grid.Row="3"
                       Margin="12"
                       Background="Transparent"
                       Tapped="ShowSource_Tapped">
-                    <TextBlock Text="Check out the source code" />
+                    <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
+                        <Underline>
+                            Check out the source code 
+                        </Underline>
+                    </TextBlock>
                 </Grid>
 
                 
