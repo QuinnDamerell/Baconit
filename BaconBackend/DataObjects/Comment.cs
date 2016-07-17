@@ -10,6 +10,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
+
 namespace BaconBackend.DataObjects
 {
     /// <summary>
@@ -168,6 +169,8 @@ namespace BaconBackend.DataObjects
             return s_accentBrush;
         }
 
+       
+
         private static SolidColorBrush GetBrightAccentColor()
         {            
             // Not thread safe, but that's ok
@@ -318,6 +321,10 @@ namespace BaconBackend.DataObjects
                 }
             }
         }
+
+        
+        
+
 
         /// <summary>
         /// The color this comment's upvote button should be in the UI.
