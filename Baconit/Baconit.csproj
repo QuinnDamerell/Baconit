@@ -314,7 +314,7 @@
     <None Include="Package.StoreAssociation.xml">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Assets\Settings\AboutBaconitIcon.png" />
+    <Content Include="Assets\Settings\AboutRedduntIcon.png" />
     <Content Include="Assets\Welcome\MarilynImageMedium.jpg" />
     <Content Include="Assets\Welcome\QuinnImageMedium.jpg" />
     <Content Include="Properties\Default.rd.xml" />

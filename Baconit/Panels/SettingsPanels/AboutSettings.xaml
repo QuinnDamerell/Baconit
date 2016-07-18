@@ -49,7 +49,7 @@
                           Height="70"
                           Background="{StaticResource SystemControlBackgroundAccentBrush}"
                           Tapped="Logo_Tapped">
-                        <Image Margin="8" Source="ms-appx:///Assets/Settings/AboutBaconitIcon.png" />
+                        <Image Margin="8" Source="ms-appx:///Assets/Settings/AboutRedduntIcon.png" />
                     </Grid>
 
                     <StackPanel Grid.Column="1">
