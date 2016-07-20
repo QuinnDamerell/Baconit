@@ -85,18 +85,8 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!--  Baconit logo  -->
-                    <Image Width="20"
-                           Height="20"
-                           Margin="12,12,9,12"
-                           Source="ms-appx:///Assets/MainPage/BaconitLogo.png" />
-                    <TextBlock Grid.Column="1"
-                               Margin="0,0,0,0"
-                               VerticalAlignment="Center"
-                               FontSize="18"
-                               RequestedTheme="Dark"
-                               Style="{ThemeResource TitleTextBlockStyle}"
-                               Text="Baconit" />
+                    
+                    
 
                     <!--  Diver  -->
                     <Rectangle Grid.Row="1"

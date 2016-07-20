@@ -132,7 +132,7 @@
                                Style="{ThemeResource TitleTextBlockStyle}"
                                Text="Share the ❤" />
                     <TextBlock Margin="12,12,12,0"
-                               Text="Enjoying Baconit? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!"
+                               Text="Enjoying Reddunt? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!"
                                TextWrapping="Wrap" />
                     <Button Margin="12,24,12,24"
                             HorizontalAlignment="Stretch"

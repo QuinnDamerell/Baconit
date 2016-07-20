@@ -419,6 +419,8 @@ namespace Baconit.Panels
             m_collector.ChangePostVote(post, PostVoteAction.UpVote);
         }
 
+       
+
         /// <summary>
         /// Fired when a down vote arrow is tapped
         /// </summary>

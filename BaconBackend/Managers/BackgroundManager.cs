@@ -14,7 +14,7 @@ namespace BaconBackend.Managers
     {
         // Since this updater will do multiple things, it will always fire at 30 minutes
         // and each action will check if they should act or not.
-        private const int c_backgroundUpdateTime = 30;
+        private const int c_backgroundUpdateTime = 15;
         private const string c_backgroundTaskName = "Baconit Background Updater";
 
         private BaconManager m_baconMan;

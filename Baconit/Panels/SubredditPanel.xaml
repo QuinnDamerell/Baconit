@@ -46,14 +46,16 @@
                                     Margin="0,5,0,0"
                                     HorizontalAlignment="Left"
                                     Orientation="Vertical">
-                            <Polygon HorizontalAlignment="Center"
+                           <Polygon HorizontalAlignment="Center"
                                      Fill="{x:Bind UpVoteColor, Mode=OneWay}"
                                      Points="0,15 20,15 10,0" />
                             <Rectangle Width="8"
                                        Height="9"
                                        Margin="0,-1,1,0"
                                        HorizontalAlignment="Center"
-                                       Fill="{x:Bind UpVoteColor, Mode=OneWay}" />
+                                       Fill="{x:Bind UpVoteColor, Mode=OneWay}" /> 
+                             
+
                         </StackPanel>
                     </StackPanel>
                     <TextBlock Margin="0,-9,0,0"
@@ -161,7 +163,7 @@
 
     <!--  This holds all of the UI except the loading overlay  -->
     <SplitView x:Name="ui_splitView"
-               Background="#0A0A0A"
+               Background="Black"
                PanePlacement="Right"
                SizeChanged="SplitView_SizeChanged">
         <SplitView.Content>

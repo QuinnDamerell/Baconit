@@ -244,7 +244,7 @@ namespace Baconit
                 TimeSpan timeSinceReviewLeave = DateTime.Now - m_reviewLeaveTime;
                 if(timeSinceReviewLeave.TotalMinutes < 5)
                 {
-                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
+                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Reddunt, we really appreciate your support of the app!");
                 }
                 m_reviewLeaveTime = DateTime.MinValue;
             }
@@ -309,7 +309,7 @@ namespace Baconit
                     Subreddit newSubreddit = newSubreddits[newListCount];
 
                     // Set some UI properties.
-                    newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms -appx:///Assets/MainPage/NotFavoriteIcon.png";
+                    newSubreddit.FavIconUri = newSubreddit.IsFavorite ? "ms-appx:///Assets/MainPage/FavoriteIcon.png" : "ms-appx:///Assets/MainPage/NotFavoriteIcon.png";
                     newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
 
                     // If the two are the same, just update them.

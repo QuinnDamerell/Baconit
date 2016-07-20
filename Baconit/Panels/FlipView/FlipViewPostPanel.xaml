@@ -552,7 +552,7 @@
 
     <!--  The main content root  -->
     <Grid x:Name="ui_contentRoot"
-          Background="#121212"
+          Background="Black"
           SizeChanged="ContentRoot_SizeChanged">
         <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
         <helperControls:EndDetectingListView x:Name="ui_listView"
