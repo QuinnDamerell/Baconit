@@ -492,17 +492,13 @@
                                     Background="#01000000"
                                     Padding="4,4,14,13"
                                     Tapped="CommentUp_Tapped">
-                                <TextBlock FontSize="16"
-                                           Foreground="{x:Bind UpVoteColor, Mode=OneWay}"
-                                           Text="&#xE014;" FontFamily="Segoe MDL2 Assets"/>
+                                <FontIcon Glyph="&#xE014;" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
                                     Tapped="CommentDown_Tapped">
-                                <TextBlock FontSize="16"
-                                           Foreground="{x:Bind DownVoteColor, Mode=OneWay}"
-                                           Text="&#xE09D;" FontFamily="Segoe MDL2 Assets" />
+                                <FontIcon Glyph="&#xE09D;" Foreground="{x:Bind DownVoteColor, Mode=OneWay}" />
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
