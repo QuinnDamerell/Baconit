@@ -828,17 +828,27 @@ namespace Baconit.Panels.FlipView
             }
             else
             {
-                FlipViewPostContext context = GetContext();
-                if(context == null)
-                {
-                    return;
-                }
+                
+                
+            }
+        }
 
+        private void UserPanel_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            Comment comment = (sender as FrameworkElement).DataContext as Comment;
+            FlipViewPostContext context = GetContext();
+            if (context == null)
+            {
+                return;
+            }
+
+            else
+            {
                 // Navigate to the user
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
                 context.Host.Navigate(typeof(UserProfile), comment.Author, args);
-                
             }
         }
 

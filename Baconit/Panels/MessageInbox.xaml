@@ -102,7 +102,7 @@
         <!--  The main message list  -->
         <ListView x:Name="ui_messageList"
                   Grid.Row="1"
-                  Background="#191919"
+                  Background="Black"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   ItemTemplate="{StaticResource MessageListItem}"
                   SelectionChanged="MessageList_SelectionChanged"

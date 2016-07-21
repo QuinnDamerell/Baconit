@@ -461,7 +461,7 @@
                                     Background="{x:Bind AuthorTextBackground}">
                                 <TextBlock Margin="2,0,2,0"
                                            Foreground="{x:Bind AuthorTextColor}"
-                                           Text="{x:Bind Author}" />
+                                           Text="{x:Bind Author}" Tapped="UserPanel_Tapped" />
                             </Border>
                             <TextBlock Grid.Column="2"
                                        Margin="0,0,8,0"
@@ -494,6 +494,7 @@
                                     Tapped="CommentUp_Tapped">
                                 <FontIcon Glyph="&#xE014;" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
                             </Border>
+                            
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
@@ -516,6 +517,16 @@
                                            Foreground="#999999"
                                            Text="{x:Bind CommentButton4Text}" />
                             </Border>
+
+                            <Border Margin="-4,-4,-4,-13"
+                                    Background="#01000000"
+                                    Padding="4,4,14,13"
+                                    Tapped="CommentCollapse_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="collapse" />
+                            </Border>
+
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
@@ -531,14 +542,7 @@
                                            Foreground="#999999"
                                            Text="more" />
                             </Border>
-                            <Border Margin="-4,-4,-4,-13"
-                                    Background="#01000000"
-                                    Padding="4,4,14,13"
-                                    Tapped="CommentCollapse_Tapped">
-                                <TextBlock FontSize="15"
-                                           Foreground="#999999"
-                                           Text="collapse" />
-                            </Border>
+                           
                         </StackPanel>
                     </Grid>
                 </Grid>

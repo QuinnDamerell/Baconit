@@ -570,13 +570,16 @@ namespace BaconBackend.DataObjects
         /// Text that is shown on the UI for comment button 4
         /// </summary>
         [JsonIgnore]
+
         public string CommentButton4Text
         {
             get
             {
-                return IsCommentOwnedByUser ? "delete" : "user";
+                return IsCommentOwnedByUser ? "delete  |" : "|";
+
             }
         }
+
 
         /// <summary>
         /// Indicates if the comment has been deleted or not.
