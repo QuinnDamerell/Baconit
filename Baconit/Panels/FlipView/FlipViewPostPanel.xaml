@@ -123,9 +123,22 @@
                             <TranslateTransform x:Name="ui_headerSubtextTransform" />
                         </StackPanel.RenderTransform>
 
-                        <TextBlock TextTrimming="WordEllipsis">
-                            <Run Foreground="#939393" Text="{x:Bind Context.Post.Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Score, Mode=OneWay}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#939393" Text="{x:Bind Context.Post.FlipViewSecondary}" />
-                        </TextBlock>
+                        <!-- <TextBlock TextTrimming="WordEllipsis" Tapped="GoToUser_Tapped">
+                            <Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Author}" /> 
+                            <Run Foreground="#939393" Text=" • " />
+                            <Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Score, Mode=OneWay}" />
+                            <Run Foreground="#939393" Text=" • " />
+                            <Run Foreground="#939393" Text="{x:Bind Context.Post.FlipViewSecondary}" />
+                        </TextBlock> -->
+                        <TextBlock TextTrimming="WordEllipsis" Tapped="GoToUser_Tapped" Text="{x:Bind Context.Post.Author}" 
+                                   Foreground="{ThemeResource SystemAccentColor}" />
+                        <FontIcon Glyph="&#xE915;" FontSize="12" Foreground="#939393" />
+                        <TextBlock TextTrimming="WordEllipsis" Text="{x:Bind Context.Post.Score, Mode=OneWay}" />
+                        <FontIcon Glyph="&#xE915;" FontSize="12" Foreground="#939393" />
+
+                        <TextBlock TextTrimming="WordEllipsis" Tapped="GoToSubreddit_Tapped" Text="{x:Bind Context.Post.FlipViewSecondary}" 
+                                   Foreground="{ThemeResource SystemAccentColor}" />
+             
                         <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.StickyVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" />
                         </TextBlock>
@@ -196,9 +209,9 @@
                                     <MenuFlyoutItem Click="SaveImage_Click"
                                                     Text="Save image"
                                                     Visibility="{x:Bind Context.Post.ShowSaveImageMenu}" />
-                                    <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
-                                    <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
+                                    
+                                   
+
                                     <MenuFlyoutSeparator Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="DeletePost_Click"
                                                     Text="Delete post"
@@ -493,8 +506,11 @@
                                     Padding="4,4,14,13"
                                     Tapped="CommentUp_Tapped">
                                 <FontIcon Glyph="&#xE014;" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
+                                
                             </Border>
                             
+                            
+                           
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"

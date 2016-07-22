@@ -503,7 +503,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GoToSubreddit_Click(object sender, RoutedEventArgs e)
+        private void GoToSubreddit_Tapped(object sender, TappedRoutedEventArgs e)
         {
             FlipViewPostContext context = GetContext();
             if (context != null)
@@ -521,7 +521,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GoToUser_Click(object sender, RoutedEventArgs e)
+        private void GoToUser_Tapped(object sender, TappedRoutedEventArgs e)
         {
             FlipViewPostContext context = GetContext();
             if (context != null)
@@ -529,7 +529,7 @@ namespace Baconit.Panels.FlipView
                 // Navigate to the user.
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, context.Post.Author);
-                context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);
+                context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);    
                 
             }
         }
