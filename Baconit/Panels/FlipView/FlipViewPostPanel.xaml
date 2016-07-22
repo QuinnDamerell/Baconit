@@ -123,13 +123,7 @@
                             <TranslateTransform x:Name="ui_headerSubtextTransform" />
                         </StackPanel.RenderTransform>
 
-                        <!-- <TextBlock TextTrimming="WordEllipsis" Tapped="GoToUser_Tapped">
-                            <Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Author}" /> 
-                            <Run Foreground="#939393" Text=" • " />
-                            <Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Score, Mode=OneWay}" />
-                            <Run Foreground="#939393" Text=" • " />
-                            <Run Foreground="#939393" Text="{x:Bind Context.Post.FlipViewSecondary}" />
-                        </TextBlock> -->
+                       
                         <TextBlock TextTrimming="WordEllipsis" Tapped="GoToUser_Tapped" Text="{x:Bind Context.Post.Author}" 
                                    Foreground="{ThemeResource SystemAccentColor}" />
                         <FontIcon Glyph="&#xE915;" FontSize="12" Foreground="#939393" />
