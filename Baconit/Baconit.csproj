@@ -18,7 +18,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>41C33DA0CB56D1D214ECE4756C643F206010CEF2</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>C190D3C8764E811BCA3F98223D098A2E9D638BCB</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
