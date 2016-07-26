@@ -21,7 +21,7 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="FLIP VIEW SETTINGS" />
+                       Text="FLIP VIEW SETTINGS" x:Uid="FlipViewS"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1"
@@ -29,38 +29,38 @@
                     Padding="12">
             <TextBlock Margin="0,0,0,8"
                        Text="NSFW blocking mode"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="NSFWB"/>
             <ComboBox x:Name="ui_flipViewNsfwType"
                       MinWidth="150"
                       Margin="0,0,0,12"
                       SelectionChanged="FlipViewNsfwType_SelectionChanged">
-                <ComboBoxItem>Always</ComboBoxItem>
-                <ComboBoxItem>Disable per subreddit; resets when the app is closed</ComboBoxItem>
-                <ComboBoxItem>Never</ComboBoxItem>
+                <ComboBoxItem x:Uid="AlwaysCombo" >Always</ComboBoxItem>
+                <ComboBoxItem x:Uid="DisableCombo">Disable per subreddit; resets when the app is closed</ComboBoxItem>
+                <ComboBoxItem x:Uid="NeverCombo">Never</ComboBoxItem>
             </ComboBox>
 
-            <TextBlock Text="Preload future post content" TextWrapping="Wrap" />
+            <TextBlock Text="Preload future post content" TextWrapping="Wrap" x:Uid="PreloadPost"/>
             <ToggleSwitch x:Name="ui_preloadPost"
                           Margin="0,0,0,8"
                           Toggled="PreloadPost_Toggled" />
 
-            <TextBlock Text="Preload comments" TextWrapping="Wrap" />
+            <TextBlock Text="Preload comments" TextWrapping="Wrap" x:Uid="PreloadComments" />
             <ToggleSwitch x:Name="ui_preLoadComments"
                           Margin="0,0,0,8"
                           Toggled="PreLoadComments_Toggled" />
 
 
-            <TextBlock Text="Auto minimize story header in comments" TextWrapping="Wrap" />
+            <TextBlock Text="Auto minimize story header in comments" TextWrapping="Wrap" x:Uid="AutoTB"/>
             <ToggleSwitch x:Name="ui_minimizeStoryHeader"
                           Margin="0,0,0,8"
                           Toggled="MinimizeStoryHeader_Toggled" />
 
-            <TextBlock Text="Don't load post content until tapped" TextWrapping="Wrap" />
+            <TextBlock Text="Don't load post content until tapped" TextWrapping="Wrap" x:Uid="DisablePostLoad" />
             <ToggleSwitch x:Name="ui_disablePostLoad"
                           Margin="0,0,0,8"
                           Toggled="DisablePostLoad_Toggled" />
 
-            <TextBlock Text="Show UI help tips" TextWrapping="Wrap" />
+            <TextBlock Text="Show UI help tips" TextWrapping="Wrap" x:Uid="ShowUITB"/>
             <ToggleSwitch x:Name="ui_showHelpTips"
                           Margin="0,0,0,8"
                           Toggled="ShowHelpTips_Toggled" />

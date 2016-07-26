@@ -134,13 +134,13 @@
                                    Foreground="{ThemeResource SystemAccentColor}" />
              
                         <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.StickyVisibility}">
-                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" />
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" x:Uid="RunSticky" />
                         </TextBlock>
                         <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.FlairVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.LinkFlairText}" />
                         </TextBlock>
                         <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.GildedVisibility}">
-                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#DDB152" Text="gilded" />
+                            <Run Foreground="#939393" Text=" • " /><Run Foreground="#DDB152" Text="gilded" x:Uid="RunGilded" />
                         </TextBlock>
                     </StackPanel>
 
@@ -197,9 +197,9 @@
                                 <MenuFlyout>
                                     <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind Context.Post.IsSavedMenuText, Mode=OneWay}" />
                                     <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind Context.Post.IsHiddenMenuText, Mode=OneWay}" />
-                                    <MenuFlyoutItem Click="SharePost_Click" Text="Share post" />
-                                    <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
-                                    <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
+                                    <MenuFlyoutItem Click="SharePost_Click" Text="Share post" x:Uid="SharePostFMI"/>
+                                    <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" x:Uid="CLinkFMI"/>
+                                    <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" x:Uid="CPermaFMI" />
                                     <MenuFlyoutItem Click="SaveImage_Click"
                                                     Text="Save image"
                                                     Visibility="{x:Bind Context.Post.ShowSaveImageMenu}" />
@@ -209,10 +209,10 @@
                                     <MenuFlyoutSeparator Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="DeletePost_Click"
                                                     Text="Delete post"
-                                                    Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
+                                                    Visibility="{x:Bind Context.Post.DeletePostVisibility}" x:Uid="DeletePostClick"/>
                                     <MenuFlyoutItem Click="EditPost_Click"
                                                     Text="Edit post"
-                                                    Visibility="{x:Bind Context.Post.EditPostVisibility}" />
+                                                    Visibility="{x:Bind Context.Post.EditPostVisibility}" x:Uid="EditPostClick" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
                         </helperControls:CircleIconButton>
@@ -263,12 +263,12 @@
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Best" />
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Top" />
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Controversial" />
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="New" />
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Old" />
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Q&amp;A" />
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Best" x:Uid="CMBest"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Top" x:Uid="CMTop"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Controversial" x:Uid="CMContro"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="New" x:Uid="CMNew"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Old" x:Uid="CMOld"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Q&amp;A" x:Uid="CMQA"/>
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                         <TextBlock Margin="0,0,4,0"
@@ -306,7 +306,7 @@
                         <TextBlock Margin="0,0,4,0"
                                    VerticalAlignment="Center"
                                    Foreground="#989898"
-                                   Text="Count:" />
+                                   Text="Count:" x:Uid="CountTB"/>
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{x:Bind Context.Post.CurrentCommentShowingCount, Mode=OneWay}" />
@@ -365,7 +365,7 @@
                       Visibility="{x:Bind Context.Post.FlipViewShowEntireThreadMessage, Mode=OneWay}">
                     <TextBlock Margin="8"
                                Text="Tap here to view the entire thread"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="TapViewEntire"/>
                 </Grid>
             </Grid>
         </DataTemplate>
@@ -534,7 +534,7 @@
                                     Tapped="CommentCollapse_Tapped">
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
-                                           Text="collapse" />
+                                           Text="collapse" x:Uid="collapseTBN"/>
                             </Border>
 
                             <Border Margin="-4,-4,-4,-13"
@@ -544,13 +544,13 @@
                                 <FlyoutBase.AttachedFlyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Click="CommentSave_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
-                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share comment" />
-                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy permalink" />
+                                        <MenuFlyoutItem Click="CommentShare_Click" Text="Share comment" x:Uid="ShareCommentFMI"/>
+                                        <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy permalink" x:Uid="CopyPerFMI"/>
                                     </MenuFlyout>
                                 </FlyoutBase.AttachedFlyout>
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
-                                           Text="more" />
+                                           Text="more" x:Uid="MoreTB"/>
                             </Border>
                            
                         </StackPanel>

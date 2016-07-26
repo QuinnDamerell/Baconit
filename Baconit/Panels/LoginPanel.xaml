@@ -41,7 +41,7 @@
                 <TextBlock Grid.Row="1"
                            Margin="0,8"
                            Text="Unlock even more of Reddunt by adding account. Reddit accounts are anonymous, simple, and free - and Reddunt will keep it that way."
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="RedduntAccountTB" />
                 <Button x:Name="ui_loginButton"
                         Grid.Row="5"
                         Margin="0,8"
@@ -49,7 +49,7 @@
                         Background="{ThemeResource SystemAccentColor}"
                         Click="LoginButton_Click"
                         Content="Login"
-                        Foreground="#FFFFFF" />
+                        Foreground="#FFFFFF" x:Uid="LoginCT" />
 
                 <Button x:Name="ui_createAccountButton"
                         Grid.Row="6"
@@ -58,7 +58,7 @@
                         Background="{ThemeResource SystemAccentColor}"
                         Click="CreateAccount_Click"
                         Content="Create Account"
-                        Foreground="#FFFFFF" />
+                        Foreground="#FFFFFF" x:Uid="CreateAccountCT" />
             </Grid>
             <Grid x:Name="ui_progressUI"
                   HorizontalAlignment="Center"
@@ -84,7 +84,7 @@
                            Margin="10,0,0,0"
                            VerticalAlignment="Center"
                            FontSize="20"
-                           Text="Logging you in" />
+                           Text="Logging you in" x:Uid="LoginProgressText"/>
             </Grid>
             <Grid x:Name="ui_welcome"
                   HorizontalAlignment="Center"
@@ -112,7 +112,7 @@
                            Margin="10,0,0,0"
                            VerticalAlignment="Center"
                            FontSize="20"
-                           Text="Welcome Quinbd" />
+                           Text="Welcome Quinbd" x:Uid="WelcomeText"/>
             </Grid>
         </Grid>
     </Grid>

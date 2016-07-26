@@ -13,7 +13,7 @@
           SizeChanged="ContentRoot_SizeChanged">
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">
-                <MenuFlyoutItem Click="SaveImage_Click" Text="Save image" />
+                <MenuFlyoutItem Click="SaveImage_Click" x:Uid="contentRootFM"/>
             </MenuFlyout>
         </FlyoutBase.AttachedFlyout>
 

@@ -83,7 +83,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="MESSAGE INBOX" />
+                       Text="MESSAGE INBOX" x:Uid="MessageInboxTB" />
             <Button Grid.Column="1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"

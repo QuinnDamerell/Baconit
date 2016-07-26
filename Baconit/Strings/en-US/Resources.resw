@@ -1,0 +1,700 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="accountHeader.Text" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AppBarMenuButton.Label" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="contentRootFM.Text" xml:space="preserve">
+    <value>Save image</value>
+  </data>
+  <data name="EnjoyingRedduntTB" xml:space="preserve">
+    <value>Enjoying Reddunt? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!</value>
+  </data>
+  <data name="genericTextHeaderTB.Text" xml:space="preserve">
+    <value>Error loading post</value>
+  </data>
+  <data name="genericTextSubTB.Text" xml:space="preserve">
+    <value>Tap anywhere to open in Edge</value>
+  </data>
+  <data name="headerText.Text" xml:space="preserve">
+    <value>This post links to a subreddit</value>
+  </data>
+  <data name="headerTextAppsTB.Text" xml:space="preserve">
+    <value>This post links to a Windows App</value>
+  </data>
+  <data name="inboxGridTB.Text" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="LoadingCommentsTB.Text" xml:space="preserve">
+    <value>Loading comments</value>
+  </data>
+  <data name="loadingTextTB.Text" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="LoginProgressText.Text" xml:space="preserve">
+    <value>Logging you in</value>
+  </data>
+  <data name="MessageInboxTB.Text" xml:space="preserve">
+    <value>MESSAGE INBOX</value>
+  </data>
+  <data name="minorText.Text" xml:space="preserve">
+    <value>Tap anywhere to view /r/baconit</value>
+  </data>
+  <data name="minorTextAppsTB.Text" xml:space="preserve">
+    <value>Tap anywhere to open the store</value>
+  </data>
+  <data name="NoResultsTB.Text" xml:space="preserve">
+    <value>no results</value>
+  </data>
+  <data name="nsfwBlockRootGridTB1" xml:space="preserve">
+    <value>This post is NSFW</value>
+  </data>
+  <data name="nsfwBlockRootGridTB2.Text" xml:space="preserve">
+    <value>Tap anywhere to view</value>
+  </data>
+  <data name="profileGridTB.Text" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="progressTextTB.Text" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="ProTip.Text" xml:space="preserve">
+    <value>Pro Tip</value>
+  </data>
+  <data name="QuickReviewCT.Content" xml:space="preserve">
+    <value>leave a quick review</value>
+  </data>
+  <data name="quickSearchBox.PlaceholderText" xml:space="preserve">
+    <value>Search anything</value>
+  </data>
+  <data name="RedduntAccountTB.Text" xml:space="preserve">
+    <value>Unlock even more of Reddunt by adding account. Reddit accounts are anonymous, simple, and free - and Reddunt will keep it that way.</value>
+  </data>
+  <data name="SearchASUPTBS.PlaceholderText" xml:space="preserve">
+    <value>Search for anything; subreddits, users, post, etc.</value>
+  </data>
+  <data name="SearchForTB.Text" xml:space="preserve">
+    <value>Search for:</value>
+  </data>
+  <data name="SearchTBs.Text" xml:space="preserve">
+    <value>SEARCH</value>
+  </data>
+  <data name="searchTextBlock.Text" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SendingCommentTB.Text" xml:space="preserve">
+    <value>Sending comment...</value>
+  </data>
+  <data name="settingsGridTB.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ShareHeartTB.Text" xml:space="preserve">
+    <value>Share the ❤</value>
+  </data>
+  <data name="ShowMoreTB.Text" xml:space="preserve">
+    <value>show more</value>
+  </data>
+  <data name="signInGridTB.Text" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="subscribersTextBlock.Text" xml:space="preserve">
+    <value>73,000 subscribers</value>
+  </data>
+  <data name="textBlock.Text" xml:space="preserve">
+    <value>Spoiler!</value>
+  </data>
+  <data name="TrendingSubreddits.Text" xml:space="preserve">
+    <value>Trending Subreddits</value>
+  </data>
+  <data name="TryItTip.Text" xml:space="preserve">
+    <value>Go ahead! Try it now!</value>
+  </data>
+  <data name="ViewCommentTip.Text" xml:space="preserve">
+    <value>To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down.</value>
+  </data>
+  <data name="WelcomeText.Text" xml:space="preserve">
+    <value>Bem-vindo Quinbd</value>
+  </data>
+  <data name="AccountAgeTB.Text" xml:space="preserve">
+    <value>0 days old</value>
+  </data>
+  <data name="AllTime.Text" xml:space="preserve">
+    <value>All Time</value>
+  </data>
+  <data name="CakeDayTB.Text" xml:space="preserve">
+    <value>Cake Day!</value>
+  </data>
+  <data name="CommentSort.Text" xml:space="preserve">
+    <value>Sort:</value>
+  </data>
+  <data name="CommentSortFMIBest.Text" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="CommentSortFMIContro.Text" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="CommentSortFMINew.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="CommentSortFMITop.Text" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="CommentSortNew.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="CopyLinkMFITB.Text" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="CopyPermaLinkMFITB.Text" xml:space="preserve">
+    <value>Copy permalink</value>
+  </data>
+  <data name="FormattedPreviewTB.Text" xml:space="preserve">
+    <value>Formatted Preview</value>
+  </data>
+  <data name="GildedTB.Text" xml:space="preserve">
+    <value>Gilded</value>
+  </data>
+  <data name="GoToUserTB.Text" xml:space="preserve">
+    <value>Go to user</value>
+  </data>
+  <data name="HeaderSubmitPost.Text" xml:space="preserve">
+    <value>SUBMIT POST</value>
+  </data>
+  <data name="NoPostHereTB.Text" xml:space="preserve">
+    <value>There are no posts here.</value>
+  </data>
+  <data name="NoSubmittedComments.Text" xml:space="preserve">
+    <value>No Submitted Comments</value>
+  </data>
+  <data name="NoSubmittedPostsTB.Text" xml:space="preserve">
+    <value>No Submitted Posts</value>
+  </data>
+  <data name="PastDay.Text" xml:space="preserve">
+    <value>Past Day</value>
+  </data>
+  <data name="PastHour.Text" xml:space="preserve">
+    <value>Past Hour</value>
+  </data>
+  <data name="PastMonth.Text" xml:space="preserve">
+    <value>Past Month</value>
+  </data>
+  <data name="PastWeek.Text" xml:space="preserve">
+    <value>Past Week</value>
+  </data>
+  <data name="PastYear.Text" xml:space="preserve">
+    <value>Past Year</value>
+  </data>
+  <data name="PostSortFMIBest.Text" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="PostSortFMIContnro.Text" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="PostSortFMINew.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="PostSortFMITop.Text" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="PostSortTextTB.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="SelfTextTB.Text" xml:space="preserve">
+    <value>Self Text</value>
+  </data>
+  <data name="SettingsTB.Text" xml:space="preserve">
+    <value>SETTINGS</value>
+  </data>
+  <data name="SMIContro.Text" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="SMIHot.Text" xml:space="preserve">
+    <value>Hot</value>
+  </data>
+  <data name="SMINew.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="SMIRising.Text" xml:space="preserve">
+    <value>Rising</value>
+  </data>
+  <data name="SMITop.Text" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SortDTB.Text" xml:space="preserve">
+    <value>Sort:</value>
+  </data>
+  <data name="SortPostTB.Text" xml:space="preserve">
+    <value>Sort:</value>
+  </data>
+  <data name="SortTextHotTB.Text" xml:space="preserve">
+    <value>Hot</value>
+  </data>
+  <data name="SortTimeTB.Text" xml:space="preserve">
+    <value>Past Week</value>
+  </data>
+  <data name="StickyTB.Text" xml:space="preserve">
+    <value>Sticky</value>
+  </data>
+  <data name="StickyUserTB.Text" xml:space="preserve">
+    <value>Sticky</value>
+  </data>
+  <data name="SubtmitPostTitleTB.Text" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="TimeTB.Text" xml:space="preserve">
+    <value>Time:</value>
+  </data>
+  <data name="ViewContextTB.Text" xml:space="preserve">
+    <value>view in context</value>
+  </data>
+  <data name="CLinkFMI.Text" xml:space="preserve">
+    <value>Copy link</value>
+  </data>
+  <data name="CMBest.Text" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="CMContro.Text" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="CMNew.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="CMOld.Text" xml:space="preserve">
+    <value>Old</value>
+  </data>
+  <data name="CMQA.Text" xml:space="preserve">
+    <value>Q&amp;A</value>
+  </data>
+  <data name="CMTop.Text" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="collapseTBN.Text" xml:space="preserve">
+    <value>collapse</value>
+  </data>
+  <data name="CopyPerFMI.Text" xml:space="preserve">
+    <value>Copy permalink</value>
+  </data>
+  <data name="CountTB.Text" xml:space="preserve">
+    <value>Count:</value>
+  </data>
+  <data name="CPermaFMI.Text" xml:space="preserve">
+    <value>Copy permalink</value>
+  </data>
+  <data name="DeletePostClick.Text" xml:space="preserve">
+    <value>Delete post</value>
+  </data>
+  <data name="EditPostClick.Text" xml:space="preserve">
+    <value>Edit post</value>
+  </data>
+  <data name="MoreTB.Text" xml:space="preserve">
+    <value>more</value>
+  </data>
+  <data name="RunGilded.Text" xml:space="preserve">
+    <value>gilded</value>
+  </data>
+  <data name="RunSticky.Text" xml:space="preserve">
+    <value>sticky</value>
+  </data>
+  <data name="ShareCommentFMI.Text" xml:space="preserve">
+    <value>Share comment</value>
+  </data>
+  <data name="SharePostFMI.Text" xml:space="preserve">
+    <value>Share post</value>
+  </data>
+  <data name="TapViewEntire.Text" xml:space="preserve">
+    <value>Tap here to view the entire thread</value>
+  </data>
+  <data name="AboutDescription.Text" xml:space="preserve">
+    <value>Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+The main focus is on optimization as well great Windows 10 focused features!</value>
+  </data>
+  <data name="AddMessagesTB.Text" xml:space="preserve">
+    <value>Add messages to the notification center silently</value>
+  </data>
+  <data name="AlwaysCombo" xml:space="preserve">
+    <value>Always</value>
+  </data>
+  <data name="AuthorFilter.PlaceholderText" xml:space="preserve">
+    <value>Author Filter</value>
+  </data>
+  <data name="AutoTB.Text" xml:space="preserve">
+    <value>Auto minimize story header in comments</value>
+  </data>
+  <data name="AutoUpdateTB.Text" xml:space="preserve">
+    <value>Automatically update lock screen image</value>
+  </data>
+  <data name="AutoUpdateWTB.Text" xml:space="preserve">
+    <value>Automatically update wallpaper image</value>
+  </data>
+  <data name="BackgroundInboxCTB.Text" xml:space="preserve">
+    <value>BACKGROUND INBOX UPDATING</value>
+  </data>
+  <data name="BackgroundInboxTB.Text" xml:space="preserve">
+    <value>Background inbox updating</value>
+  </data>
+  <data name="CAllTimeB.Content" xml:space="preserve">
+    <value>All Time</value>
+  </data>
+  <data name="CancelCT.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CBestCB.Content" xml:space="preserve">
+    <value>Best</value>
+  </data>
+  <data name="CBIalltime.Content" xml:space="preserve">
+    <value>all time</value>
+  </data>
+  <data name="CBIcontro.Content" xml:space="preserve">
+    <value>controversial</value>
+  </data>
+  <data name="CBIhot.Content" xml:space="preserve">
+    <value>hot</value>
+  </data>
+  <data name="CBInew.Content" xml:space="preserve">
+    <value>new</value>
+  </data>
+  <data name="CBIpday.Content" xml:space="preserve">
+    <value>past day</value>
+  </data>
+  <data name="CBIphour.Content" xml:space="preserve">
+    <value>past hour</value>
+  </data>
+  <data name="CBIpmonth.Content" xml:space="preserve">
+    <value>past month</value>
+  </data>
+  <data name="CBIpweek.Content" xml:space="preserve">
+    <value>past week</value>
+  </data>
+  <data name="CBIpyear.Content" xml:space="preserve">
+    <value>past year</value>
+  </data>
+  <data name="CBIrising.Content" xml:space="preserve">
+    <value>rising</value>
+  </data>
+  <data name="CBItop.Content" xml:space="preserve">
+    <value>top</value>
+  </data>
+  <data name="CCommentsCBB.Content" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="CControCB.Content" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="CheckUnder" xml:space="preserve">
+    <value>Check out the source code</value>
+  </data>
+  <data name="CNewCB.Content" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="COldCB.Content" xml:space="preserve">
+    <value>Old</value>
+  </data>
+  <data name="CPastDayB.Content" xml:space="preserve">
+    <value>Past Day</value>
+  </data>
+  <data name="CPastHourB.Content" xml:space="preserve">
+    <value>Past Hour</value>
+  </data>
+  <data name="CPastMonthB.Content" xml:space="preserve">
+    <value>Past Month</value>
+  </data>
+  <data name="CPastWeekB.Content" xml:space="preserve">
+    <value>Past Week</value>
+  </data>
+  <data name="CPastYearB.Content" xml:space="preserve">
+    <value>Past Year</value>
+  </data>
+  <data name="CQACB.Content" xml:space="preserve">
+    <value>Q&amp;A</value>
+  </data>
+  <data name="CreateAccountCT.Content" xml:space="preserve">
+    <value>Create Account</value>
+  </data>
+  <data name="CSettings.Text" xml:space="preserve">
+    <value>COMMENT SETTINGS</value>
+  </data>
+  <data name="CTopCB.Content" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="DevSettings.Text" xml:space="preserve">
+    <value>DEVELOPER SETTINGS</value>
+  </data>
+  <data name="DisableCombo" xml:space="preserve">
+    <value>Disable per subreddit; resets when the app is close</value>
+  </data>
+  <data name="DisablePostLoad.Text" xml:space="preserve">
+    <value>Don't load post content until tapped</value>
+  </data>
+  <data name="EverythingCB.Content" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="FatalException.Text" xml:space="preserve">
+    <value>Don't let fatal exceptions kill the app, report the exception instead of crashing. (this will leave your app in an unstable state)</value>
+  </data>
+  <data name="FlipViewS.Text" xml:space="preserve">
+    <value>FLIP VIEW SETTINGS</value>
+  </data>
+  <data name="fullpost.Text" xml:space="preserve">
+    <value>Show full post titles</value>
+  </data>
+  <data name="HeaderAboutTB.Text" xml:space="preserve">
+    <value>ABOUT</value>
+  </data>
+  <data name="HowMessagesTB.Text" xml:space="preserve">
+    <value>How messages appear in the notification center</value>
+  </data>
+  <data name="ImageUpdateFTB.Text" xml:space="preserve">
+    <value>Image update frequency</value>
+  </data>
+  <data name="IsNNSFW.Content" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="IsNSFW.Content" xml:space="preserve">
+    <value>Is NSFW?</value>
+  </data>
+  <data name="IsYNSFW.Content" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="LastUpdate.Text" xml:space="preserve">
+    <value>Last Update:</value>
+  </data>
+  <data name="LockScreenTB.Text" xml:space="preserve">
+    <value>Lock screen image source</value>
+  </data>
+  <data name="LoginCT.Content" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="MemoryPressure.Text" xml:space="preserve">
+    <value>Pages cleaned up for memory pressure: 0</value>
+  </data>
+  <data name="MemOverlay.Text" xml:space="preserve">
+    <value>Show app memory overlay</value>
+  </data>
+  <data name="MSBand1.Text" xml:space="preserve">
+    <value>Reddunt can integrate with your Microsoft Band v1 or v2 to update your wallpaper, add a Reddunt tile, or give you instant notifications for new inbox messages.</value>
+  </data>
+  <data name="MSBand2.Text" xml:space="preserve">
+    <value>No Band found, make sure your band is powered on and connected.</value>
+  </data>
+  <data name="MSBand3.Text" xml:space="preserve">
+    <value>Wallpaper</value>
+  </data>
+  <data name="MSBand4.Text" xml:space="preserve">
+    <value>Automatically update Band wallpaper</value>
+  </data>
+  <data name="MSBand5.Text" xml:space="preserve">
+    <value>Band wallpaper image source</value>
+  </data>
+  <data name="MSBand6.Text" xml:space="preserve">
+    <value>Tile &amp; Inbox</value>
+  </data>
+  <data name="MSBand7.Text" xml:space="preserve">
+    <value>Inbox background updating must be enabled to enable this feature.</value>
+  </data>
+  <data name="NeverCombo" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="NNewCB.Content" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="NSFWB.Text" xml:space="preserve">
+    <value>NSFW blocking mode</value>
+  </data>
+  <data name="PinToStart.Content" xml:space="preserve">
+    <value>Pin to start</value>
+  </data>
+  <data name="PostsCB.Content" xml:space="preserve">
+    <value>Posts</value>
+  </data>
+  <data name="PreloadComments.Text" xml:space="preserve">
+    <value>Preload comments</value>
+  </data>
+  <data name="PreloadPost.Text" xml:space="preserve">
+    <value>Preload future post content</value>
+  </data>
+  <data name="RateUnder" xml:space="preserve">
+    <value>Rate and review at Windows Store</value>
+  </data>
+  <data name="RelevanceCB.Content" xml:space="preserve">
+    <value>Relevance</value>
+  </data>
+  <data name="ResetReview.Content" xml:space="preserve">
+    <value>Reset rate and review counter</value>
+  </data>
+  <data name="SearchThisSubReddit" xml:space="preserve">
+    <value>Search this subreddit</value>
+  </data>
+  <data name="SelfFilter.PlaceholderText" xml:space="preserve">
+    <value>Selftext Filter</value>
+  </data>
+  <data name="SelfPostCB.Content" xml:space="preserve">
+    <value>Is a Self Post?</value>
+  </data>
+  <data name="SelfPostNCB.Content" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="SelfPostYCB.Content" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="SendCT.Content" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ShowUITB.Text" xml:space="preserve">
+    <value>Show UI help tips</value>
+  </data>
+  <data name="SubFilter.PlaceholderText" xml:space="preserve">
+    <value>Subreddit Filter</value>
+  </data>
+  <data name="SubmitNewPost.Content" xml:space="preserve">
+    <value>Submit new post</value>
+  </data>
+  <data name="SubredditsCB.Content" xml:space="preserve">
+    <value>Subreddits</value>
+  </data>
+  <data name="SubscribeCT.Content" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
+  <data name="SVS1.Text" xml:space="preserve">
+    <value>SUBREDDIT VIEW SETTINGS</value>
+  </data>
+  <data name="SVS2.Text" xml:space="preserve">
+    <value>Subreddit to view when the app opens</value>
+  </data>
+  <data name="SystemState.Text" xml:space="preserve">
+    <value>System State:</value>
+  </data>
+  <data name="TTopCB.Content" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="UpdatingLockTB.Text" xml:space="preserve">
+    <value>UPDATING AND LOCK SCREEN IMAGES</value>
+  </data>
+  <data name="UsersCB.Content" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="WallITB.Text" xml:space="preserve">
+    <value>Wallpaper image source</value>
+  </data>
+  <data name="WebFilter.PlaceholderText" xml:space="preserve">
+    <value>Web Filter</value>
+  </data>
+</root>

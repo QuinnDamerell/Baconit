@@ -130,14 +130,14 @@
                     <TextBlock Margin="12,12,12,12"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Style="{ThemeResource TitleTextBlockStyle}"
-                               Text="Share the ❤" />
+                               Text="Share the ❤" x:Uid="ShareHeartTB"/>
                     <TextBlock Margin="12,12,12,0"
                                Text="Enjoying Reddunt? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="EnjoyingRedduntTB"/>
                     <Button Margin="12,24,12,24"
                             HorizontalAlignment="Stretch"
                             Click="Review_Clicked"
-                            Content="leave a quick review" />
+                            Content="leave a quick review" x:Uid="QuickReviewCT"/>
                 </StackPanel>
             </Grid>
 

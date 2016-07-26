@@ -9,9 +9,11 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot" Background="#333333">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            
         </Grid.RowDefinitions>
 
         <!--  Comment Header  -->
@@ -21,7 +23,8 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="COMMENT SETTINGS" />
+                       Text="COMMENT SETTINGS" x:Uid="CSettings" />
+           
         </StackPanel>
 
         <StackPanel Grid.Row="1"
@@ -33,12 +36,12 @@
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSort_SelectionChanged">
-                <ComboBoxItem Content="Best" />
-                <ComboBoxItem Content="Top" />
-                <ComboBoxItem Content="Controversial" />
-                <ComboBoxItem Content="New" />
-                <ComboBoxItem Content="Old" />
-                <ComboBoxItem Content="Q&amp;A" />
+                <ComboBoxItem Content="Best" x:Uid="CBestCB"/>
+                <ComboBoxItem Content="Top" x:Uid="CTopCB" />
+                <ComboBoxItem Content="Controversial" x:Uid="CControCB" />
+                <ComboBoxItem Content="New" x:Uid="CNewCB" />
+                <ComboBoxItem Content="Old" x:Uid="COldCB"/>
+                <ComboBoxItem Content="Q&amp;A" x:Uid="CQACB" />
             </ComboBox>
 
             <TextBlock Text="Default count" TextWrapping="Wrap" />
@@ -50,7 +53,12 @@
                 <ComboBoxItem Content="150" />
                 <ComboBoxItem Content="200" />
                 <ComboBoxItem Content="300" />
+                
+                
             </ComboBox>
+            
         </StackPanel>
+        
     </Grid>
+    
 </UserControl>

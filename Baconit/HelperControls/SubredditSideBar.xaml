@@ -33,7 +33,7 @@
                            Margin="12,0,12,12"
                            FontSize="16"
                            FontWeight="Light"
-                           Text="73,000 subscribers" />
+                           Text="73,000 subscribers" x:Uid="subscribersTextBlock"/>
             </StackPanel>
 
             <!--  Sub and pin buttons  -->
@@ -49,14 +49,14 @@
                             HorizontalAlignment="Stretch"
                             Background="#292929"
                             Click="SubscribeButton_Click"
-                            Content="subscribe" />
+                            Content="subscribe" x:Uid="SubscribeCT" />
                     <Button x:Name="ui_pinToStartButton"
                             Grid.Column="1"
                             Margin="12,24,12,12"
                             HorizontalAlignment="Stretch"
                             Background="#66292929"
                             Click="PinButton_Click"
-                            Content="pint to start" />
+                            Content="pint to start" x:Uid="PinToStart"/>
                 </Grid>
 
                 <Button x:Name="ui_searchSubreddit"
@@ -64,7 +64,7 @@
                         HorizontalAlignment="Stretch"
                         Background="#66292929"
                         Click="SearchSubreddit_Click"
-                        Content="search this subreddit" />
+                        Content="search this subreddit" x:Uid="SearchThisSubReddit"/>
 
                 <!--  Submit post  -->
                 <Button x:Name="ui_submitPostButton"
@@ -72,7 +72,7 @@
                         HorizontalAlignment="Stretch"
                         Background="#66292929"
                         Click="SubmitPostButton_Click"
-                        Content="submit a new post" />
+                        Content="submit a new post" x:Uid="SubmitNewPost" />
             </StackPanel>
 
 

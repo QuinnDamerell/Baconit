@@ -20,7 +20,7 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SETTINGS" />
+                       Text="SETTINGS" x:Uid="SettingsTB"/>
         </StackPanel>
 
         <ListView x:Name="ui_settingsList"
@@ -32,10 +32,12 @@
                   Style="{StaticResource ListViewStyle}">
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <EntranceThemeTransition />
                     <AddDeleteThemeTransition />
                 </TransitionCollection>
             </ListView.ItemContainerTransitions>
+            
+            
         </ListView>
     </Grid>
 </UserControl>

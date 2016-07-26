@@ -215,7 +215,7 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            FontSize="16"
-                           Text="Loading" />
+                           Text="Loading" x:Uid="progressTextTB"/>
             </StackPanel>
         </Grid>
 
@@ -234,13 +234,13 @@
                            Margin="0,0,0,8"
                            HorizontalAlignment="Center"
                            FontSize="24"
-                           Text="Error Loading Post" />
+                           Text="Error Loading Post" x:Uid="genericTextHeaderTB"/>
                 <TextBlock x:Name="ui_genericTextSub"
                            Grid.Row="1"
                            HorizontalAlignment="Center"
                            FontSize="16"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Tap anywhere to open in Edge" />
+                           Text="Tap anywhere to open in Edge" x:Uid="genericTextSubTB"/>
             </Grid>
         </Grid>
 
@@ -258,12 +258,12 @@
                 <TextBlock Margin="0,0,0,8"
                            HorizontalAlignment="Center"
                            FontSize="24"
-                           Text="This post is NSFW" />
+                           Text="This post is NSFW" x:Uid="nsfwBlockRootGridTB1" />
                 <TextBlock Grid.Row="1"
                            HorizontalAlignment="Center"
                            FontSize="16"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Tap anywhere to view" />
+                           Text="Tap anywhere to view" x:Uid="nsfwBlockRootGridTB2" />
             </Grid>
         </Grid>
     </Grid>

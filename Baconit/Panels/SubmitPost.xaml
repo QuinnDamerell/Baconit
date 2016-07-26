@@ -112,7 +112,7 @@
                 <StackPanel>
                     <TextBlock Margin="12"
                                VerticalAlignment="Bottom"
-                               Text="SUBMIT POST" />
+                               Text="SUBMIT POST" x:Uid="HeaderSubmitPost" />
                 </StackPanel>
 
                 <Grid Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -125,7 +125,7 @@
 
                     <!--  title  -->
                     <StackPanel Grid.Row="0" Background="{StaticResource BaconitAccentColorLevel1Brush}">
-                        <TextBlock Margin="12,12,12,6" Text="Title" />
+                        <TextBlock Margin="12,12,12,6" Text="Title" x:Uid="SubtmitPostTitleTB" />
                         <TextBox x:Name="ui_postTitleTextBox"
                                  Margin="12,0,12,12"
                                  MaxLength="300"
@@ -148,7 +148,7 @@
                                    Text="Url" />
                         <TextBlock x:Name="ui_postSelfTextHeader"
                                    Margin="12,12,12,6"
-                                   Text="Self Text" />
+                                   Text="Self Text" x:Uid="SelfTextTB" />
 
                         <!--  Url / Selftext box  -->
                         <TextBox x:Name="ui_postUrlTextBox"
@@ -198,7 +198,7 @@
 
                             <helperControls:RedditMarkdownVisualHelper Margin="12,0,12,12" OnHelperTapped="RedditMarkdownVisualHelper_OnHelperTapped" />
 
-                            <TextBlock Margin="12,0,12,6" Text="Formatted Preview" />
+                            <TextBlock Margin="12,0,12,6" Text="Formatted Preview" x:Uid="FormattedPreviewTB"/>
 
                             <Grid Margin="12,0,12,12"
                                   Background="#66000000"

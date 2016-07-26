@@ -198,7 +198,7 @@
                                  KeyUp="QuickSearchBox_KeyUp"
                                  Padding="8,7,0,0"
                                  PlaceholderText="Search Anything"
-                                 Visibility="Collapsed" />
+                                 Visibility="Collapsed" x:Uid="quickSearchBox"/>
 
                         <!--  The actual search UI  -->
                         <Grid Grid.Column="1" Tapped="SearchHeader_Tapped">
@@ -222,7 +222,7 @@
                                        VerticalAlignment="Center"
                                        FontSize="16"
                                        Style="{ThemeResource TitleTextBlockStyle}"
-                                       Text="Search" />
+                                       Text="Search" x:Uid="searchTextBlock" />
                         </Grid>
                     </Grid>
 
@@ -250,7 +250,7 @@
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Style="{ThemeResource TitleTextBlockStyle}"
-                                   Text="Trending Subreddits" />
+                                   Text="Trending Subreddits" x:Uid="TrendingSubreddits" />
                     </Grid>
 
 
@@ -340,7 +340,7 @@
                                    FontSize="16"
                                    RequestedTheme="Dark"
                                    Style="{ThemeResource TitleTextBlockStyle}"
-                                   Text="Account" />
+                                   Text="Account" x:Uid="accountHeader"/>
                         <StackPanel x:Name="ui_accountHeaderKarmaHolder"
                                     Grid.Column="2"
                                     Margin="8,8,12,8"
@@ -398,25 +398,25 @@
                               Background="#01000000"
                               Padding="12"
                               Tapped="SigninGrid_Tapped">
-                            <TextBlock x:Name="ui_signInText" Text="Sign In" />
+                            <TextBlock x:Name="ui_signInText" Text="Sign In" x:Uid="signInGridTB"/>
                         </Grid>
                         <Grid x:Name="ui_profileGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="ProfileGrid_Tapped">
-                            <TextBlock Text="Profile" />
+                            <TextBlock Text="Profile" x:Uid="profileGridTB" />
                         </Grid>
                         <Grid x:Name="ui_inboxGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="InboxGrid_Tapped">
-                            <TextBlock x:Name="ui_inboxText" Text="Inbox" />
+                            <TextBlock x:Name="ui_inboxText" Text="Inbox" x:Uid="inboxGridTB" />
                         </Grid>
                         <Grid x:Name="ui_settingsGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="SettingsGrid_Tapped">
-                            <TextBlock Text="Settings" />
+                            <TextBlock Text="Settings" x:Uid="settingsGridTB" />
                         </Grid>
                     </StackPanel>
                 </Grid>

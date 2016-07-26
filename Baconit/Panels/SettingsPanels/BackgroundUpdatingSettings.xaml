@@ -21,34 +21,34 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="UPDATING AND LOCK SCREEN IMAGES" />
+                       Text="UPDATING AND LOCK SCREEN IMAGES" x:Uid="UpdatingLockTB"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
             <StackPanel Grid.Row="1" Margin="12">
-                 <TextBlock Text="Automatically update lock screen image" TextWrapping="Wrap" />
+                 <TextBlock Text="Automatically update lock screen image" TextWrapping="Wrap" x:Uid="AutoUpdateTB"/>
                 <ToggleSwitch x:Name="ui_enableLockScreen" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Automatically update wallpaper image"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="AutoUpdateWTB" />
                 <ToggleSwitch x:Name="ui_enableDesktop" Toggled="ToggleSwitch_Toggled" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Lock screen image source"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="LockScreenTB"/>
                 <ComboBox x:Name="ui_lockScreenSource"
                           MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Wallpaper image source"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="WallITB"/>
                 <ComboBox x:Name="ui_desktopSource"
                           MinWidth="150"
                           Margin="0,8,0,8"
                           SelectionChanged="ComboBox_SelectionChanged" />
                 <TextBlock Margin="0,12,0,0"
                            Text="Image update frequency"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="ImageUpdateFTB"/>
                 <ComboBox x:Name="ui_imageFrequency"
                           MinWidth="150"
                           Margin="0,8,0,8"
@@ -58,12 +58,12 @@
                            Margin="0,12,0,0"
                            Foreground="#BBFFFFFF"
                            Text="Last Update:"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="LastUpdate"/>
                 <TextBlock x:Name="ui_currentSystemUpdateStatus"
                            Margin="0,12,0,0"
                            Foreground="#BBFFFFFF"
                            Text="System State:"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="SystemState"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

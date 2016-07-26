@@ -100,11 +100,15 @@ namespace Baconit.ContentPanels.Panels
 
                     // Setup the video
                     m_youTubeVideo = new MediaElement();
-                    m_youTubeVideo.AutoPlay = false;
                     m_youTubeVideo.AreTransportControlsEnabled = true;
+                    m_youTubeVideo.TransportControls.IsCompact = true;
                     m_youTubeVideo.CurrentStateChanged += MediaElement_CurrentStateChanged;
                     m_youTubeVideo.Source = youTubeUri.Uri;
-                    ui_contentRoot.Children.Add(m_youTubeVideo);
+                    ui_contentRoot.Children.Add(m_youTubeVideo); 
+              
+
+
+
                 });
             });
         }

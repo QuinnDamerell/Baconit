@@ -36,15 +36,15 @@
 
                     <TextBlock Grid.Row="0"
                                Margin="0,0,0,12"
-                               Text="Baconit can integrate with your Microsoft Band v1 or v2 to update your wallpaper, add a Baconit tile, or give you instant notifications for new inbox messages."
-                               TextWrapping="Wrap" />
+                               Text="Reddunt can integrate with your Microsoft Band v1 or v2 to update your wallpaper, add a Reddunt tile, or give you instant notifications for new inbox messages."
+                               TextWrapping="Wrap" x:Uid="MSBand1" />
 
                     <TextBlock x:Name="ui_noBandConnected"
                                Grid.Row="1"
                                Margin="0,0,0,12"
                                Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                Text="No Band found, make sure your band is powered on and connected."
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="MSBand2"/>
 
                     <Grid Grid.Row="2">
                         <StackPanel>
@@ -52,16 +52,16 @@
                                        FontWeight="Bold"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Wallpaper"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="MSBand3"/>
 
                             <TextBlock Margin="0,12,0,0"
                                        Text="Automatically update Band wallpaper"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="MSBand4"/>
                             <ToggleSwitch x:Name="ui_enableBandWallpaperUpdate" Toggled="EnableBandWallpaperUpdate_Toggled" />
 
                             <TextBlock Margin="0,12,0,0"
                                        Text="Band wallpaper image source"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="MSBand5"/>
                             <ComboBox x:Name="ui_wallpaperSubreddit"
                                       MinWidth="150"
                                       Margin="0,8,0,8"
@@ -71,16 +71,16 @@
                                        FontWeight="Bold"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Tile &amp; Inbox"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="MSBand6"/>
 
                             <TextBlock Margin="0,12,0,0"
-                                       Text="Add a Baconit tile and sync my message inbox"
+                                       Text="Add a Reddunt tile and sync my message inbox"
                                        TextWrapping="Wrap" />
                             <TextBlock x:Name="ui_messageInboxNotEnabled"
                                        Margin="0,6,0,0"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                        Text="Inbox background updating must be enabled to enable this feature."
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="MSBand7"/>
                             <ToggleSwitch x:Name="ui_syncToBand" Toggled="SyncToBand_Toggled" />
                         </StackPanel>
 

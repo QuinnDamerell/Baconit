@@ -58,7 +58,7 @@
                               Visibility="{x:Bind StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="Sticky" />
+                                       Text="Sticky" x:Uid="StickyUserTB"/>
                         </Grid>
                         <Grid HorizontalAlignment="Left"
                               Background="{x:Bind DarkenedAccentColorBrush}"
@@ -123,7 +123,7 @@
                           Padding="4,6,14,13">
                         <TextBlock FontSize="15"
                                    Foreground="#999999"
-                                   Text="view in context" />
+                                   Text="view in context" x:Uid="ViewContextTB"/>
                     </Grid>
                 </Grid>
             </Border>
@@ -170,7 +170,7 @@
                           Visibility="Collapsed">
                         <TextBlock Margin="6,3"
                                    VerticalAlignment="Center"
-                                   Text="Cake Day!" />
+                                   Text="Cake Day!" x:Uid="CakeDayTB"/>
                     </Grid>
 
                     <!--  account age  -->
@@ -179,7 +179,7 @@
                     </Viewbox>
                     <TextBlock x:Name="ui_accountAgeText"
                                VerticalAlignment="Center"
-                               Text="0 days old" />
+                               Text="0 days old" x:Uid="AccountAgeTB"/>
 
                     <!--  link karma  -->
                     <Viewbox Width="15" Margin="16,12,6,12">
@@ -226,17 +226,17 @@
                                             <TextBlock Margin="0,0,4,0"
                                                        VerticalAlignment="Center"
                                                        Foreground="#989898"
-                                                       Text="Sort:" />
+                                                       Text="Sort:" x:Uid="SortPostTB"/>
                                             <TextBlock x:Name="ui_postSortText"
                                                        VerticalAlignment="Center"
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                                       Text="New">
+                                                       Text="New" x:Uid="PostSortTextTB">
                                                 <FlyoutBase.AttachedFlyout>
                                                     <MenuFlyout>
-                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="New" />
-                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Best" />
-                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Top" />
-                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Controversial" />
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="New" x:Uid="PostSortFMINew"/>
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Best" x:Uid="PostSortFMIBest"/>
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Top" x:Uid="PostSortFMITop"/>
+                                                        <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Controversial" x:Uid="PostSortFMIContro" />
                                                     </MenuFlyout>
                                                 </FlyoutBase.AttachedFlyout>
                                             </TextBlock>
@@ -261,7 +261,7 @@
                             <TextBlock x:Name="ui_postNoPostsText"
                                        Margin="0,12,0,0"
                                        Text="No Submitted Posts"
-                                       Visibility="Collapsed" />
+                                       Visibility="Collapsed" x:Uid="NoSubmittedPostsTB" />
 
                             <!--  Progress Ring for Loading  -->
                             <ProgressRing x:Name="ui_postLoadingRing"
@@ -301,17 +301,17 @@
                                             <TextBlock Margin="0,0,4,0"
                                                        VerticalAlignment="Center"
                                                        Foreground="#989898"
-                                                       Text="Sort:" />
+                                                       Text="Sort:" x:Uid="CommentSort"/>
                                             <TextBlock x:Name="ui_commentSortText"
                                                        VerticalAlignment="Center"
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                                       Text="New">
+                                                       Text="New" x:Uid="CommentSortNew">
                                                 <FlyoutBase.AttachedFlyout>
                                                     <MenuFlyout>
-                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="New" />
-                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Best" />
-                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Top" />
-                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Controversial" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="New" x:Uid="CommentSortFMINew"/>
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Best" x:Uid="CommentSortFMIBest" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Top" x:Uid="CommentSortFMITop" />
+                                                        <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Controversial" x:Uid="CommentSortFMIContro" />
                                                     </MenuFlyout>
                                                 </FlyoutBase.AttachedFlyout>
                                             </TextBlock>
@@ -337,7 +337,7 @@
                             <TextBlock x:Name="ui_commentNoPostsText"
                                        Margin="0,12,0,0"
                                        Text="No Submitted Comments"
-                                       Visibility="Collapsed" />
+                                       Visibility="Collapsed" x:Uid="NoSubmittedComments"/>
 
                             <!--  Progress Ring for Loading  -->
                             <ProgressRing x:Name="ui_commentLoadingRing"

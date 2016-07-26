@@ -23,7 +23,7 @@
                         Padding="12">
                 <TextBlock VerticalAlignment="Bottom"
                            FontWeight="Bold"
-                           Text="ABOUT" />
+                           Text="ABOUT" x:Uid="HeaderAboutTB"/>
             </StackPanel>
 
             <Grid Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -65,16 +65,16 @@
 
                 <TextBlock Grid.Row="1"
                            Margin="12"
-                           Text="Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
-The main focus is on optimization as well great Windows 10 focused features!"
-                           TextWrapping="Wrap" />
+                           
+                           TextWrapping="Wrap" Text="Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+The main focus is on optimization as well great Windows 10 focused features!" x:Uid="AboutDescription"/>
 
                 <Grid Grid.Row="2"
                       Margin="12"
                       Background="Transparent"
                       Tapped="RateAndReview_Tapped">
                     <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
-                        <Underline>
+                        <Underline x:Uid="RateUnder">
                             Rate and review at Windows Store
                         </Underline>
                     </TextBlock>
@@ -85,7 +85,7 @@ The main focus is on optimization as well great Windows 10 focused features!"
                       Background="Transparent"
                       Tapped="ShowSource_Tapped">
                     <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
-                        <Underline>
+                        <Underline x:Uid="CheckUnder">
                             Check out the source code 
                         </Underline>
                     </TextBlock>

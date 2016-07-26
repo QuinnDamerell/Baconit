@@ -27,9 +27,9 @@
                     <MenuFlyout>
                         <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
                         <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind IsHiddenMenuText, Mode=OneWay}" />
-                        <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
-                        <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
-                        <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" />
+                        <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" x:Uid="CopyLinkMFITB"/>
+                        <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" x:Uid="CopyPermaLinkMFITB"/>
+                        <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" x:Uid="GoToUserTB"/>
                         <MenuFlyoutSeparator />
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
@@ -125,7 +125,7 @@
                                 Visibility="{x:Bind StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="Sticky" />
+                                       Text="Sticky" x:Uid="StickyTB" />
                         </Border>
                         <Border Margin="0,0,8,0"
                                 HorizontalAlignment="Left"
@@ -142,7 +142,7 @@
                                 Visibility="{x:Bind GildedVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="White"
-                                       Text="Gilded" />
+                                       Text="Gilded" x:Uid="GildedTB"/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -198,23 +198,23 @@
                                 Tapped="Sort_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" x:Uid="SMIHot"/>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" x:Uid="SMINew"/>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" x:Uid="SMIRising"/>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" x:Uid="SMIContro"/>
+                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" x:Uid="SMITop"/>
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                         <TextBlock Margin="0,0,2,0"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="#989898"
-                                   Text="Sort:" />
+                                   Text="Sort:" x:Uid="SortDTB"/>
                         <TextBlock x:Name="ui_sortText"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="Hot" />
+                                   Text="Hot" x:Uid="SortTextHotTB"/>
                         <TextBlock Margin="2,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
@@ -235,24 +235,24 @@
                                 Visibility="Collapsed">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" />
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" x:Uid="PastHour"/>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" x:Uid="PastDay"/>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" x:Uid="PastHWeek"/>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" x:Uid="PastMonth"/>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" x:Uid="PastYear"/>
+                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" x:Uid="AllTime"/>
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                         <TextBlock Margin="0,0,2,0"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="#989898"
-                                   Text="Time:" />
+                                   Text="Time:" x:Uid="TimeTB"/>
                         <TextBlock x:Name="ui_sortTimeText"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="Past Week" />
+                                   Text="Past Week" x:Uid="SortTimeTB"/>
                         <TextBlock Margin="2,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
@@ -278,7 +278,7 @@
                                                     Style="{StaticResource ListViewStyle}">
                     <ListView.ItemContainerTransitions>
                         <TransitionCollection>
-                            <EntranceThemeTransition IsStaggeringEnabled="True" />
+                            <EntranceThemeTransition />
                             <AddDeleteThemeTransition />
                         </TransitionCollection>
                     </ListView.ItemContainerTransitions>
@@ -290,11 +290,10 @@
                            Margin="12,0,12,12"
                            Foreground="#999999"
                            Text="There are no posts here."
-                           Visibility="Collapsed" />
+                           Visibility="Collapsed" x:Uid="NoPostHereTB"/>
 
-                <!--  Custom App bar  -->
-                <CommandBar Grid.Row="2"
-                Background="#1F1F1F">
+                
+                <CommandBar Grid.Row="2" >
                     <AppBarButton Icon="Refresh"
                       Tapped="Refresh_Click"
                       Label="Refresh"/>
@@ -304,7 +303,7 @@
                       Label="Add"/>
                     <AppBarButton Icon="List"
                       Tapped="MenuButton_Click"
-                      Label="Menu"/>
+                      Label="More" x:Uid="AppBarMenuButton"/>
                 </CommandBar>
             </Grid>
         </SplitView.Content>

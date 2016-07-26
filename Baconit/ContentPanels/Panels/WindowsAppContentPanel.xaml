@@ -22,13 +22,13 @@
                            HorizontalAlignment="Center"
                            FontSize="22"
                            Text="This post links to a Windows App"
-                           TextAlignment="Center" />
+                           TextAlignment="Center" x:Uid="headerTextAppsTB"/>
                 <TextBlock x:Name="ui_minorText"
                            Grid.Row="1"
                            FontSize="15"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                            Text="Tap anywhere to open the store"
-                           TextAlignment="Center" />
+                           TextAlignment="Center" x:Uid="minorTextAppsTB"/>
             </Grid>
         </Grid>
         <helperControls:LoadingOverlay x:Name="ui_loadingOverlay" />

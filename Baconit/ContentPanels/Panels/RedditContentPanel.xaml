@@ -22,13 +22,13 @@
                            HorizontalAlignment="Center"
                            FontSize="22"
                            Text="This post links to a subreddit"
-                           TextAlignment="Center" />
+                           TextAlignment="Center" x:Uid="headerText" />
                 <TextBlock x:Name="ui_minorText"
                            Grid.Row="1"
                            FontSize="15"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                            Text="Tap anywhere to view /r/baconit"
-                           TextAlignment="Center" />
+                           TextAlignment="Center" x:Uid="minorText" />
             </Grid>
         </Grid>
     </Grid>

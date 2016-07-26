@@ -254,7 +254,7 @@
                         Margin="6"
                         HorizontalAlignment="Right"
                         Click="Cancel_Click"
-                        Content="Cancel" />
+                        Content="Cancel" x:Uid="CancelCT"/>
 
                 <!--  Send Icon  -->
                 <Button x:Name="ui_sendButton"
@@ -263,7 +263,7 @@
                         Margin="6"
                         HorizontalAlignment="Left"
                         Click="Send_Click"
-                        Content="Send" />
+                        Content="Send" x:Uid="SendCT" />
             </Grid>
         </Grid>
 
@@ -283,7 +283,7 @@
                 <TextBlock Grid.Row="1"
                            Margin="12"
                            HorizontalAlignment="Center"
-                           Text="Sending Comment..." />
+                           Text="Sending Comment..." x:Uid="SendingCommentTB" />
             </Grid>
         </Grid>
     </Grid>

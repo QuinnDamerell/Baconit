@@ -60,11 +60,11 @@
                 </Grid>
 
                 <Border Margin="12" Visibility="{x:Bind ShowShowMore}">
-                    <TextBlock Text="show more" />
+                    <TextBlock Text="show more" x:Uid="ShowMoreTB" />
                 </Border>
 
                 <Border Margin="12" Visibility="{x:Bind ShowNoResults}">
-                    <TextBlock Foreground="#999999" Text="no results" />
+                    <TextBlock Foreground="#999999" Text="no results" x:Uid="NoResultsTB"/>
                 </Border>
             </Grid>
         </DataTemplate>
@@ -150,7 +150,7 @@
         <Grid Grid.Row="0" Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SEARCH" />
+                       Text="SEARCH" x:Uid="SearchTBs" />
         </Grid>
 
         <!--  Search Header  -->
@@ -176,7 +176,7 @@
                 <TextBox x:Name="ui_searchBox"
                          KeyUp="SearchBox_KeyUp"
                          PlaceholderText="Search for anything; subreddits, users, post, etc."
-                         Style="{StaticResource AlwaysWhiteTextBoxStyle}" />
+                         Style="{StaticResource AlwaysWhiteTextBoxStyle}" x:Uid="SearchASUPTBS"/>
                 <Grid Grid.Column="1"
                       Width="35"
                       Margin="4,0,0,0"
@@ -194,16 +194,16 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Margin="12,0,0,12"
                            VerticalAlignment="Center"
-                           Text="Search For:" />
+                           Text="Search For:" x:Uid="SearchForTB"/>
                 <ComboBox x:Name="ui_searchForCombo"
                           Grid.Column="1"
                           Margin="12,0,12,12"
                           SelectedIndex="0"
                           SelectionChanged="SearchForCombo_SelectionChanged">
-                    <ComboBoxItem Content="Everything" />
-                    <ComboBoxItem Content="Subreddits" />
-                    <ComboBoxItem Content="Users" />
-                    <ComboBoxItem Content="Posts" />
+                    <ComboBoxItem Content="Everything" x:Uid="EverythingCB"/>
+                    <ComboBoxItem Content="Subreddits" x:Uid="SubredditsCB" />
+                    <ComboBoxItem Content="Users" x:Uid="UsersCB"/>
+                    <ComboBoxItem Content="Posts" x:Uid="PostsCB" />
                 </ComboBox>
             </Grid>
 
@@ -223,10 +223,10 @@
                               Margin="12,0,0,12"
                               SelectedIndex="0"
                               SelectionChanged="SearchForCombo_SelectionChanged">
-                        <ComboBoxItem Content="Relevance" />
-                        <ComboBoxItem Content="Top" />
-                        <ComboBoxItem Content="New" />
-                        <ComboBoxItem Content="Comments" />
+                        <ComboBoxItem Content="Relevance" x:Uid="RelevanceCB" />
+                        <ComboBoxItem Content="Top" x:Uid="TTopCB" />
+                        <ComboBoxItem Content="New" x:Uid="NNewCB" />
+                        <ComboBoxItem Content="Comments" x:Uid="CCommentsCBB" />
                     </ComboBox>
                     <ComboBox x:Name="ui_postTime"
                               Grid.Column="1"
@@ -234,12 +234,12 @@
                               Margin="12,0,12,12"
                               SelectedIndex="0"
                               SelectionChanged="SearchForCombo_SelectionChanged">
-                        <ComboBoxItem Content="All Time" />
-                        <ComboBoxItem Content="Past Hour" />
-                        <ComboBoxItem Content="Past Day" />
-                        <ComboBoxItem Content="Past Week" />
-                        <ComboBoxItem Content="Past Month" />
-                        <ComboBoxItem Content="Past Year" />
+                        <ComboBoxItem Content="All Time" x:Uid="CAllTimeB"/>
+                        <ComboBoxItem Content="Past Hour" x:Uid="CPastHourB" />
+                        <ComboBoxItem Content="Past Day" x:Uid="CPastDayB" />
+                        <ComboBoxItem Content="Past Week" x:Uid="CPastWeekB" />
+                        <ComboBoxItem Content="Past Month" x:Uid="CPastMonthB" />
+                        <ComboBoxItem Content="Past Year" x:Uid="CPastYearB" />
                     </ComboBox>
                     <TextBox x:Name="ui_postSubreddit"
                              Grid.Column="2"
@@ -248,7 +248,7 @@
                              Margin="0,0,12,0"
                              VerticalAlignment="Top"
                              KeyUp="SearchBox_KeyUp"
-                             PlaceholderText="Subreddit Filter" />
+                             PlaceholderText="Subreddit Filter" x:Uid="SubFilter"/>
                     <TextBox x:Name="ui_postUserName"
                              Grid.Column="2"
                              Width="180"
@@ -256,7 +256,7 @@
                              Margin="0,0,12,0"
                              VerticalAlignment="Top"
                              KeyUp="SearchBox_KeyUp"
-                             PlaceholderText="Author Filter" />
+                             PlaceholderText="Author Filter" x:Uid="AuthorFilter"/>
                     <TextBox x:Name="ui_postWebsite"
                              Grid.Column="2"
                              Width="180"
@@ -264,7 +264,7 @@
                              Margin="0,0,12,0"
                              VerticalAlignment="Top"
                              KeyUp="SearchBox_KeyUp"
-                             PlaceholderText="Website Filter" />
+                             PlaceholderText="Website Filter" x:Uid="WebFilter"/>
                     <TextBox x:Name="ui_postSelfText"
                              Grid.Column="2"
                              Width="180"
@@ -272,16 +272,16 @@
                              Margin="0,0,0,0"
                              VerticalAlignment="Top"
                              KeyUp="SearchBox_KeyUp"
-                             PlaceholderText="Selftext Filter" />
+                             PlaceholderText="Selftext Filter" x:Uid="SelfFilter" />
                     <ComboBox x:Name="ui_postIsSelf"
                               Grid.Column="1"
                               Width="120"
                               Margin="12,0,12,12"
                               SelectedIndex="0"
                               SelectionChanged="SearchForCombo_SelectionChanged">
-                        <ComboBoxItem Content="Is Self Post?" />
-                        <ComboBoxItem Content="Yes" />
-                        <ComboBoxItem Content="No" />
+                        <ComboBoxItem Content="Is Self Post?" x:Uid="SelfPostCB"/>
+                        <ComboBoxItem Content="Yes" x:Uid="SelfPostYCB" />
+                        <ComboBoxItem Content="No" x:Uid="SelfPostNCB"/>
                     </ComboBox>
                     <ComboBox x:Name="ui_postIsNsfw"
                               Grid.Column="1"
@@ -289,9 +289,9 @@
                               Margin="0,0,12,12"
                               SelectedIndex="0"
                               SelectionChanged="SearchForCombo_SelectionChanged">
-                        <ComboBoxItem Content="Is NSFW?" />
-                        <ComboBoxItem Content="Yes" />
-                        <ComboBoxItem Content="No" />
+                        <ComboBoxItem Content="Is NSFW?" x:Uid="IsNSFW" />
+                        <ComboBoxItem Content="Yes" x:Uid="IsYNSFW" />
+                        <ComboBoxItem Content="No" x:Uid="IsNNSFW"/>
                     </ComboBox>
                 </StackPanel>
             </ScrollViewer>

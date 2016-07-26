@@ -73,7 +73,7 @@
                           VerticalAlignment="Center" />
             <TextBlock x:Name="ui_loadingText"
                        Margin="24"
-                       Text="Loading..." />
+                       Text="Loading..." x:Uid="loadingTextTB" />
         </StackPanel>
 
 

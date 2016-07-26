@@ -21,7 +21,7 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="DEVELOPER SETTINGS" />
+                       Text="DEVELOPER SETTINGS" x:Uid="DevSettings"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1"
@@ -31,21 +31,21 @@
             <ToggleSwitch x:Name="ui_debuggingOn" Toggled="DebuggingOn_Toggled" />
             <TextBlock Margin="0,12,0,0"
                        Text="Don't let fatal exceptions kill the app, report the exception instead of crashing. (this will leave your app in an unstable state)"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="FatalException"/>
             <ToggleSwitch x:Name="ui_preventAppCrashes" Toggled="PreventAppCrashes_Toggled" />
             <TextBlock Margin="0,12,0,0"
                        Text="Show app memory overlay"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="MemOverlay"/>
             <ToggleSwitch x:Name="ui_showMemoryOverlay" Toggled="ShowMemoryOverlay_Toggled" />
 
             <Button Margin="0,12,0,12"
                     Click="RateAndReviewReset_Click"
-                    Content="Reset rate and review counter" />
+                    Content="Reset rate and review counter" x:Uid="ResetReview"/>
 
             <TextBlock x:Name="ui_numberPagesCleanedUp"
                        Margin="0,12,0,0"
                        Text="Pages cleaned up for memory pressure: 0"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="MemoryPressure" />
 
 
         </StackPanel>

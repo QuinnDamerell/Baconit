@@ -17,7 +17,7 @@
                            FontSize="15"
                            Text="Spoiler!"
                            TextAlignment="Center"
-                           TextWrapping="Wrap" />
+                           TextWrapping="Wrap" x:Uid="textBlock"/>
             </Grid>
         </Grid>
     </Grid>
