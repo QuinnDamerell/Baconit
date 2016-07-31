@@ -27,6 +27,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Baconit.Panels.FlipView;
 using Windows.ApplicationModel.Resources.Core;
+using Microsoft.Services;
+
 
 namespace Baconit.Panels
 {
@@ -50,9 +52,15 @@ namespace Baconit.Panels
             this.DataContext = this;
             Loaded += SubredditPanel_Loaded;
 
+            if (Microsoft.Services.Store.Engagement.Feedback.IsSupported)
+            {
+                this.feedbackButton.Visibility = Visibility.Visible;
+            }
+
             // Set the post list
             ui_postList.ItemsSource = m_postsLists;
         }
+
 
         private void SubredditPanel_Loaded(object sender, RoutedEventArgs e)
         {
@@ -544,6 +552,13 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
+        }
+
+        private async void FeedbackHub_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            await Microsoft.Services.Store.Engagement.Feedback.LaunchFeedbackAsync();
+
         }
 
         /// <summary>

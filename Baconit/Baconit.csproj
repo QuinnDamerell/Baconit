@@ -521,6 +521,12 @@
     <XliffResource Include="MultilingualResources\Baconit.pt-BR.xlf" />
   </ItemGroup>
   <ItemGroup>
+    <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">
+      <Name>Microsoft Store Engagement SDK</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0">
+      <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
+    </SDKReference>
     <SDKReference Include="WindowsMobile, Version=10.0.14388.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>

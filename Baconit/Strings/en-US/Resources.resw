@@ -874,4 +874,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="SortTBS.Text" xml:space="preserve">
     <value>Sort:</value>
   </data>
+  <data name="FeedbackHubLabel.Label" xml:space="preserve">
+    <value>Feedback Hub</value>
+  </data>
 </root>

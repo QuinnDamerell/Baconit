@@ -1016,6 +1016,14 @@ O foco principal é em otimizações, mas também como algumas funções especif
           <source>Sort:</source>
           <target state="translated">Ordem:</target>
         </trans-unit>
+        <trans-unit id="FeedbackHubLabel.Label" translate="yes" xml:space="preserve">
+          <source>Feedback Hub</source>
+          <target state="new">Feedback Hub</target>
+        </trans-unit>
+        <trans-unit id="SettingsLabel.Label" translate="yes" xml:space="preserve">
+          <source>Settings</source>
+          <target state="new">Settings</target>
+        </trans-unit>
       </group>
     </body>
   </file>

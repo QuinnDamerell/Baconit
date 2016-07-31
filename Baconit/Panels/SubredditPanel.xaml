@@ -294,6 +294,7 @@
 
                 
                 <CommandBar Grid.Row="2" >
+                    <CommandBar.PrimaryCommands>
                     <AppBarButton Icon="Refresh"
                       Tapped="Refresh_Click"
                       Label="Refresh" x:Uid="RefreshButton"/>
@@ -304,6 +305,10 @@
                     <AppBarButton Icon="List"
                       Tapped="MenuButton_Click"
                       Label="More" x:Uid="AppBarMenuButton"/>
+                    </CommandBar.PrimaryCommands>
+                    <CommandBar.SecondaryCommands>
+                        <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Tapped="FeedbackHub_Tapped" x:Name="feedbackButton"/>
+                    </CommandBar.SecondaryCommands>
                 </CommandBar>
             </Grid>
         </SplitView.Content>
