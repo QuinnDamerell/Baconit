@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -362,10 +363,13 @@ namespace Baconit
         /// </summary>
         private void UpdateAccount()
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             // Set the defaults
             string userName = App.BaconMan.UserMan.IsUserSignedIn && App.BaconMan.UserMan.CurrentUser != null && App.BaconMan.UserMan.CurrentUser.Name != null ? App.BaconMan.UserMan.CurrentUser.Name : "Unknown";
-            ui_accountHeader.Text = App.BaconMan.UserMan.IsUserSignedIn ? userName : "Account";
-            ui_signInText.Text = App.BaconMan.UserMan.IsUserSignedIn ? "Sign Out" : "Sign In";
+            ui_accountHeader.Text = App.BaconMan.UserMan.IsUserSignedIn ? userName : resourceMap.GetValue("AccountCode/Text", resourceContext).ValueAsString;
+            ui_signInText.Text = App.BaconMan.UserMan.IsUserSignedIn ? resourceMap.GetValue("SignOutCode/Text", resourceContext).ValueAsString : resourceMap.GetValue("SignInCode/Text", resourceContext).ValueAsString;
             ui_inboxGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
             ui_profileGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
             ui_accountHeaderMailBox.Visibility = Visibility.Collapsed;

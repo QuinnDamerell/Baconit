@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -19,6 +20,9 @@ namespace BaconBackend.DataObjects
     /// </summary>
     public class Comment : INotifyPropertyChanged
     {
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
         /// <summary>
         /// The comment's unique ID. Prefixed with "t1_", this 
         /// is the comment's fullname.
@@ -268,7 +272,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave comment" : "Save comment";
+                return IsSaved ? resourceMap.GetValue("UnsaveComment", resourceContext).ValueAsString : resourceMap.GetValue("SaveComment", resourceContext).ValueAsString;
             }
         }
 
@@ -562,7 +566,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsCommentOwnedByUser ? "edit" : "reply";
+                return IsCommentOwnedByUser ? resourceMap.GetValue("EditComment", resourceContext).ValueAsString : resourceMap.GetValue("ReplyComment", resourceContext).ValueAsString;
             }
         }
 
@@ -575,7 +579,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsCommentOwnedByUser ? "delete  |" : "|";
+                return IsCommentOwnedByUser ? resourceMap.GetValue("DeleteComment", resourceContext).ValueAsString : "|";
 
             }
         }

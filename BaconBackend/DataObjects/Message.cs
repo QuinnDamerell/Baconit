@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -150,9 +151,12 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public string MarkAsReadText
         {
+
             get
             {
-                return IsNew ? "mark as read" : "mark as unread";
+                ResourceContext resourceContext = new ResourceContext();
+                ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+                return IsNew ? resourceMap.GetValue("MarkAsReadCode/Text", resourceContext).ValueAsString : resourceMap.GetValue("MarkAsUnreadCode/Text", resourceContext).ValueAsString;
             }
         }
 

@@ -12,6 +12,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Resources;
+using Windows.ApplicationModel.Resources.Core;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -100,9 +102,11 @@ namespace Baconit.HelperControls
         /// <param name="newVisibility"></param>
         private void OnShowLoadingChanged(Visibility newVisibility)
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
             ui_progressRing.IsActive = newVisibility == Visibility.Visible;
             ui_progressRing.Visibility = Visibility.Visible;
-            ui_textBlock.Text = "Loading Comments";
+            ui_textBlock.Text = resourceMap.GetValue("LoadingC/Text", resourceContext).ValueAsString;
             PlayAnimation(newVisibility);
         }
 

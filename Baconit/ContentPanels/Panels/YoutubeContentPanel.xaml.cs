@@ -9,6 +9,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media;
 using Windows.System.Display;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -40,18 +41,23 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         DisplayRequest m_displayRequest;
 
+
         public YoutubeContentPanel(IContentPanelBaseInternal panelBase)
         {
             this.InitializeComponent();
+            
             m_base = panelBase;
+          
+
         }
 
-        /// <summary>
-        /// Called by the host when it queries if we can handle a post.
-        /// </summary>
-        /// <param name="post"></param>
-        /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+
+                    /// <summary>
+                    /// Called by the host when it queries if we can handle a post.
+                    /// </summary>
+                    /// <param name="post"></param>
+                    /// <returns></returns>
+                    static public bool CanHandlePost(ContentPanelSource source)
         {
             // Note! We can't do the full Uri get because it relays on an Internet request and
             // we can't lose the time for this quick check. If we can get the youtube id assume we are good.
@@ -105,13 +111,12 @@ namespace Baconit.ContentPanels.Panels
                     m_youTubeVideo.CurrentStateChanged += MediaElement_CurrentStateChanged;
                     m_youTubeVideo.Source = youTubeUri.Uri;
                     ui_contentRoot.Children.Add(m_youTubeVideo); 
-              
-
-
 
                 });
             });
         }
+
+        
 
         /// <summary>
         /// Fired when we should destroy our content.

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -25,17 +26,19 @@ namespace Baconit.Panels
         public Settings()
         {
             this.InitializeComponent();
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
 
             // Add the settings to the list
-            m_settingsList.Add("Flip view");
+            m_settingsList.Add(resourceMap.GetValue("FlipViewCode/Text", resourceContext).ValueAsString);
             m_settingsList.Add("Subreddit");
-            m_settingsList.Add("Comments");
+            m_settingsList.Add(resourceMap.GetValue("CommentsSCode/Text", resourceContext).ValueAsString);
             m_settingsList.Add("Microsoft Band");
-            m_settingsList.Add("Inbox background updating");
-            m_settingsList.Add("Lock screen & desktop wallpaper updating");
-            m_settingsList.Add("Terms and conditions");
-            m_settingsList.Add("Privacy policy");
-            m_settingsList.Add("About");
+            m_settingsList.Add(resourceMap.GetValue("InboxbackgroundupdatingCode/Text", resourceContext).ValueAsString);
+            m_settingsList.Add(resourceMap.GetValue("LockscreendesktopwallpaperupdatingCode/Text", resourceContext).ValueAsString);
+            m_settingsList.Add(resourceMap.GetValue("TermsandConditionsCode/Text", resourceContext).ValueAsString);
+            m_settingsList.Add(resourceMap.GetValue("PrivacyPolicyCode/Text", resourceContext).ValueAsString);
+            m_settingsList.Add(resourceMap.GetValue("AboutSCode/Text", resourceContext).ValueAsString);
 
             // Set the list
             ui_settingsList.ItemsSource = m_settingsList;

@@ -46,8 +46,8 @@
                               Margin="0,8,0,8"
                               SelectedIndex="0"
                               SelectionChanged="MessageNotificationType_SelectionChanged">
-                        <ComboBoxItem>Show each message</ComboBoxItem>
-                        <ComboBoxItem>Show one total unread count</ComboBoxItem>
+                        <ComboBoxItem x:Uid="ShowEachMessageCBI">Show each message</ComboBoxItem>
+                        <ComboBoxItem x:Uid="ShowOneTotalUnreadCBI">Show one total unread count</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
             </ScrollViewer>

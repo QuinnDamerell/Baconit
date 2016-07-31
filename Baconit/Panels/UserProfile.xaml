@@ -201,7 +201,7 @@
 
             <Grid Grid.Row="1" Background="Black">
                 <Pivot>
-                    <PivotItem Header="SUBMITTED">
+                    <PivotItem Header="SUBMITTED" x:Uid="PivotSubmitted">
                         <Grid>
                             <!--  Posts list  -->
                             <helperControls:EndDetectingListView x:Name="ui_postList"
@@ -276,7 +276,7 @@
                                          Background="Transparent" />
                         </Grid>
                     </PivotItem>
-                    <PivotItem Header="COMMENTS">
+                    <PivotItem Header="COMMENTS" x:Uid="PivotComments">
                         <Grid>
                             <!--  Comment list  -->
                             <helperControls:EndDetectingListView x:Name="ui_commentList"

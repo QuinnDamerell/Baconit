@@ -74,9 +74,9 @@ The main focus is on optimization as well great Windows 10 focused features!" x:
                       Background="Transparent"
                       Tapped="RateAndReview_Tapped">
                     <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
-                        <Underline x:Uid="RateUnder">
-                            Rate and review at Windows Store
-                        </Underline>
+                        <Underline>
+                             <Run Text="Rate and review at Windows Store" x:Uid="RateUnder"/>
+                       </Underline>
                     </TextBlock>
                 </Grid>
 
@@ -85,8 +85,8 @@ The main focus is on optimization as well great Windows 10 focused features!" x:
                       Background="Transparent"
                       Tapped="ShowSource_Tapped">
                     <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
-                        <Underline x:Uid="CheckUnder">
-                            Check out the source code 
+                        <Underline>
+                           <Run Text="Check out the source code" x:Uid="CheckUnder"/>  
                         </Underline>
                     </TextBlock>
                 </Grid>

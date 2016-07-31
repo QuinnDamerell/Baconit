@@ -274,7 +274,7 @@
                         <TextBlock Margin="0,0,4,0"
                                    VerticalAlignment="Center"
                                    Foreground="#989898"
-                                   Text="Sort:" />
+                                   Text="Sort:" x:Uid="SortTBS" />
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{x:Bind Context.Post.CommentCurrentSortTypeString, Mode=OneWay}" />

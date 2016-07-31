@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
@@ -26,6 +27,8 @@ namespace Baconit.Panels
 {
     public sealed partial class Search : UserControl, IPanel
     {
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
         const string c_subredditShowMoreHeader = "subreddit";
         const string c_postShowMoreHeader = "post";
 
@@ -315,7 +318,7 @@ namespace Baconit.Panels
                     SearchResult header = new SearchResult()
                     {
                         ResultType = SearchResultTypes.Header,
-                        HeaderText = "Subreddit Results"
+                        HeaderText = resourceMap.GetValue("SubredditResultsCode", resourceContext).ValueAsString
                     };
                     m_searchResultsList.Insert(0, header);
 
@@ -449,7 +452,7 @@ namespace Baconit.Panels
                     SearchResult header = new SearchResult()
                     {
                         ResultType = SearchResultTypes.Header,
-                        HeaderText = "Post Results"
+                        HeaderText = resourceMap.GetValue("PostsResultsCode", resourceContext).ValueAsString
                     };
                     m_searchResultsList.Add(header);
 
@@ -588,7 +591,7 @@ namespace Baconit.Panels
                 SearchResult header = new SearchResult()
                 {
                     ResultType = SearchResultTypes.Header,
-                    HeaderText = "User Result"
+                    HeaderText = resourceMap.GetValue("UserResultsCode", resourceContext).ValueAsString
                 };
                 m_searchResultsList.Insert(insertIndex, header);
                 insertIndex++;
@@ -605,7 +608,7 @@ namespace Baconit.Panels
                     };
                     if (userResult.IsGold)
                     {
-                        userItem.MinorAccentText = "Has Gold";
+                        userItem.MinorAccentText = resourceMap.GetValue("HasGoldCode/MinorAccentText", resourceContext).ValueAsString;
                     }
                     m_searchResultsList.Insert(insertIndex, userItem);
                     insertIndex++;

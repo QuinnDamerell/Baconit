@@ -296,11 +296,11 @@
                 <CommandBar Grid.Row="2" >
                     <AppBarButton Icon="Refresh"
                       Tapped="Refresh_Click"
-                      Label="Refresh"/>
+                      Label="Refresh" x:Uid="RefreshButton"/>
                     <AppBarButton x:Name="ui_appBarSubButton"
                       Icon="Add"
                       Tapped="AppBarSideBarOpen_OnIconTapped"
-                      Label="Add"/>
+                      Label="Add" x:Uid="AddButton" />
                     <AppBarButton Icon="List"
                       Tapped="MenuButton_Click"
                       Label="More" x:Uid="AppBarMenuButton"/>

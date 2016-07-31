@@ -232,7 +232,7 @@
     <value>To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down.</value>
   </data>
   <data name="WelcomeText.Text" xml:space="preserve">
-    <value>Bem-vindo Quinbd</value>
+    <value>Welcome Quinbd</value>
   </data>
   <data name="AccountAgeTB.Text" xml:space="preserve">
     <value>0 days old</value>
@@ -430,7 +430,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="AddMessagesTB.Text" xml:space="preserve">
     <value>Add messages to the notification center silently</value>
   </data>
-  <data name="AlwaysCombo" xml:space="preserve">
+  <data name="AlwaysCombo.Content" xml:space="preserve">
     <value>Always</value>
   </data>
   <data name="AuthorFilter.PlaceholderText" xml:space="preserve">
@@ -499,7 +499,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="CControCB.Content" xml:space="preserve">
     <value>Controversial</value>
   </data>
-  <data name="CheckUnder" xml:space="preserve">
+  <data name="CheckUnder.Text" xml:space="preserve">
     <value>Check out the source code</value>
   </data>
   <data name="CNewCB.Content" xml:space="preserve">
@@ -538,7 +538,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="DevSettings.Text" xml:space="preserve">
     <value>DEVELOPER SETTINGS</value>
   </data>
-  <data name="DisableCombo" xml:space="preserve">
+  <data name="DisableCombo.Content" xml:space="preserve">
     <value>Disable per subreddit; resets when the app is close</value>
   </data>
   <data name="DisablePostLoad.Text" xml:space="preserve">
@@ -577,6 +577,9 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="LastUpdate.Text" xml:space="preserve">
     <value>Last Update:</value>
   </data>
+  <data name="LoadingC.Text" xml:space="preserve">
+    <value>Loading comments</value>
+  </data>
   <data name="LockScreenTB.Text" xml:space="preserve">
     <value>Lock screen image source</value>
   </data>
@@ -610,7 +613,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="MSBand7.Text" xml:space="preserve">
     <value>Inbox background updating must be enabled to enable this feature.</value>
   </data>
-  <data name="NeverCombo" xml:space="preserve">
+  <data name="NeverCombo.Content" xml:space="preserve">
     <value>Never</value>
   </data>
   <data name="NNewCB.Content" xml:space="preserve">
@@ -631,7 +634,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="PreloadPost.Text" xml:space="preserve">
     <value>Preload future post content</value>
   </data>
-  <data name="RateUnder" xml:space="preserve">
+  <data name="RateUnder.Text" xml:space="preserve">
     <value>Rate and review at Windows Store</value>
   </data>
   <data name="RelevanceCB.Content" xml:space="preserve">
@@ -686,7 +689,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Top</value>
   </data>
   <data name="UpdatingLockTB.Text" xml:space="preserve">
-    <value>UPDATING AND LOCK SCREEN IMAGES</value>
+    <value>WALLPAPER AND LOCKSCREEN UPDATING</value>
   </data>
   <data name="UsersCB.Content" xml:space="preserve">
     <value>Users</value>
@@ -696,5 +699,179 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   </data>
   <data name="WebFilter.PlaceholderText" xml:space="preserve">
     <value>Web Filter</value>
+  </data>
+  <data name="AllTimeCode.Text" xml:space="preserve">
+    <value>All Time</value>
+  </data>
+  <data name="ControCode.Text" xml:space="preserve">
+    <value>Controversial</value>
+  </data>
+  <data name="HotCode.Text" xml:space="preserve">
+    <value>Hot</value>
+  </data>
+  <data name="NewCode.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="PastDayCode.Text" xml:space="preserve">
+    <value>Past Day</value>
+  </data>
+  <data name="PastHourCode.Text" xml:space="preserve">
+    <value>Past Hour</value>
+  </data>
+  <data name="PastHWeek.Text" xml:space="preserve">
+    <value>Past Week</value>
+  </data>
+  <data name="PastMonthCode.Text" xml:space="preserve">
+    <value>Past Month</value>
+  </data>
+  <data name="PastWeekCode.Text" xml:space="preserve">
+    <value>Past Week</value>
+  </data>
+  <data name="PastYearCode.Text" xml:space="preserve">
+    <value>Past Year</value>
+  </data>
+  <data name="RisingCode.Text" xml:space="preserve">
+    <value>Rising</value>
+  </data>
+  <data name="TopCode.Text" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="AboutSCode.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AllowedCode.Text" xml:space="preserve">
+    <value>Allowed</value>
+  </data>
+  <data name="CommentsSCode.Text" xml:space="preserve">
+    <value>Comments</value>
+  </data>
+  <data name="DefaultcountTB.Text" xml:space="preserve">
+    <value>Default count</value>
+  </data>
+  <data name="DefaultSortsTB.Text" xml:space="preserve">
+    <value>Default sort</value>
+  </data>
+  <data name="DefaultsortTB.Text" xml:space="preserve">
+    <value>Default sort</value>
+  </data>
+  <data name="DefaulttimesortTB.Text" xml:space="preserve">
+    <value>Default time sort</value>
+  </data>
+  <data name="DeniedCode.Text" xml:space="preserve">
+    <value>Denied</value>
+  </data>
+  <data name="FlipViewCode.Text" xml:space="preserve">
+    <value>Flip View</value>
+  </data>
+  <data name="InboxbackgroundupdatingCode.Text" xml:space="preserve">
+    <value>Inbox background updating</value>
+  </data>
+  <data name="LastUpdateCode.Text" xml:space="preserve">
+    <value>Last update</value>
+  </data>
+  <data name="LockscreendesktopwallpaperupdatingCode.Text" xml:space="preserve">
+    <value>Lock screen &amp; desktop wallpaper updating</value>
+  </data>
+  <data name="NeverCode.Text" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="PrivacyPolicyCode.Text" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="ReddunTileInboxTB.Text" xml:space="preserve">
+    <value>Add a Reddunt tile and sync my message inbox</value>
+  </data>
+  <data name="ShowEachMessageCBI.Content" xml:space="preserve">
+    <value>Show each message</value>
+  </data>
+  <data name="ShowOneTotalUnreadCBI.Content" xml:space="preserve">
+    <value>Show one total unread count</value>
+  </data>
+  <data name="SystemStateCode.Text" xml:space="preserve">
+    <value>System State</value>
+  </data>
+  <data name="TermsandConditionsCode.Text" xml:space="preserve">
+    <value>Terms and Conditions</value>
+  </data>
+  <data name="AddButton.Label" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="RefreshButton.Label" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="AccountCode.Text" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="DeleteComment" xml:space="preserve">
+    <value>delete  |</value>
+  </data>
+  <data name="EditComment" xml:space="preserve">
+    <value>edit</value>
+  </data>
+  <data name="HasGoldCode.MinorAccentText" xml:space="preserve">
+    <value>Has Gold</value>
+  </data>
+  <data name="HidePost" xml:space="preserve">
+    <value>Hide post</value>
+  </data>
+  <data name="MarkAsReadCode.Text" xml:space="preserve">
+    <value>mark as read</value>
+  </data>
+  <data name="MarkAsUnreadCode.Text" xml:space="preserve">
+    <value>mark as unread</value>
+  </data>
+  <data name="PivotComments.Header" xml:space="preserve">
+    <value>COMMENTS</value>
+  </data>
+  <data name="PivotSubmitted.Header" xml:space="preserve">
+    <value>SUBMITTED</value>
+  </data>
+  <data name="PostsResultsCode" xml:space="preserve">
+    <value>Posts Results</value>
+  </data>
+  <data name="replyBTN.ButtonText" xml:space="preserve">
+    <value>reply</value>
+  </data>
+  <data name="ReplyComment" xml:space="preserve">
+    <value>reply</value>
+  </data>
+  <data name="SaveComment" xml:space="preserve">
+    <value>Save comment</value>
+  </data>
+  <data name="SavePost" xml:space="preserve">
+    <value>Save post</value>
+  </data>
+  <data name="SignInCode.Text" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="SignOutCode.Text" xml:space="preserve">
+    <value>Sign Out</value>
+  </data>
+  <data name="SubredditResultsCode" xml:space="preserve">
+    <value>Subreddit Results</value>
+  </data>
+  <data name="UnhidePost" xml:space="preserve">
+    <value>Unhide post</value>
+  </data>
+  <data name="UnsaveComment" xml:space="preserve">
+    <value>Unsave comment</value>
+  </data>
+  <data name="UnsavePost" xml:space="preserve">
+    <value>Unsave post</value>
+  </data>
+  <data name="UserResultsCode" xml:space="preserve">
+    <value>User Results</value>
+  </data>
+  <data name="ViewInContext.ButtonText" xml:space="preserve">
+    <value>view comment in context</value>
+  </data>
+  <data name="SendCode.Content" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="UpdateCode.Content" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="SortTBS.Text" xml:space="preserve">
+    <value>Sort:</value>
   </data>
 </root>

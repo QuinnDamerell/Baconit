@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -22,6 +23,9 @@ namespace BaconBackend.DataObjects
     [JsonObject(MemberSerialization.OptOut)]
     public class Post : BindableBase
     {
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
         /// <summary>
         /// The comment's unique ID. Prefixed with "t3_", this
         /// is the post's fullname.
@@ -439,7 +443,8 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave post" : "Save post";
+                return IsSaved ? resourceMap.GetValue("UnsavePost", resourceContext).ValueAsString : resourceMap.GetValue("SavePost", resourceContext).ValueAsString
+;
             }
         }
 
@@ -451,7 +456,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsHidden ? "Unhide post" : "Hide post";
+                return IsHidden ? resourceMap.GetValue("UnhidePost", resourceContext).ValueAsString : resourceMap.GetValue("HidePost", resourceContext).ValueAsString;
             }
         }
 

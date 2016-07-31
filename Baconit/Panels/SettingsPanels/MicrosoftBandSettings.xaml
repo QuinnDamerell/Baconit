@@ -75,7 +75,7 @@
 
                             <TextBlock Margin="0,12,0,0"
                                        Text="Add a Reddunt tile and sync my message inbox"
-                                       TextWrapping="Wrap" />
+                                       TextWrapping="Wrap" x:Uid="ReddunTileInboxTB"/>
                             <TextBlock x:Name="ui_messageInboxNotEnabled"
                                        Margin="0,6,0,0"
                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"

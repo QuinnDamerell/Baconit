@@ -26,6 +26,7 @@ using Baconit.HelperControls;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Baconit.Panels.FlipView;
+using Windows.ApplicationModel.Resources.Core;
 
 namespace Baconit.Panels
 {
@@ -591,23 +592,27 @@ namespace Baconit.Panels
 
         private void SetCurrentSort(SortTypes type)
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             m_currentSortType = type;
             switch (type)
             {
+
                 case SortTypes.Rising:
-                    ui_sortText.Text = "Rising";
+                    ui_sortText.Text = resourceMap.GetValue("RisingCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Hot:
-                    ui_sortText.Text = "Hot";
+                    ui_sortText.Text = resourceMap.GetValue("HotCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Controversial:
-                    ui_sortText.Text = "Controversial";
+                    ui_sortText.Text = resourceMap.GetValue("ControCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.New:
-                    ui_sortText.Text = "New";
+                    ui_sortText.Text = resourceMap.GetValue("NewCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Top:
-                    ui_sortText.Text = "Top";
+                    ui_sortText.Text = resourceMap.GetValue("TopCode/Text", resourceContext).ValueAsString; 
                     break;
             }
 
@@ -681,26 +686,31 @@ namespace Baconit.Panels
 
         private void SetCurrentTimeSort(SortTimeTypes type)
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             m_currentSortTimeType = type;
             switch (type)
             {
                 case SortTimeTypes.AllTime:
-                    ui_sortTimeText.Text = "All Time";
+                    ui_sortTimeText.Text = resourceMap.GetValue("AllTimeCode/Text", resourceContext).ValueAsString;
+                    ;
                     break;
                 case SortTimeTypes.Day:
-                    ui_sortTimeText.Text = "Past Day";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastDayCode/Text", resourceContext).ValueAsString;
+                    ;
                     break;
                 case SortTimeTypes.Hour:
-                    ui_sortTimeText.Text = "Past Hour";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastHourCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Month:
-                    ui_sortTimeText.Text = "Past Month";
+                    ui_sortTimeText.Text = ui_sortTimeText.Text = resourceMap.GetValue("PastMonthCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Week:
-                    ui_sortTimeText.Text = "Past Week";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastWeekCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Year:
-                    ui_sortTimeText.Text = "Past Year";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastYearCode/Text", resourceContext).ValueAsString;
                     break;
             }
         }

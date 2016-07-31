@@ -1,0 +1,1022 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="pt-BR" original="BACONIT/STRINGS/EN-US/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.1605.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="BACONIT/STRINGS/EN-US/RESOURCES.RESW" datatype="resx">
+        <trans-unit id="accountHeader.Text" translate="yes" xml:space="preserve">
+          <source>Account</source>
+          <target state="translated">Conta</target>
+        </trans-unit>
+        <trans-unit id="AppBarMenuButton.Label" translate="yes" xml:space="preserve">
+          <source>Menu</source>
+          <target state="new">Menu</target>
+        </trans-unit>
+        <trans-unit id="contentRootFM.Text" translate="yes" xml:space="preserve">
+          <source>Save image</source>
+          <target state="translated">Salvar imagem</target>
+        </trans-unit>
+        <trans-unit id="EnjoyingRedduntTB" translate="yes" xml:space="preserve">
+          <source>Enjoying Reddunt? We would greatly appreciate it if you took a quick second to leave us a review! Thanks for supporting the project!</source>
+          <target state="translated">Gostando do Reddunt? Nós adorariamos se você deixasse um rápido review! Obrigado desde já por usar o aplicativo!</target>
+        </trans-unit>
+        <trans-unit id="genericTextHeaderTB.Text" translate="yes" xml:space="preserve">
+          <source>Error loading post</source>
+          <target state="translated">Erro ao carregar o post</target>
+        </trans-unit>
+        <trans-unit id="genericTextSubTB.Text" translate="yes" xml:space="preserve">
+          <source>Tap anywhere to open in Edge</source>
+          <target state="translated">Toque em qualquer lugar para abrir no Edge</target>
+        </trans-unit>
+        <trans-unit id="headerText.Text" translate="yes" xml:space="preserve">
+          <source>This post links to a subreddit</source>
+          <target state="translated">Este post contem um link para algum subreddit</target>
+        </trans-unit>
+        <trans-unit id="headerTextAppsTB.Text" translate="yes" xml:space="preserve">
+          <source>This post links to a Windows App</source>
+          <target state="translated">Este post contem um link para um app da Loja. </target>
+        </trans-unit>
+        <trans-unit id="inboxGridTB.Text" translate="yes" xml:space="preserve">
+          <source>Inbox</source>
+          <target state="translated">Mensagens</target>
+        </trans-unit>
+        <trans-unit id="LoadingCommentsTB.Text" translate="yes" xml:space="preserve">
+          <source>Loading comments</source>
+          <target state="translated">Carregando comentários</target>
+        </trans-unit>
+        <trans-unit id="loadingTextTB.Text" translate="yes" xml:space="preserve">
+          <source>Loading...</source>
+          <target state="translated">Carregando...</target>
+        </trans-unit>
+        <trans-unit id="LoginProgressText.Text" translate="yes" xml:space="preserve">
+          <source>Logging you in</source>
+          <target state="translated">Iniciando sua sessão</target>
+        </trans-unit>
+        <trans-unit id="MessageInboxTB.Text" translate="yes" xml:space="preserve">
+          <source>MESSAGE INBOX</source>
+          <target state="translated">CAIXA DE ENTRADA</target>
+        </trans-unit>
+        <trans-unit id="minorText.Text" translate="yes" xml:space="preserve">
+          <source>Tap anywhere to view /r/baconit</source>
+          <target state="translated">Toque em qualquer lugar para visualizar /r/baconit</target>
+        </trans-unit>
+        <trans-unit id="minorTextAppsTB.Text" translate="yes" xml:space="preserve">
+          <source>Tap anywhere to open the store</source>
+          <target state="translated">Toque em qualquer lugar para abrir a Loja</target>
+        </trans-unit>
+        <trans-unit id="NoResultsTB.Text" translate="yes" xml:space="preserve">
+          <source>no results</source>
+          <target state="translated">não há resultados</target>
+        </trans-unit>
+        <trans-unit id="nsfwBlockRootGridTB1" translate="yes" xml:space="preserve">
+          <source>This post is NSFW</source>
+          <target state="translated">Este post contem conteúdo +18</target>
+        </trans-unit>
+        <trans-unit id="nsfwBlockRootGridTB2.Text" translate="yes" xml:space="preserve">
+          <source>Tap anywhere to view</source>
+          <target state="translated">Toque em qualquer lugar para visualizar</target>
+        </trans-unit>
+        <trans-unit id="profileGridTB.Text" translate="yes" xml:space="preserve">
+          <source>Profile</source>
+          <target state="translated">Perfil</target>
+        </trans-unit>
+        <trans-unit id="progressTextTB.Text" translate="yes" xml:space="preserve">
+          <source>Loading</source>
+          <target state="translated">Carregando</target>
+        </trans-unit>
+        <trans-unit id="ProTip.Text" translate="yes" xml:space="preserve">
+          <source>Pro Tip</source>
+          <target state="translated">Dica</target>
+        </trans-unit>
+        <trans-unit id="QuickReviewCT.Content" translate="yes" xml:space="preserve">
+          <source>leave a quick review</source>
+          <target state="translated">deixe um rápido review</target>
+        </trans-unit>
+        <trans-unit id="quickSearchBox.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Search anything</source>
+          <target state="translated">Pesquise qualquer coisa</target>
+        </trans-unit>
+        <trans-unit id="RedduntAccountTB.Text" translate="yes" xml:space="preserve">
+          <source>Unlock even more of Reddunt by adding account. Reddit accounts are anonymous, simple, and free - and Reddunt will keep it that way.</source>
+          <target state="translated">Usufrua ainda mais do Reddunt adicionando uma conta. Contas do Reddit são anônimas, simples e gratuito — e o Reddunt o deixará dessa forma. </target>
+        </trans-unit>
+        <trans-unit id="SearchASUPTBS.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Search for anything; subreddits, users, post, etc.</source>
+          <target state="translated">Pesquise qualquer coisa; subreddits, usuários, posts, etc.</target>
+        </trans-unit>
+        <trans-unit id="SearchForTB.Text" translate="yes" xml:space="preserve">
+          <source>Search for:</source>
+          <target state="translated">Pesquise por:</target>
+        </trans-unit>
+        <trans-unit id="SearchTBs.Text" translate="yes" xml:space="preserve">
+          <source>SEARCH</source>
+          <target state="translated">PESQUISA</target>
+        </trans-unit>
+        <trans-unit id="searchTextBlock.Text" translate="yes" xml:space="preserve">
+          <source>Search</source>
+          <target state="translated">Pesquisar</target>
+        </trans-unit>
+        <trans-unit id="SendingCommentTB.Text" translate="yes" xml:space="preserve">
+          <source>Sending comment...</source>
+          <target state="translated">Enviando comentários...</target>
+        </trans-unit>
+        <trans-unit id="settingsGridTB.Text" translate="yes" xml:space="preserve">
+          <source>Settings</source>
+          <target state="translated">Configurações</target>
+        </trans-unit>
+        <trans-unit id="ShareHeartTB.Text" translate="yes" xml:space="preserve">
+          <source>Share the ❤</source>
+          <target state="translated">Compartilhe o ❤</target>
+        </trans-unit>
+        <trans-unit id="ShowMoreTB.Text" translate="yes" xml:space="preserve">
+          <source>show more</source>
+          <target state="translated">mostrar mais</target>
+        </trans-unit>
+        <trans-unit id="signInGridTB.Text" translate="yes" xml:space="preserve">
+          <source>Sign In</source>
+          <target state="translated">Entrar</target>
+        </trans-unit>
+        <trans-unit id="subscribersTextBlock.Text" translate="yes" xml:space="preserve">
+          <source>73,000 subscribers</source>
+          <target state="translated">73,000 inscritos</target>
+        </trans-unit>
+        <trans-unit id="textBlock.Text" translate="yes" xml:space="preserve">
+          <source>Spoiler!</source>
+          <target state="new">Spoiler!</target>
+        </trans-unit>
+        <trans-unit id="TrendingSubreddits.Text" translate="yes" xml:space="preserve">
+          <source>Trending Subreddits</source>
+          <target state="translated">Subreddits em alta</target>
+        </trans-unit>
+        <trans-unit id="TryItTip.Text" translate="yes" xml:space="preserve">
+          <source>Go ahead! Try it now!</source>
+          <target state="translated">Vá em frente, experimente agora!</target>
+        </trans-unit>
+        <trans-unit id="ViewCommentTip.Text" translate="yes" xml:space="preserve">
+          <source>To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down.</source>
+          <target state="translated">Para ver os comentários para este ou qualquer post, coloque o dedo ou o cursor do mouse sobre a barra de rolagem e role para baixo.</target>
+        </trans-unit>
+        <trans-unit id="WelcomeText.Text" translate="yes" xml:space="preserve">
+          <source>Welcome Quinbd</source>
+          <target state="translated">Bem-vindo Quinbd</target>
+        </trans-unit>
+        <trans-unit id="AccountAgeTB.Text" translate="yes" xml:space="preserve">
+          <source>0 days old</source>
+          <target state="translated">0 dias atrás.</target>
+        </trans-unit>
+        <trans-unit id="AllTime.Text" translate="yes" xml:space="preserve">
+          <source>All Time</source>
+          <target state="translated">Desde sempre</target>
+        </trans-unit>
+        <trans-unit id="CakeDayTB.Text" translate="yes" xml:space="preserve">
+          <source>Cake Day!</source>
+          <target state="translated">Dia do Bolo!</target>
+        </trans-unit>
+        <trans-unit id="CommentSort.Text" translate="yes" xml:space="preserve">
+          <source>Sort:</source>
+          <target state="translated">Ordem:</target>
+        </trans-unit>
+        <trans-unit id="CommentSortFMIBest.Text" translate="yes" xml:space="preserve">
+          <source>Best</source>
+          <target state="translated">Melhor</target>
+        </trans-unit>
+        <trans-unit id="CommentSortFMIContro.Text" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="CommentSortFMINew.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="CommentSortFMITop.Text" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="CommentSortNew.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="CopyLinkMFITB.Text" translate="yes" xml:space="preserve">
+          <source>Copy link</source>
+          <target state="translated">Copiar link</target>
+        </trans-unit>
+        <trans-unit id="CopyPermaLinkMFITB.Text" translate="yes" xml:space="preserve">
+          <source>Copy permalink</source>
+          <target state="translated">Copiar permalink</target>
+        </trans-unit>
+        <trans-unit id="FormattedPreviewTB.Text" translate="yes" xml:space="preserve">
+          <source>Formatted Preview</source>
+          <target state="translated">Prévia formatada</target>
+        </trans-unit>
+        <trans-unit id="GildedTB.Text" translate="yes" xml:space="preserve">
+          <source>Gilded</source>
+          <target state="translated">Dourado</target>
+        </trans-unit>
+        <trans-unit id="GoToUserTB.Text" translate="yes" xml:space="preserve">
+          <source>Go to user</source>
+          <target state="translated">Ir ao usuário</target>
+        </trans-unit>
+        <trans-unit id="HeaderSubmitPost.Text" translate="yes" xml:space="preserve">
+          <source>SUBMIT POST</source>
+          <target state="translated">ENVIAR POST</target>
+        </trans-unit>
+        <trans-unit id="NoPostHereTB.Text" translate="yes" xml:space="preserve">
+          <source>There are no posts here.</source>
+          <target state="translated">Não há posts aqui.</target>
+        </trans-unit>
+        <trans-unit id="NoSubmittedComments.Text" translate="yes" xml:space="preserve">
+          <source>No Submitted Comments</source>
+          <target state="translated">Nenhum comentário enviado</target>
+        </trans-unit>
+        <trans-unit id="NoSubmittedPostsTB.Text" translate="yes" xml:space="preserve">
+          <source>No Submitted Posts</source>
+          <target state="translated">Nenhum post enviado</target>
+        </trans-unit>
+        <trans-unit id="PastDay.Text" translate="yes" xml:space="preserve">
+          <source>Past Day</source>
+          <target state="translated">Último dia</target>
+        </trans-unit>
+        <trans-unit id="PastHour.Text" translate="yes" xml:space="preserve">
+          <source>Past Hour</source>
+          <target state="translated">Última hora</target>
+        </trans-unit>
+        <trans-unit id="PastMonth.Text" translate="yes" xml:space="preserve">
+          <source>Past Month</source>
+          <target state="translated">Último mês</target>
+        </trans-unit>
+        <trans-unit id="PastWeek.Text" translate="yes" xml:space="preserve">
+          <source>Past Week</source>
+          <target state="translated">Última semana</target>
+        </trans-unit>
+        <trans-unit id="PastYear.Text" translate="yes" xml:space="preserve">
+          <source>Past Year</source>
+          <target state="translated">Último ano</target>
+        </trans-unit>
+        <trans-unit id="PostSortFMIBest.Text" translate="yes" xml:space="preserve">
+          <source>Best</source>
+          <target state="translated">Melhor</target>
+        </trans-unit>
+        <trans-unit id="PostSortFMIContnro.Text" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="PostSortFMINew.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="PostSortFMITop.Text" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="PostSortTextTB.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="SelfTextTB.Text" translate="yes" xml:space="preserve">
+          <source>Self Text</source>
+          <target state="translated">Post interno</target>
+        </trans-unit>
+        <trans-unit id="SettingsTB.Text" translate="yes" xml:space="preserve">
+          <source>SETTINGS</source>
+          <target state="translated">CONFIGURAÇÕES</target>
+        </trans-unit>
+        <trans-unit id="SMIContro.Text" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="SMIHot.Text" translate="yes" xml:space="preserve">
+          <source>Hot</source>
+          <target state="translated">Popular</target>
+        </trans-unit>
+        <trans-unit id="SMINew.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="SMIRising.Text" translate="yes" xml:space="preserve">
+          <source>Rising</source>
+          <target state="translated">Em alta</target>
+        </trans-unit>
+        <trans-unit id="SMITop.Text" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="SortDTB.Text" translate="yes" xml:space="preserve">
+          <source>Sort:</source>
+          <target state="translated">Ordem:</target>
+        </trans-unit>
+        <trans-unit id="SortPostTB.Text" translate="yes" xml:space="preserve">
+          <source>Sort:</source>
+          <target state="translated">Ordem:</target>
+        </trans-unit>
+        <trans-unit id="SortTextHotTB.Text" translate="yes" xml:space="preserve">
+          <source>Hot</source>
+          <target state="translated">Popular</target>
+        </trans-unit>
+        <trans-unit id="SortTimeTB.Text" translate="yes" xml:space="preserve">
+          <source>Past Week</source>
+          <target state="translated">Última semana</target>
+        </trans-unit>
+        <trans-unit id="StickyTB.Text" translate="yes" xml:space="preserve">
+          <source>Sticky</source>
+          <target state="translated">Fixado</target>
+        </trans-unit>
+        <trans-unit id="StickyUserTB.Text" translate="yes" xml:space="preserve">
+          <source>Sticky</source>
+          <target state="translated">Fixado</target>
+        </trans-unit>
+        <trans-unit id="SubtmitPostTitleTB.Text" translate="yes" xml:space="preserve">
+          <source>Title</source>
+          <target state="translated">Título</target>
+        </trans-unit>
+        <trans-unit id="TimeTB.Text" translate="yes" xml:space="preserve">
+          <source>Time:</source>
+          <target state="translated">Tempo:</target>
+        </trans-unit>
+        <trans-unit id="ViewContextTB.Text" translate="yes" xml:space="preserve">
+          <source>view in context</source>
+          <target state="translated">visualizar no contexto</target>
+        </trans-unit>
+        <trans-unit id="CLinkFMI.Text" translate="yes" xml:space="preserve">
+          <source>Copy link</source>
+          <target state="translated">Copiar link</target>
+        </trans-unit>
+        <trans-unit id="CMBest.Text" translate="yes" xml:space="preserve">
+          <source>Best</source>
+          <target state="translated">Melhor</target>
+        </trans-unit>
+        <trans-unit id="CMContro.Text" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="CMNew.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="CMOld.Text" translate="yes" xml:space="preserve">
+          <source>Old</source>
+          <target state="translated">Antigo</target>
+        </trans-unit>
+        <trans-unit id="CMQA.Text" translate="yes" xml:space="preserve">
+          <source>Q&amp;A</source>
+          <target state="new">Q&amp;A</target>
+        </trans-unit>
+        <trans-unit id="CMTop.Text" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="collapseTBN.Text" translate="yes" xml:space="preserve">
+          <source>collapse</source>
+          <target state="translated">esconder</target>
+        </trans-unit>
+        <trans-unit id="CopyPerFMI.Text" translate="yes" xml:space="preserve">
+          <source>Copy permalink</source>
+          <target state="translated">Copiar permalink</target>
+        </trans-unit>
+        <trans-unit id="CountTB.Text" translate="yes" xml:space="preserve">
+          <source>Count:</source>
+          <target state="translated">Contagem:</target>
+        </trans-unit>
+        <trans-unit id="CPermaFMI.Text" translate="yes" xml:space="preserve">
+          <source>Copy permalink</source>
+          <target state="translated">Copiar permalink</target>
+        </trans-unit>
+        <trans-unit id="DeletePostClick.Text" translate="yes" xml:space="preserve">
+          <source>Delete post</source>
+          <target state="translated">Deletar post</target>
+        </trans-unit>
+        <trans-unit id="EditPostClick.Text" translate="yes" xml:space="preserve">
+          <source>Edit post</source>
+          <target state="translated">Editar post</target>
+        </trans-unit>
+        <trans-unit id="MoreTB.Text" translate="yes" xml:space="preserve">
+          <source>more</source>
+          <target state="translated">mais</target>
+        </trans-unit>
+        <trans-unit id="RunGilded.Text" translate="yes" xml:space="preserve">
+          <source>gilded</source>
+          <target state="translated">dourado</target>
+        </trans-unit>
+        <trans-unit id="RunSticky.Text" translate="yes" xml:space="preserve">
+          <source>sticky</source>
+          <target state="translated">fixado</target>
+        </trans-unit>
+        <trans-unit id="ShareCommentFMI.Text" translate="yes" xml:space="preserve">
+          <source>Share comment</source>
+          <target state="translated">Compartilhar comentário</target>
+        </trans-unit>
+        <trans-unit id="SharePostFMI.Text" translate="yes" xml:space="preserve">
+          <source>Share post</source>
+          <target state="translated">Compartilhar post</target>
+        </trans-unit>
+        <trans-unit id="TapViewEntire.Text" translate="yes" xml:space="preserve">
+          <source>Tap here to view the entire thread</source>
+          <target state="translated">Toque aqui para visualizar o tópico inteiro</target>
+        </trans-unit>
+        <trans-unit id="AboutDescription.Text" translate="yes" xml:space="preserve">
+          <source>Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+The main focus is on optimization as well great Windows 10 focused features!</source>
+          <target state="translated">Reddunt é um lindo cliente para Reddit® baseado no Baconit, um aplicativo de código aberto. Está disponível em todos os dispositivos com Windows 10.
+O foco principal é em otimizações, mas também como algumas funções especificas do Windows 10.</target>
+        </trans-unit>
+        <trans-unit id="AddMessagesTB.Text" translate="yes" xml:space="preserve">
+          <source>Add messages to the notification center silently</source>
+          <target state="translated">Adicionar mensagens para a Central de Ações silenciosamente</target>
+        </trans-unit>
+        <trans-unit id="AuthorFilter.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Author Filter</source>
+          <target state="translated">Filtrar Autor</target>
+        </trans-unit>
+        <trans-unit id="AutoTB.Text" translate="yes" xml:space="preserve">
+          <source>Auto minimize story header in comments</source>
+          <target state="translated">Auto minimizar cabeçalhos de histórias nos comentários</target>
+        </trans-unit>
+        <trans-unit id="AutoUpdateTB.Text" translate="yes" xml:space="preserve">
+          <source>Automatically update lock screen image</source>
+          <target state="translated">Atualizar automaticamente imagem de tela de bloqueio</target>
+        </trans-unit>
+        <trans-unit id="AutoUpdateWTB.Text" translate="yes" xml:space="preserve">
+          <source>Automatically update wallpaper image</source>
+          <target state="translated">Atualizar automaticamente imagem de plano de fundo</target>
+        </trans-unit>
+        <trans-unit id="BackgroundInboxCTB.Text" translate="yes" xml:space="preserve">
+          <source>BACKGROUND INBOX UPDATING</source>
+          <target state="translated">ATUALIZAÇÃO DE MENSAGENS EM SEGUNDO PLANO</target>
+        </trans-unit>
+        <trans-unit id="BackgroundInboxTB.Text" translate="yes" xml:space="preserve">
+          <source>Background inbox updating</source>
+          <target state="translated">Atualização de mensagem em segundo plano</target>
+        </trans-unit>
+        <trans-unit id="CAllTimeB.Content" translate="yes" xml:space="preserve">
+          <source>All Time</source>
+          <target state="translated">Desde sempre</target>
+        </trans-unit>
+        <trans-unit id="CancelCT.Content" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="translated">Cancelar</target>
+        </trans-unit>
+        <trans-unit id="CBestCB.Content" translate="yes" xml:space="preserve">
+          <source>Best</source>
+          <target state="translated">Melhor</target>
+        </trans-unit>
+        <trans-unit id="CBIalltime.Content" translate="yes" xml:space="preserve">
+          <source>all time</source>
+          <target state="translated">desde sempre</target>
+        </trans-unit>
+        <trans-unit id="CBIcontro.Content" translate="yes" xml:space="preserve">
+          <source>controversial</source>
+          <target state="translated">controverso</target>
+        </trans-unit>
+        <trans-unit id="CBIhot.Content" translate="yes" xml:space="preserve">
+          <source>hot</source>
+          <target state="translated">popular</target>
+        </trans-unit>
+        <trans-unit id="CBInew.Content" translate="yes" xml:space="preserve">
+          <source>new</source>
+          <target state="translated">novo</target>
+        </trans-unit>
+        <trans-unit id="CBIpday.Content" translate="yes" xml:space="preserve">
+          <source>past day</source>
+          <target state="translated">último dia</target>
+        </trans-unit>
+        <trans-unit id="CBIphour.Content" translate="yes" xml:space="preserve">
+          <source>past hour</source>
+          <target state="translated">última hora</target>
+        </trans-unit>
+        <trans-unit id="CBIpmonth.Content" translate="yes" xml:space="preserve">
+          <source>past month</source>
+          <target state="translated">último mês</target>
+        </trans-unit>
+        <trans-unit id="CBIpweek.Content" translate="yes" xml:space="preserve">
+          <source>past week</source>
+          <target state="translated">última semana</target>
+        </trans-unit>
+        <trans-unit id="CBIpyear.Content" translate="yes" xml:space="preserve">
+          <source>past year</source>
+          <target state="translated">último ano</target>
+        </trans-unit>
+        <trans-unit id="CBIrising.Content" translate="yes" xml:space="preserve">
+          <source>rising</source>
+          <target state="translated">em alta</target>
+        </trans-unit>
+        <trans-unit id="CBItop.Content" translate="yes" xml:space="preserve">
+          <source>top</source>
+          <target state="new">top</target>
+        </trans-unit>
+        <trans-unit id="CCommentsCBB.Content" translate="yes" xml:space="preserve">
+          <source>Comments</source>
+          <target state="translated">Comentários</target>
+        </trans-unit>
+        <trans-unit id="CControCB.Content" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="CNewCB.Content" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="COldCB.Content" translate="yes" xml:space="preserve">
+          <source>Old</source>
+          <target state="translated">Antigo</target>
+        </trans-unit>
+        <trans-unit id="CPastDayB.Content" translate="yes" xml:space="preserve">
+          <source>Past Day</source>
+          <target state="translated">Último dia</target>
+        </trans-unit>
+        <trans-unit id="CPastHourB.Content" translate="yes" xml:space="preserve">
+          <source>Past Hour</source>
+          <target state="translated">Última hora</target>
+        </trans-unit>
+        <trans-unit id="CPastMonthB.Content" translate="yes" xml:space="preserve">
+          <source>Past Month</source>
+          <target state="translated">Último mês</target>
+        </trans-unit>
+        <trans-unit id="CPastWeekB.Content" translate="yes" xml:space="preserve">
+          <source>Past Week</source>
+          <target state="translated">Última Semana</target>
+        </trans-unit>
+        <trans-unit id="CPastYearB.Content" translate="yes" xml:space="preserve">
+          <source>Past Year</source>
+          <target state="translated">Último ano</target>
+        </trans-unit>
+        <trans-unit id="CQACB.Content" translate="yes" xml:space="preserve">
+          <source>Q&amp;A</source>
+          <target state="new">Q&amp;A</target>
+        </trans-unit>
+        <trans-unit id="CreateAccountCT.Content" translate="yes" xml:space="preserve">
+          <source>Create Account</source>
+          <target state="translated">Criar conta</target>
+        </trans-unit>
+        <trans-unit id="CSettings.Text" translate="yes" xml:space="preserve">
+          <source>COMMENT SETTINGS</source>
+          <target state="translated">CONFIGURAÇÕES DE COMENTÁRIO</target>
+        </trans-unit>
+        <trans-unit id="CTopCB.Content" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="DevSettings.Text" translate="yes" xml:space="preserve">
+          <source>DEVELOPER SETTINGS</source>
+          <target state="translated">CONFIGURAÇÕES DE DESENVOLVEDOR</target>
+        </trans-unit>
+        <trans-unit id="DisablePostLoad.Text" translate="yes" xml:space="preserve">
+          <source>Don't load post content until tapped</source>
+          <target state="translated">Não carregar conteúdo do post até tocar</target>
+        </trans-unit>
+        <trans-unit id="EverythingCB.Content" translate="yes" xml:space="preserve">
+          <source>Everything</source>
+          <target state="translated">Qualquer coisa</target>
+        </trans-unit>
+        <trans-unit id="FatalException.Text" translate="yes" xml:space="preserve">
+          <source>Don't let fatal exceptions kill the app, report the exception instead of crashing. (this will leave your app in an unstable state)</source>
+          <target state="translated">Não deixe que exceções fatais matem o app, relatar a exceção em vez de deixar de funcionar; (Isso pode deixar o aplicativo em um estado instável).</target>
+        </trans-unit>
+        <trans-unit id="FlipViewS.Text" translate="yes" xml:space="preserve">
+          <source>FLIP VIEW SETTINGS</source>
+          <target state="translated">CONFIGURAÇÕES DA BARRA LATERAL</target>
+        </trans-unit>
+        <trans-unit id="fullpost.Text" translate="yes" xml:space="preserve">
+          <source>Show full post titles</source>
+          <target state="translated">Mostrar títulos completos em posts</target>
+        </trans-unit>
+        <trans-unit id="HeaderAboutTB.Text" translate="yes" xml:space="preserve">
+          <source>ABOUT</source>
+          <target state="translated">SOBRE</target>
+        </trans-unit>
+        <trans-unit id="HowMessagesTB.Text" translate="yes" xml:space="preserve">
+          <source>How messages appear in the notification center</source>
+          <target state="translated">Como mensagens aparecem na Central de Ações</target>
+        </trans-unit>
+        <trans-unit id="ImageUpdateFTB.Text" translate="yes" xml:space="preserve">
+          <source>Image update frequency</source>
+          <target state="translated">Frequência de atualização de imagem</target>
+        </trans-unit>
+        <trans-unit id="IsNNSFW.Content" translate="yes" xml:space="preserve">
+          <source>No</source>
+          <target state="translated">Não</target>
+        </trans-unit>
+        <trans-unit id="IsNSFW.Content" translate="yes" xml:space="preserve">
+          <source>Is NSFW?</source>
+          <target state="translated">É +18?</target>
+        </trans-unit>
+        <trans-unit id="IsYNSFW.Content" translate="yes" xml:space="preserve">
+          <source>Yes</source>
+          <target state="translated">Sim</target>
+        </trans-unit>
+        <trans-unit id="LastUpdate.Text" translate="yes" xml:space="preserve">
+          <source>Last Update:</source>
+          <target state="translated">Última atualização: </target>
+        </trans-unit>
+        <trans-unit id="LoadingC.Text" translate="yes" xml:space="preserve">
+          <source>Loading comments</source>
+          <target state="translated">Carregando comentários</target>
+        </trans-unit>
+        <trans-unit id="LockScreenTB.Text" translate="yes" xml:space="preserve">
+          <source>Lock screen image source</source>
+          <target state="translated">Fonte da imagem de tela de bloqueio</target>
+        </trans-unit>
+        <trans-unit id="LoginCT.Content" translate="yes" xml:space="preserve">
+          <source>Login</source>
+          <target state="translated">Entrar</target>
+        </trans-unit>
+        <trans-unit id="MemoryPressure.Text" translate="yes" xml:space="preserve">
+          <source>Pages cleaned up for memory pressure: 0</source>
+          <target state="translated">Páginas limpas por pressão de memória:</target>
+        </trans-unit>
+        <trans-unit id="MemOverlay.Text" translate="yes" xml:space="preserve">
+          <source>Show app memory overlay</source>
+          <target state="translated">Mostrar sobreposição de memória</target>
+        </trans-unit>
+        <trans-unit id="MSBand1.Text" translate="yes" xml:space="preserve">
+          <source>Reddunt can integrate with your Microsoft Band v1 or v2 to update your wallpaper, add a Reddunt tile, or give you instant notifications for new inbox messages.</source>
+          <target state="translated">Reddunt pode integrar com sua Microsoft Band 1 ou 2 para atualizar seu plano de fundo, adicionar tile ou enviar notificações de suas mensagens. </target>
+        </trans-unit>
+        <trans-unit id="MSBand2.Text" translate="yes" xml:space="preserve">
+          <source>No Band found, make sure your band is powered on and connected.</source>
+          <target state="translated">Nenhuma Microsoft Band encontrada. Certifique-se que esteja ligada e conectada. </target>
+        </trans-unit>
+        <trans-unit id="MSBand3.Text" translate="yes" xml:space="preserve">
+          <source>Wallpaper</source>
+          <target state="translated">Plano de fundo</target>
+        </trans-unit>
+        <trans-unit id="MSBand4.Text" translate="yes" xml:space="preserve">
+          <source>Automatically update Band wallpaper</source>
+          <target state="translated">Atualizar automaticamente plano de fundo da Microsoft Band</target>
+        </trans-unit>
+        <trans-unit id="MSBand5.Text" translate="yes" xml:space="preserve">
+          <source>Band wallpaper image source</source>
+          <target state="translated">Fonte de imagem de plano de fundo</target>
+        </trans-unit>
+        <trans-unit id="MSBand6.Text" translate="yes" xml:space="preserve">
+          <source>Tile &amp; Inbox</source>
+          <target state="translated">Tile &amp; Mensagens</target>
+        </trans-unit>
+        <trans-unit id="MSBand7.Text" translate="yes" xml:space="preserve">
+          <source>Inbox background updating must be enabled to enable this feature.</source>
+          <target state="translated">Atualização de mensagens em segundo plano precisa estar habilitado para funcionar.</target>
+        </trans-unit>
+        <trans-unit id="NNewCB.Content" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="NSFWB.Text" translate="yes" xml:space="preserve">
+          <source>NSFW blocking mode</source>
+          <target state="translated">Bloquear conteúdo +18</target>
+        </trans-unit>
+        <trans-unit id="PinToStart.Content" translate="yes" xml:space="preserve">
+          <source>Pin to start</source>
+          <target state="translated">Fixar na Tela Inicial</target>
+        </trans-unit>
+        <trans-unit id="PostsCB.Content" translate="yes" xml:space="preserve">
+          <source>Posts</source>
+          <target state="new">Posts</target>
+        </trans-unit>
+        <trans-unit id="PreloadComments.Text" translate="yes" xml:space="preserve">
+          <source>Preload comments</source>
+          <target state="translated">Pré-carregar comentários</target>
+        </trans-unit>
+        <trans-unit id="PreloadPost.Text" translate="yes" xml:space="preserve">
+          <source>Preload future post content</source>
+          <target state="translated">Pré-carregar posts seguintes</target>
+        </trans-unit>
+        <trans-unit id="RelevanceCB.Content" translate="yes" xml:space="preserve">
+          <source>Relevance</source>
+          <target state="translated">Relevância</target>
+        </trans-unit>
+        <trans-unit id="ResetReview.Content" translate="yes" xml:space="preserve">
+          <source>Reset rate and review counter</source>
+          <target state="translated">Resetar nota e contador de review</target>
+        </trans-unit>
+        <trans-unit id="SearchThisSubReddit" translate="yes" xml:space="preserve">
+          <source>Search this subreddit</source>
+          <target state="translated">Pesquisar neste subreddit</target>
+        </trans-unit>
+        <trans-unit id="SelfFilter.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Selftext Filter</source>
+          <target state="translated">Filtro de Post Interno</target>
+        </trans-unit>
+        <trans-unit id="SelfPostCB.Content" translate="yes" xml:space="preserve">
+          <source>Is a Self Post?</source>
+          <target state="translated">É um Post Interno?</target>
+        </trans-unit>
+        <trans-unit id="SelfPostNCB.Content" translate="yes" xml:space="preserve">
+          <source>No</source>
+          <target state="translated">Não</target>
+        </trans-unit>
+        <trans-unit id="SelfPostYCB.Content" translate="yes" xml:space="preserve">
+          <source>Yes</source>
+          <target state="translated">Sim</target>
+        </trans-unit>
+        <trans-unit id="SendCT.Content" translate="yes" xml:space="preserve">
+          <source>Send</source>
+          <target state="translated">Enviar</target>
+        </trans-unit>
+        <trans-unit id="ShowUITB.Text" translate="yes" xml:space="preserve">
+          <source>Show UI help tips</source>
+          <target state="translated">Mostrar dicas de interface de usuário</target>
+        </trans-unit>
+        <trans-unit id="SubFilter.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Subreddit Filter</source>
+          <target state="translated">Filtro de Subreddit</target>
+        </trans-unit>
+        <trans-unit id="SubmitNewPost.Content" translate="yes" xml:space="preserve">
+          <source>Submit new post</source>
+          <target state="translated">Enviar novo post</target>
+        </trans-unit>
+        <trans-unit id="SubredditsCB.Content" translate="yes" xml:space="preserve">
+          <source>Subreddits</source>
+          <target state="new">Subreddits</target>
+        </trans-unit>
+        <trans-unit id="SubscribeCT.Content" translate="yes" xml:space="preserve">
+          <source>Subscribe</source>
+          <target state="translated">Inscrever-se</target>
+        </trans-unit>
+        <trans-unit id="SVS1.Text" translate="yes" xml:space="preserve">
+          <source>SUBREDDIT VIEW SETTINGS</source>
+          <target state="translated">CONFIGURAÇÕES DE SUBREDDIT</target>
+        </trans-unit>
+        <trans-unit id="SVS2.Text" translate="yes" xml:space="preserve">
+          <source>Subreddit to view when the app opens</source>
+          <target state="translated">Subreddit padrão na tela inicial do app</target>
+        </trans-unit>
+        <trans-unit id="SystemState.Text" translate="yes" xml:space="preserve">
+          <source>System State:</source>
+          <target state="translated">Estado de sistema: </target>
+        </trans-unit>
+        <trans-unit id="TTopCB.Content" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="UpdatingLockTB.Text" translate="yes" xml:space="preserve">
+          <source>WALLPAPER AND LOCKSCREEN UPDATING</source>
+          <target state="translated">ATUALIZAÇÃO DE PLANO DE FUNDO E TELA DE BLOQUEIO</target>
+        </trans-unit>
+        <trans-unit id="UsersCB.Content" translate="yes" xml:space="preserve">
+          <source>Users</source>
+          <target state="translated">Usuários</target>
+        </trans-unit>
+        <trans-unit id="WallITB.Text" translate="yes" xml:space="preserve">
+          <source>Wallpaper image source</source>
+          <target state="translated">Fonte de imagem de plano de fundo</target>
+        </trans-unit>
+        <trans-unit id="WebFilter.PlaceholderText" translate="yes" xml:space="preserve">
+          <source>Web Filter</source>
+          <target state="translated">Filtro de Web</target>
+        </trans-unit>
+        <trans-unit id="AllTimeCode.Text" translate="yes" xml:space="preserve">
+          <source>All Time</source>
+          <target state="translated">Desde sempre</target>
+        </trans-unit>
+        <trans-unit id="ControCode.Text" translate="yes" xml:space="preserve">
+          <source>Controversial</source>
+          <target state="translated">Controverso</target>
+        </trans-unit>
+        <trans-unit id="HotCode.Text" translate="yes" xml:space="preserve">
+          <source>Hot</source>
+          <target state="translated">Popular</target>
+        </trans-unit>
+        <trans-unit id="NewCode.Text" translate="yes" xml:space="preserve">
+          <source>New</source>
+          <target state="translated">Novo</target>
+        </trans-unit>
+        <trans-unit id="PastDayCode.Text" translate="yes" xml:space="preserve">
+          <source>Past Day</source>
+          <target state="translated">Último dia</target>
+        </trans-unit>
+        <trans-unit id="PastHourCode.Text" translate="yes" xml:space="preserve">
+          <source>Past Hour</source>
+          <target state="translated">Última hora</target>
+        </trans-unit>
+        <trans-unit id="PastMonthCode.Text" translate="yes" xml:space="preserve">
+          <source>Past Month</source>
+          <target state="translated">Último mês</target>
+        </trans-unit>
+        <trans-unit id="PastWeekCode.Text" translate="yes" xml:space="preserve">
+          <source>Past Week</source>
+          <target state="translated">Última semana</target>
+        </trans-unit>
+        <trans-unit id="PastYearCode.Text" translate="yes" xml:space="preserve">
+          <source>Past Year</source>
+          <target state="translated">Último ano</target>
+        </trans-unit>
+        <trans-unit id="RisingCode.Text" translate="yes" xml:space="preserve">
+          <source>Rising</source>
+          <target state="translated">Em alta</target>
+        </trans-unit>
+        <trans-unit id="TopCode.Text" translate="yes" xml:space="preserve">
+          <source>Top</source>
+          <target state="new">Top</target>
+        </trans-unit>
+        <trans-unit id="PastHWeek.Text" translate="yes" xml:space="preserve">
+          <source>Past Week</source>
+          <target state="translated">Semana passada</target>
+        </trans-unit>
+        <trans-unit id="AllowedCode.Text" translate="yes" xml:space="preserve">
+          <source>Allowed</source>
+          <target state="translated">Permitido</target>
+        </trans-unit>
+        <trans-unit id="DefaultcountTB.Text" translate="yes" xml:space="preserve">
+          <source>Default count</source>
+          <target state="translated">Contagem padrão</target>
+        </trans-unit>
+        <trans-unit id="DefaultSortsTB.Text" translate="yes" xml:space="preserve">
+          <source>Default sort</source>
+          <target state="translated">Classificação padrão</target>
+        </trans-unit>
+        <trans-unit id="DefaultsortTB.Text" translate="yes" xml:space="preserve">
+          <source>Default sort</source>
+          <target state="translated">Classificação padrão</target>
+        </trans-unit>
+        <trans-unit id="DefaulttimesortTB.Text" translate="yes" xml:space="preserve">
+          <source>Default time sort</source>
+          <target state="translated">Classificação de tempo padrão</target>
+        </trans-unit>
+        <trans-unit id="DeniedCode.Text" translate="yes" xml:space="preserve">
+          <source>Denied</source>
+          <target state="translated">Negado</target>
+        </trans-unit>
+        <trans-unit id="LastUpdateCode.Text" translate="yes" xml:space="preserve">
+          <source>Last update</source>
+          <target state="translated">Última atualização: </target>
+        </trans-unit>
+        <trans-unit id="NeverCode.Text" translate="yes" xml:space="preserve">
+          <source>Never</source>
+          <target state="translated">Nunca</target>
+        </trans-unit>
+        <trans-unit id="ReddunTileInboxTB.Text" translate="yes" xml:space="preserve">
+          <source>Add a Reddunt tile and sync my message inbox</source>
+          <target state="translated">Adicionar uma tile do Reddunt e sincronizar minhas mensagens</target>
+        </trans-unit>
+        <trans-unit id="SystemStateCode.Text" translate="yes" xml:space="preserve">
+          <source>System State</source>
+          <target state="translated">Estado de sistema: </target>
+        </trans-unit>
+        <trans-unit id="RateUnder.Text" translate="yes" xml:space="preserve">
+          <source>Rate and review at Windows Store</source>
+          <target state="translated">Dê uma nota e um review na Loja do Windows</target>
+        </trans-unit>
+        <trans-unit id="ShowEachMessageCBI.Content" translate="yes" xml:space="preserve">
+          <source>Show each message</source>
+          <target state="translated">Mostrar mensagem individualmente</target>
+        </trans-unit>
+        <trans-unit id="ShowOneTotalUnreadCBI.Content" translate="yes" xml:space="preserve">
+          <source>Show one total unread count</source>
+          <target state="translated">Mostrar contagem total não lida</target>
+        </trans-unit>
+        <trans-unit id="CheckUnder.Text" translate="yes" xml:space="preserve">
+          <source>Check out the source code</source>
+          <target state="translated">Veja o código-fonte</target>
+        </trans-unit>
+        <trans-unit id="AboutSCode.Text" translate="yes" xml:space="preserve">
+          <source>About</source>
+          <target state="translated">Sobre</target>
+        </trans-unit>
+        <trans-unit id="CommentsSCode.Text" translate="yes" xml:space="preserve">
+          <source>Comments</source>
+          <target state="translated">Comentários</target>
+        </trans-unit>
+        <trans-unit id="FlipViewCode.Text" translate="yes" xml:space="preserve">
+          <source>Flip View</source>
+          <target state="translated">Barra lateral </target>
+        </trans-unit>
+        <trans-unit id="InboxbackgroundupdatingCode.Text" translate="yes" xml:space="preserve">
+          <source>Inbox background updating</source>
+          <target state="translated">Atualização de mensagens em segundo plano</target>
+        </trans-unit>
+        <trans-unit id="LockscreendesktopwallpaperupdatingCode.Text" translate="yes" xml:space="preserve">
+          <source>Lock screen &amp; desktop wallpaper updating</source>
+          <target state="translated">Atualização de imagem de tela de bloqueio &amp; área de trabalho </target>
+        </trans-unit>
+        <trans-unit id="PrivacyPolicyCode.Text" translate="yes" xml:space="preserve">
+          <source>Privacy Policy</source>
+          <target state="translated">Políticas de Privacidade</target>
+        </trans-unit>
+        <trans-unit id="TermsandConditionsCode.Text" translate="yes" xml:space="preserve">
+          <source>Terms and Conditions</source>
+          <target state="translated">Termos e Condições</target>
+        </trans-unit>
+        <trans-unit id="AlwaysCombo.Content" translate="yes" xml:space="preserve">
+          <source>Always</source>
+          <target state="translated">Sempre</target>
+        </trans-unit>
+        <trans-unit id="DisableCombo.Content" translate="yes" xml:space="preserve">
+          <source>Disable per subreddit; resets when the app is close</source>
+          <target state="translated">Desativar por subreddit; reseta quando o app é fechado</target>
+        </trans-unit>
+        <trans-unit id="NeverCombo.Content" translate="yes" xml:space="preserve">
+          <source>Never</source>
+          <target state="translated">Nunca</target>
+        </trans-unit>
+        <trans-unit id="AddButton.Label" translate="yes" xml:space="preserve">
+          <source>Add</source>
+          <target state="new">Add</target>
+        </trans-unit>
+        <trans-unit id="RefreshButton.Label" translate="yes" xml:space="preserve">
+          <source>Refresh</source>
+          <target state="translated">Atualizar</target>
+        </trans-unit>
+        <trans-unit id="AccountCode.Text" translate="yes" xml:space="preserve">
+          <source>Account</source>
+          <target state="translated">Conta</target>
+        </trans-unit>
+        <trans-unit id="MarkAsReadCode.Text" translate="yes" xml:space="preserve">
+          <source>mark as read</source>
+          <target state="translated">marcar como lido</target>
+        </trans-unit>
+        <trans-unit id="MarkAsUnreadCode.Text" translate="yes" xml:space="preserve">
+          <source>mark as unread</source>
+          <target state="translated">marcar como não lido</target>
+        </trans-unit>
+        <trans-unit id="replyBTN.ButtonText" translate="yes" xml:space="preserve">
+          <source>reply</source>
+          <target state="translated">responder</target>
+        </trans-unit>
+        <trans-unit id="SignInCode.Text" translate="yes" xml:space="preserve">
+          <source>Sign In</source>
+          <target state="translated">Entrar</target>
+        </trans-unit>
+        <trans-unit id="SignOutCode.Text" translate="yes" xml:space="preserve">
+          <source>Sign Out</source>
+          <target state="translated">Sair</target>
+        </trans-unit>
+        <trans-unit id="ViewInContext.ButtonText" translate="yes" xml:space="preserve">
+          <source>view comment in context</source>
+          <target state="translated">visualizar comentário em contexto</target>
+        </trans-unit>
+        <trans-unit id="SubredditResultsCode" translate="yes" xml:space="preserve">
+          <source>Subreddit Results</source>
+          <target state="translated">Subreddits</target>
+        </trans-unit>
+        <trans-unit id="HasGoldCode.MinorAccentText" translate="yes" xml:space="preserve">
+          <source>Has Gold</source>
+          <target state="translated">Há ouro</target>
+        </trans-unit>
+        <trans-unit id="PostsResultsCode" translate="yes" xml:space="preserve">
+          <source>Posts Results</source>
+          <target state="translated">Posts</target>
+        </trans-unit>
+        <trans-unit id="UserResultsCode" translate="yes" xml:space="preserve">
+          <source>User Results</source>
+          <target state="translated">Usuários</target>
+        </trans-unit>
+        <trans-unit id="DeleteComment" translate="yes" xml:space="preserve">
+          <source>delete  |</source>
+          <target state="translated">deletar  |</target>
+        </trans-unit>
+        <trans-unit id="EditComment" translate="yes" xml:space="preserve">
+          <source>edit</source>
+          <target state="translated">editar</target>
+        </trans-unit>
+        <trans-unit id="ReplyComment" translate="yes" xml:space="preserve">
+          <source>reply</source>
+          <target state="translated">responder</target>
+        </trans-unit>
+        <trans-unit id="SaveComment" translate="yes" xml:space="preserve">
+          <source>Save comment</source>
+          <target state="translated">Salvar comentário</target>
+        </trans-unit>
+        <trans-unit id="UnsaveComment" translate="yes" xml:space="preserve">
+          <source>Unsave comment</source>
+          <target state="translated">Des-salvar comentário</target>
+        </trans-unit>
+        <trans-unit id="HidePost" translate="yes" xml:space="preserve">
+          <source>Hide post</source>
+          <target state="translated">Esconder post</target>
+        </trans-unit>
+        <trans-unit id="PivotComments.Header" translate="yes" xml:space="preserve">
+          <source>COMMENTS</source>
+          <target state="translated">COMENTÁRIOS</target>
+        </trans-unit>
+        <trans-unit id="PivotSubmitted.Header" translate="yes" xml:space="preserve">
+          <source>SUBMITTED</source>
+          <target state="translated">ENVIADOS</target>
+        </trans-unit>
+        <trans-unit id="SavePost" translate="yes" xml:space="preserve">
+          <source>Save post</source>
+          <target state="translated">Salvar post</target>
+        </trans-unit>
+        <trans-unit id="UnhidePost" translate="yes" xml:space="preserve">
+          <source>Unhide post</source>
+          <target state="translated">Mostrar post</target>
+        </trans-unit>
+        <trans-unit id="UnsavePost" translate="yes" xml:space="preserve">
+          <source>Unsave post</source>
+          <target state="translated">Des-salvar</target>
+        </trans-unit>
+        <trans-unit id="SendCode.Content" translate="yes" xml:space="preserve">
+          <source>Send</source>
+          <target state="translated">Enviar</target>
+        </trans-unit>
+        <trans-unit id="UpdateCode.Content" translate="yes" xml:space="preserve">
+          <source>Update</source>
+          <target state="translated">Atualizar</target>
+        </trans-unit>
+        <trans-unit id="SortTBS.Text" translate="yes" xml:space="preserve">
+          <source>Sort:</source>
+          <target state="translated">Ordem:</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

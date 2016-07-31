@@ -50,7 +50,7 @@
                             Orientation="Horizontal">
 
                     <!--  Reply button  -->
-                    <helperControls:SimpleTextButton ButtonText="reply" OnButtonTapped="Reply_Tapped" />
+                    <helperControls:SimpleTextButton ButtonText="reply" OnButtonTapped="Reply_Tapped" x:Uid="replyBTN"/>
 
                     <!--  Mark as read button  -->
                     <helperControls:SimpleTextButton ButtonText="{x:Bind MarkAsReadText, Mode=OneWay}" OnButtonTapped="MarkAsRead_Tapped" />
@@ -58,7 +58,7 @@
                     <!--  View In Context  -->
                     <helperControls:SimpleTextButton ButtonText="view comment in context"
                                                      OnButtonTapped="ViewContext_OnButtonTapped"
-                                                     Visibility="{x:Bind ShowViewContextUi}" />
+                                                     Visibility="{x:Bind ShowViewContextUi}" x:Uid="ViewInContext"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -111,7 +111,7 @@
             <!--  This animates the messages in  -->
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <EntranceThemeTransition />
                     <AddDeleteThemeTransition />
                 </TransitionCollection>
             </ListView.ItemContainerTransitions>

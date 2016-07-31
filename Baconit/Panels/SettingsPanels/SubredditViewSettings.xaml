@@ -33,7 +33,7 @@
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSubreddit_SelectionChanged" />
 
-            <TextBlock Text="Default sort" TextWrapping="Wrap" />
+            <TextBlock Text="Default sort" TextWrapping="Wrap" x:Uid="DefaultSortsTB"/>
             <ComboBox x:Name="ui_defaultSort"
                       MinWidth="150"
                       Margin="0,8,12,18"
@@ -45,7 +45,7 @@
                 <ComboBoxItem Content="top" x:Uid="CBItop" />
             </ComboBox>
 
-            <TextBlock Text="Default time sort" TextWrapping="Wrap" />
+            <TextBlock Text="Default time sort" TextWrapping="Wrap" x:Uid="DefaulttimesortTB"/>
             <ComboBox x:Name="ui_defaultTimeSort"
                       MinWidth="150"
                       Margin="0,8,12,18"

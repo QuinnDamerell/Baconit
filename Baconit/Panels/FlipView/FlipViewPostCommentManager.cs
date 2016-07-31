@@ -622,7 +622,7 @@ namespace Baconit.Panels
                 string shareBody = m_shareComment.Body.Length > 50 ? m_shareComment.Body.Substring(0, 50) + "..." : m_shareComment.Body;
                 args.Request.Data.Properties.ApplicationName = "Baconit";
                 args.Request.Data.Properties.ContentSourceWebLink = new Uri(commentLink, UriKind.Absolute);
-                args.Request.Data.Properties.Title = "A Reddit Post Shared From Baconit";
+                args.Request.Data.Properties.Title = "A Reddit post shared from Reddunt";
                 args.Request.Data.Properties.Description = shareBody;
                 args.Request.Data.SetText($" \r\n\r\n{shareBody}\r\n\r\n{commentLink}");
                 m_shareComment = null;
@@ -630,8 +630,9 @@ namespace Baconit.Panels
             }
             else
             {
-                args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-              
+                App.BaconMan.MessageMan.ShowMessageSimple("Ops!", "There's nothing to share!");
+                
+
             }
         }
 
