@@ -1020,10 +1020,6 @@ O foco principal é em otimizações, mas também como algumas funções especif
           <source>Feedback Hub</source>
           <target state="new">Feedback Hub</target>
         </trans-unit>
-        <trans-unit id="SettingsLabel.Label" translate="yes" xml:space="preserve">
-          <source>Settings</source>
-          <target state="new">Settings</target>
-        </trans-unit>
       </group>
     </body>
   </file>
