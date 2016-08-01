@@ -139,11 +139,10 @@
     <Compile Include="ContentPanels\Panels\WindowsAppContentPanel.xaml.cs">
       <DependentUpon>WindowsAppContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\..\..\YoutubeContentPanel.xaml.cs">
-      <DependentUpon>YoutubeContentPanel.xaml</DependentUpon>
-      <Link>ContentPanels\Panels\YoutubeContentPanel.xaml.cs</Link>
-    </Compile>
     <Compile Include="ContentPanels\ContentPanelMaster.cs" />
+    <Compile Include="ContentPanels\Panels\YoutubeContentPanel.xaml.cs">
+      <DependentUpon>YoutubeContentPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperControls\CircleIconButton.xaml.cs">
       <DependentUpon>CircleIconButton.xaml</DependentUpon>
     </Compile>
@@ -316,6 +315,7 @@
     <Content Include="Assets\AppAssets\Wide310x150Logo.scale-400.png" />
     <Content Include="Assets\FlipView\MenuIcon.png" />
     <Content Include="Assets\FlipView\UpCarret.png" />
+    <Content Include="Assets\IconicTiles\Iconic200.png" />
     <Content Include="Assets\MainPage\BaconitLogo.png" />
     <Content Include="Assets\MainPage\FavoriteIcon.png" />
     <Content Include="Assets\MainPage\NotFavoriteIcon.png" />
