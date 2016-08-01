@@ -28,7 +28,7 @@ using Windows.UI;
 using Baconit.Panels.FlipView;
 using Windows.ApplicationModel.Resources.Core;
 using Microsoft.Services;
-
+using Windows.UI.ViewManagement;
 
 namespace Baconit.Panels
 {
@@ -46,6 +46,9 @@ namespace Baconit.Panels
         SortTimeTypes m_currentSortTimeType;
         LoadingOverlay m_loadingOverlay = null;
 
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
         public SubredditPanel()
         {
             this.InitializeComponent();
@@ -59,6 +62,8 @@ namespace Baconit.Panels
 
             // Set the post list
             ui_postList.ItemsSource = m_postsLists;
+
+
         }
 
 
@@ -561,6 +566,27 @@ namespace Baconit.Panels
 
         }
 
+        // Create AppBar button to enter in full screen mode
+        private void FullScreenMode_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ApplicationView FSView = ApplicationView.GetForCurrentView();
+            bool isFullMode = FSView.IsFullScreenMode; 
+
+            if (isFullMode)
+            {
+                FullScreenAppBar.Label = resourceMap.GetValue("EnterFullScreenModeCode/Label",
+                    resourceContext).ValueAsString;
+                FSView.ExitFullScreenMode();
+            }
+
+            else
+            {  
+                FullScreenAppBar.Label = resourceMap.GetValue("ExitFullScreenModeCode/Label",
+                    resourceContext).ValueAsString;
+                FSView.TryEnterFullScreenMode();
+            }   
+        }
+
         /// <summary>
         /// Fired when a sort menu item is tapped.
         /// </summary>
@@ -701,8 +727,7 @@ namespace Baconit.Panels
 
         private void SetCurrentTimeSort(SortTimeTypes type)
         {
-            ResourceContext resourceContext = new ResourceContext();
-            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+            
 
             m_currentSortTimeType = type;
             switch (type)

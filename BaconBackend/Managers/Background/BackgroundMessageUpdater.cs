@@ -52,6 +52,7 @@ namespace BaconBackend.Managers.Background
 
                     // Tell it to update!
                     m_collector.Update(true);
+
                 }
             }
         }
@@ -184,6 +185,7 @@ namespace BaconBackend.Managers.Background
                         if (unreadCount != 0)
                         {
                             newNotifications.Add(new Tuple<string, string, string>($"You have {unreadCount} new inbox message" + (unreadCount == 1 ? "." : "s."), "", "totalCount"));
+                           
                         }
                     }              
                 }
@@ -209,6 +211,8 @@ namespace BaconBackend.Managers.Background
 
                     var toast = new ToastNotification(toastContent.GetXml());
                     toast.Tag = newNote.Item3;
+                   
+
 
                     // Only show if we should and this is the first message to show.
                     toast.SuppressPopup = hasShownNote || updateSliently || AddToNotificationCenterSilently;

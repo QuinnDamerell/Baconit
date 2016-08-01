@@ -877,4 +877,13 @@ The main focus is on optimization as well great Windows 10 focused features!</va
   <data name="FeedbackHubLabel.Label" xml:space="preserve">
     <value>Feedback Hub</value>
   </data>
+  <data name="EnterFullScreenModeCode.Label" xml:space="preserve">
+    <value>Enter Full Screen Mode</value>
+  </data>
+  <data name="ExitFullScreenModeCode.Label" xml:space="preserve">
+    <value>Exit Full Screen Mode</value>
+  </data>
+  <data name="FullScreenModeXAML.Label" xml:space="preserve">
+    <value>Enter Full Screen Mode</value>
+  </data>
 </root>

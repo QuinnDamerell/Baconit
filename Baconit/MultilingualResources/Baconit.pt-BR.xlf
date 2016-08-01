@@ -1020,6 +1020,18 @@ O foco principal é em otimizações, mas também como algumas funções especif
           <source>Feedback Hub</source>
           <target state="new">Feedback Hub</target>
         </trans-unit>
+        <trans-unit id="EnterFullScreenModeCode.Label" translate="yes" xml:space="preserve">
+          <source>Enter Full Screen Mode</source>
+          <target state="translated">Entrar no modo tela cheia</target>
+        </trans-unit>
+        <trans-unit id="ExitFullScreenModeCode.Label" translate="yes" xml:space="preserve">
+          <source>Exit Full Screen Mode</source>
+          <target state="translated">Sair do modo tela cheia</target>
+        </trans-unit>
+        <trans-unit id="FullScreenModeXAML.Label" translate="yes" xml:space="preserve">
+          <source>Enter Full Screen Mode</source>
+          <target state="translated">Entrar no modo tela cheia</target>
+        </trans-unit>
       </group>
     </body>
   </file>

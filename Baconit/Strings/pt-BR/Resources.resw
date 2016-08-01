@@ -724,4 +724,13 @@ O foco principal é em otimizações, mas também como algumas funções especif
   <data name="SortTBS.Text" xml:space="preserve">
     <value>Ordem:</value>
   </data>
+  <data name="EnterFullScreenModeCode.Label" xml:space="preserve">
+    <value>Entrar no modo tela cheia</value>
+  </data>
+  <data name="ExitFullScreenModeCode.Label" xml:space="preserve">
+    <value>Sair do modo tela cheia</value>
+  </data>
+  <data name="FullScreenModeXAML.Label" xml:space="preserve">
+    <value>Entrar no modo tela cheia</value>
+  </data>
 </root>
