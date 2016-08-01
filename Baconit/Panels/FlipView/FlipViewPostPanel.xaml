@@ -578,7 +578,7 @@
             <!--  This animates the comments in and out when hidden  -->
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <EntranceThemeTransition />
                     <AddDeleteThemeTransition />
                 </TransitionCollection>
             </ListView.ItemContainerTransitions>

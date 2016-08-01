@@ -251,7 +251,7 @@
                                 </helperControls:EndDetectingListView.HeaderTemplate>
                                 <ListView.ItemContainerTransitions>
                                     <TransitionCollection>
-                                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                        <EntranceThemeTransition />
                                         <AddDeleteThemeTransition />
                                     </TransitionCollection>
                                 </ListView.ItemContainerTransitions>
@@ -327,7 +327,7 @@
 
                                 <ListView.ItemContainerTransitions>
                                     <TransitionCollection>
-                                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                        <EntranceThemeTransition />
                                         <AddDeleteThemeTransition />
                                     </TransitionCollection>
                                 </ListView.ItemContainerTransitions>

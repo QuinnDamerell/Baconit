@@ -310,7 +310,7 @@
                 <!--  This animates the search results in  -->
                 <ListView.ItemContainerTransitions>
                     <TransitionCollection>
-                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                        <EntranceThemeTransition  />
                         <AddDeleteThemeTransition />
                     </TransitionCollection>
                 </ListView.ItemContainerTransitions>
