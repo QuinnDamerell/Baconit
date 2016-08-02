@@ -49,6 +49,7 @@ namespace Baconit
         //
         // Private Vars
         //
+       
 
         /// <summary>
         /// The main panel manager for the app
@@ -84,6 +85,9 @@ namespace Baconit
         /// The time the review was left.
         /// </summary>
         DateTime m_reviewLeaveTime = DateTime.MinValue;
+
+        // we use to open splitview by swipe 
+        int x1, x2;
 
         public MainPage()
         {
@@ -134,6 +138,7 @@ namespace Baconit
             // Sub to the memory report
             App.BaconMan.MemoryMan.OnMemoryReport += MemoryMan_OnMemoryReport;
         }
+
 
         /// <summary>
         /// Fired when the main page is loaded.

@@ -60,7 +60,7 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-
+        <Grid x:Name="SplitViewGrid">
         <SplitView x:Name="ui_splitView"
                    PaneClosed="SplitView_PaneClosed"
                    SizeChanged="SplitView_SizeChanged" RequestedTheme="Default">
@@ -459,7 +459,7 @@
                 </Grid>
             </SplitView.Content>
         </SplitView>
-
+        </Grid>
         <helperControls:GlobalContentPresenter x:Name="ui_globalContentPresenter" />
     </Grid>
 </Page>

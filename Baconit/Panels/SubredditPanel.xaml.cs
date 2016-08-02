@@ -51,8 +51,7 @@ namespace Baconit.Panels
         ResourceContext resourceContext = new ResourceContext();
         ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
 
-        // we use to open splitview by swipe 
-        int x1, x2;
+
 
         public SubredditPanel()
         {
@@ -67,32 +66,6 @@ namespace Baconit.Panels
 
             // Set the post list
             ui_postList.ItemsSource = m_postsLists;
-
-            // splitview sipe code
-            SplitViewGrid.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
-            SplitViewGrid.ManipulationStarted += SplitViewGrid_ManipulationStarted;
-            SplitViewGrid.ManipulationCompleted += SplitViewGrid_ManipulationCompleted;
-
-
-        }
-
-        private void SplitViewGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            x2 = (int)e.Position.Y;
-            if (x1>x2)
-            {
-                ui_splitView.IsPaneOpen = !ui_splitView.IsPaneOpen;
-            }
-
-            else
-            {
-                ui_splitView.IsPaneOpen = !ui_splitView.IsPaneOpen;
-            }
-        }
-
-        private void SplitViewGrid_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            x1 = (int)e.Position.X;
 
         }
 
