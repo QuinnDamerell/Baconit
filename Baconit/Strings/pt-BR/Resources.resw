@@ -157,7 +157,7 @@
     <value>Prévia formatada</value>
   </data>
   <data name="GildedTB.Text" xml:space="preserve">
-    <value>Dourado</value>
+    <value>Gilded</value>
   </data>
   <data name="GoToUserTB.Text" xml:space="preserve">
     <value>Ir ao usuário</value>
@@ -283,7 +283,7 @@
     <value>mais</value>
   </data>
   <data name="RunGilded.Text" xml:space="preserve">
-    <value>dourado</value>
+    <value>gilded</value>
   </data>
   <data name="RunSticky.Text" xml:space="preserve">
     <value>fixado</value>
@@ -674,7 +674,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Subreddits</value>
   </data>
   <data name="HasGoldCode.MinorAccentText" xml:space="preserve">
-    <value>Há ouro</value>
+    <value>Possui ouro</value>
   </data>
   <data name="PostsResultsCode" xml:space="preserve">
     <value>Posts</value>

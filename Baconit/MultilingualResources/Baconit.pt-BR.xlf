@@ -212,7 +212,7 @@
         </trans-unit>
         <trans-unit id="GildedTB.Text" translate="yes" xml:space="preserve">
           <source>Gilded</source>
-          <target state="translated">Dourado</target>
+          <target state="translated">Gilded</target>
         </trans-unit>
         <trans-unit id="GoToUserTB.Text" translate="yes" xml:space="preserve">
           <source>Go to user</source>
@@ -396,7 +396,7 @@
         </trans-unit>
         <trans-unit id="RunGilded.Text" translate="yes" xml:space="preserve">
           <source>gilded</source>
-          <target state="translated">dourado</target>
+          <target state="translated">gilded</target>
         </trans-unit>
         <trans-unit id="RunSticky.Text" translate="yes" xml:space="preserve">
           <source>sticky</source>
@@ -950,7 +950,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="HasGoldCode.MinorAccentText" translate="yes" xml:space="preserve">
           <source>Has Gold</source>
-          <target state="translated">Há ouro</target>
+          <target state="translated">Possui ouro</target>
         </trans-unit>
         <trans-unit id="PostsResultsCode" translate="yes" xml:space="preserve">
           <source>Posts Results</source>
