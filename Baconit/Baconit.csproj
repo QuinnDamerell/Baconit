@@ -21,10 +21,10 @@
     <PackageCertificateThumbprint>C190D3C8764E811BCA3F98223D098A2E9D638BCB</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxPackageDir>C:\Users\Vitor\Documents\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
-    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
     <HockeyAppResourceId>b9aacd166c864ee6892ae436c1157ad6</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -60,6 +60,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>

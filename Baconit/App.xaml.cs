@@ -44,6 +44,7 @@ namespace Baconit
         /// The main reference in the app to the backend of Baconit
         /// </summary>
         public static BaconManager BaconMan;
+        public static MediaElement MPE;
 
         /// <summary>
         /// Indicates if we have already registered for back.
@@ -66,7 +67,7 @@ namespace Baconit
             // Now setup the baconman
             BaconMan = new BaconManager(false);
 
-           
+
 
             // Init the app
             this.InitializeComponent();
@@ -80,6 +81,7 @@ namespace Baconit
         /// Fired when the app is opened from a toast message.
         /// </summary>
         /// <param name="args"></param>
+        /// <param name="e"></param>
         protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
@@ -89,7 +91,7 @@ namespace Baconit
                 ToastNotificationActivatedEventArgs toastArgs = (ToastNotificationActivatedEventArgs)args;
                 SetupAndALaunchApp(toastArgs.Argument);
             }
-            else if(args is ProtocolActivatedEventArgs)
+            else if (args is ProtocolActivatedEventArgs)
             {
                 ProtocolActivatedEventArgs protcolArgs = (ProtocolActivatedEventArgs)args;
                 string argsString = protcolArgs.Uri.OriginalString;
@@ -101,6 +103,7 @@ namespace Baconit
             {
                 SetupAndALaunchApp(String.Empty);
             }
+           
         }
 
         /// <summary>
@@ -113,6 +116,7 @@ namespace Baconit
             SetupAndALaunchApp(e.Arguments);
         }
 
+        
         /// <summary>
         /// Does the work necessary to setup and launch the app.
         /// </summary>

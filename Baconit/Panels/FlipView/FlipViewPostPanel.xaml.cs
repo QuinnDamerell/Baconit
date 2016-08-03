@@ -1222,59 +1222,111 @@ namespace Baconit.Panels.FlipView
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CommentSortMenu_Click(object sender, RoutedEventArgs e)
+
         {
+
             FlipViewPostContext context = GetContext();
-            if(context == null)
+
+            if (context == null)
+
             {
+
                 return;
+
             }
 
+
+
             // Update sort type
+
             MenuFlyoutItem item = sender as MenuFlyoutItem;
+
             context.Post.CommentSortType = GetCommentSortFromString(item.Text);
 
+
+
             // Get the collector and update the sort
+
             FlipViewPostCommentManager commentManager = GetCommentManger();
+
             commentManager.ChangeCommentSort();
+
         }
 
+
+
         private CommentSortTypes GetCommentSortFromString(string typeString)
+
         {
+
             typeString = typeString.ToLower();
+
             switch (typeString)
+
             {
 
                 case "best":
+
                 default:
+
                     return CommentSortTypes.Best;
+
                 case "controversial":
+
                     return CommentSortTypes.Controversial;
+
                 case "new":
+
                     return CommentSortTypes.New;
+
                 case "old":
+
                     return CommentSortTypes.Old;
+
                 case "q&a":
+
                     return CommentSortTypes.QA;
+
                 case "top":
+
                     return CommentSortTypes.Top;
+
             }
+
         }
 
+
+
         private void CommentShowingCountMenu_Click(object sender, RoutedEventArgs e)
+
         {
+
             FlipViewPostContext context = GetContext();
+
             if (context == null)
+
             {
+
                 return;
+
             }
 
+
+
             // Parse the new comment count
+
             MenuFlyoutItem item = sender as MenuFlyoutItem;
+
             context.Post.CurrentCommentShowingCount = int.Parse(item.Text);
 
+
+
             // Get the collector and update the sort
+
             FlipViewPostCommentManager commentManager = GetCommentManger();
+
             commentManager.UpdateShowingCommentCount(context.Post.CurrentCommentShowingCount);
+
         }
 
         #endregion
