@@ -263,12 +263,12 @@
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Best" x:Uid="CMBest"/>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Top" x:Uid="CMTop"/>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Controversial" x:Uid="CMContro"/>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="New" x:Uid="CMNew"/>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Old" x:Uid="CMOld"/>
-                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Q&amp;A" x:Uid="CMQA"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Best" />
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Top" />
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Controversial"/>
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="New" />
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Old" />
+                                <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Q&amp;A" />
                             </MenuFlyout>
                         </FlyoutBase.AttachedFlyout>
                         <TextBlock Margin="0,0,4,0"
