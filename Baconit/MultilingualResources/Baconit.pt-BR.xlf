@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en-US" target-language="pt-BR" original="BACONIT/STRINGS/EN-US/RESOURCES.RESW" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
     <header>
@@ -32,11 +32,11 @@
         </trans-unit>
         <trans-unit id="headerText.Text" translate="yes" xml:space="preserve">
           <source>This post links to a subreddit</source>
-          <target state="translated">Este post contem um link para algum subreddit</target>
+          <target state="translated">Este post contem um link para um subreddit</target>
         </trans-unit>
         <trans-unit id="headerTextAppsTB.Text" translate="yes" xml:space="preserve">
           <source>This post links to a Windows App</source>
-          <target state="translated">Este post contem um link para um app da Loja. </target>
+          <target state="translated">Este post contem um link para um app da Loja</target>
         </trans-unit>
         <trans-unit id="inboxGridTB.Text" translate="yes" xml:space="preserve">
           <source>Inbox</source>
@@ -72,7 +72,7 @@
         </trans-unit>
         <trans-unit id="nsfwBlockRootGridTB1" translate="yes" xml:space="preserve">
           <source>This post is NSFW</source>
-          <target state="translated">Este post contem conteúdo +18</target>
+          <target state="translated">Este post possui conteúdo inadequado para menores de 18 anos</target>
         </trans-unit>
         <trans-unit id="nsfwBlockRootGridTB2.Text" translate="yes" xml:space="preserve">
           <source>Tap anywhere to view</source>
@@ -100,7 +100,7 @@
         </trans-unit>
         <trans-unit id="RedduntAccountTB.Text" translate="yes" xml:space="preserve">
           <source>Unlock even more of Reddunt by adding account. Reddit accounts are anonymous, simple, and free - and Reddunt will keep it that way.</source>
-          <target state="translated">Usufrua ainda mais do Reddunt adicionando uma conta. Contas do Reddit são anônimas, simples e gratuito — e o Reddunt o deixará dessa forma. </target>
+          <target state="translated">Usufrua ainda mais do Reddunt adicionando uma conta. Contas do Reddit são anônimas, simples e gratuito — e o Reddunt o deixará dessa forma.</target>
         </trans-unit>
         <trans-unit id="SearchASUPTBS.PlaceholderText" translate="yes" xml:space="preserve">
           <source>Search for anything; subreddits, users, post, etc.</source>
@@ -148,11 +148,11 @@
         </trans-unit>
         <trans-unit id="TrendingSubreddits.Text" translate="yes" xml:space="preserve">
           <source>Trending Subreddits</source>
-          <target state="translated">Subreddits em alta</target>
+          <target state="translated">Tendências para Subreddits</target>
         </trans-unit>
         <trans-unit id="TryItTip.Text" translate="yes" xml:space="preserve">
           <source>Go ahead! Try it now!</source>
-          <target state="translated">Vá em frente, experimente agora!</target>
+          <target state="translated">Vá em frente! Experimente agora!</target>
         </trans-unit>
         <trans-unit id="ViewCommentTip.Text" translate="yes" xml:space="preserve">
           <source>To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down.</source>
@@ -164,11 +164,11 @@
         </trans-unit>
         <trans-unit id="AccountAgeTB.Text" translate="yes" xml:space="preserve">
           <source>0 days old</source>
-          <target state="translated">0 dias atrás.</target>
+          <target state="translated">0 dias atrás</target>
         </trans-unit>
         <trans-unit id="AllTime.Text" translate="yes" xml:space="preserve">
           <source>All Time</source>
-          <target state="translated">Desde sempre</target>
+          <target state="translated">Qualquer Data</target>
         </trans-unit>
         <trans-unit id="CakeDayTB.Text" translate="yes" xml:space="preserve">
           <source>Cake Day!</source>
@@ -236,23 +236,23 @@
         </trans-unit>
         <trans-unit id="PastDay.Text" translate="yes" xml:space="preserve">
           <source>Past Day</source>
-          <target state="translated">Último dia</target>
+          <target state="translated">Último Dia</target>
         </trans-unit>
         <trans-unit id="PastHour.Text" translate="yes" xml:space="preserve">
           <source>Past Hour</source>
-          <target state="translated">Última hora</target>
+          <target state="translated">Última Hora</target>
         </trans-unit>
         <trans-unit id="PastMonth.Text" translate="yes" xml:space="preserve">
           <source>Past Month</source>
-          <target state="translated">Último mês</target>
+          <target state="translated">Último Mês</target>
         </trans-unit>
         <trans-unit id="PastWeek.Text" translate="yes" xml:space="preserve">
           <source>Past Week</source>
-          <target state="translated">Última semana</target>
+          <target state="translated">Última Semana</target>
         </trans-unit>
         <trans-unit id="PastYear.Text" translate="yes" xml:space="preserve">
           <source>Past Year</source>
-          <target state="translated">Último ano</target>
+          <target state="translated">Último Ano</target>
         </trans-unit>
         <trans-unit id="PostSortFMIBest.Text" translate="yes" xml:space="preserve">
           <source>Best</source>
@@ -276,7 +276,7 @@
         </trans-unit>
         <trans-unit id="SelfTextTB.Text" translate="yes" xml:space="preserve">
           <source>Self Text</source>
-          <target state="translated">Post interno</target>
+          <target state="translated">Post Interno</target>
         </trans-unit>
         <trans-unit id="SettingsTB.Text" translate="yes" xml:space="preserve">
           <source>SETTINGS</source>
@@ -296,7 +296,7 @@
         </trans-unit>
         <trans-unit id="SMIRising.Text" translate="yes" xml:space="preserve">
           <source>Rising</source>
-          <target state="translated">Em alta</target>
+          <target state="translated">Em Alta</target>
         </trans-unit>
         <trans-unit id="SMITop.Text" translate="yes" xml:space="preserve">
           <source>Top</source>
@@ -316,7 +316,7 @@
         </trans-unit>
         <trans-unit id="SortTimeTB.Text" translate="yes" xml:space="preserve">
           <source>Past Week</source>
-          <target state="translated">Última semana</target>
+          <target state="translated">Última Semana</target>
         </trans-unit>
         <trans-unit id="StickyTB.Text" translate="yes" xml:space="preserve">
           <source>Sticky</source>
@@ -450,7 +450,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="CAllTimeB.Content" translate="yes" xml:space="preserve">
           <source>All Time</source>
-          <target state="translated">Desde sempre</target>
+          <target state="translated">Qualquer Data</target>
         </trans-unit>
         <trans-unit id="CancelCT.Content" translate="yes" xml:space="preserve">
           <source>Cancel</source>
@@ -462,7 +462,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="CBIalltime.Content" translate="yes" xml:space="preserve">
           <source>all time</source>
-          <target state="translated">desde sempre</target>
+          <target state="translated">qualquer data</target>
         </trans-unit>
         <trans-unit id="CBIcontro.Content" translate="yes" xml:space="preserve">
           <source>controversial</source>
@@ -522,15 +522,15 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="CPastDayB.Content" translate="yes" xml:space="preserve">
           <source>Past Day</source>
-          <target state="translated">Último dia</target>
+          <target state="translated">Último Dia</target>
         </trans-unit>
         <trans-unit id="CPastHourB.Content" translate="yes" xml:space="preserve">
           <source>Past Hour</source>
-          <target state="translated">Última hora</target>
+          <target state="translated">Última Hora</target>
         </trans-unit>
         <trans-unit id="CPastMonthB.Content" translate="yes" xml:space="preserve">
           <source>Past Month</source>
-          <target state="translated">Último mês</target>
+          <target state="translated">Último Mês</target>
         </trans-unit>
         <trans-unit id="CPastWeekB.Content" translate="yes" xml:space="preserve">
           <source>Past Week</source>
@@ -538,7 +538,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="CPastYearB.Content" translate="yes" xml:space="preserve">
           <source>Past Year</source>
-          <target state="translated">Último ano</target>
+          <target state="translated">Último Ano</target>
         </trans-unit>
         <trans-unit id="CQACB.Content" translate="yes" xml:space="preserve">
           <source>Q&amp;A</source>
@@ -546,7 +546,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="CreateAccountCT.Content" translate="yes" xml:space="preserve">
           <source>Create Account</source>
-          <target state="translated">Criar conta</target>
+          <target state="translated">Criar Conta</target>
         </trans-unit>
         <trans-unit id="CSettings.Text" translate="yes" xml:space="preserve">
           <source>COMMENT SETTINGS</source>
@@ -566,7 +566,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="EverythingCB.Content" translate="yes" xml:space="preserve">
           <source>Everything</source>
-          <target state="translated">Qualquer coisa</target>
+          <target state="translated">Qualquer Coisa</target>
         </trans-unit>
         <trans-unit id="FatalException.Text" translate="yes" xml:space="preserve">
           <source>Don't let fatal exceptions kill the app, report the exception instead of crashing. (this will leave your app in an unstable state)</source>
@@ -592,10 +592,6 @@ O foco principal é em otimizações, mas também como algumas funções especif
           <source>Image update frequency</source>
           <target state="translated">Frequência de atualização de imagem</target>
         </trans-unit>
-        <trans-unit id="IsNNSFW.Content" translate="yes" xml:space="preserve">
-          <source>No</source>
-          <target state="translated">Não</target>
-        </trans-unit>
         <trans-unit id="IsNSFW.Content" translate="yes" xml:space="preserve">
           <source>Is NSFW?</source>
           <target state="translated">É +18?</target>
@@ -603,6 +599,10 @@ O foco principal é em otimizações, mas também como algumas funções especif
         <trans-unit id="IsYNSFW.Content" translate="yes" xml:space="preserve">
           <source>Yes</source>
           <target state="translated">Sim</target>
+        </trans-unit>
+        <trans-unit id="IsNNSFW.Content" translate="yes" xml:space="preserve">
+          <source>No</source>
+          <target state="translated">Não</target>
         </trans-unit>
         <trans-unit id="LastUpdate.Text" translate="yes" xml:space="preserve">
           <source>Last Update:</source>
@@ -662,7 +662,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="NSFWB.Text" translate="yes" xml:space="preserve">
           <source>NSFW blocking mode</source>
-          <target state="translated">Bloquear conteúdo +18</target>
+          <target state="translated">Bloquear conteúdo improprio para menores de 18 anos</target>
         </trans-unit>
         <trans-unit id="PinToStart.Content" translate="yes" xml:space="preserve">
           <source>Pin to start</source>
@@ -742,7 +742,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="SystemState.Text" translate="yes" xml:space="preserve">
           <source>System State:</source>
-          <target state="translated">Estado de sistema: </target>
+          <target state="translated">Estado de sistema:</target>
         </trans-unit>
         <trans-unit id="TTopCB.Content" translate="yes" xml:space="preserve">
           <source>Top</source>
@@ -766,7 +766,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="AllTimeCode.Text" translate="yes" xml:space="preserve">
           <source>All Time</source>
-          <target state="translated">Desde sempre</target>
+          <target state="translated">Qualquer Data</target>
         </trans-unit>
         <trans-unit id="ControCode.Text" translate="yes" xml:space="preserve">
           <source>Controversial</source>
@@ -786,23 +786,23 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="PastHourCode.Text" translate="yes" xml:space="preserve">
           <source>Past Hour</source>
-          <target state="translated">Última hora</target>
+          <target state="translated">Última Hora</target>
         </trans-unit>
         <trans-unit id="PastMonthCode.Text" translate="yes" xml:space="preserve">
           <source>Past Month</source>
-          <target state="translated">Último mês</target>
+          <target state="translated">Último Mês</target>
         </trans-unit>
         <trans-unit id="PastWeekCode.Text" translate="yes" xml:space="preserve">
           <source>Past Week</source>
-          <target state="translated">Última semana</target>
+          <target state="translated">Última Semana</target>
         </trans-unit>
         <trans-unit id="PastYearCode.Text" translate="yes" xml:space="preserve">
           <source>Past Year</source>
-          <target state="translated">Último ano</target>
+          <target state="translated">Último Ano</target>
         </trans-unit>
         <trans-unit id="RisingCode.Text" translate="yes" xml:space="preserve">
           <source>Rising</source>
-          <target state="translated">Em alta</target>
+          <target state="translated">Em Alta</target>
         </trans-unit>
         <trans-unit id="TopCode.Text" translate="yes" xml:space="preserve">
           <source>Top</source>
@@ -810,11 +810,15 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="PastHWeek.Text" translate="yes" xml:space="preserve">
           <source>Past Week</source>
-          <target state="translated">Semana passada</target>
+          <target state="translated">Semana Passada</target>
         </trans-unit>
         <trans-unit id="AllowedCode.Text" translate="yes" xml:space="preserve">
           <source>Allowed</source>
           <target state="translated">Permitido</target>
+        </trans-unit>
+        <trans-unit id="DeniedCode.Text" translate="yes" xml:space="preserve">
+          <source>Denied</source>
+          <target state="translated">Negado</target>
         </trans-unit>
         <trans-unit id="DefaultcountTB.Text" translate="yes" xml:space="preserve">
           <source>Default count</source>
@@ -832,10 +836,6 @@ O foco principal é em otimizações, mas também como algumas funções especif
           <source>Default time sort</source>
           <target state="translated">Classificação de tempo padrão</target>
         </trans-unit>
-        <trans-unit id="DeniedCode.Text" translate="yes" xml:space="preserve">
-          <source>Denied</source>
-          <target state="translated">Negado</target>
-        </trans-unit>
         <trans-unit id="LastUpdateCode.Text" translate="yes" xml:space="preserve">
           <source>Last update</source>
           <target state="translated">Última atualização: </target>
@@ -850,7 +850,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="SystemStateCode.Text" translate="yes" xml:space="preserve">
           <source>System State</source>
-          <target state="translated">Estado de sistema: </target>
+          <target state="translated">Estado do Sistema</target>
         </trans-unit>
         <trans-unit id="RateUnder.Text" translate="yes" xml:space="preserve">
           <source>Rate and review at Windows Store</source>
@@ -950,7 +950,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="HasGoldCode.MinorAccentText" translate="yes" xml:space="preserve">
           <source>Has Gold</source>
-          <target state="translated">Possui ouro</target>
+          <target state="translated">Possui Gold</target>
         </trans-unit>
         <trans-unit id="PostsResultsCode" translate="yes" xml:space="preserve">
           <source>Posts Results</source>
@@ -1022,15 +1022,15 @@ O foco principal é em otimizações, mas também como algumas funções especif
         </trans-unit>
         <trans-unit id="EnterFullScreenModeCode.Label" translate="yes" xml:space="preserve">
           <source>Enter Full Screen Mode</source>
-          <target state="translated">Entrar no modo tela cheia</target>
+          <target state="translated">Entrar no modo Tela Cheia</target>
         </trans-unit>
         <trans-unit id="ExitFullScreenModeCode.Label" translate="yes" xml:space="preserve">
           <source>Exit Full Screen Mode</source>
-          <target state="translated">Sair do modo tela cheia</target>
+          <target state="translated">Sair do modo Tela Cheia</target>
         </trans-unit>
         <trans-unit id="FullScreenModeXAML.Label" translate="yes" xml:space="preserve">
           <source>Enter Full Screen Mode</source>
-          <target state="translated">Entrar no modo tela cheia</target>
+          <target state="translated">Entrar no modo Tela Cheia</target>
         </trans-unit>
       </group>
     </body>
