@@ -86,9 +86,6 @@ namespace Baconit
         /// </summary>
         DateTime m_reviewLeaveTime = DateTime.MinValue;
 
-        // we use to open splitview by swipe 
-        int x1, x2;
-
         public MainPage()
         {
             this.InitializeComponent();

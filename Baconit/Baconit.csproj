@@ -18,7 +18,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>C190D3C8764E811BCA3F98223D098A2E9D638BCB</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>499ADED1BF67E25CA80434C24EDDA8EB85D8C20B</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
@@ -105,10 +105,10 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="Baconit_TemporaryKey.pfx" />
     <None Include="project.json" />
-    <PRIResource Include="Strings\pt-BR\Resources.resw">
+    <PRIResource Include="Assets\Strings\pt-BR\Resources.resw">
       <SubType>Designer</SubType>
     </PRIResource>
-    <PRIResource Include="Strings\en-US\Resources.resw" />
+    <PRIResource Include="Assets\Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
