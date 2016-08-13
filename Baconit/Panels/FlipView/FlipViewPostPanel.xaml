@@ -123,7 +123,7 @@
                             <TranslateTransform x:Name="ui_headerSubtextTransform" />
                         </StackPanel.RenderTransform>
 
-                       
+
                         <TextBlock TextTrimming="WordEllipsis" Tapped="GoToUser_Tapped" Text="{x:Bind Context.Post.Author}" 
                                    Foreground="{ThemeResource SystemAccentColor}" />
                         <FontIcon Glyph="&#xE915;" FontSize="12" Foreground="#939393" />
@@ -132,7 +132,7 @@
 
                         <TextBlock TextTrimming="WordEllipsis" Tapped="GoToSubreddit_Tapped" Text="{x:Bind Context.Post.FlipViewSecondary}" 
                                    Foreground="{ThemeResource SystemAccentColor}" />
-             
+
                         <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.StickyVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" x:Uid="RunSticky" />
                         </TextBlock>
@@ -203,8 +203,8 @@
                                     <MenuFlyoutItem Click="SaveImage_Click"
                                                     Text="Save image"
                                                     Visibility="{x:Bind Context.Post.ShowSaveImageMenu}" />
-                                    
-                                   
+
+
 
                                     <MenuFlyoutSeparator Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="DeletePost_Click"
@@ -221,8 +221,9 @@
 
                 <!--  Note if this height changes it must be updated in c_hiddenCommentHeaderHeight  -->
                 <Grid Grid.Row="1"
-                      Height="36"
-                      Background="#282828">
+                      Height="36" Background="Black">
+                  
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="auto" />
@@ -500,11 +501,11 @@
                                     Padding="4,4,14,13"
                                     Tapped="CommentUp_Tapped">
                                 <FontIcon Glyph="&#xE014;" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
-                                
+
                             </Border>
-                            
-                            
-                           
+
+
+
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
@@ -552,7 +553,7 @@
                                            Foreground="#999999"
                                            Text="more" x:Uid="MoreTB"/>
                             </Border>
-                           
+
                         </StackPanel>
                     </Grid>
                 </Grid>
