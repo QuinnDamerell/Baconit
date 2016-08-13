@@ -141,6 +141,14 @@ namespace Baconit
         /// <param name="e"></param>
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            //The app is always in Dark theme so it's good to insure that the Status bar is consistent.
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                var statusBar = StatusBar.GetForCurrentView();
+                statusBar.ForegroundColor = Colors.White;
+                statusBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
+                statusBar.BackgroundOpacity = 1;
+            }
             // Set the current information to the UI.
             UpdateSubredditList(App.BaconMan.SubredditMan.SubredditList);
             UpdateAccount();
