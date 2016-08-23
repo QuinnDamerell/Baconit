@@ -9,7 +9,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid Background="#191919" Tapped="ContentRoot_Tapped">
+    <Grid Background="Black" Tapped="ContentRoot_Tapped">
         <Grid>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.RowDefinitions>

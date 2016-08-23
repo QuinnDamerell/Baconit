@@ -9,7 +9,7 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot"
-          Background="#191919"
+          Background="Black"
           SizeChanged="ContentRoot_SizeChanged">
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">

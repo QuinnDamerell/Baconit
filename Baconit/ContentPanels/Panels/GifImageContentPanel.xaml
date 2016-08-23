@@ -8,5 +8,5 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#191919" />
+    <Grid x:Name="ui_contentRoot" Background="Black" />
 </UserControl>
