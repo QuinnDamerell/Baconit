@@ -540,8 +540,8 @@ namespace Baconit.Panels.FlipView
 
         private void SetupListViewForNewContext()
         {
-            // Hide the scroll bar.
-            ScrollViewer.SetVerticalScrollBarVisibility(ui_listView, ScrollBarVisibility.Hidden);
+            // Show scrollbar only when Windows don't detect touchpad/touch/scroll wheel
+            ScrollViewer.SetVerticalScrollBarVisibility(ui_listView, ScrollBarVisibility.Auto);
             m_lastKnownScrollOffset = 0;
         }
 

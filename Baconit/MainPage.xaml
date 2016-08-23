@@ -61,42 +61,42 @@
         </VisualStateManager.VisualStateGroups>
 
         <Grid x:Name="SplitViewGrid">
-        <SplitView x:Name="ui_splitView"
+            <SplitView x:Name="ui_splitView"
                    PaneClosed="SplitView_PaneClosed"
                    SizeChanged="SplitView_SizeChanged" RequestedTheme="Default">
-            <SplitView.Pane>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <SplitView.Pane>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    
-                    
 
-                    <!--  Diver  -->
-                    <Rectangle Grid.Row="1"
+
+
+                        <!--  Diver  -->
+                        <Rectangle Grid.Row="1"
                                Grid.ColumnSpan="2"
                                Height="2"
                                HorizontalAlignment="Stretch"
                                Fill="{ThemeResource AppBarItemPointerOverBackgroundThemeBrush}" />
 
-                    <!--  Subreddit list  -->
-                    <ListView x:Name="ui_subredditList"
+                        <!--  Subreddit list  -->
+                        <ListView x:Name="ui_subredditList"
                               Grid.Row="6"
                               Grid.ColumnSpan="2"
                               VerticalAlignment="Top"
@@ -104,93 +104,93 @@
                               ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                               SelectionChanged="SubredditList_SelectionChanged"
                               Style="{StaticResource ListViewStyle}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0" HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid Grid.RowSpan="2"
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.RowSpan="2"
                                           Grid.Column="0"
                                           Background="#01000000"
                                           Padding="12,0,0,0"
                                           Tapped="Favorite_Tapped">
 
-                                        <Image Width="20"
+                                            <Image Width="20"
                                                Height="20"
                                                Source="{Binding FavIconUri}" />
-                                    </Grid>
-                                    <Grid Grid.Column="1" Tapped="Subreddit_Tapped">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0"
+                                        </Grid>
+                                        <Grid Grid.Column="1" Tapped="Subreddit_Tapped">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0"
                                                    Margin="8,8,8,0"
                                                    Foreground="White"
                                                    Style="{ThemeResource BodyTextBlockStyle}"
                                                    Text="{Binding DisplayName}" />
-                                        <TextBlock Grid.Row="1"
+                                            <TextBlock Grid.Row="1"
                                                    Margin="8,0,8,8"
                                                    Foreground="{Binding SubTextBrush}"
                                                    Style="{ThemeResource BodyTextBlockStyle}"
                                                    Text="{Binding Title}"
                                                    TextTrimming="WordEllipsis"
                                                    TextWrapping="NoWrap" />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                        <ListView.ItemContainerTransitions>
-                            <TransitionCollection />
-                        </ListView.ItemContainerTransitions>
-                    </ListView>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerTransitions>
+                                <TransitionCollection />
+                            </ListView.ItemContainerTransitions>
+                        </ListView>
 
-                    <!--  The quick serach results, overlays the subreddit list when open  -->
-                    <StackPanel x:Name="ui_quickSearchResultBox"
+                        <!--  The quick serach results, overlays the subreddit list when open  -->
+                        <StackPanel x:Name="ui_quickSearchResultBox"
                                 Grid.Row="6"
                                 Grid.ColumnSpan="2"
                                 VerticalAlignment="Bottom"
                                 Background="White">
-                        <Grid x:Name="ui_quickSearchLowPriGrid"
+                            <Grid x:Name="ui_quickSearchLowPriGrid"
                               Background="Transparent"
                               Tapped="QuickSearchLowPriGrid_Tapped">
-                            <TextBlock x:Name="ui_quickSearchLowPriText"
+                                <TextBlock x:Name="ui_quickSearchLowPriText"
                                        Margin="10"
                                        Foreground="Black"
                                        Text="baconit" />
-                        </Grid>
-                        <Grid x:Name="ui_quickSearchMedPriGrid"
+                            </Grid>
+                            <Grid x:Name="ui_quickSearchMedPriGrid"
                               Background="Transparent"
                               Tapped="QuickSearchMedPriGrid_Tapped">
-                            <TextBlock x:Name="ui_quickSearchMedPriText"
+                                <TextBlock x:Name="ui_quickSearchMedPriText"
                                        Margin="10"
                                        Foreground="Black"
                                        Text="baconit" />
-                        </Grid>
-                        <Grid x:Name="ui_quickSearchHiPriGrid"
+                            </Grid>
+                            <Grid x:Name="ui_quickSearchHiPriGrid"
                               Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                               Tapped="QuickSearchHiPriGrid_Tapped">
-                            <TextBlock x:Name="ui_quickSearchHiPriText"
+                                <TextBlock x:Name="ui_quickSearchHiPriText"
                                        Margin="10"
                                        Foreground="Black"
                                        Text="baconit" />
-                        </Grid>
-                    </StackPanel>
+                            </Grid>
+                        </StackPanel>
 
-                    <!--  Search Header  -->
-                    <Grid x:Name="ui_searchHeader"
+                        <!--  Search Header  -->
+                        <Grid x:Name="ui_searchHeader"
                           Grid.Row="7"
                           Grid.ColumnSpan="2"
                           Background="{StaticResource BaconitAccentColorLevel3Brush}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="ui_quickSearchTextBoxColumDef" Width="auto" />
-                            <ColumnDefinition x:Name="ui_quickSearchHeaderColumDef" Width="*" />
-                        </Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="ui_quickSearchTextBoxColumDef" Width="auto" />
+                                <ColumnDefinition x:Name="ui_quickSearchHeaderColumDef" Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                        <!--  The inline quick search box  -->
-                        <TextBox x:Name="ui_quickSearchBox"
+                            <!--  The inline quick search box  -->
+                            <TextBox x:Name="ui_quickSearchBox"
                                  Grid.Column="0"
                                  HorizontalAlignment="Stretch"
                                  VerticalContentAlignment="Center"
@@ -200,140 +200,140 @@
                                  PlaceholderText="Search Anything"
                                  Visibility="Collapsed" x:Uid="quickSearchBox"/>
 
-                        <!--  The actual search UI  -->
-                        <Grid Grid.Column="1" Tapped="SearchHeader_Tapped">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <SymbolIcon Grid.Column="0"
+                            <!--  The actual search UI  -->
+                            <Grid Grid.Column="1" Tapped="SearchHeader_Tapped">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <SymbolIcon Grid.Column="0"
                                         Width="25"
                                         Height="25"
                                         Margin="8,8,12,8"
                                         RenderTransformOrigin="0.5, 0.5"
                                         Symbol="Find">
-                                <SymbolIcon.RenderTransform>
-                                    <ScaleTransform ScaleX=".9" ScaleY=".9" />
-                                </SymbolIcon.RenderTransform>
-                            </SymbolIcon>
-                            <TextBlock x:Name="ui_searchTextBlock"
+                                    <SymbolIcon.RenderTransform>
+                                        <ScaleTransform ScaleX=".9" ScaleY=".9" />
+                                    </SymbolIcon.RenderTransform>
+                                </SymbolIcon>
+                                <TextBlock x:Name="ui_searchTextBlock"
                                        Grid.Column="1"
                                        Margin="0,0,0,3"
                                        VerticalAlignment="Center"
                                        FontSize="16"
                                        Style="{ThemeResource TitleTextBlockStyle}"
                                        Text="Search" x:Uid="searchTextBlock" />
+                            </Grid>
                         </Grid>
-                    </Grid>
 
-                    <!--  Trending Subreddits Header  -->
-                    <Grid x:Name="ui_trendingSubredditsHeader"
+                        <!--  Trending Subreddits Header  -->
+                        <Grid x:Name="ui_trendingSubredditsHeader"
                           Grid.Row="8"
                           Grid.ColumnSpan="2"
                           Background="{StaticResource BaconitAccentColorLevel2Brush}"
                           Tapped="TrendingSubredditsHeader_Tapped">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <SymbolIcon Width="25"
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <SymbolIcon Width="25"
                                     Height="25"
                                     Margin="8,8,12,8"
                                     RenderTransformOrigin="0.5, 0.5"
                                     Symbol="OpenWith">
-                            <SymbolIcon.RenderTransform>
-                                <ScaleTransform ScaleX=".9" ScaleY=".9" />
-                            </SymbolIcon.RenderTransform>
-                        </SymbolIcon>
-                        <TextBlock Grid.Column="1"
+                                <SymbolIcon.RenderTransform>
+                                    <ScaleTransform ScaleX=".9" ScaleY=".9" />
+                                </SymbolIcon.RenderTransform>
+                            </SymbolIcon>
+                            <TextBlock Grid.Column="1"
                                    Margin="0,0,0,3"
                                    VerticalAlignment="Center"
                                    FontSize="16"
                                    Style="{ThemeResource TitleTextBlockStyle}"
                                    Text="Trending Subreddits" x:Uid="TrendingSubreddits" />
-                    </Grid>
+                        </Grid>
 
 
-                    <!--  Trending Subreddits Panel  -->
-                    <StackPanel x:Name="ui_trendingSubredditsPanel"
+                        <!--  Trending Subreddits Panel  -->
+                        <StackPanel x:Name="ui_trendingSubredditsPanel"
                                 Grid.Row="9"
                                 Grid.ColumnSpan="2"
                                 MaxHeight="0"
                                 Background="{ThemeResource SystemControlBackgroundAccentBrush}">
-                        <StackPanel.Resources>
-                            <Storyboard x:Name="ui_storySubredditsPanel">
-                                <DoubleAnimation x:Name="ui_animSubredditsPanel"
+                            <StackPanel.Resources>
+                                <Storyboard x:Name="ui_storySubredditsPanel">
+                                    <DoubleAnimation x:Name="ui_animSubredditsPanel"
                                                  Duration="0:0:0.5"
                                                  EnableDependentAnimation="True"
                                                  Storyboard.TargetName="ui_trendingSubredditsPanel"
                                                  Storyboard.TargetProperty="MaxHeight">
-                                    <DoubleAnimation.EasingFunction>
-                                        <ExponentialEase EasingMode="EaseOut" Exponent="7" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </StackPanel.Resources>
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseOut" Exponent="7" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </StackPanel.Resources>
 
-                        <!--  NOTE! TrendingSubreddit_Tapped is senstive to UI layout changes. If you make a change update that also  -->
-                        <Grid Background="#01000000"
+                            <!--  NOTE! TrendingSubreddit_Tapped is senstive to UI layout changes. If you make a change update that also  -->
+                            <Grid Background="#01000000"
                               Padding="12"
                               Tapped="TrendingSubreddit_Tapped">
-                            <TextBlock x:Name="ui_trendingSubreddit1"
+                                <TextBlock x:Name="ui_trendingSubreddit1"
                                        FontSize="16"
                                        Text="/r/Baconit" />
-                        </Grid>
-                        <Grid Background="#01000000"
+                            </Grid>
+                            <Grid Background="#01000000"
                               Padding="12"
                               Tapped="TrendingSubreddit_Tapped">
-                            <TextBlock x:Name="ui_trendingSubreddit2"
+                                <TextBlock x:Name="ui_trendingSubreddit2"
                                        FontSize="16"
                                        Text="/r/WindowsPhone" />
-                        </Grid>
-                        <Grid Background="#01000000"
+                            </Grid>
+                            <Grid Background="#01000000"
                               Padding="12"
                               Tapped="TrendingSubreddit_Tapped">
-                            <TextBlock x:Name="ui_trendingSubreddit3"
+                                <TextBlock x:Name="ui_trendingSubreddit3"
                                        FontSize="16"
                                        Text="/r/Windows" />
-                        </Grid>
-                        <Grid Background="#01000000"
+                            </Grid>
+                            <Grid Background="#01000000"
                               Padding="12"
                               Tapped="TrendingSubreddit_Tapped">
-                            <TextBlock x:Name="ui_trendingSubreddit4"
+                                <TextBlock x:Name="ui_trendingSubreddit4"
                                        FontSize="16"
                                        Text="/r/Microsoft" />
-                        </Grid>
-                        <Grid Background="#01000000"
+                            </Grid>
+                            <Grid Background="#01000000"
                               Padding="12"
                               Tapped="TrendingSubreddit_Tapped">
-                            <TextBlock x:Name="ui_trendingSubreddit5"
+                                <TextBlock x:Name="ui_trendingSubreddit5"
                                        FontSize="16"
                                        Text="/r/Surface" />
-                        </Grid>
-                    </StackPanel>
+                            </Grid>
+                        </StackPanel>
 
 
-                    <!--  Account Header  -->
-                    <Grid x:Name="ui_accountHeaderGrid"
+                        <!--  Account Header  -->
+                        <Grid x:Name="ui_accountHeaderGrid"
                           Grid.Row="10"
                           Grid.ColumnSpan="2"
                           Background="{StaticResource BaconitAccentColorLevel1Brush}"
                           Tapped="AccountHeader_Tapped">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <SymbolIcon Width="25"
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <SymbolIcon Width="25"
                                     Height="25"
                                     Margin="8,8,12,8"
                                     RenderTransformOrigin="0.5, 0.5"
                                     Symbol="Contact">
-                            <SymbolIcon.RenderTransform>
-                                <ScaleTransform ScaleX=".9" ScaleY=".9" />
-                            </SymbolIcon.RenderTransform>
-                        </SymbolIcon>
-                        <TextBlock x:Name="ui_accountHeader"
+                                <SymbolIcon.RenderTransform>
+                                    <ScaleTransform ScaleX=".9" ScaleY=".9" />
+                                </SymbolIcon.RenderTransform>
+                            </SymbolIcon>
+                            <TextBlock x:Name="ui_accountHeader"
                                    Grid.Column="1"
                                    Margin="0,0,0,3"
                                    VerticalAlignment="Center"
@@ -341,27 +341,27 @@
                                    RequestedTheme="Dark"
                                    Style="{ThemeResource TitleTextBlockStyle}"
                                    Text="Account" x:Uid="accountHeader"/>
-                        <StackPanel x:Name="ui_accountHeaderKarmaHolder"
+                            <StackPanel x:Name="ui_accountHeaderKarmaHolder"
                                     Grid.Column="2"
                                     Margin="8,8,12,8"
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal"
                                     Visibility="Visible">
-                            <TextBlock x:Name="ui_accountHeaderKaramaLink"
+                                <TextBlock x:Name="ui_accountHeaderKaramaLink"
                                        Margin="0,0,0,3"
                                        FontSize="16"
                                        Foreground="#B1D2F3"
                                        Text="3500" />
-                            <TextBlock Margin="0,0,0,3"
+                                <TextBlock Margin="0,0,0,3"
                                        FontSize="16"
                                        Text=" /" />
-                            <TextBlock x:Name="ui_accountHeaderKaramaComment"
+                                <TextBlock x:Name="ui_accountHeaderKaramaComment"
                                        Margin="0,0,0,3"
                                        FontSize="16"
                                        Foreground="#FF8B60"
                                        Text=" 3500" />
-                        </StackPanel>
-                        <StackPanel x:Name="ui_accountHeaderMailBox"
+                            </StackPanel>
+                            <StackPanel x:Name="ui_accountHeaderMailBox"
                                     Grid.Column="2"
                                     VerticalAlignment="Center"
                                     Background="Transparent"
@@ -369,58 +369,59 @@
                                     Padding="11"
                                     Tapped="InboxGrid_Tapped"
                                     Visibility="Collapsed">
-                            <TextBlock x:Name="ui_inboxCountTextBlock" VerticalAlignment="Center" />
-                            <SymbolIcon Margin="8,0,0,0" Symbol="Mail" />
-                        </StackPanel>
-                    </Grid>
+                                <TextBlock x:Name="ui_inboxCountTextBlock" VerticalAlignment="Center" />
+                                <SymbolIcon Margin="8,0,0,0" Symbol="Mail" />
+                            </StackPanel>
+                        </Grid>
 
-                    <!--  Account Block  -->
-                    <StackPanel x:Name="ui_accountGrid"
+                        <!--  Account Block  -->
+                        <StackPanel x:Name="ui_accountGrid"
                                 Grid.Row="11"
                                 Grid.ColumnSpan="2"
                                 MaxHeight="0"
                                 Background="{ThemeResource SystemControlBackgroundAccentBrush}">
-                        <StackPanel.Resources>
-                            <Storyboard x:Name="ui_storyAccountGrid">
-                                <DoubleAnimation x:Name="ui_animAccountGrid"
+                            <StackPanel.Resources>
+                                <Storyboard x:Name="ui_storyAccountGrid">
+                                    <DoubleAnimation x:Name="ui_animAccountGrid"
                                                  Duration="0:0:0.5"
                                                  EnableDependentAnimation="True"
                                                  Storyboard.TargetName="ui_accountGrid"
                                                  Storyboard.TargetProperty="MaxHeight">
-                                    <DoubleAnimation.EasingFunction>
-                                        <ExponentialEase EasingMode="EaseOut" Exponent="7" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </StackPanel.Resources>
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseOut" Exponent="7" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </StackPanel.Resources>
 
-                        <Grid x:Name="ui_signInGrid"
+                            <Grid x:Name="ui_signInGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="SigninGrid_Tapped">
-                            <TextBlock x:Name="ui_signInText" Text="Sign In" x:Uid="signInGridTB"/>
-                        </Grid>
-                        <Grid x:Name="ui_profileGrid"
+                                <TextBlock x:Name="ui_signInText" Text="Sign In" x:Uid="signInGridTB"/>
+                            </Grid>
+                            <Grid x:Name="ui_profileGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="ProfileGrid_Tapped">
-                            <TextBlock Text="Profile" x:Uid="profileGridTB" />
-                        </Grid>
-                        <Grid x:Name="ui_inboxGrid"
+                                <TextBlock Text="Profile" x:Uid="profileGridTB" />
+                            </Grid>
+                            <Grid x:Name="ui_inboxGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="InboxGrid_Tapped">
-                            <TextBlock x:Name="ui_inboxText" Text="Inbox" x:Uid="inboxGridTB" />
-                        </Grid>
-                        <Grid x:Name="ui_settingsGrid"
+                                <TextBlock x:Name="ui_inboxText" Text="Inbox" x:Uid="inboxGridTB" />
+                            </Grid>
+                            <Grid x:Name="ui_settingsGrid"
                               Background="#01000000"
                               Padding="12"
                               Tapped="SettingsGrid_Tapped">
-                            <TextBlock Text="Settings" x:Uid="settingsGridTB" />
-                        </Grid>
-                    </StackPanel>
-                </Grid>
-            </SplitView.Pane>
+                                <TextBlock Text="Settings" x:Uid="settingsGridTB" />
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+                </SplitView.Pane>
 
             <!--  Conent root  -->
             <SplitView.Content>

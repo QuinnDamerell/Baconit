@@ -12,7 +12,7 @@
     <!--  A scroller to hold all of the content  -->
     <ScrollViewer x:Name="ui_contentRoot"
                   Style="{StaticResource ScrollViewerStyle}"
-                  VerticalScrollBarVisibility="Hidden">
+                  VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />

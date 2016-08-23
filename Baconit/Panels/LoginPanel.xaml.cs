@@ -35,6 +35,7 @@ namespace Baconit.Panels
         {
             this.InitializeComponent();
 
+
             // Setup the image.
             List<Uri> uriList = new List<Uri>();
             uriList.Add(new Uri("ms-appx:///Assets/Welcome/QuinnImageMedium.jpg", UriKind.Absolute));
