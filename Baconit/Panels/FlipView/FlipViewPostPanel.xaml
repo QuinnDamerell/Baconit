@@ -8,6 +8,10 @@
              xmlns:local="using:Baconit.Panels.FlipView"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
+             xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+             xmlns:behaviors="using:Microsoft.Toolkit.Uwp.UI.Animations.Behaviors"
+             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+
              d:DesignHeight="200"
              d:DesignWidth="1280"
              mc:Ignorable="d">

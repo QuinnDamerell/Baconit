@@ -246,7 +246,7 @@
 
         <!--  NSFW block  -->
         <Grid x:Name="ui_nsfwBlockRoot"
-              Background="#191919"
+              Background="Black"
               Tapped="NsfwBlockRoot_Tapped"
               Visibility="Collapsed">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">

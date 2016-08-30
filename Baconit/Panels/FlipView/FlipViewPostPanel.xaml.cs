@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.UI.Animations;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -38,6 +40,8 @@ namespace Baconit.Panels.FlipView
         public Action<object, CommentBoxOnOpenedArgs> CommentBoxOpened;
         public Func<object, OnCommentSubmittedArgs, bool> CommentBoxSubmitted;
     }
+
+   
 
     public sealed partial class FlipViewPostPanel : UserControl
     {
@@ -125,6 +129,8 @@ namespace Baconit.Panels.FlipView
             get { return (bool)GetValue(IsVisibleProperty); }
             set { SetValue(IsVisibleProperty, value); }
         }
+
+      
 
         public static readonly DependencyProperty IsVisibleProperty =
             DependencyProperty.Register(
