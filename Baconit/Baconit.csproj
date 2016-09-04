@@ -18,13 +18,13 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>499ADED1BF67E25CA80434C24EDDA8EB85D8C20B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>81F37290DB149CD3B4F3289B821B50992EF24885</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <AppxPackageDir>C:\Users\Vitor\Documents\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
-    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
     <HockeyAppResourceId>b9aacd166c864ee6892ae436c1157ad6</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -105,6 +105,7 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="Baconit_TemporaryKey.pfx" />
     <None Include="project.json" />
+    <PRIResource Include="Strings\it-IT\Resources.resw" />
     <PRIResource Include="Strings\pt-BR\Resources.resw">
       <SubType>Designer</SubType>
     </PRIResource>
@@ -533,9 +534,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Strings\it-IT\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
