@@ -28,7 +28,9 @@ using Windows.UI;
 using Baconit.Panels.FlipView;
 using Windows.ApplicationModel.Resources.Core;
 using Microsoft.Services;
+using Microsoft.Services.Store.Engagement;
 using Windows.UI.ViewManagement;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Baconit.Panels
 {
@@ -59,7 +61,7 @@ namespace Baconit.Panels
             this.DataContext = this;
             Loaded += SubredditPanel_Loaded;
 
-            if (Microsoft.Services.Store.Engagement.Feedback.IsSupported)
+            if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
             {
                 this.feedbackButton.Visibility = Visibility.Visible;
             }
@@ -524,7 +526,7 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
             m_host.Navigate(typeof(UserProfile), post.Author, args);
-           
+
         }
 
         private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)
@@ -561,10 +563,12 @@ namespace Baconit.Panels
             }
         }
 
-        private async void FeedbackHub_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void FeedbackHub_Click(object sender, RoutedEventArgs e)
         {
 
-            await Microsoft.Services.Store.Engagement.Feedback.LaunchFeedbackAsync();
+            var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+            await launcher.LaunchAsync();
+
 
         }
 

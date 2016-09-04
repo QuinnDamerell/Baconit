@@ -12,6 +12,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
+   
     <UserControl.Resources>
         <DataTemplate x:Key="MessageListItem" x:DataType="dataObjects:Message">
             <Grid Margin="4,12,12,12"
@@ -138,3 +139,4 @@
                                    OnCommentSubmitted="ReplyBox_OnCommentSubmitted" />
     </Grid>
 </UserControl>
+

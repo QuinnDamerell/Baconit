@@ -307,7 +307,7 @@
                       Label="More" x:Uid="AppBarMenuButton"/>
                         </CommandBar.PrimaryCommands>
                         <CommandBar.SecondaryCommands>
-                            <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Tapped="FeedbackHub_Tapped" x:Name="feedbackButton"/>
+                            <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Click="FeedbackHub_Click" x:Name="feedbackButton"/>
                             <AppBarButton Label="Enter Full Screen Mode" x:Uid="FullScreenModeXAML" Tapped="FullScreenMode_Tapped" x:Name="FullScreenAppBar"/>
                         </CommandBar.SecondaryCommands>
                     </CommandBar>

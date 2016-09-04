@@ -111,7 +111,7 @@
                                HorizontalAlignment="Center"
                                Text="{x:Bind Context.Post.Title}"
                                TextAlignment="Center"
-                               TextWrapping="Wrap">
+                               TextWrapping="Wrap" FontSize="18px">
                         <TextBlock.RenderTransform>
                             <TranslateTransform x:Name="ui_headerTitleTransform" />
                         </TextBlock.RenderTransform>
