@@ -1,7 +1,6 @@
 ﻿using BaconBackend;
 using BaconBackend.Helpers;
 using Baconit.Interfaces;
-using Microsoft.HockeyApp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -57,7 +56,6 @@ namespace Baconit
         /// </summary>
         public App()
         {
-            Microsoft.HockeyApp.HockeyClient.Current.Configure("b9aacd166c864ee6892ae436c1157ad6");
 
             //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(true);
 

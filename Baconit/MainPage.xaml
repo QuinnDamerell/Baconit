@@ -415,7 +415,7 @@
                             <Grid x:Name="ui_settingsGrid"
                               Background="#01000000"
                               Padding="12"
-                              Tapped="SettingsGrid_Tapped">
+                              Tapped="SettingsGrid_Tapped" AccessKey="F" >
                                 <TextBlock Text="Settings" x:Uid="settingsGridTB" />
                             </Grid>
                         </StackPanel>

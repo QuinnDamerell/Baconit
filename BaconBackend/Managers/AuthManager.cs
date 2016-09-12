@@ -15,8 +15,8 @@ namespace BaconBackend.Managers
 
     public class AuthManager
     {
-        private const string BACONIT_APP_ID = "EU5cWoJCJ5HcPQ";
-        private const string BACONIT_REDIRECT_URL = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
+        private const string REDDUNT_APP_ID = "S3wokzEmbyCSSg";
+        private const string REDDUNT_REDIRECT_URL = "http://vitorgrs.github.io/Reddunt/";
 
         private class AccessTokenResult
         {
@@ -176,11 +176,11 @@ namespace BaconBackend.Managers
             string nonce = GetNonce();
 
             // Create the nav string
-            string tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
-                + "client_id=" + BACONIT_APP_ID
+            string tokenRequestString = "https://ssl.reddit.com/api/v1/authorize.compact?"
+                + "client_id=" + REDDUNT_APP_ID
                 + "&response_type=code"
                 + "&state=" + nonce
-                + "&redirect_uri=" + BACONIT_REDIRECT_URL
+                + "&redirect_uri=" + REDDUNT_REDIRECT_URL
                 + "&duration=permanent"
                 + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
                 + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
@@ -189,7 +189,7 @@ namespace BaconBackend.Managers
             try
             {
                 Uri start = new Uri(tokenRequestString, UriKind.Absolute);
-                Uri end = new Uri(BACONIT_REDIRECT_URL, UriKind.Absolute);
+                Uri end = new Uri(REDDUNT_REDIRECT_URL, UriKind.Absolute);
                 WebAuthenticationResult result = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, start, end);
 
                 if(result.ResponseStatus == WebAuthenticationStatus.Success)
@@ -280,10 +280,10 @@ namespace BaconBackend.Managers
                 List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
                 postData.Add(new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"));
                 postData.Add(new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", code));
-                postData.Add(new KeyValuePair<string, string>("redirect_uri", BACONIT_REDIRECT_URL));
+                postData.Add(new KeyValuePair<string, string>("redirect_uri", REDDUNT_REDIRECT_URL));
 
                 // Create the auth header
-                var byteArray = Encoding.UTF8.GetBytes(BACONIT_APP_ID+":");
+                var byteArray = Encoding.UTF8.GetBytes(REDDUNT_APP_ID+":");
                 var base64String = "Basic " + Convert.ToBase64String(byteArray);
                 IHttpContent response = await m_baconMan.NetworkMan.MakePostRequest(accessTokenRequest, postData, base64String);
                 string responseString = await response.ReadAsStringAsync();

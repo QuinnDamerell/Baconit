@@ -1203,5 +1203,7 @@ namespace Baconit
             bool isHandled = false;
             App.BaconMan.OnBackButton_Fired(ref isHandled);
         }
+
+       
     }
 }
