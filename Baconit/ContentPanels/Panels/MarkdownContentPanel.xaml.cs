@@ -75,6 +75,14 @@ namespace Baconit.ContentPanels.Panels
                 m_markdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
                 m_markdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
                 m_markdownBlock.Markdown = m_base.Source.SelfText;
+
+                Binding fontSizeBinding = new Binding
+                {
+                    Source = App.BaconMan.UiSettingsMan,
+                    Path = new PropertyPath("PostView_Markdown_FontSize")
+                };
+                m_markdownBlock.SetBinding(MarkdownTextBlock.FontSizeProperty, fontSizeBinding);
+
                 ui_contentRoot.Children.Add(m_markdownBlock);
             });
         }

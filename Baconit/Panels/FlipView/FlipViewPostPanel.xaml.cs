@@ -971,6 +971,36 @@ namespace Baconit.Panels.FlipView
             App.BaconMan.ShowGlobalContent(e.Link);
         }
 
+        /// <summary>
+        /// Fired when a user clicks the "zoom in" menu entry
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ZoomIn_Click(object sender, RoutedEventArgs e)
+        {
+            App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize++;
+        }
+
+        /// <summary>
+        /// Fired when a user clicks the "zoom out" menu entry
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ZoomOut_Click(object sender, RoutedEventArgs e)
+        {
+            App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize--;
+        }
+
+        /// <summary>
+        /// Fired when a user clicks the "reset zoom" menu entry
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ZoomReset_Click(object sender, RoutedEventArgs e)
+        {
+            App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize = 14;
+        }
+
         #endregion
 
         #region Full Screen Logic
