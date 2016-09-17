@@ -35,6 +35,7 @@ namespace Baconit.ContentPanels.Panels
         {
             this.InitializeComponent();
             m_base = panelBase;
+            this.initializePinchHandling();
         }
 
         /// <summary>
@@ -153,6 +154,47 @@ namespace Baconit.ContentPanels.Panels
             }
         }
 
+        #endregion
+
+        #region Pinch Scale Handling
+        /// <summary>
+        /// enables listening for "pinch" scaling events
+        /// </summary>
+        private void initializePinchHandling()
+        {
+            ManipulationMode |= ManipulationModes.Scale;
+            ManipulationStarted += PinchManipulationStarted;
+            ManipulationDelta += PinchManipulationDelta;
+        }
+
+        /// <summary>
+        /// font size at pinch start
+        /// </summary>
+        private int m_initialFontSize;
+
+        /// <summary>
+        /// save font size at pinch start
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PinchManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            m_initialFontSize = App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize;
+        }
+
+        /// <summary>
+        /// set new font size while pinching (in steps of 1)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PinchManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            double newSize = e.Cumulative.Scale * m_initialFontSize;
+
+            if (Math.Abs(newSize - App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize) >= 1) {
+                App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize = (int)newSize;
+            }
+        }
         #endregion
     }
 }
