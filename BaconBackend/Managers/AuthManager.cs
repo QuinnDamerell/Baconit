@@ -176,7 +176,7 @@ namespace BaconBackend.Managers
             string nonce = GetNonce();
 
             // Create the nav string
-            string tokenRequestString = "https://ssl.reddit.com/api/v1/authorize.compact?"
+            string tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
                 + "client_id=" + REDDUNT_APP_ID
                 + "&response_type=code"
                 + "&state=" + nonce
