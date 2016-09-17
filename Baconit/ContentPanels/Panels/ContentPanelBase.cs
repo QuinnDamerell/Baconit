@@ -252,6 +252,47 @@ namespace Baconit.ContentPanels.Panels
 
         #region Create Control
 
+        public static Type getControlType(ContentPanelSource source, Object callingClass = null) {
+            try
+            {
+                if (GifImageContentPanel.CanHandlePost(source))
+                {
+                    return typeof(GifImageContentPanel);
+                }
+                else if (YoutubeContentPanel.CanHandlePost(source))
+                {
+                    return typeof(YoutubeContentPanel);
+                }
+                else if (BasicImageContentPanel.CanHandlePost(source))
+                {
+                    return typeof(BasicImageContentPanel);
+                }
+                else if (MarkdownContentPanel.CanHandlePost(source))
+                {
+                    return typeof(MarkdownContentPanel);
+                }
+                else if (RedditContentPanel.CanHandlePost(source))
+                {
+                    return typeof(RedditContentPanel);
+                }
+                else if (CommentSpoilerContentPanel.CanHandlePost(source))
+                {
+                    return typeof(CommentSpoilerContentPanel);
+                }
+                else if (WindowsAppContentPanel.CanHandlePost(source))
+                {
+                    return typeof(WindowsAppContentPanel);
+                }
+            }
+            catch (Exception e)
+            {
+                // If we fail here we will fall back to the web browser.
+                App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
+                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(callingClass, "FailedToQueryCanHandlePost", e);
+            }
+            return typeof(WebPageContentPanel);
+        }
+
         public async Task<bool> CreateContentPanel(ContentPanelSource source, bool canLoadLargePanels)
         {
             // Indicates if the panel was loaded.
@@ -267,53 +308,16 @@ namespace Baconit.ContentPanels.Panels
             if (!source.ForceWeb)
             {
                 // Try to figure out the type.
-                try
-                {
-                    if (GifImageContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(GifImageContentPanel);
-                    }
-                    else if (YoutubeContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(YoutubeContentPanel);
-                    }
-                    else if (BasicImageContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(BasicImageContentPanel);
-                    }
-                    else if (MarkdownContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(MarkdownContentPanel);
-                    }
-                    else if (RedditContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(RedditContentPanel);
-                    }
-                    else if (CommentSpoilerContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(CommentSpoilerContentPanel);
-                    }
-                    else if (WindowsAppContentPanel.CanHandlePost(source))
-                    {
-                        controlType = typeof(WindowsAppContentPanel);
-                    }
-                    else
-                    {
-                        // This is a web browser
+                controlType = getControlType(source, this);
+                if (controlType == typeof(WebPageContentPanel)) {
+                    // This is a web browser
 
-                        // If we are blocking large panels don't allow the
-                        // browser.
-                        if (!canLoadLargePanels)
-                        {
-                            loadedPanel = false;
-                        }
+                    // If we are blocking large panels don't allow the
+                    // browser.
+                    if (!canLoadLargePanels)
+                    {
+                        loadedPanel = false;
                     }
-                }
-                catch (Exception e)
-                {
-                    // If we fail here we will fall back to the web browser.
-                    App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToQueryCanHandlePost", e);
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using BaconBackend.Collectors;
+using BaconBackend.DataObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,12 +11,12 @@ namespace BaconBackend.Managers
 {
     public enum NsfwBlockType
     {
-        Always = 0,        
+        Always = 0,
         PerSubreddit,
         Never,
     }
 
-    public class UiSettingManager
+    public class UiSettingManager : BindableBase
     {
         BaconManager m_baconMan;
 
@@ -547,6 +548,50 @@ namespace BaconBackend.Managers
         /// Used to keep track of how many pages have been removed.
         /// </summary>
         public int PagesMemoryCleanedUp = 0;
+
+        #endregion
+
+        #region PostView
+
+        /// <summary>
+        /// The current zoom level for MarkDown View
+        /// </summary>
+        public int PostView_Markdown_FontSize
+        {
+            get
+            {
+                if (!m_postview_markdown_FontSize.HasValue)
+                {
+                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.PostView_Markdown_FontSize"))
+                    {
+                        SetProperty(
+                            ref m_postview_markdown_FontSize,
+                            m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.PostView_Markdown_FontSize"),
+                            "PostView_Markdown_FontSize"
+                        );
+                    }
+                    else
+                    {
+                        SetProperty(
+                            ref m_postview_markdown_FontSize,
+                            14,
+                            "PostView_Markdown_FontSize"
+                        );
+                    }
+                }
+                return m_postview_markdown_FontSize.Value;
+            }
+            set
+            {
+                SetProperty(
+                    ref m_postview_markdown_FontSize,
+                    value,
+                    "PostView_Markdown_FontSize"
+                );
+                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.PostView_Markdown_FontSize", m_postview_markdown_FontSize.Value);
+            }
+        }
+        private int? m_postview_markdown_FontSize = null;
 
         #endregion
     }
