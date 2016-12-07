@@ -27,18 +27,18 @@
         <uap:SplashScreen Image="Assets\AppAssets\SplashScreen.png" BackgroundColor="transparent" />
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="reddunt">
-            <uap:Logo>Assets\AppAssets\Square44x44\Square44.png</uap:Logo>
-            <uap:DisplayName>Reddunt</uap:DisplayName>
-          </uap:Protocol>
-        </uap:Extension>
         <Extension Category="windows.backgroundTasks" EntryPoint="BaconBackground.BackgroundEntry">
           <BackgroundTasks>
             <Task Type="systemEvent" />
             <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="reddunt">
+            <uap:Logo>Assets\AppAssets\Square44x44\Square44.png</uap:Logo>
+            <uap:DisplayName>Reddunt</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
