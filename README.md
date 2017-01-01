@@ -1,4 +1,6 @@
 # Baconit
+
+[![Join the chat at https://gitter.im/QuinnDamerell/Baconit](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuinnDamerell/Baconit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 The highest rated reddit client for Windows Phone has been rewritten from the ground up and is now available for all Windows 10 devices. Now with a dynamic new UI, faster speeds, and features you have been asking for. Welcome to the new Baconit. We know you’re going to love it.
 
 ##Quick Links
