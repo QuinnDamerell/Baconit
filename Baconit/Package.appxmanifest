@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap uap3 mp">
-  <Identity Name="63002SalvatoreDev.Reddunt" Publisher="CN=95B45669-0162-487E-9842-E3D6299BED6B" Version="2.1.2.0" />
+  <Identity Name="63002SalvatoreDev.Reddunt" Publisher="CN=95B45669-0162-487E-9842-E3D6299BED6B" Version="2.1.3.0" />
   <mp:PhoneIdentity PhoneProductId="0c7dd4f8-f15a-4441-b1aa-55d4eea336a8" PhonePublisherId="151d3a27-e392-4666-a7d4-60cdbcadf73f" />
   <Properties>
     <DisplayName>Reddunt</DisplayName>
@@ -27,18 +27,18 @@
         <uap:SplashScreen Image="Assets\AppAssets\SplashScreen.png" BackgroundColor="transparent" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BaconBackground.BackgroundEntry">
-          <BackgroundTasks>
-            <Task Type="systemEvent" />
-            <Task Type="timer" />
-          </BackgroundTasks>
-        </Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="reddunt">
             <uap:Logo>Assets\AppAssets\Square44x44\Square44.png</uap:Logo>
             <uap:DisplayName>Reddunt</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="BaconBackground.BackgroundEntry">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>
