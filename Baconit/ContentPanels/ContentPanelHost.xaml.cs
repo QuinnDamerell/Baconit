@@ -668,7 +668,7 @@ namespace Baconit.ContentPanels
             if (show)
             {
                 ui_genericTextHeader.Text = message == null ? "Error loading post" : message;
-                ui_genericTextSub.Text = subMessage == null ? "Tap anywhere to open in Edge" : subMessage;
+                ui_genericTextSub.Text = subMessage == null ? "Tap anywhere to open in your browser" : subMessage;
             }
 
             if (show)
