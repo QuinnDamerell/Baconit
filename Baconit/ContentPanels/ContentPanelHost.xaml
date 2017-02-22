@@ -240,7 +240,7 @@
                            HorizontalAlignment="Center"
                            FontSize="16"
                            Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                           Text="Tap anywhere to open in Edge" />
+                           Text="Tap anywhere to open in your browser" />
             </Grid>
         </Grid>
 
