@@ -11,17 +11,17 @@
     <AssemblyName>Baconit</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>06CCE5EDF46E31E013D1DA401F39106FA08D13D3</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>A53C3E5784C0B61D9CAB61819E07DD1EBE595760</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <AppxPackageDir>C:\Users\Vitor\Documents\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
@@ -515,10 +515,6 @@
       <Project>{c79ac423-5427-4379-ab5b-11f531b5229c}</Project>
       <Name>BaconBackground</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UniversalMarkdown\UniversalMarkdown\UniversalMarkdown.csproj">
-      <Project>{9ffc3b68-696a-4342-a2b8-2eadddef7ff9}</Project>
-      <Name>UniversalMarkdown</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <XliffResource Include="MultilingualResources\Baconit.pt-BR.xlf" />
@@ -530,7 +526,7 @@
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
-    <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
+    <SDKReference Include="WindowsMobile, Version=10.0.15063.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>

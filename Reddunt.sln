@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25618.0
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baconit", "Baconit\Baconit.csproj", "{904F56DA-B11C-43DC-9EB9-417501E79437}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -12,8 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaconBackend", "BaconBackend\BaconBackend.csproj", "{760D26FA-938B-4B0A-9C87-915ADAED244D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaconBackground", "BaconBackground\BaconBackground.csproj", "{C79AC423-5427-4379-AB5B-11F531B5229C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalMarkdown", "UniversalMarkdown\UniversalMarkdown\UniversalMarkdown.csproj", "{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,22 +77,6 @@ Global
 		{C79AC423-5427-4379-AB5B-11F531B5229C}.Release|x64.Build.0 = Release|x64
 		{C79AC423-5427-4379-AB5B-11F531B5229C}.Release|x86.ActiveCfg = Release|x86
 		{C79AC423-5427-4379-AB5B-11F531B5229C}.Release|x86.Build.0 = Release|x86
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|ARM.ActiveCfg = Debug|ARM
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|ARM.Build.0 = Debug|ARM
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|x64.ActiveCfg = Debug|x64
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|x64.Build.0 = Debug|x64
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|x86.ActiveCfg = Debug|x86
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Debug|x86.Build.0 = Debug|x86
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|ARM.ActiveCfg = Release|ARM
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|ARM.Build.0 = Release|ARM
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|x64.ActiveCfg = Release|x64
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|x64.Build.0 = Release|x64
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|x86.ActiveCfg = Release|x86
-		{9FFC3B68-696A-4342-A2B8-2EADDDEF7FF9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
