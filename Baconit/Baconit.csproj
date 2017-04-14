@@ -18,11 +18,11 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>A53C3E5784C0B61D9CAB61819E07DD1EBE595760</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>33B2DE16F7E9588A7AB690FCAFC1C27B65512F58</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <AppxPackageDir>C:\Users\Vitor\Documents\</AppxPackageDir>
+    <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
+    <AppxPackageDir>C:\Users\vitor\Documents\Reddunt APPX\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
     <HockeyAppResourceId>b9aacd166c864ee6892ae436c1157ad6</HockeyAppResourceId>
