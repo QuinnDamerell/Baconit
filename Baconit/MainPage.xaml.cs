@@ -144,6 +144,23 @@ namespace Baconit
         /// <param name="e"></param>
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+
+            // Status Bar will always be black, even on light theme
+
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+
+            {
+
+                var statusBar = StatusBar.GetForCurrentView();
+
+                statusBar.ForegroundColor = Colors.White;
+
+                statusBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
+
+                statusBar.BackgroundOpacity = 1;
+
+            }
+
             // Set the current information to the UI.
             UpdateSubredditList(App.BaconMan.SubredditMan.SubredditList);
             UpdateAccount();
