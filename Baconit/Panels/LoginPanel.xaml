@@ -5,14 +5,27 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+             xmlns:behaviors="using:Microsoft.Toolkit.Uwp.UI.Animations.Behaviors"
+             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
              RequestedTheme="Dark"
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot">
-        <helperControls:SlidingImages x:Name="ui_imageScrolBackground" Opacity="0.45" />
+        <helperControls:SlidingImages x:Name="ui_imageScrolBackground" />
         <Grid>
+            <interactivity:Interaction.Behaviors>
+                <behaviors:Blur x:Name="BlurBehavior"
+                        Value="13"
+                        Duration="3000"
+                        Delay="0"
+                        AutomaticallyStart="True"/>
+            </interactivity:Interaction.Behaviors>
+        </Grid>
+        <Grid>
+           
             <Grid x:Name="ui_loginUI"
                   MaxWidth="280"
                   HorizontalAlignment="Center"
@@ -37,6 +50,7 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
+              
                 <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Login" />
                 <TextBlock Grid.Row="1"
                            Margin="0,8"
