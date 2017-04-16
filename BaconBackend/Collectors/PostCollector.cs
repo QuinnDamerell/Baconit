@@ -115,6 +115,8 @@ namespace BaconBackend.Collectors
                 {
                     // Special case for the saved posts
                     postCollectionUrl = $"/user/{m_baconMan.UserMan.CurrentUser.Name}/saved/.json";
+                    optionalArgs = "type=links";
+
                 }
                 else if (!String.IsNullOrWhiteSpace(collectorContext.forcePostId))
                 {
