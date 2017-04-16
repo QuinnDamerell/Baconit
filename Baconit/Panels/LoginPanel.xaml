@@ -20,7 +20,7 @@
                 <behaviors:Blur x:Name="BlurBehavior"
                         Value="13"
                         Duration="3000"
-                        Delay="0"
+                        Delay="20"
                         AutomaticallyStart="True"/>
             </interactivity:Interaction.Behaviors>
         </Grid>
