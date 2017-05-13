@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -16,15 +16,15 @@
 
         <!--  Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="Black"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="UPDATING AND LOCK SCREEN IMAGES" x:Uid="UpdatingLockTB"/>
+                       Text="Wallpaper settings" x:Uid="UpdatingLockTB" FontSize="32" TextWrapping="Wrap"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
+        <ScrollViewer Grid.Row="1" Background="Black" Style="{StaticResource ScrollViewerStyle}">
             <StackPanel Grid.Row="1" Margin="12">
                  <TextBlock Text="Automatically update lock screen image" TextWrapping="Wrap" x:Uid="AutoUpdateTB"/>
                 <ToggleSwitch x:Name="ui_enableLockScreen" Toggled="ToggleSwitch_Toggled" />

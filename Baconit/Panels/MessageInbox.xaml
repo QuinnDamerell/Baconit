@@ -77,18 +77,18 @@
         <!--  Message Header  -->
         <Grid x:Name="ui_messageHeader"
               Grid.Row="0"
-              Padding="12">
+              Padding="12" Background="Black">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="MESSAGE INBOX" x:Uid="MessageInboxTB" />
+                       Text="Message inbox" x:Uid="MessageInboxTB" FontSize="32"/>
             <Button Grid.Column="1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Background="#333333"
+                    Background="Black"
                     BorderBrush="Transparent"
                     BorderThickness="0"
                     Click="Refresh_Click">
@@ -104,10 +104,10 @@
         <ListView x:Name="ui_messageList"
                   Grid.Row="1"
                   Background="Black"
-                  ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                  
                   ItemTemplate="{StaticResource MessageListItem}"
                   SelectionChanged="MessageList_SelectionChanged"
-                  Style="{StaticResource ListViewStyle}">
+                 >
 
             <!--  This animates the messages in  -->
             <ListView.ItemContainerTransitions>

@@ -136,5 +136,6 @@ namespace Baconit.Panels.SettingsPanels
 
             App.BaconMan.UiSettingsMan.FlipView_MinimizeStoryHeader = ui_minimizeStoryHeader.IsOn;
         }
+
     }
 }

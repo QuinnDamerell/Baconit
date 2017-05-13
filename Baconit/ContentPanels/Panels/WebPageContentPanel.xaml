@@ -19,7 +19,7 @@
                     Margin="24,24,12,24"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Background="#BB000000"
+                    Background="{StaticResource BackgroundTopBlur}"
                     CornerRadius="2"
                     Opacity="0"
                     Tapped="BackButton_Tapped"
@@ -35,7 +35,8 @@
                     </Storyboard>
                 </Border.Resources>
                 <ContentPresenter Width="40" Height="40">
-                    <SymbolIcon Symbol="Back" />
+                    <FontIcon Glyph="&#xE0A6;" />
+                   
                 </ContentPresenter>
             </Border>
             <Border x:Name="ui_readingMode"
@@ -46,12 +47,12 @@
                     VerticalAlignment="Bottom"
                     Background="#BB000000"
                     CornerRadius="2"
-                    Tapped="ReadingMode_Tapped">
-                <Grid>
+                    Tapped="ReadingMode_Tapped" Visibility="Collapsed">
+                <Grid Visibility="Collapsed">
                     <ContentPresenter x:Name="ui_readingModeIconHolder"
                                       Width="40"
-                                      Height="40">
-                        <SymbolIcon x:Name="ui_readingModeIdon" Symbol="PreviewLink" />
+                                      Height="40" Visibility="Collapsed">
+                        <SymbolIcon x:Name="ui_readingModeIdon" Symbol="PreviewLink" Visibility="Collapsed"/>
                     </ContentPresenter>
                     <ProgressRing x:Name="ui_readingModeLoading"
                                   Width="23"
@@ -66,11 +67,11 @@
                     Margin="12,24,24,24"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Background="#BB000000"
+                    Background="{StaticResource BackgroundTopBlur}"
                     CornerRadius="2"
                     Tapped="FullScreenHolder_Tapped">
                 <ContentPresenter Width="40" Height="40">
-                    <SymbolIcon x:Name="ui_fullScreenIcon" Symbol="FullScreen" />
+                    <SymbolIcon Symbol="FullScreen" x:Name="ui_fullScreenIcon" />
                 </ContentPresenter>
             </Border>
         </StackPanel>

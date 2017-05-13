@@ -34,7 +34,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a ref to the media element that is playing.
         /// </summary>
-        MediaElement m_youTubeVideo;
+        
 
         /// <summary>
         /// Holds the request to not sleep the computer while a video is playing.
@@ -48,9 +48,10 @@ namespace Baconit.ContentPanels.Panels
 
             m_base = panelBase;
 
-
+            
         }
-
+     
+     
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
@@ -80,6 +81,8 @@ namespace Baconit.ContentPanels.Panels
             }
         }
 
+     
+
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
@@ -105,17 +108,15 @@ namespace Baconit.ContentPanels.Panels
                     }
 
                     // Setup the video
-                    m_youTubeVideo = new MediaElement();
-                    m_youTubeVideo.AreTransportControlsEnabled = true;
-                    m_youTubeVideo.TransportControls.IsCompact = true;
+                   
+                    m_youTubeVideo.AutoPlay = false;
                     m_youTubeVideo.CurrentStateChanged += MediaElement_CurrentStateChanged;
                     m_youTubeVideo.Source = youTubeUri.Uri;
-                    ui_contentRoot.Children.Add(m_youTubeVideo);
+                   
 
                 });
             });
         }
-
 
 
         /// <summary>

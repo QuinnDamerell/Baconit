@@ -1,0 +1,1331 @@
+﻿<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:media="using:Microsoft.UI.Xaml.Media" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+         
+            <Color x:Key="SystemRevealListLowColor">#18FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="TreeViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <Color x:Key="SystemChromeAltHighColor">#FF1F1F1F</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <Color x:Key="SystemRevealChromeMediumColor">#F2393939</Color>
+            <Color x:Key="SystemChromeAltMediumHighColor">#CC1F1F1F</Color>
+            <Color x:Key="SystemRevealAltHighColor">#F2000000</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark1Brush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <Color x:Key="SystemRevealBaseMediumColor">#91FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentMediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicElementMediumBrush" Color="{StaticResource SystemAltMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentMediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark2MediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark1Brush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="TreeViewItemReorderPlaceholderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundTransparentBrush" Color="Transparent" />
+            <Color x:Key="SystemRevealAltLowColor">#30000000</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark2MediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumHighBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumHighBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <Color x:Key="SystemRevealChromeMediumLowColor">#F22B2B2B</Color>
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicElementBrush" Color="{StaticResource SystemChromeLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <Color x:Key="SystemRevealBaseHighColor">#F2FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicWindowBrush" Color="{StaticResource SystemChromeLowColor}" />
+            <Color x:Key="SystemRevealChromeAltLowColor">#F2F9F9F9</Color>
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicWindowMediumBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicElementMediumBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <Color x:Key="SystemRevealBaseLowColor">#30FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicWindowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicElementBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicWindowMediumBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicElementMediumBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ListViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicWindowBrush" Color="{StaticResource SystemAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackMediumBrush" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            <Color x:Key="SystemRevealChromeGrayColor">#F2767676</Color>
+            <Color x:Key="SystemRevealChromeWhiteColor">#F2FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicElementBrush" Color="{StaticResource SystemAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicWindowMediumBrush" Color="{StaticResource SystemAltMediumLowColor}" />
+            <Color x:Key="SystemRevealAltMediumColor">#91000000</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumColor">#C2000000</Color>
+            <Color x:Key="SystemRevealBaseMediumHighColor">#C2FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <Color x:Key="SystemRevealAltMediumHighColor">#C2000000</Color>
+            <Color x:Key="SystemRevealAltMediumLowColor">#61000000</Color>
+            <Color x:Key="SystemRevealBaseMediumLowColor">#61FFFFFF</Color>
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAltTransparentBrush" Color="Transparent" />
+            <Color x:Key="SystemRevealChromeBlackHighColor">#F2000000</Color>
+            <Color x:Key="SystemRevealChromeLowColor">#F21F1F1F</Color>
+            <Color x:Key="SystemRevealChromeBlackLowColor">#30000000</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumLowColor">#61000000</Color>
+            <x:String x:Key="RatingControlUnselectedState"></x:String>
+            <Color x:Key="SystemRevealChromeHighColor">#F2767676</Color>
+            <Color x:Key="SystemRevealListMediumColor">#30FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="GridViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackHighBrush" Color="{StaticResource SystemChromeBlackHighColor}" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumLowBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeOpacity">0.8</x:Double>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor1FallbackToAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor2FallbackToAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltHighBrush" Color="{StaticResource SystemAltHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="TreeViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltMediumHighBrush" Color="{StaticResource SystemAltMediumHighColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentHighBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.9" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentLowBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.6" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentMediumBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.8" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundChecked" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeAltLowBrush" Color="{StaticResource SystemChromeAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeHighBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentHighBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.9" />
+            <SolidColorBrush x:Key="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" Color="{ThemeResource SystemAccentColorDark3}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="RatingControlForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="RatingControlPointerOverPlaceholderUnselectedForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminateDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackHighBrush" Color="{StaticResource SystemChromeBlackHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackMediumBrush" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumLowBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <StaticResource x:Key="ButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundChecked" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPressed" ResourceKey="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminate" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <Color x:Key="SystemChromeMediumHighColor">#FF323232</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminateDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RatingControlBackground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderHighlightAltTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeThickness">2</x:Double>
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminate" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlDisabledSelectedForeground" ResourceKey="SystemBaseMediumLowColor" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPressed" ResourceKey="SystemControlRevealBackgroundHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowFallbackToTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightListMediumRevealListLowBackgroundBrush" Color="{StaticResource SystemListMediumColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlay" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderForegroundTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentLowBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.6" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentMediumBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.8" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrush" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelected" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlPlaceholderSelectedForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="RatingControlSelectedForeground" ResourceKey="SystemControlForegroundAccentBrush" />
+            <StaticResource x:Key="RatingControlDisabledUnselectedForeground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <x:String x:Key="RatingControlAllOtherStates"></x:String>
+            <StaticResource x:Key="NavigationViewDefaultPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewExpandedPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewSelectionIndicatorForeground" ResourceKey="SystemControlForegroundAccentBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPointerOver" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPressed" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundDisabled" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="{StaticResource SystemAltHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeFillThemeBrush" Color="{StaticResource SystemChromeDisabledHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeStrokeThemeBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeImageSourceStrokeOpacity">1</x:Double>
+            <x:Double x:Key="PersonPictureEllipseStrokeThickness">0</x:Double>
+            <StaticResource x:Key="TreeViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelected" ResourceKey="SystemControlHighlightListAccentLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListAccentHighBrush" />
+            <StaticResource x:Key="TreeViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <Color x:Key="SystemRevealListLowColor">#17000000</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="TreeViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <Color x:Key="SystemChromeAltHighColor">#FFFFFFFF</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <Color x:Key="SystemRevealChromeMediumColor">#E6E6E6E6</Color>
+            <Color x:Key="SystemChromeAltMediumHighColor">#CCFFFFFF</Color>
+            <Color x:Key="SystemRevealAltHighColor">#E6FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark1Brush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <Color x:Key="SystemRevealBaseMediumColor">#8A000000</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentMediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicElementMediumBrush" Color="{StaticResource SystemAltMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentMediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark2MediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark1Brush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="TreeViewItemReorderPlaceholderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundTransparentBrush" Color="Transparent" />
+            <Color x:Key="SystemRevealAltLowColor">#2EFFFFFF</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark2MediumHighBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumHighBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumHighBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <Color x:Key="SystemRevealChromeMediumLowColor">#E6F2F2F2</Color>
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicElementBrush" Color="{StaticResource SystemChromeLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <Color x:Key="SystemRevealBaseHighColor">#E6000000</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicWindowBrush" Color="{StaticResource SystemChromeLowColor}" />
+            <Color x:Key="SystemRevealChromeAltLowColor">#E6171717</Color>
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicWindowMediumBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicElementMediumBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <Color x:Key="SystemRevealBaseLowColor">#2E000000</Color>
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicWindowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicElementBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicWindowMediumBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicElementMediumBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ListViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicWindowBrush" Color="{StaticResource SystemAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackMediumBrush" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            <Color x:Key="SystemRevealChromeGrayColor">#E6767676</Color>
+            <Color x:Key="SystemRevealChromeWhiteColor">#E6FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicElementBrush" Color="{StaticResource SystemAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicWindowMediumBrush" Color="{StaticResource SystemAltMediumLowColor}" />
+            <Color x:Key="SystemRevealAltMediumColor">#8AFFFFFF</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumColor">#B8000000</Color>
+            <Color x:Key="SystemRevealBaseMediumHighColor">#B8000000</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumBrush" Color="{StaticResource SystemChromeMediumColor}" />
+            <Color x:Key="SystemRevealAltMediumHighColor">#B8FFFFFF</Color>
+            <Color x:Key="SystemRevealAltMediumLowColor">#61FFFFFF</Color>
+            <Color x:Key="SystemRevealBaseMediumLowColor">#61000000</Color>
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAltTransparentBrush" Color="Transparent" />
+            <Color x:Key="SystemRevealChromeBlackHighColor">#E6000000</Color>
+            <Color x:Key="SystemRevealChromeLowColor">#E6F2F2F2</Color>
+            <Color x:Key="SystemRevealChromeBlackLowColor">#2E000000</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumLowColor">#66000000</Color>
+            <x:String x:Key="RatingControlUnselectedState"></x:String>
+            <Color x:Key="SystemRevealChromeHighColor">#E6CCCCCC</Color>
+            <Color x:Key="SystemRevealListMediumColor">#2E000000</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="GridViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackHighBrush" Color="{StaticResource SystemChromeBlackHighColor}" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumLowBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeOpacity">0.8</x:Double>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListLowBrush" Color="{StaticResource SystemListLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListMediumBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor1FallbackToAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor2FallbackToAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltHighBrush" Color="{StaticResource SystemAltHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <StaticResource x:Key="TreeViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltMediumHighBrush" Color="{StaticResource SystemAltMediumHighColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentHighBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.9" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentLowBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.6" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentMediumBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.8" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundChecked" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeAltLowBrush" Color="{StaticResource SystemChromeAltLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeHighBrush" Color="{StaticResource SystemChromeHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentHighBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.9" />
+            <SolidColorBrush x:Key="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" Color="{ThemeResource SystemAccentColorDark3}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="RatingControlForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <StaticResource x:Key="RatingControlPointerOverPlaceholderUnselectedForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminateDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackHighBrush" Color="{StaticResource SystemChromeBlackHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackMediumBrush" Color="{StaticResource SystemChromeBlackMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumLowBrush" Color="{StaticResource SystemChromeMediumLowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeWhiteBrush" Color="{StaticResource SystemChromeWhiteColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseHighBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumHighBrush" Color="{StaticResource SystemBaseMediumHighColor}" />
+            <StaticResource x:Key="ButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundChecked" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPressed" ResourceKey="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminate" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <Color x:Key="SystemChromeMediumHighColor">#FFE6E6E6</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseLowBrush" Color="{StaticResource SystemBaseLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminateDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RatingControlBackground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderHighlightAltTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeThickness">2</x:Double>
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminate" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlDisabledSelectedForeground" ResourceKey="SystemBaseMediumLowColor" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPressed" ResourceKey="SystemControlRevealBackgroundHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowFallbackToTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightListMediumRevealListLowBackgroundBrush" Color="{StaticResource SystemListMediumColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlay" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderForegroundTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentLowBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.6" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentMediumBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.8" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrush" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelected" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlPlaceholderSelectedForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="RatingControlSelectedForeground" ResourceKey="SystemControlForegroundAccentBrush" />
+            <StaticResource x:Key="RatingControlDisabledUnselectedForeground" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <x:String x:Key="RatingControlAllOtherStates"></x:String>
+            <StaticResource x:Key="NavigationViewDefaultPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewExpandedPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewSelectionIndicatorForeground" ResourceKey="SystemControlForegroundAccentBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPointerOver" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPressed" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundDisabled" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="{StaticResource SystemAltHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeForegroundThemeBrush" Color="{StaticResource SystemBaseHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeFillThemeBrush" Color="{StaticResource SystemChromeDisabledHighColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeStrokeThemeBrush" Color="{StaticResource SystemListMediumColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="{StaticResource SystemBaseMediumColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeImageSourceStrokeOpacity">1</x:Double>
+            <x:Double x:Key="PersonPictureEllipseStrokeThickness">0</x:Double>
+            <StaticResource x:Key="TreeViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelected" ResourceKey="SystemControlHighlightListAccentLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListAccentHighBrush" />
+            <StaticResource x:Key="TreeViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <Color x:Key="SystemRevealListLowColor">#19FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="TreeViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <Color x:Key="SystemChromeAltHighColor">#FF1F1F1F</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <Color x:Key="SystemRevealChromeMediumColor">#FF393939</Color>
+            <Color x:Key="SystemChromeAltMediumHighColor">#CC1F1F1F</Color>
+            <Color x:Key="SystemRevealAltHighColor">#FF000000</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark1Brush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <Color x:Key="SystemRevealBaseMediumColor">#99FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicElementMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark2MediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundAccentBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowAccentDark1Brush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="TreeViewItemReorderPlaceholderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundTransparentBrush" Color="Transparent" />
+            <Color x:Key="SystemRevealAltLowColor">#33000000</Color>
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementAccentDark2MediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeWhiteBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicElementMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlAcrylicWindowMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <Color x:Key="SystemRevealChromeMediumLowColor">#FF2B2B2B</Color>
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicElementBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumHighBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <Color x:Key="SystemRevealBaseHighColor">#FFFFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicWindowMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseHighAcrylicElementMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlChromeLowAcrylicWindowBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <Color x:Key="SystemRevealChromeAltLowColor">#FFF9F9F9</Color>
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicWindowMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlChromeHighAcrylicElementMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <Color x:Key="SystemRevealBaseLowColor">#33FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicWindowBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseLowAcrylicElementBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumLowBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseMediumLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicWindowMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlBaseMediumLowAcrylicElementMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <StaticResource x:Key="ListViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicWindowBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <Color x:Key="SystemRevealChromeGrayColor">#FF767676</Color>
+            <Color x:Key="SystemRevealChromeWhiteColor">#FFFFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlAltLowAcrylicElementBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <SolidColorBrush x:Key="SystemControlAltMediumLowAcrylicWindowMediumBrush" Color="{ThemeResource SystemColorWindowColor}" />
+            <Color x:Key="SystemRevealAltMediumColor">#99000000</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumColor">#CC000000</Color>
+            <Color x:Key="SystemRevealBaseMediumHighColor">#CCFFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <Color x:Key="SystemRevealAltMediumHighColor">#CC000000</Color>
+            <Color x:Key="SystemRevealAltMediumLowColor">#66000000</Color>
+            <Color x:Key="SystemRevealBaseMediumLowColor">#66FFFFFF</Color>
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListMediumBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAltTransparentBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <Color x:Key="SystemRevealChromeBlackHighColor">#FF000000</Color>
+            <Color x:Key="SystemRevealChromeLowColor">#FF1F1F1F</Color>
+            <Color x:Key="SystemRevealChromeBlackLowColor">#33000000</Color>
+            <Color x:Key="SystemRevealChromeBlackMediumLowColor">#66000000</Color>
+            <x:String x:Key="RatingControlUnselectedState"></x:String>
+            <Color x:Key="SystemRevealChromeHighColor">#FF767676</Color>
+            <Color x:Key="SystemRevealListMediumColor">#33FFFFFF</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="GridViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeBlackHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundChromeMediumLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeOpacity">1</x:Double>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundListMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor1FallbackToAccentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentColor2FallbackToAccentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAccentBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltHighBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseHighBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="TreeViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseLowBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltBaseMediumHighBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltAltMediumHighBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentHighBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentLowBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltListAccentMediumBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltChromeWhiteBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightBaseMediumBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundChecked" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeAltLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightChromeWhiteBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightTransparentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderAccentBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="RatingControlForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="RatingControlPointerOverPlaceholderUnselectedForeground" ResourceKey="SystemControlForegroundBaseMediumBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminateDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderBaseMediumLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackHighBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeBlackMediumBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeMediumLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderChromeWhiteBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderTransparentBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightAccentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="NavigationViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumHighBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="ButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RepeatButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundChecked" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedPressed" ResourceKey="SystemControlHighlightBaseMediumLowRevealAccentBackgroundBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminate" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <Color x:Key="SystemChromeMediumHighColor">#FF323232</Color>
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundBaseLowBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePointerOver" ResourceKey="SystemControlRevealBackgroundBaseLowBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <SolidColorBrush x:Key="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminatePressed" ResourceKey="SystemControlBackgroundBaseMediumLowRevealBaseLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBackgroundIndeterminateDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="RatingControlBackground" ResourceKey="SystemControlForegroundBaseLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushChecked" ResourceKey="SystemControlRevealBorderHighlightAltTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <x:Double x:Key="PersonPictureEllipseBadgeStrokeThickness">2</x:Double>
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushCheckedDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminate" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlDisabledSelectedForeground" ResourceKey="SystemColorGrayTextColor" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightBaseMediumLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="ToggleButtonRevealBorderBrushIndeterminatePointerOver" ResourceKey="SystemControlRevealBorderHighlightBaseMediumLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundPressed" ResourceKey="SystemControlRevealBackgroundHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="AppBarEllipsisButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderListLowFallbackToTransparentBrush" Color="Transparent" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderListLowFallbackToTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="AppBarButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAltTransparentBrush" Color="{ThemeResource SystemColorHighlightTextColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackground" ResourceKey="SystemControlRevealBackgroundHighlightAltTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlHighlightListMediumRevealListLowBackgroundBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlay" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightAccentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelected" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrush" ResourceKey="SystemControlRevealBorderForegroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderForegroundTransparentBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="SystemControlRevealBorderHighlightTransparentBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="AppBarToggleButtonRevealBorderBrushCheckedPressed" ResourceKey="SystemControlRevealBorderHighlightTransparentBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ListViewItemRevealPlaceholderBackground" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightAccentBrush" />
+            <StaticResource x:Key="GridViewItemRevealBackgroundSelectedPressed" ResourceKey="SystemControlHighlightAccentDark3RevealAccentDark2BackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackground" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundPressed" ResourceKey="SystemControlHighlightListMediumRevealListLowBackgroundBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelected" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentLowBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundHighlightListAccentLowBrush" />
+            <SolidColorBrush x:Key="SystemControlRevealBackgroundHighlightListAccentMediumBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrush" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelected" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedUnfocused" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPressed" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="ComboBoxItemRevealBorderBrushSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundTransparentBrush" />
+            <StaticResource x:Key="RatingControlPlaceholderSelectedForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="RatingControlSelectedForeground" ResourceKey="SystemControlHighlightAccentBrush" />
+            <StaticResource x:Key="RatingControlDisabledUnselectedForeground" ResourceKey="SystemControlForegroundBaseLowBrush" />
+            <x:String x:Key="RatingControlAllOtherStates"></x:String>
+            <StaticResource x:Key="NavigationViewDefaultPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewExpandedPaneBackground" ResourceKey="SystemChromeMediumHighColor" />
+            <StaticResource x:Key="NavigationViewItemBackground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundCheckedPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelected" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBackgroundSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemForegroundCheckedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushChecked" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlHighlightListAccentMediumBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushCheckedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelectedPressed" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="NavigationViewSelectionIndicatorForeground" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPointerOver" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundPressed" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="ColorPickerSliderThumbBackgroundDisabled" ResourceKey="SystemControlDisabledChromeDisabledHighBrush" />
+            <SolidColorBrush x:Key="PersonPictureForegroundThemeBrush" Color="{ThemeResource SystemColorButtonTextColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeForegroundThemeBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeFillThemeBrush" Color="{ThemeResource SystemColorButtonTextColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseBadgeStrokeThemeBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <SolidColorBrush x:Key="PersonPictureEllipseFillThemeBrush" Color="{ThemeResource SystemColorButtonFaceColor}" />
+            <x:Double x:Key="PersonPictureEllipseBadgeImageSourceStrokeOpacity">1</x:Double>
+            <x:Double x:Key="PersonPictureEllipseStrokeThickness">1</x:Double>
+            <StaticResource x:Key="TreeViewItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelected" ResourceKey="SystemControlHighlightListAccentLowBrush" />
+            <StaticResource x:Key="TreeViewItemBackgroundSelectedPressed" ResourceKey="SystemControlHighlightListAccentHighBrush" />
+            <StaticResource x:Key="TreeViewItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemForegroundSelected" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrush" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushPointerOver" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushDisabled" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedPressed" ResourceKey="SystemControlTransparentBrush" />
+            <StaticResource x:Key="TreeViewItemBorderBrushSelectedDisabled" ResourceKey="SystemControlTransparentBrush" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+    <Thickness x:Key="ToggleButtonRevealBorderThemeThickness">2</Thickness>
+    <Style x:Key="TreeViewItemStyle" TargetType="controls:TreeViewItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="{ThemeResource TreeViewItemBackground}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource TreeViewItemBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{ThemeResource TreeViewItemBorderThemeThickness}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:TreeViewItem">
+
+                    <Grid x:Name="ContentPresenterGrid" Margin="0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.States>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundPointerOver}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundPointerOver}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundPressed}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundPressed}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushPressed}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundSelected}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundSelected}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushSelected}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundDisabled}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundDisabled}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOverSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundSelectedPointerOver}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundSelectedPointerOver}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushSelectedPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PressedSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundSelectedPressed}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundSelectedPressed}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushSelectedPressed}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="SelectedDisabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemBackgroundSelectedDisabled}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemForegroundSelectedDisabled}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemBorderBrushSelectedDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="ReorderedPlaceholder">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentPresenterGrid.Background" Value="{ThemeResource TreeViewItemReorderPlaceholderBrush}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource TreeViewItemReorderPlaceholderBrush}" />
+                                            <Setter Target="ContentPresenterGrid.BorderBrush" Value="{ThemeResource TreeViewItemReorderPlaceholderBrush}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup.States>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid.Children>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    Margin="{TemplateBinding Padding}" />
+                        </Grid.Children>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Thickness x:Key="ButtonRevealBorderThemeThickness">2</Thickness>
+    <SolidColorBrush x:Key="SystemControlTransparentBrush" Color="#00FFFFFF" />
+    <SolidColorBrush x:Key="ListViewItemRevealBorderBrush" Color="#00FFFFFF" />
+    <Thickness x:Key="AppBarEllipsisButtonRevealBorderThemeThickness">0</Thickness>
+    <SolidColorBrush x:Key="GridViewItemRevealBorderBrush" Color="#00FFFFFF" />
+    <Thickness x:Key="RepeatButtonRevealBorderThemeThickness">2</Thickness>
+    <Thickness x:Key="AppBarButtonRevealBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="AppBarToggleButtonRevealBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="ListViewItemRevealBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="GridViewItemRevealBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="ComboBoxItemRevealBorderThemeThickness">0</Thickness>
+    <DataTemplate x:Key="BackgroundGlyphDefaultTemplate">
+
+        <TextBlock
+                IsHitTestVisible="False"
+                Foreground="{ThemeResource RatingControlBackground}"
+                Margin="-8,-8,0,0"
+                FontSize="32"
+                Text="{ThemeResource RatingControlUnselectedState}"
+                FontFamily="Segoe MDL2 Assets"
+                AutomationProperties.AccessibilityView="Raw" />
+
+    </DataTemplate>
+    <Style x:Key="ButtonRevealStyle" TargetType="Button" />
+    <Style x:Key="RepeatButtonRevealStyle" TargetType="RepeatButton" />
+    <Style x:Key="AppBarToggleButtonRevealStyle" TargetType="AppBarToggleButton" />
+    <Style x:Key="EllipsisButtonRevealStyle" TargetType="Button" />
+    <Style x:Key="ToggleButtonRevealStyle" TargetType="ToggleButton" />
+    <Style x:Key="CommandBarRevealStyle" TargetType="CommandBar" />
+    <Style x:Key="AppBarButtonRevealStyle" TargetType="AppBarButton" />
+    <Style x:Key="AppBarButtonRevealOverflowStyle" TargetType="AppBarButton">
+        <Setter Property="Width" Value="NaN" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style x:Key="AppBarToggleButtonRevealOverflowStyle" TargetType="AppBarToggleButton">
+        <Setter Property="Width" Value="NaN" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style x:Key="AppBarButtonRevealLabelsOnRightStyle" TargetType="AppBarButton">
+        <Setter Property="Width" Value="NaN" />
+    </Style>
+    <Style x:Key="AppBarToggleButtonRevealLabelsOnRightStyle" TargetType="AppBarToggleButton">
+        <Setter Property="Width" Value="NaN" />
+    </Style>
+    <Style x:Key="ListViewItemRevealStyle" TargetType="ListViewItem" />
+    <Thickness x:Key="TreeViewItemBorderThemeThickness">2,1</Thickness>
+    <Style x:Key="GridViewItemRevealStyle" TargetType="GridViewItem" />
+    <Style x:Key="ComboBoxItemRevealStyle" TargetType="ComboBoxItem" />
+    <Style x:Key="SemanticZoomRevealStyle" TargetType="SemanticZoom" />
+    <DataTemplate x:Key="ForegroundGlyphDefaultTemplate">
+
+        <TextBlock
+                Margin="-8,-8,0,0"
+                FontSize="32"
+                Text="{ThemeResource RatingControlAllOtherStates}"
+                FontFamily="Segoe MDL2 Assets"
+                AutomationProperties.AccessibilityView="Raw" />
+
+    </DataTemplate>
+    <x:Double x:Key="PaneToggleButtonSize">48</x:Double>
+    <Thickness x:Key="NavigationViewToggleBorderThickness">1</Thickness>
+    <Style x:Key="PaneToggleButtonStyle" TargetType="Button">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}" />
+        <Setter Property="MinHeight" Value="{StaticResource PaneToggleButtonSize}" />
+        <Setter Property="MinWidth" Value="{StaticResource PaneToggleButtonSize}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{ThemeResource NavigationViewItemBackground}" />
+        <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{ThemeResource NavigationViewToggleBorderThickness}" />
+        <Setter Property="Content" Value="" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+
+                    <Grid x:Name="LayoutRoot" Width="{TemplateBinding MinWidth}" Height="{TemplateBinding MinHeight}" Margin="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.States>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushPointerOver}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushPressed}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundDisabled}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushDisabled}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Checked">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundChecked}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushChecked}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundChecked}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedPointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundCheckedPointerOver}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushCheckedPointerOver}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundCheckedPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedPressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundCheckedPressed}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushCheckedPressed}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundCheckedPressed}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedDisabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundCheckedDisabled}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushCheckedDisabled}" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource NavigationViewItemForegroundCheckedDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup.States>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid.Children>
+                            <Viewbox x:Name="IconHost" Margin="16" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Viewbox.Child>
+                                    <ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" />
+                                </Viewbox.Child>
+                            </Viewbox>
+                            <Border x:Name="RevealBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
+                        </Grid.Children>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Thickness x:Key="NavigationViewItemBorderThickness">2,1</Thickness>
+    <Style x:Key="ColorPickerBorderStyle" TargetType="Shape">
+        <Setter Property="Stroke" Value="{ThemeResource SystemControlForegroundListLowBrush}" />
+        <Setter Property="StrokeThickness" Value="2" />
+    </Style>
+    <Style TargetType="controls:NavigationMenuItem">
+        <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
+        <Setter Property="Background" Value="{ThemeResource NavigationViewItemBackground}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource NavigationViewItemBorderThickness}" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:NavigationMenuItem">
+
+                    <Grid x:Name="LayoutRoot" Height="40" Background="{TemplateBinding Background}" Control.IsTemplateFocusTarget="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="PointerStates">
+                                <VisualStateGroup.States>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushPointerOver}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushPressed}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundPressed}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundDisabled}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushDisabled}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundDisabled}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundSelected}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushSelected}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelected}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelected}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="SelectedPointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundSelectedPointerOver}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushSelectedPointerOver}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelectedPointerOver}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelectedPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="SelectedPressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundSelectedPressed}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushSelectedPressed}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelectedPressed}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundSelectedPointerOver}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="SelectedDisabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="LayoutRoot.Background" Value="{ThemeResource NavigationViewItemBackgroundDisabled}" />
+                                            <Setter Target="RevealBorder.BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrushDisabled}" />
+                                            <Setter Target="Text.Foreground" Value="{ThemeResource NavigationViewItemForegroundDisabled}" />
+                                            <Setter Target="IconHost.Foreground" Value="{ThemeResource NavigationViewItemForegroundDisabled}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup.States>
+                            </VisualStateGroup>
+                            <VisualStateGroup>
+                                <VisualStateGroup.States>
+                                    <VisualState x:Name="Default" />
+                                    <VisualState x:Name="ClosedCompact">
+                                        <VisualState.Setters>
+                                            <Setter Target="RevealBorder.HorizontalAlignment" Value="Left" />
+                                            <Setter Target="RevealBorder.Width">
+                                                <Setter.Value>
+                                                    <Binding Path="CompactPaneLength">
+                                                        <Binding.RelativeSource>
+                                                            <RelativeSource Mode="TemplatedParent" />
+                                                        </Binding.RelativeSource>
+                                                    </Binding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup.States>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid.Children>
+                            <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Grid.Children>
+                                    <Rectangle x:Name="SelectionIndicator" Width="6" Height="24" Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}" Opacity="0" />
+                                </Grid.Children>
+                            </Grid>
+                            <Border x:Name="RevealBorder" Grid.ColumnSpan="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
+                            <ContentPresenter x:Name="IconHost" Margin="16,12">
+                                <ContentPresenter.Content>
+                                    <Viewbox Child="{TemplateBinding Icon}"/>
+                                </ContentPresenter.Content>
+                            </ContentPresenter>
+                            <TextBlock x:Name="Text"
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    TextWrapping="NoWrap"
+                                    Text="{TemplateBinding Text}">
+                            </TextBlock>
+                        </Grid.Children>
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -1,5 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -46,7 +151,7 @@
     <value>Iniciando sua sessão</value>
   </data>
   <data name="MessageInboxTB.Text" xml:space="preserve">
-    <value>CAIXA DE ENTRADA</value>
+    <value>Caixa de Entrada</value>
   </data>
   <data name="minorText.Text" xml:space="preserve">
     <value>Toque em qualquer lugar para visualizar /r/baconit</value>
@@ -88,7 +193,7 @@
     <value>Pesquise por:</value>
   </data>
   <data name="SearchTBs.Text" xml:space="preserve">
-    <value>PESQUISA</value>
+    <value>Pesquisar</value>
   </data>
   <data name="searchTextBlock.Text" xml:space="preserve">
     <value>Pesquisar</value>
@@ -205,7 +310,7 @@
     <value>Post interno</value>
   </data>
   <data name="SettingsTB.Text" xml:space="preserve">
-    <value>CONFIGURAÇÕES</value>
+    <value>Configurações</value>
   </data>
   <data name="SMIContro.Text" xml:space="preserve">
     <value>Controverso</value>
@@ -317,7 +422,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Atualizar automaticamente imagem de plano de fundo</value>
   </data>
   <data name="BackgroundInboxCTB.Text" xml:space="preserve">
-    <value>ATUALIZAÇÃO DE MENSAGENS EM SEGUNDO PLANO</value>
+    <value>Atualização de mensagens em 2° plano</value>
   </data>
   <data name="BackgroundInboxTB.Text" xml:space="preserve">
     <value>Atualização de mensagem em segundo plano</value>
@@ -392,7 +497,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Criar conta</value>
   </data>
   <data name="CSettings.Text" xml:space="preserve">
-    <value>CONFIGURAÇÕES DE COMENTÁRIO</value>
+    <value>Configurações de comentários</value>
   </data>
   <data name="DevSettings.Text" xml:space="preserve">
     <value>CONFIGURAÇÕES DE DESENVOLVEDOR</value>
@@ -407,13 +512,13 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Não deixe que exceções fatais matem o app, relatar a exceção em vez de deixar de funcionar; (Isso pode deixar o aplicativo em um estado instável).</value>
   </data>
   <data name="FlipViewS.Text" xml:space="preserve">
-    <value>CONFIGURAÇÕES DA BARRA LATERAL</value>
+    <value>Configuraçõs da barra lateral</value>
   </data>
   <data name="fullpost.Text" xml:space="preserve">
     <value>Mostrar títulos completos em posts</value>
   </data>
   <data name="HeaderAboutTB.Text" xml:space="preserve">
-    <value>SOBRE</value>
+    <value>Sobre</value>
   </data>
   <data name="HowMessagesTB.Text" xml:space="preserve">
     <value>Como mensagens aparecem na Central de Ações</value>
@@ -521,7 +626,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Inscrever-se</value>
   </data>
   <data name="SVS1.Text" xml:space="preserve">
-    <value>CONFIGURAÇÕES DE SUBREDDIT</value>
+    <value>Configurações de subreddit</value>
   </data>
   <data name="SVS2.Text" xml:space="preserve">
     <value>Subreddit padrão na tela inicial do app</value>
@@ -530,7 +635,7 @@ O foco principal é em otimizações, mas também como algumas funções especif
     <value>Estado de sistema: </value>
   </data>
   <data name="UpdatingLockTB.Text" xml:space="preserve">
-    <value>ATUALIZAÇÃO DE PLANO DE FUNDO E TELA DE BLOQUEIO</value>
+    <value>Atualizações de Wallpaper</value>
   </data>
   <data name="UsersCB.Content" xml:space="preserve">
     <value>Usuários</value>

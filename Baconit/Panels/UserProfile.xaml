@@ -16,7 +16,7 @@
             <Grid>
                 <StackPanel Margin="0,12,6,0"
                             HorizontalAlignment="Stretch"
-                            Background="Transparent"
+                            Background="Black"
                             Orientation="Vertical">
                     <Grid>
                         <TextBlock Margin="0,0,10,0"
@@ -143,7 +143,7 @@
             </Grid.RowDefinitions>
 
             <!--  User header page  -->
-            <StackPanel x:Name="ui_titleHeaderContainer" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+            <StackPanel x:Name="ui_titleHeaderContainer" Background="{StaticResource SystemControlAcrylicWindowAccentMediumHighBrush}">
                 <!--  Name block  -->
                 <TextBlock x:Name="ui_userName"
                            Margin="12,12,12,0"
@@ -212,7 +212,7 @@
                                                                  OnListEndDetectedEvent="PostList_OnListEndDetectedEvent"
                                                                  Padding="0,0,8,0"
                                                                  SelectionChanged="PostList_SelectionChanged"
-                                                                 Style="{StaticResource ListViewStyle}">
+                                                                 >
 
                                 <helperControls:EndDetectingListView.HeaderTemplate>
                                     <DataTemplate>
@@ -232,7 +232,7 @@
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                                        Text="New" x:Uid="PostSortTextTB">
                                                 <FlyoutBase.AttachedFlyout>
-                                                    <MenuFlyout>
+                                                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="New" x:Uid="PostSortFMINew"/>
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Best" x:Uid="PostSortFMIBest"/>
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Top" x:Uid="PostSortFMITop"/>
@@ -281,13 +281,12 @@
                             <!--  Comment list  -->
                             <helperControls:EndDetectingListView x:Name="ui_commentList"
                                                                  EndOfListDetectionThrehold="0.7"
-                                                                 IsTapEnabled="False"
-                                                                 ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                                 IsTapEnabled="False"                                          
                                                                  ItemTemplate="{StaticResource CommentItemDataTemplate}"
                                                                  OnListEndDetectedEvent="CommentList_OnListEndDetectedEvent"
                                                                  Padding="0,0,8,0"
                                                                  SelectionChanged="CommentList_SelectionChanged"
-                                                                 Style="{StaticResource ListViewStyle}">
+                                                                 Margin="-14,0,0,0">
 
                                 <helperControls:EndDetectingListView.HeaderTemplate>
                                     <DataTemplate>
@@ -297,7 +296,7 @@
                                                     Background="Transparent"
                                                     Orientation="Horizontal"
                                                     Padding="0,6,12,6"
-                                                    Tapped="CommentSort_Tapped">
+                                                    Tapped="CommentSort_Tapped" Margin="12,0,0,0">
                                             <TextBlock Margin="0,0,4,0"
                                                        VerticalAlignment="Center"
                                                        Foreground="#989898"
@@ -307,7 +306,7 @@
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                                        Text="New" x:Uid="CommentSortNew">
                                                 <FlyoutBase.AttachedFlyout>
-                                                    <MenuFlyout>
+                                                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="New" x:Uid="CommentSortFMINew"/>
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Best" x:Uid="CommentSortFMIBest" />
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Top" x:Uid="CommentSortFMITop" />

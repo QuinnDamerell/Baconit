@@ -322,7 +322,7 @@
     <value>Messaggio di testo</value>
   </data>
   <data name="SettingsTB.Text" xml:space="preserve">
-    <value>IMPOSTAZIONI</value>
+    <value>Impostazioni</value>
   </data>
   <data name="SMIContro.Text" xml:space="preserve">
     <value>Discussi</value>
@@ -446,7 +446,7 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
     <value>Aggiornamento automatico dello sfondo del desktop</value>
   </data>
   <data name="BackgroundInboxCTB.Text" xml:space="preserve">
-    <value>AGGIORNAMENTO DELLA POSTA IN ARRIVO IN BACKGROUND</value>
+    <value>Aggiornamento dela posta</value>
   </data>
   <data name="BackgroundInboxTB.Text" xml:space="preserve">
     <value>Aggiornamento della posta in arrivo in background</value>
@@ -530,13 +530,14 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
     <value>Crea account</value>
   </data>
   <data name="CSettings.Text" xml:space="preserve">
-    <value>IMPOSTAZIONI DEI COMMENTI</value>
+    <value>IMPOSTAZIONI DEI COMMENTI
+Impostazioni dei commenti</value>
   </data>
   <data name="CTopCB.Content" xml:space="preserve">
     <value>Migliori</value>
   </data>
   <data name="DevSettings.Text" xml:space="preserve">
-    <value>IMPOSTAZIONI PER SVILUPPATORI</value>
+    <value>Impostazioni per sviluppatori</value>
   </data>
   <data name="DisableCombo.Content" xml:space="preserve">
     <value>Disabilita per subreddit; si resetta quando l'app è chiusa</value>
@@ -551,13 +552,13 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
     <value>Impedisci agli errori fatali di far crashare l'app e invia un log (questo lascerà l'app in uno stato instabile)</value>
   </data>
   <data name="FlipViewS.Text" xml:space="preserve">
-    <value>IMPOSTAZIONI MODALITÀ LIBRO</value>
+    <value>Impostazioni modalità libro</value>
   </data>
   <data name="fullpost.Text" xml:space="preserve">
     <value>Mostra i titoli dei post per intero</value>
   </data>
   <data name="HeaderAboutTB.Text" xml:space="preserve">
-    <value>INFO</value>
+    <value>Info</value>
   </data>
   <data name="HowMessagesTB.Text" xml:space="preserve">
     <value>Visualizzazione messaggi nel Centro Notifiche</value>
@@ -677,7 +678,7 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
     <value>Sottoscrivi</value>
   </data>
   <data name="SVS1.Text" xml:space="preserve">
-    <value>IMPOSTAZIONI VISUALIZZAZIONE SUBREDDIT</value>
+    <value>Visualizzazione subreddit</value>
   </data>
   <data name="SVS2.Text" xml:space="preserve">
     <value>Subreddit da visualizzare all'apertura dell'app</value>
@@ -689,7 +690,7 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
     <value>Migliore</value>
   </data>
   <data name="UpdatingLockTB.Text" xml:space="preserve">
-    <value>AGGIORNAMENTO SFONDO E LOCKSCREEN</value>
+    <value>Aggionamento sfondo</value>
   </data>
   <data name="UsersCB.Content" xml:space="preserve">
     <value>Utenti</value>
@@ -886,5 +887,4 @@ L'obiettivo principale è l'ottimizzazione, così come l'implementazioni delle s
   <data name="FullScreenModeXAML.Label" xml:space="preserve">
     <value>Entra in modalità fullscreen</value>
   </data>
-
 </root>

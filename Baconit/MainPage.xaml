@@ -5,11 +5,12 @@
       xmlns:helperControls="using:Baconit.HelperControls"
       xmlns:local="using:Baconit"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:controls="using:WhatsNew.UWP.Controls"
       RequestedTheme="Dark"
       mc:Ignorable="d">
 
     <Grid x:Name="ui_mainHolder" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+      
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="QuickSearch">
@@ -61,6 +62,12 @@
         </VisualStateManager.VisualStateGroups>
 
         <Grid x:Name="SplitViewGrid">
+            <controls:WhatsNewPopup 
+ApplicationName="Reddunt" WhatsNewMessage="This version of Reddunt includes major overhaul to the design. Refactored a lot of code to make the Windows NEXT generation of design work, there's a lot of changes, it starts on spacing to motion effects, and it goes to blur on side and flyout panels to bigger and bolder fonts. This is just the start, more design changes are coming soon, so please, send feedback to us. This update is just available to Windows PCs and tablets, for x64 architecture. Right now our Microsoft library is compiled to the x64 architecture."
+WhatsNewYes="Got it!"/>
+
+
+
             <SplitView x:Name="ui_splitView"
                    PaneClosed="SplitView_PaneClosed"
                    SizeChanged="SplitView_SizeChanged" RequestedTheme="Default">
@@ -100,13 +107,13 @@
                               Grid.Row="6"
                               Grid.ColumnSpan="2"
                               VerticalAlignment="Top"
-                              Background="#00000000"
-                              ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
-                              SelectionChanged="SubredditList_SelectionChanged"
-                              Style="{StaticResource ListViewStyle}">
+                              Background="#00000000" 
+                                  
+                              SelectionChanged="SubredditList_SelectionChanged" >
+
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="0" HorizontalAlignment="Stretch">
+                                    <Grid Margin="0" HorizontalAlignment="Stretch" Padding="0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="auto" />
                                             <ColumnDefinition Width="*" />
@@ -114,12 +121,9 @@
                                         <Grid Grid.RowSpan="2"
                                           Grid.Column="0"
                                           Background="#01000000"
-                                          Padding="12,0,0,0"
-                                          Tapped="Favorite_Tapped">
-
-                                            <Image Width="20"
-                                               Height="20"
-                                               Source="{Binding FavIconUri}" />
+                                          Padding="0"
+                                          Tapped="Favorite_Tapped" HorizontalAlignment="Stretch">
+                                            <FontIcon Glyph="&#xE00A;" Width="20" Height="20" Foreground="#C0C0C0"/>
                                         </Grid>
                                         <Grid Grid.Column="1" Tapped="Subreddit_Tapped">
                                             <Grid.RowDefinitions>

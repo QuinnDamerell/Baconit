@@ -10,7 +10,7 @@
              mc:Ignorable="d">
 
     <Grid>
-        <Grid x:Name="ui_contentRoot" Background="#333333">
+        <Grid x:Name="ui_contentRoot" Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
@@ -18,15 +18,15 @@
 
             <!--  Header  -->
             <StackPanel Grid.Row="0"
-                        Background="#333333"
+                        Background="Black"
                         Orientation="Horizontal"
                         Padding="12">
                 <TextBlock VerticalAlignment="Bottom"
                            FontWeight="Bold"
-                           Text="BACKGROUND INBOX UPDATING" x:Uid="BackgroundInboxCTB" />
+                           Text="Background inbox updating" x:Uid="BackgroundInboxCTB" FontSize="32" TextWrapping="WrapWholeWords"/>
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
+            <ScrollViewer Grid.Row="1" Background="Black" Style="{StaticResource ScrollViewerStyle}">
                 <StackPanel Grid.Row="1" Margin="12">
                     <TextBlock Margin="0,0,0,0"
                                Text="Background inbox updating"

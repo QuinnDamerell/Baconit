@@ -154,7 +154,7 @@
     <value>Logging you in</value>
   </data>
   <data name="MessageInboxTB.Text" xml:space="preserve">
-    <value>MESSAGE INBOX</value>
+    <value>Message Inbox</value>
   </data>
   <data name="minorText.Text" xml:space="preserve">
     <value>Tap anywhere to view /r/baconit</value>
@@ -196,7 +196,7 @@
     <value>Search for:</value>
   </data>
   <data name="SearchTBs.Text" xml:space="preserve">
-    <value>SEARCH</value>
+    <value>Search</value>
   </data>
   <data name="searchTextBlock.Text" xml:space="preserve">
     <value>Search</value>
@@ -446,7 +446,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Automatically update wallpaper image</value>
   </data>
   <data name="BackgroundInboxCTB.Text" xml:space="preserve">
-    <value>BACKGROUND INBOX UPDATING</value>
+    <value>Background inbox updating</value>
   </data>
   <data name="BackgroundInboxTB.Text" xml:space="preserve">
     <value>Background inbox updating</value>
@@ -530,13 +530,13 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Create Account</value>
   </data>
   <data name="CSettings.Text" xml:space="preserve">
-    <value>COMMENT SETTINGS</value>
+    <value>Comment settings</value>
   </data>
   <data name="CTopCB.Content" xml:space="preserve">
     <value>Top</value>
   </data>
   <data name="DevSettings.Text" xml:space="preserve">
-    <value>DEVELOPER SETTINGS</value>
+    <value>Developer settings</value>
   </data>
   <data name="DisableCombo.Content" xml:space="preserve">
     <value>Disable per subreddit; resets when the app is close</value>
@@ -557,7 +557,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Show full post titles</value>
   </data>
   <data name="HeaderAboutTB.Text" xml:space="preserve">
-    <value>ABOUT</value>
+    <value>About</value>
   </data>
   <data name="HowMessagesTB.Text" xml:space="preserve">
     <value>How messages appear in the notification center</value>
@@ -677,7 +677,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Subscribe</value>
   </data>
   <data name="SVS1.Text" xml:space="preserve">
-    <value>SUBREDDIT VIEW SETTINGS</value>
+    <value>Subreddit view settings</value>
   </data>
   <data name="SVS2.Text" xml:space="preserve">
     <value>Subreddit to view when the app opens</value>
@@ -689,7 +689,7 @@ The main focus is on optimization as well great Windows 10 focused features!</va
     <value>Top</value>
   </data>
   <data name="UpdatingLockTB.Text" xml:space="preserve">
-    <value>WALLPAPER AND LOCKSCREEN UPDATING</value>
+    <value>Wallpaper updating</value>
   </data>
   <data name="UsersCB.Content" xml:space="preserve">
     <value>Users</value>

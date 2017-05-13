@@ -43,6 +43,7 @@ namespace Baconit
     {
         public string LinkToShow;
     }
+   
 
     public sealed partial class MainPage : Page, IMainPage, IBackendActionListener
     {
@@ -86,6 +87,8 @@ namespace Baconit
         /// </summary>
         DateTime m_reviewLeaveTime = DateTime.MinValue;
 
+       
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -95,6 +98,8 @@ namespace Baconit
 
             // Set ourselves as the backend action listener
             App.BaconMan.SetBackendActionListener(this);
+
+            
 
             // Set the title bar color
             ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
@@ -136,6 +141,7 @@ namespace Baconit
             App.BaconMan.MemoryMan.OnMemoryReport += MemoryMan_OnMemoryReport;
         }
 
+       
 
         /// <summary>
         /// Fired when the main page is loaded.

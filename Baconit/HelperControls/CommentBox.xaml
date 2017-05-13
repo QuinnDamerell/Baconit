@@ -250,26 +250,26 @@
 
                 <!--  Close Icon  -->
                 <Button x:Name="ui_cancelButton"
-                        Width="200"
+                        Width="160"
                         Margin="6"
                         HorizontalAlignment="Right"
                         Click="Cancel_Click"
-                        Content="Cancel" x:Uid="CancelCT"/>
+                        Content="Cancel" x:Uid="CancelCT" Style="{StaticResource ButtonRevealStyle}"/>
 
                 <!--  Send Icon  -->
                 <Button x:Name="ui_sendButton"
                         Grid.Column="1"
-                        Width="200"
+                        Width="160"
                         Margin="6"
                         HorizontalAlignment="Left"
                         Click="Send_Click"
-                        Content="Send" x:Uid="SendCT" />
+                        Content="Send" x:Uid="SendCT" Style="{StaticResource ButtonRevealStyle}" />
             </Grid>
         </Grid>
 
         <!--  Grid to show the sending overlay  -->
         <Grid x:Name="ui_sendingOverlay"
-              Background="#DD000000"
+              Background="{StaticResource BackgroundTopBlurComments}"
               Visibility="Collapsed">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <Grid.RowDefinitions>

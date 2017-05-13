@@ -8,5 +8,15 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="Black" />
+    <Grid x:Name="ui_contentRoot" Background="Black" >
+        <MediaElement x:Name="m_youTubeVideo" AreTransportControlsEnabled="True" >
+            <MediaElement.TransportControls>
+                <MediaTransportControls IsCompact="True">
+                    
+                </MediaTransportControls>
+            </MediaElement.TransportControls>
+        </MediaElement>
+    </Grid>
+
+
 </UserControl>

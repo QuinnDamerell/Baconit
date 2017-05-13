@@ -70,7 +70,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="PostFilterAnimations">
@@ -150,7 +150,7 @@
         <Grid Grid.Row="0" Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SEARCH" x:Uid="SearchTBs" />
+                       Text="Search" x:Uid="SearchTBs" FontSize="32"/>
         </Grid>
 
         <!--  Search Header  -->
@@ -200,7 +200,7 @@
                           Margin="12,0,12,12"
                           SelectedIndex="0"
                           SelectionChanged="SearchForCombo_SelectionChanged">
-                    <ComboBoxItem Content="Everything" x:Uid="EverythingCB"/>
+                    <ComboBoxItem Content="Everything" x:Uid="EverythingCB" />
                     <ComboBoxItem Content="Subreddits" x:Uid="SubredditsCB" />
                     <ComboBoxItem Content="Users" x:Uid="UsersCB"/>
                     <ComboBoxItem Content="Posts" x:Uid="PostsCB" />
@@ -305,7 +305,7 @@
                       ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                       ItemTemplate="{StaticResource SearchResultListItem}"
                       SelectionChanged="SearchResults_SelectionChanged"
-                      Style="{StaticResource ListViewStyle}">
+                      >
 
                 <!--  This animates the search results in  -->
                 <ListView.ItemContainerTransitions>

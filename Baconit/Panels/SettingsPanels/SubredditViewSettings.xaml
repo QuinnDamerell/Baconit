@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -16,16 +16,16 @@
 
         <!--  Subreddit Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="Black"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SUBREDDIT VIEW SETTINGS" x:Uid="SVS1"/>
+                       Text="Subreddit settings" x:Uid="SVS1" FontSize="32" TextWrapping="Wrap"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1"
-                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Background="Black"
                     Padding="12">
             <TextBlock Text="Subreddit to view when the app opens" TextWrapping="Wrap" x:Uid="SVS2"/>
             <ComboBox x:Name="ui_defaultSubreddit"
