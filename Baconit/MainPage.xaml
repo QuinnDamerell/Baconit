@@ -5,12 +5,12 @@
       xmlns:helperControls="using:Baconit.HelperControls"
       xmlns:local="using:Baconit"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:controls="using:WhatsNew.UWP.Controls"
       RequestedTheme="Dark"
       mc:Ignorable="d">
 
     <Grid x:Name="ui_mainHolder" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
       
+
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="QuickSearch">
@@ -60,14 +60,20 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
-        <Grid x:Name="SplitViewGrid">
-            <controls:WhatsNewPopup 
-ApplicationName="Reddunt" WhatsNewMessage="This version of Reddunt includes major overhaul to the design. Refactored a lot of code to make the Windows NEXT generation of design work, there's a lot of changes, it starts on spacing to motion effects, and it goes to blur on side and flyout panels to bigger and bolder fonts. This is just the start, more design changes are coming soon, so please, send feedback to us. This update is just available to Windows PCs and tablets, for x64 architecture. Right now our Microsoft library is compiled to the x64 architecture."
-WhatsNewYes="Got it!"/>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
 
+        <Grid Grid.Row="0" Background="{StaticResource BackgroundBehindBlur}">
+            <TextBlock Text="Reddunt"
+                       Style="{ThemeResource CaptionTextBlockStyle}"
+                       Margin="12,0"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <Grid x:Name="SplitViewGrid" Grid.Row="1">
             <SplitView x:Name="ui_splitView"
                    PaneClosed="SplitView_PaneClosed"
                    SizeChanged="SplitView_SizeChanged" RequestedTheme="Default">
@@ -427,43 +433,43 @@ WhatsNewYes="Got it!"/>
                     </Grid>
                 </SplitView.Pane>
 
-            <!--  Conent root  -->
-            <SplitView.Content>
-                <Grid>
-                    <Grid x:Name="ui_contentRoot" />
+                <!--  Conent root  -->
+                <SplitView.Content>
+                    <Grid>
+                        <Grid x:Name="ui_contentRoot" />
 
-                    <!--  UI for the memory monitor  -->
-                    <StackPanel x:Name="ui_memoryContainer"
+                        <!--  UI for the memory monitor  -->
+                        <StackPanel x:Name="ui_memoryContainer"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
                                 Background="Black"
                                 Orientation="Horizontal"
                                 Visibility="Collapsed">
 
-                        <!--  Holds the bar  -->
-                        <Grid x:Name="ui_memoryBarBackground"
+                            <!--  Holds the bar  -->
+                            <Grid x:Name="ui_memoryBarBackground"
                               Width="10"
                               Background="Green">
-                            <Grid x:Name="ui_memoryBarOverlay"
+                                <Grid x:Name="ui_memoryBarOverlay"
                                   Width="10"
                                   VerticalAlignment="Bottom"
                                   Background="Red" />
-                        </Grid>
+                            </Grid>
 
-                        <!--  Holds the text  -->
-                        <StackPanel Margin="3,0,0,0"
+                            <!--  Holds the text  -->
+                            <StackPanel Margin="3,0,0,0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"
                                     Background="Black"
                                     Orientation="Vertical">
-                            <TextBlock x:Name="ui_memoryAppUsage" Foreground="White" />
-                            <TextBlock x:Name="ui_memoryAppLimit" Foreground="White" />
-                            <TextBlock x:Name="ui_memoryAppPercentage" Foreground="White" />
+                                <TextBlock x:Name="ui_memoryAppUsage" Foreground="White" />
+                                <TextBlock x:Name="ui_memoryAppLimit" Foreground="White" />
+                                <TextBlock x:Name="ui_memoryAppPercentage" Foreground="White" />
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </SplitView.Content>
-        </SplitView>
+                    </Grid>
+                </SplitView.Content>
+            </SplitView>
         </Grid>
         <helperControls:GlobalContentPresenter x:Name="ui_globalContentPresenter" />
     </Grid>
