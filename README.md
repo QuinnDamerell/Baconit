@@ -1,12 +1,12 @@
 # Baconit
 The highest rated reddit client for Windows Phone has been rewritten from the ground up and is now available for all Windows 10 devices. Now with a dynamic new UI, faster speeds, and features you have been asking for. Welcome to the new Baconit. We know you’re going to love it.
 
-##Quick Links
+## Quick Links
 * [Get The App](https://www.microsoft.com/store/apps/9wzdncrfj0bc)
 * [Baconit Subreddit](https://www.reddit.com/r/baconit)
 * [Baconit Development Subreddit](https://www.reddit.com/r/BaconitDev)
 
-##Screenshots
+## Screenshots
 ![Desktop 1](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop1.png)
 ![Desktop 2](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop2.png)
 ![Desktop 3](https://github.com/QuinnDamerell/Baconit/blob/develop/Media/GitHubReadme/Desktop3.png)
@@ -30,11 +30,11 @@ Big Todo. For now, you can find discussions on architecture on the [dev subreddi
 ## Style Guidelines
 Todo. For now just match the style conventions used in the files.
 
-###Contributors
+### Contributors
 
 * [Quinn Damerell](http://www.quinndamerell.com/) - Creator
 
-###Special Thanks and Projects Used
+### Special Thanks and Projects Used
 
 * [Json.Net](https://github.com/JamesNK/Newtonsoft.Json) - The most amazing json parser for C#.
 * [My Toolkit](https://github.com/MyToolkit/MyToolkit/wiki/YouTube) - Youtube video parsing and video discovery.
