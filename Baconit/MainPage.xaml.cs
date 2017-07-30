@@ -100,10 +100,18 @@ namespace Baconit
             // Set ourselves as the backend action listener
             App.BaconMan.SetBackendActionListener(this);
 
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
+            
+            // Set the title bar color
+
+            ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = Color.FromArgb(255, 51, 51, 51);
+            ApplicationView.GetForCurrentView().TitleBar.InactiveBackgroundColor = Color.FromArgb(255, 51, 51, 51);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonInactiveBackgroundColor = Color.FromArgb(255, 51, 51, 51);    
+            ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Color.FromArgb(255, 255, 255, 255);
+            ApplicationView.GetForCurrentView().TitleBar.InactiveForegroundColor = Color.FromArgb(255, 255, 255, 255);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Color.FromArgb(255, 255, 255, 255);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 255, 255, 255);
 
 
 

@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:media="using:Microsoft.UI.Xaml.Media" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-            <media:AcrylicBrush x:Key="BackgroundBehindBlur" BackgroundSource="HostBackdrop" TintColor="Black" TintOpacity="0.6" FallbackColor="Black" />
+            <media:AcrylicBrush x:Key="BackgroundBehindBlur" BackgroundSource="HostBackdrop" TintColor="Black" TintOpacity="0.5" FallbackColor="Black" />
             <media:AcrylicBrush x:Key="BackgroundBehindMenuBlur" BackgroundSource="HostBackdrop" TintColor="#FF1F1F1F" TintOpacity="0.9" FallbackColor="Black" />
             <media:AcrylicBrush x:Key="BackgroundTopBlur" BackgroundSource="Backdrop" TintColor="#FF1F1F1F" TintOpacity="0.2" FallbackColor="#FF1F1F1F" />
             <media:AcrylicBrush x:Key="BackgroundTopBlurComments" BackgroundSource="Backdrop" TintColor="{ThemeResource SystemAccentColor}" TintOpacity="0.4" FallbackColor="{ThemeResource SystemAccentColor}" />

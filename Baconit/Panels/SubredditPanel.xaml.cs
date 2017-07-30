@@ -573,7 +573,7 @@ namespace Baconit.Panels
         }
 
         // Create AppBar button to enter in full screen mode
-        private void FullScreenMode_Tapped(object sender, TappedRoutedEventArgs e)
+        private void FullScreenMode_Clicked(object sender, RoutedEventArgs e)
         {
             ApplicationView FSView = ApplicationView.GetForCurrentView();
             bool isFullMode = FSView.IsFullScreenMode; 
@@ -770,7 +770,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppBarSideBarOpen_OnIconTapped(object sender, TappedRoutedEventArgs e)
+        private void AppBarSideBarOpen_OnIconClicked(object sender, RoutedEventArgs e)
         {
             // Make sure we have a sub
             if(m_subreddit == null)
@@ -887,12 +887,12 @@ namespace Baconit.Panels
             });
         }
 
-        private void MenuButton_Click(object sender, TappedRoutedEventArgs e)
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             m_host.ToggleMenu(true);
         }
 
-        private void Refresh_Click(object sender, TappedRoutedEventArgs e)
+        private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             // Kick off an update.
             m_collector.Update(true);

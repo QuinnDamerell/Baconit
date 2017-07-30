@@ -60,18 +60,7 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-
-        <Grid Grid.Row="0" Background="{StaticResource BackgroundBehindBlur}">
-            <TextBlock Text="Reddunt"
-                       Style="{ThemeResource CaptionTextBlockStyle}"
-                       Margin="12,0"
-                       VerticalAlignment="Center"/>
-        </Grid>
+      
 
         <Grid x:Name="SplitViewGrid" Grid.Row="1">
             <SplitView x:Name="ui_splitView"
