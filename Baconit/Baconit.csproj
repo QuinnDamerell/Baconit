@@ -570,7 +570,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.UI.Xaml">
-      <HintPath>..\..\..\..\Documents\Visual Studio 2017\Projects\App2\Microsoft.UI.Xaml.x64\x64\Microsoft.UI.Xaml.winmd</HintPath>
+      <HintPath>..\..\lol\Microsoft.UI.Xaml\Libraries\$(PlatformTarget)\Microsoft.UI.Xaml.winmd</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

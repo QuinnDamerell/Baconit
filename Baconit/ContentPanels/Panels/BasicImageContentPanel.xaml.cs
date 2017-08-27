@@ -11,6 +11,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.Storage;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.IO;
+using System.Linq;
 
 namespace Baconit.ContentPanels.Panels
 {
@@ -761,6 +766,58 @@ namespace Baconit.ContentPanels.Panels
         private bool AreCloseEnoughToEqual(float num1, float num2)
         {
             return Math.Abs(num1 - num2) < .001;
+        }
+
+        private async void SaveImageAt_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+           
+            if (m_base.Source.Url.Contains(".jpg"))
+            {
+                picker.FileTypeChoices.Add("JPEG Image", new List<string> { ".jpg", ".jpeg" });
+                picker.DefaultFileExtension = ".jpg";
+                picker.SuggestedFileName = $"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg";
+            }
+            else if (m_base.Source.Url.Contains(".png"))
+            {
+                picker.FileTypeChoices.Add("PNG Image", new List<string> { ".png"});
+                picker.DefaultFileExtension = ".png";
+                picker.SuggestedFileName = $"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.png";
+            }
+
+            var file = await picker.PickSaveFileAsync();
+
+            if (file != null)
+            {
+                using (var fileStream = await file.OpenStreamForWriteAsync())
+                {
+
+                    var client = new HttpClient();
+                    var httpStream = await client.GetStreamAsync(m_base.Source.Url);
+                    await httpStream.CopyToAsync(fileStream);
+                    fileStream.Dispose();
+
+
+                }
+
+
+                Windows.Storage.Provider.FileUpdateStatus status =
+               await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Failed)
+                {
+                    ContentDialog failed = new ContentDialog();
+                    failed.Content = "Sorry, there was a error while trying to save the file." + Environment.NewLine + "Try again in a little bit. :)";
+                    failed.PrimaryButtonText = "Close";
+                    await failed.ShowAsync();
+                }
+            }
+
+            else
+            {
+                return;
+            }
+          
         }
     }
 }
