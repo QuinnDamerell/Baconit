@@ -776,13 +776,13 @@ namespace Baconit.ContentPanels.Panels
             {
                 picker.FileTypeChoices.Add("JPEG Image", new List<string> { ".jpg", ".jpeg" });
                 picker.DefaultFileExtension = ".jpg";
-                picker.SuggestedFileName = $"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg";
             }
             else if (m_base.Source.Url.Contains(".png"))
             {
                 picker.FileTypeChoices.Add("PNG Image", new List<string> { ".png"});
                 picker.DefaultFileExtension = ".png";
-                picker.SuggestedFileName = $"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.png";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.png";
             }
 
             var file = await picker.PickSaveFileAsync();

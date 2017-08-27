@@ -309,7 +309,7 @@ namespace BaconBackend.Managers
                             }
 
                             // Write the file.
-                            StorageFile file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
+                            StorageFile file = await savedPicturesFolder.CreateFileAsync($"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
                             using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
                             {
                                 await RandomAccessStream.CopyAndCloseAsync(response.ImageStream.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
