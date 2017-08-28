@@ -21,6 +21,8 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace Baconit.ContentPanels.Panels
 {
+
+
     public sealed partial class BasicImageContentPanel : UserControl, IContentPanel
     {
         const float MAX_ZOOM_FACTOR = 5.0f;

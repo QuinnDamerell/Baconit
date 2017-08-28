@@ -232,7 +232,7 @@
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                                        Text="New" x:Uid="PostSortTextTB">
                                                 <FlyoutBase.AttachedFlyout>
-                                                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                                    <MenuFlyout >
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="New" x:Uid="PostSortFMINew"/>
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Best" x:Uid="PostSortFMIBest"/>
                                                         <MenuFlyoutItem Click="PostSortFlyoutItem_Click" Text="Top" x:Uid="PostSortFMITop"/>
@@ -306,7 +306,7 @@
                                                        Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                                        Text="New" x:Uid="CommentSortNew">
                                                 <FlyoutBase.AttachedFlyout>
-                                                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                                    <MenuFlyout >
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="New" x:Uid="CommentSortFMINew"/>
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Best" x:Uid="CommentSortFMIBest" />
                                                         <MenuFlyoutItem Click="CommentSortFlyoutItem_Click" Text="Top" x:Uid="CommentSortFMITop" />

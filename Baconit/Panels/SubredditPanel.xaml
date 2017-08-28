@@ -23,12 +23,13 @@
                     <ColumnDefinition Width="Auto"  />
                 </Grid.ColumnDefinitions>
                 <FlyoutBase.AttachedFlyout>
-                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                    <MenuFlyout >
                         <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
                         <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind IsHiddenMenuText, Mode=OneWay}" />
                         <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" x:Uid="CopyLinkMFITB"/>
                         <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" x:Uid="CopyPermaLinkMFITB"/>
                         <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" x:Uid="GoToUserTB"/>
+                     
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
 
@@ -175,7 +176,7 @@
                                 Padding="12"
                                 Tapped="Sort_Tapped">
                             <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                <MenuFlyout >
                                     <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" x:Uid="SMIHot"/>
                                     <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" x:Uid="SMINew"/>
                                     <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" x:Uid="SMIRising"/>
@@ -212,7 +213,7 @@
                                 Tapped="SortTime_Tapped"
                                 Visibility="Collapsed">
                             <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                <MenuFlyout >
                                     <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" x:Uid="PastHour"/>
                                     <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" x:Uid="PastDay"/>
                                     <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" x:Uid="PastHWeek"/>

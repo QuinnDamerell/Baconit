@@ -198,7 +198,7 @@
                                                          OnIconTapped="More_Tapped"
                                                          SymbolIcon="More">
                             <FlyoutBase.AttachedFlyout>
-                                <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                <MenuFlyout >
                                     <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind Context.Post.IsSavedMenuText, Mode=OneWay}" />
                                     <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind Context.Post.IsHiddenMenuText, Mode=OneWay}" />
                                     <MenuFlyoutItem Click="SharePost_Click" Text="Share post" x:Uid="SharePostFMI"/>
@@ -267,7 +267,7 @@
                                 Padding="12,0,6,0"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
-                            <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                            <MenuFlyout >
                                 <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Best" />
                                 <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Top" />
                                 <MenuFlyoutItem Click="CommentSortMenu_Click" Text="Controversial"/>
@@ -300,7 +300,7 @@
                                 Padding="6,0,6,0"
                                 Tapped="OpenMenuFlyout_Tapped">
                         <FlyoutBase.AttachedFlyout>
-                            <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                            <MenuFlyout >
                                 <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="50" />
                                 <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="150" />
                                 <MenuFlyoutItem Click="CommentShowingCountMenu_Click" Text="200" />
@@ -547,7 +547,7 @@
                                     Padding="4,4,14,13"
                                     Tapped="CommentMore_Tapped">
                                 <FlyoutBase.AttachedFlyout>
-                                    <MenuFlyout MenuFlyoutPresenterStyle="{StaticResource MenuFlyoutPresenterStyle}">
+                                    <MenuFlyout >
                                         <MenuFlyoutItem Click="CommentSave_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
                                         <MenuFlyoutItem Click="CommentShare_Click" Text="Share comment" x:Uid="ShareCommentFMI"/>
                                         <MenuFlyoutItem Click="CommentPermalink_Click" Text="Copy permalink" x:Uid="CopyPerFMI"/>

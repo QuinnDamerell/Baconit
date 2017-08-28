@@ -31,9 +31,11 @@ using Microsoft.Services;
 using Microsoft.Services.Store.Engagement;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Media.Animation;
+using Baconit.ContentPanels;
 
 namespace Baconit.Panels
 {
+
     public sealed partial class SubredditPanel : UserControl, IPanel
     {
 
@@ -52,8 +54,6 @@ namespace Baconit.Panels
         // we use for putting strings on resources 
         ResourceContext resourceContext = new ResourceContext();
         ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
-
-
 
         public SubredditPanel()
         {
