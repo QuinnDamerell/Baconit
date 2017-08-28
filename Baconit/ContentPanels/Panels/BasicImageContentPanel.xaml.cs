@@ -847,7 +847,6 @@ namespace Baconit.ContentPanels.Panels
             if (m_base.Source.Url != null)
             {
                 Uri ximageuri = new Uri(m_base.Source.Url);
-                // RandomAccessStreamReference ImageStream = RandomAccessStreamReference.CreateFromUri(ximageuri);
                 DataPackage data = new DataPackage();
                 data.SetWebLink(ximageuri);
                 Clipboard.SetContent(data);
