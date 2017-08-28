@@ -15,6 +15,8 @@
             <MenuFlyout x:Name="flyoutMenu">
                 <MenuFlyoutItem Click="SaveImage_Click" x:Uid="contentRootFM"/>
                 <MenuFlyoutItem Click="SaveImageAt_Click" x:Uid="SaveImageAt" Text="Save image at..."/>
+                <MenuFlyoutItem Click="CopyImage_Click" Text="Copy image" />
+                <MenuFlyoutItem Click="CopyImageUrl_Click" Text="Copy image link" />
             </MenuFlyout>
         </FlyoutBase.AttachedFlyout>
 

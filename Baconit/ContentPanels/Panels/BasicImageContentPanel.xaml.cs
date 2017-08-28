@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.IO;
 using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+
 
 namespace Baconit.ContentPanels.Panels
 {
@@ -47,6 +49,8 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         Image m_image;
 
+       
+
         /// <summary>
         /// The calculated min zoom factor for this image.
         /// </summary>
@@ -66,6 +70,8 @@ namespace Baconit.ContentPanels.Panels
         /// Holds a reference to the image's memory source.
         /// </summary>
         InMemoryRandomAccessStream m_imageSourceStream = null;
+
+        
 
         /// <summary>
         /// Indicates the current state of the image
@@ -211,6 +217,8 @@ namespace Baconit.ContentPanels.Panels
                         {
                             bmpImage.ImageOpened -= BitmapImage_ImageOpened;
                             bmpImage.ImageFailed -= BitmapImage_ImageFailed;
+
+                          
                         }
                     }
 
@@ -818,6 +826,32 @@ namespace Baconit.ContentPanels.Panels
                 return;
             }
           
+        }
+
+        private void CopyImage_Click(object sender, RoutedEventArgs e)
+        {
+         
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                RandomAccessStreamReference ImageStream = RandomAccessStreamReference.CreateFromUri(ximageuri);
+                DataPackage data = new DataPackage();
+                data.SetBitmap(ImageStream);
+                Clipboard.SetContent(data);
+            }
+        }
+
+        private void CopyImageUrl_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                // RandomAccessStreamReference ImageStream = RandomAccessStreamReference.CreateFromUri(ximageuri);
+                DataPackage data = new DataPackage();
+                data.SetWebLink(ximageuri);
+                Clipboard.SetContent(data);
+            }
         }
     }
 }

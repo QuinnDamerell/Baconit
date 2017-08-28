@@ -389,7 +389,7 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 DataPackage data = new DataPackage();
-                data.SetText("http://www.reddit.com" + context.Post.Permalink);
+                data.SetText("http://www.reddit.com" + context.Post.Permalink);              
                 Clipboard.SetContent(data);
             }
         }
