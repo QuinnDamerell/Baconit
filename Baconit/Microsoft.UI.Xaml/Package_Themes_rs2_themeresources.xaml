@@ -339,8 +339,8 @@
             <StaticResource x:Key="NavigationViewItemBackgroundSelectedPointerOver" ResourceKey="SystemControlRevealBackgroundHighlightListLowBrush" />
             <StaticResource x:Key="ToggleButtonRevealBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" />
             <media:AcrylicBrush x:Key="SystemControlAcrylicWindowBrush" BackgroundSource="HostBackdrop" TintColor="{StaticResource SystemChromeAltHighColor}" TintOpacity="0.8" FallbackColor="{StaticResource SystemChromeMediumColor}" />
-            <media:AcrylicBrush x:Key="BackgroundBehindBlur" BackgroundSource="HostBackdrop" TintColor="Black" TintOpacity="0.5" FallbackColor="Black" />
-            <media:AcrylicBrush x:Key="BackgroundTopBlur" BackgroundSource="Backdrop" TintColor="#FF1F1F1F" TintOpacity="0.4" FallbackColor="#FF1F1F1F" />
+            <media:AcrylicBrush x:Key="BackgroundBehindBlur" BackgroundSource="HostBackdrop" TintColor="Black" TintOpacity="0.6" FallbackColor="Black" />
+            <media:AcrylicBrush x:Key="BackgroundTopBlur" BackgroundSource="Backdrop" TintColor="#FF1F1F1F" TintOpacity="0.6" FallbackColor="#FF1F1F1F" />
             <media:AcrylicBrush x:Key="SystemControlAcrylicElementAccentDark1Brush" BackgroundSource="Backdrop" TintColor="{ThemeResource SystemAccentColorDark1}" TintOpacity="0.8" FallbackColor="{ThemeResource SystemAccentColorDark1}" />
             <StaticResource x:Key="ColorPickerSliderThumbBackground" ResourceKey="SystemControlForegroundBaseHighBrush" />
             <media:AcrylicBrush x:Key="SystemControlAcrylicElementBrush" BackgroundSource="Backdrop" TintColor="{StaticResource SystemChromeAltHighColor}" TintOpacity="0.8" FallbackColor="{StaticResource SystemChromeMediumColor}" />
