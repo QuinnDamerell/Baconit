@@ -17,7 +17,7 @@ using System.Net.Http;
 using System.IO;
 using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
-
+using Windows.UI.Popups;
 
 namespace Baconit.ContentPanels.Panels
 {
@@ -852,6 +852,16 @@ namespace Baconit.ContentPanels.Panels
                 DataPackage data = new DataPackage();
                 data.SetWebLink(ximageuri);
                 Clipboard.SetContent(data);
+            }
+        }
+
+        private async void AskGoogle_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.google.com/searchbyimage?site=search&sa=X&image_url=" + m_base.Source.Url));
+                
             }
         }
     }
