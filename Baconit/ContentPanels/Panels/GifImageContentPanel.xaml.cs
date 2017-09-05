@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
@@ -445,5 +446,92 @@ namespace Baconit.ContentPanels.Panels
         }
 
         #endregion
+
+        private async void SaveImageAt_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+
+            if (m_base.Source.Url.Contains(".jpg"))
+            {
+                picker.FileTypeChoices.Add("JPEG Image", new List<string> { ".jpg", ".jpeg" });
+                picker.DefaultFileExtension = ".jpg";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg";
+            }
+            else if (m_base.Source.Url.Contains(".png"))
+            {
+                picker.FileTypeChoices.Add("PNG Image", new List<string> { ".png" });
+                picker.DefaultFileExtension = ".png";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.png";
+            }
+
+            var file = await picker.PickSaveFileAsync();
+
+            if (file != null)
+            {
+                using (var fileStream = await file.OpenStreamForWriteAsync())
+                {
+
+                    var client = new System.Net.Http.HttpClient();
+                    var httpStream = await client.GetStreamAsync(m_base.Source.Url);
+                    await httpStream.CopyToAsync(fileStream);
+                    fileStream.Dispose();
+
+
+                }
+
+
+                Windows.Storage.Provider.FileUpdateStatus status =
+               await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Failed)
+                {
+                    ContentDialog failed = new ContentDialog();
+                    failed.Content = "Sorry, there was a error while trying to save the file." + Environment.NewLine + "Try again in a little bit. :)";
+                    failed.PrimaryButtonText = "Close";
+                    await failed.ShowAsync();
+                }
+            }
+
+            else
+            {
+                return;
+            }
+
+        }
+
+        private void CopyImage_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                RandomAccessStreamReference ImageStream = RandomAccessStreamReference.CreateFromUri(ximageuri);
+                DataPackage data = new DataPackage();
+                data.SetBitmap(ImageStream);
+                Clipboard.SetContent(data);
+            }
+        }
+
+        private void CopyImageUrl_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                DataPackage data = new DataPackage();
+                data.SetWebLink(ximageuri);
+                Clipboard.SetContent(data);
+            }
+        }
+
+        private async void AskGoogle_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.google.com/searchbyimage?site=search&sa=X&image_url=" + m_base.Source.Url));
+
+            }
+        }
     }
 }

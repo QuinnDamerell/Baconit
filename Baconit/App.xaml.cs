@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.StartScreen;
+using System.Threading.Tasks;
 
 namespace Baconit
 {
@@ -66,7 +68,7 @@ namespace Baconit
             BaconMan = new BaconManager(false);
 
 
-
+            
             // Init the app
             this.InitializeComponent();
             

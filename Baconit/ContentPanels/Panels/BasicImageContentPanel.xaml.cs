@@ -861,7 +861,7 @@ namespace Baconit.ContentPanels.Panels
             if (m_base.Source.Url != null)
             {
                 await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.google.com/searchbyimage?site=search&sa=X&image_url=" + m_base.Source.Url));
-                
+             
             }
         }
     }

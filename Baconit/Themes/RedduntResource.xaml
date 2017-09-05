@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:helperControls="using:Baconit.HelperControls"
                     xmlns:local="using:Baconit">
+   
 
     <Style TargetType="MenuFlyoutPresenter">
         <Setter Property="RequestedTheme" Value="Dark"/>
@@ -72,6 +73,17 @@
     </Style>
 
     <!--  Default style for Windows.UI.Xaml.Controls.TextBox  -->
+
+    <!--  Default style for Windows.UI.Xaml.Controls.TextBox  -->
+
+
+
+
+    <!--  Default style for Windows.UI.Xaml.Controls.Primitives.ScrollBar  -->
+
+    <!--  Default style for Windows.UI.Xaml.Controls.ScrollViewer  -->
+
+    <!--  Default style for Windows.UI.Xaml.Controls.ListView  -->
     <!--  This text block style well essentally always stay in the "actived" state.  -->
     <Style x:Key="AlwaysWhiteTextBoxStyle" TargetType="TextBox">
         <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
@@ -279,7 +291,6 @@
         </Setter>
     </Style>
 
-    <!--  Default style for Windows.UI.Xaml.Controls.TextBox  -->
     <!--  This text block style well essentally always stay in the "actived" state.  -->
     <Style TargetType="AutoSuggestBox">
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -335,7 +346,6 @@
 
 
 
-    <!--  Default style for Windows.UI.Xaml.Controls.Primitives.ScrollBar  -->
     <!--
             This is based off the default style, but modified to make it not look so ugly on desktop.
             The style I created here is reverse enginerred from the Xbox app.
@@ -832,7 +842,6 @@
         </Setter>
     </Style>
 
-    <!--  Default style for Windows.UI.Xaml.Controls.ScrollViewer  -->
     <!--  The only change from the default here is that we change the style of the scroll bar  -->
     <Style x:Key="ScrollViewerStyle" TargetType="ScrollViewer">
         <Setter Property="HorizontalScrollMode" Value="Auto" />
@@ -992,7 +1001,6 @@
         </Setter>
     </Style>
 
-    <!--  Default style for Windows.UI.Xaml.Controls.ListView  -->
     <!--  The only change from the defult is the scrollview style  -->
     <Style x:Key="ListViewStyle" TargetType="ListView">
         <Setter Property="IsTabStop" Value="False" />

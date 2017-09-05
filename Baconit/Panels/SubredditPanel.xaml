@@ -283,17 +283,17 @@
                         <CommandBar.PrimaryCommands>
                             <AppBarButton Icon="Refresh"
                       Click="Refresh_Click"
-                      Label="Refresh" x:Uid="RefreshButton"/>
+                      Label="Refresh" x:Uid="RefreshButton" AccessKey="R"/>
                             <AppBarButton x:Name="ui_appBarSubButton"
                       Icon="Add"
                       Click="AppBarSideBarOpen_OnIconClicked"
-                      Label="Add" x:Uid="AddButton"  />
+                      Label="Add" x:Uid="AddButton"  AccessKey="N"/>
                             <AppBarButton Icon="List"
                       Click="MenuButton_Click"
-                      Label="More" x:Uid="AppBarMenuButton" />
+                      Label="More" x:Uid="AppBarMenuButton" AccessKey="M"/>
                         </CommandBar.PrimaryCommands>
                         <CommandBar.SecondaryCommands>
-                            <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Click="FeedbackHub_Click" x:Name="feedbackButton"/>
+                            <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Click="FeedbackHub_Click" x:Name="feedbackButton" />
                             <AppBarButton Label="Enter Full Screen Mode" x:Uid="FullScreenModeXAML" Click="FullScreenMode_Clicked" x:Name="FullScreenAppBar"/>
                         </CommandBar.SecondaryCommands>
                     </CommandBar>

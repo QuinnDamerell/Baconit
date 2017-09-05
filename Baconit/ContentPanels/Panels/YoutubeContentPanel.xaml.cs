@@ -7,18 +7,25 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
 using Windows.Media;
+using Windows.Storage.Streams;
 using Windows.System.Display;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Core;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -34,7 +41,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a ref to the media element that is playing.
         /// </summary>
-        
+
 
         /// <summary>
         /// Holds the request to not sleep the computer while a video is playing.
@@ -48,10 +55,10 @@ namespace Baconit.ContentPanels.Panels
 
             m_base = panelBase;
 
-            
+
         }
-     
-     
+
+
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
@@ -81,7 +88,7 @@ namespace Baconit.ContentPanels.Panels
             }
         }
 
-     
+
 
         /// <summary>
         /// Fired when we should load the content.
@@ -108,11 +115,11 @@ namespace Baconit.ContentPanels.Panels
                     }
 
                     // Setup the video
-                   
+
                     m_youTubeVideo.AutoPlay = false;
                     m_youTubeVideo.CurrentStateChanged += MediaElement_CurrentStateChanged;
                     m_youTubeVideo.Source = youTubeUri.Uri;
-                   
+
 
                 });
             });
@@ -316,5 +323,6 @@ namespace Baconit.ContentPanels.Panels
         }
 
         #endregion
+      
     }
 }
