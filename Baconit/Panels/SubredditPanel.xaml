@@ -254,7 +254,7 @@
                                                     ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
                                                     Padding="0,0,8,0"
                                                     SelectionChanged="PostList_SelectionChanged"
-                                                        AllowDrop="True" CanDrag="True"
+                                                       
                                                     >
                         <ListView.ItemContainerTransitions>
                             <TransitionCollection>
