@@ -17,6 +17,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -42,12 +44,14 @@ namespace Baconit
     {
         public string LinkToShow;
     }
+   
 
     public sealed partial class MainPage : Page, IMainPage, IBackendActionListener
     {
         //
         // Private Vars
         //
+       
 
         /// <summary>
         /// The main panel manager for the app
@@ -84,6 +88,8 @@ namespace Baconit
         /// </summary>
         DateTime m_reviewLeaveTime = DateTime.MinValue;
 
+       
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -94,15 +100,21 @@ namespace Baconit
             // Set ourselves as the backend action listener
             App.BaconMan.SetBackendActionListener(this);
 
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
+            
             // Set the title bar color
+
             ApplicationView.GetForCurrentView().TitleBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
             ApplicationView.GetForCurrentView().TitleBar.ButtonBackgroundColor = Color.FromArgb(255, 51, 51, 51);
             ApplicationView.GetForCurrentView().TitleBar.InactiveBackgroundColor = Color.FromArgb(255, 51, 51, 51);
-            ApplicationView.GetForCurrentView().TitleBar.ButtonInactiveBackgroundColor = Color.FromArgb(255, 51, 51, 51);
+            ApplicationView.GetForCurrentView().TitleBar.ButtonInactiveBackgroundColor = Color.FromArgb(255, 51, 51, 51);    
             ApplicationView.GetForCurrentView().TitleBar.ForegroundColor = Color.FromArgb(255, 255, 255, 255);
             ApplicationView.GetForCurrentView().TitleBar.InactiveForegroundColor = Color.FromArgb(255, 255, 255, 255);
             ApplicationView.GetForCurrentView().TitleBar.ButtonForegroundColor = Color.FromArgb(255, 255, 255, 255);
             ApplicationView.GetForCurrentView().TitleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 255, 255, 255);
+
+
+
 
             // Create the starting panel
             WelcomePanel panel = new WelcomePanel();
@@ -134,6 +146,8 @@ namespace Baconit
             App.BaconMan.MemoryMan.OnMemoryReport += MemoryMan_OnMemoryReport;
         }
 
+       
+
         /// <summary>
         /// Fired when the main page is loaded.
         /// </summary>
@@ -141,6 +155,23 @@ namespace Baconit
         /// <param name="e"></param>
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+
+            // Status Bar will always be black, even on light theme
+
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+
+            {
+
+                var statusBar = StatusBar.GetForCurrentView();
+
+                statusBar.ForegroundColor = Colors.White;
+
+                statusBar.BackgroundColor = Color.FromArgb(255, 51, 51, 51);
+
+                statusBar.BackgroundOpacity = 1;
+
+            }
+
             // Set the current information to the UI.
             UpdateSubredditList(App.BaconMan.SubredditMan.SubredditList);
             UpdateAccount();
@@ -244,7 +275,7 @@ namespace Baconit
                 TimeSpan timeSinceReviewLeave = DateTime.Now - m_reviewLeaveTime;
                 if(timeSinceReviewLeave.TotalMinutes < 5)
                 {
-                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
+                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Reddunt, we really appreciate your support of the app!");
                 }
                 m_reviewLeaveTime = DateTime.MinValue;
             }
@@ -352,7 +383,7 @@ namespace Baconit
             }
             catch(Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "UpdateSubredditListFailed", e);
+               
                 App.BaconMan.MessageMan.DebugDia("UpdateSubredditListFailed", e);
             }
         }
@@ -362,10 +393,13 @@ namespace Baconit
         /// </summary>
         private void UpdateAccount()
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             // Set the defaults
             string userName = App.BaconMan.UserMan.IsUserSignedIn && App.BaconMan.UserMan.CurrentUser != null && App.BaconMan.UserMan.CurrentUser.Name != null ? App.BaconMan.UserMan.CurrentUser.Name : "Unknown";
-            ui_accountHeader.Text = App.BaconMan.UserMan.IsUserSignedIn ? userName : "Account";
-            ui_signInText.Text = App.BaconMan.UserMan.IsUserSignedIn ? "Sign Out" : "Sign In";
+            ui_accountHeader.Text = App.BaconMan.UserMan.IsUserSignedIn ? userName : resourceMap.GetValue("AccountCode/Text", resourceContext).ValueAsString;
+            ui_signInText.Text = App.BaconMan.UserMan.IsUserSignedIn ? resourceMap.GetValue("SignOutCode/Text", resourceContext).ValueAsString : resourceMap.GetValue("SignInCode/Text", resourceContext).ValueAsString;
             ui_inboxGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
             ui_profileGrid.Visibility = App.BaconMan.UserMan.IsUserSignedIn ? Visibility.Visible : Visibility.Collapsed;
             ui_accountHeaderMailBox.Visibility = Visibility.Collapsed;
@@ -401,7 +435,7 @@ namespace Baconit
             // Reverse the status
             App.BaconMan.SubredditMan.SetFavorite(sub.Id, !sub.IsFavorite);
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditListFavoriteTapped");
+            
         }
 
         /// <summary>
@@ -578,7 +612,7 @@ namespace Baconit
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, App.BaconMan.UserMan.CurrentUser.Name);
                 m_panelManager.Navigate(typeof(UserProfile), App.BaconMan.UserMan.CurrentUser.Name, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToProfileViaGlobalMenu");
+               
             }
             ToggleMenu(false);
         }
@@ -594,7 +628,7 @@ namespace Baconit
         /// <param name="e"></param>
         private void KeyboardShortcutHepler_OnQuickSearchActivation(object sender, EventArgs e)
         {
-            App.BaconMan.TelemetryMan.ReportEvent(this, "QuickSearchKeyboardShortcut");
+            
             ToggleMenu(true);
             SearchHeader_Tapped(null, null);
         }
@@ -609,7 +643,6 @@ namespace Baconit
             // If the search box is empty close or open the box
             if (String.IsNullOrWhiteSpace(ui_quickSearchBox.Text))
             {
-                App.BaconMan.TelemetryMan.ReportEvent(this, "QuickSearchOpened");
                 ToggleQuickSearch();
             }
             else
@@ -1197,6 +1230,7 @@ namespace Baconit
         {
             bool isHandled = false;
             App.BaconMan.OnBackButton_Fired(ref isHandled);
+            
         }
     }
 }

@@ -5,14 +5,27 @@
              xmlns:helperControls="using:Baconit.HelperControls"
              xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+             xmlns:behaviors="using:Microsoft.Toolkit.Uwp.UI.Animations.Behaviors"
+             xmlns:core="using:Microsoft.Xaml.Interactions.Core"
              RequestedTheme="Dark"
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot">
-        <helperControls:SlidingImages x:Name="ui_imageScrolBackground" Opacity="0.45" />
+        <helperControls:SlidingImages x:Name="ui_imageScrolBackground" />
         <Grid>
+            <interactivity:Interaction.Behaviors>
+                <behaviors:Blur x:Name="BlurBehavior"
+                        Value="13"
+                        Duration="3000"
+                        Delay="20"
+                        AutomaticallyStart="True"/>
+            </interactivity:Interaction.Behaviors>
+        </Grid>
+        <Grid>
+           
             <Grid x:Name="ui_loginUI"
                   MaxWidth="280"
                   HorizontalAlignment="Center"
@@ -37,28 +50,29 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
+              
                 <TextBlock Style="{ThemeResource HeaderTextBlockStyle}" Text="Login" />
                 <TextBlock Grid.Row="1"
                            Margin="0,8"
-                           Text="Unlock even more of Baconit by adding account. Reddit accounts are anonymous, simple, and free - and Baconit will keep it that way."
-                           TextWrapping="Wrap" />
+                           Text="Unlock even more of Reddunt by adding account. Reddit accounts are anonymous, simple, and free - and Reddunt will keep it that way."
+                           TextWrapping="Wrap" x:Uid="RedduntAccountTB" />
                 <Button x:Name="ui_loginButton"
                         Grid.Row="5"
                         Margin="0,8"
                         HorizontalAlignment="Stretch"
-                        Background="#60FFFFFF"
+                        Background="{ThemeResource SystemAccentColor}"
                         Click="LoginButton_Click"
                         Content="Login"
-                        Foreground="#FFFFFF" />
+                        Foreground="#FFFFFF" x:Uid="LoginCT" />
 
                 <Button x:Name="ui_createAccountButton"
                         Grid.Row="6"
                         Margin="0,8"
                         HorizontalAlignment="Stretch"
-                        Background="#60FFFFFF"
+                        Background="{ThemeResource SystemAccentColor}"
                         Click="CreateAccount_Click"
                         Content="Create Account"
-                        Foreground="#FFFFFF" />
+                        Foreground="#FFFFFF" x:Uid="CreateAccountCT" />
             </Grid>
             <Grid x:Name="ui_progressUI"
                   HorizontalAlignment="Center"
@@ -84,7 +98,7 @@
                            Margin="10,0,0,0"
                            VerticalAlignment="Center"
                            FontSize="20"
-                           Text="Logging you in" />
+                           Text="Logging you in" x:Uid="LoginProgressText"/>
             </Grid>
             <Grid x:Name="ui_welcome"
                   HorizontalAlignment="Center"
@@ -112,7 +126,7 @@
                            Margin="10,0,0,0"
                            VerticalAlignment="Center"
                            FontSize="20"
-                           Text="Welcome Quinbd" />
+                           Text="Welcome Quinbd" x:Uid="WelcomeText"/>
             </Grid>
         </Grid>
     </Grid>

@@ -11,9 +11,18 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.Storage;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.IO;
+using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Popups;
 
 namespace Baconit.ContentPanels.Panels
 {
+
+
     public sealed partial class BasicImageContentPanel : UserControl, IContentPanel
     {
         const float MAX_ZOOM_FACTOR = 5.0f;
@@ -42,6 +51,8 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         Image m_image;
 
+       
+
         /// <summary>
         /// The calculated min zoom factor for this image.
         /// </summary>
@@ -61,6 +72,8 @@ namespace Baconit.ContentPanels.Panels
         /// Holds a reference to the image's memory source.
         /// </summary>
         InMemoryRandomAccessStream m_imageSourceStream = null;
+
+        
 
         /// <summary>
         /// Indicates the current state of the image
@@ -152,8 +165,7 @@ namespace Baconit.ContentPanels.Panels
                 // Make sure we got it.
                 if (String.IsNullOrWhiteSpace(imageUrl))
                 {
-                    // This is bad, we should be able to get the url.
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
+                    
 
                     // Jump back to the UI thread
                     m_base.FireOnFallbackToBrowser();
@@ -207,6 +219,8 @@ namespace Baconit.ContentPanels.Panels
                         {
                             bmpImage.ImageOpened -= BitmapImage_ImageOpened;
                             bmpImage.ImageFailed -= BitmapImage_ImageFailed;
+
+                          
                         }
                     }
 
@@ -254,7 +268,7 @@ namespace Baconit.ContentPanels.Panels
             {
                 if (!response.Success)
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
+                   
                     m_base.FireOnFallbackToBrowser();
                     return;
                 }
@@ -341,15 +355,11 @@ namespace Baconit.ContentPanels.Panels
                 m_lastImageSetSize.Height = m_currentControlSize.Height;
             }
 
-            // Create a bitmap and
+            // Create a bitmap 
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.CreateOptions = BitmapCreateOptions.None;
             bitmapImage.ImageOpened += BitmapImage_ImageOpened;
-            bitmapImage.ImageFailed += BitmapImage_ImageFailed;
-
-            // Set the source.
-            stream.Seek(0);
-            bitmapImage.SetSource(stream);
+            bitmapImage.ImageFailed += BitmapImage_ImageFailed;           
 
             // Get the decode height and width.
             int decodeWidth = 0;
@@ -378,6 +388,12 @@ namespace Baconit.ContentPanels.Panels
             // But since this is scaled, the control size is something like 3 physical pixels for each logical pixel, so the image is lower res
             // if we use physical.
             bitmapImage.DecodePixelType = App.BaconMan.MemoryMan.MemoryPressure < MemoryPressureStates.Medium ? DecodePixelType.Logical : DecodePixelType.Physical;
+
+
+            // This has to be dome after decode size
+            stream.Seek(0);
+            bitmapImage.SetSource(stream);
+
 
             // Destroy the old image.
             if (m_image.Source != null)
@@ -760,6 +776,93 @@ namespace Baconit.ContentPanels.Panels
         private bool AreCloseEnoughToEqual(float num1, float num2)
         {
             return Math.Abs(num1 - num2) < .001;
+        }
+
+        private async void SaveImageAt_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileSavePicker();
+           
+            if (m_base.Source.Url.Contains(".jpg"))
+            {
+                picker.FileTypeChoices.Add("JPEG Image", new List<string> { ".jpg", ".jpeg" });
+                picker.DefaultFileExtension = ".jpg";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg";
+            }
+            else if (m_base.Source.Url.Contains(".png"))
+            {
+                picker.FileTypeChoices.Add("PNG Image", new List<string> { ".png"});
+                picker.DefaultFileExtension = ".png";
+                picker.SuggestedFileName = $"Reddunt Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.png";
+            }
+
+            var file = await picker.PickSaveFileAsync();
+
+            if (file != null)
+            {
+                using (var fileStream = await file.OpenStreamForWriteAsync())
+                {
+
+                    var client = new HttpClient();
+                    var httpStream = await client.GetStreamAsync(m_base.Source.Url);
+                    await httpStream.CopyToAsync(fileStream);
+                    fileStream.Dispose();
+
+
+                }
+
+
+                Windows.Storage.Provider.FileUpdateStatus status =
+               await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Failed)
+                {
+                    ContentDialog failed = new ContentDialog();
+                    failed.Content = "Sorry, there was a error while trying to save the file." + Environment.NewLine + "Try again in a little bit. :)";
+                    failed.PrimaryButtonText = "Close";
+                    await failed.ShowAsync();
+                }
+            }
+
+            else
+            {
+                return;
+            }
+          
+        }
+
+        private void CopyImage_Click(object sender, RoutedEventArgs e)
+        {
+         
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                RandomAccessStreamReference ImageStream = RandomAccessStreamReference.CreateFromUri(ximageuri);
+                DataPackage data = new DataPackage();
+                data.SetBitmap(ImageStream);
+                Clipboard.SetContent(data);
+            }
+        }
+
+        private void CopyImageUrl_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                Uri ximageuri = new Uri(m_base.Source.Url);
+                DataPackage data = new DataPackage();
+                data.SetWebLink(ximageuri);
+                Clipboard.SetContent(data);
+            }
+        }
+
+        private async void AskGoogle_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (m_base.Source.Url != null)
+            {
+                await Windows.System.Launcher.LaunchUriAsync(new Uri("https://www.google.com/searchbyimage?site=search&sa=X&image_url=" + m_base.Source.Url));
+             
+            }
         }
     }
 }

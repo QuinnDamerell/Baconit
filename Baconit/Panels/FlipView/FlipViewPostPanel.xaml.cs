@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -21,6 +22,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.UI.Animations;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -37,6 +40,8 @@ namespace Baconit.Panels.FlipView
         public Action<object, CommentBoxOnOpenedArgs> CommentBoxOpened;
         public Func<object, OnCommentSubmittedArgs, bool> CommentBoxSubmitted;
     }
+
+   
 
     public sealed partial class FlipViewPostPanel : UserControl
     {
@@ -124,6 +129,8 @@ namespace Baconit.Panels.FlipView
             get { return (bool)GetValue(IsVisibleProperty); }
             set { SetValue(IsVisibleProperty, value); }
         }
+
+      
 
         public static readonly DependencyProperty IsVisibleProperty =
             DependencyProperty.Register(
@@ -321,7 +328,7 @@ namespace Baconit.Panels.FlipView
                 if (!String.IsNullOrWhiteSpace(url))
                 {
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "OpenInBrowser");
+                 
                 }
             }
         }
@@ -334,7 +341,7 @@ namespace Baconit.Panels.FlipView
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "MoreTapped");
+           
         }
 
         private void SavePost_Click(object sender, RoutedEventArgs e)
@@ -343,7 +350,7 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 context.Collector.SaveOrHidePost(context.Post, !context.Post.IsSaved, null);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "SavePostTapped");
+                
             }
         }
 
@@ -353,7 +360,7 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 context.Collector.SaveOrHidePost(context.Post, null, !context.Post.IsHidden);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
+               
             }
         }
 
@@ -372,7 +379,7 @@ namespace Baconit.Panels.FlipView
                     data.SetText(context.Post.Url);
                 }
                 Clipboard.SetContent(data);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
+               
             }
         }
 
@@ -382,9 +389,8 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 DataPackage data = new DataPackage();
-                data.SetText("http://www.reddit.com" + context.Post.Permalink);
+                data.SetText("http://www.reddit.com" + context.Post.Permalink);              
                 Clipboard.SetContent(data);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
             }
         }
 
@@ -394,7 +400,6 @@ namespace Baconit.Panels.FlipView
             if (context != null)
             {
                 App.BaconMan.ImageMan.SaveImageLocally(context.Post.Url);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
             }
         }
 
@@ -412,7 +417,7 @@ namespace Baconit.Panels.FlipView
                     DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
                     dataTransferManager.DataRequested += DataTransferManager_DataRequested;
                     DataTransferManager.ShowShareUI();
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "SharePostTapped");
+                   
                 }
             }
         }
@@ -427,12 +432,11 @@ namespace Baconit.Panels.FlipView
                 args.Request.Data.Properties.Description = m_sharePost.Title;
                 args.Request.Data.SetText($"\r\n\r\n{m_sharePost.Title}\r\n\r\n{m_sharePost.Url}");
                 m_sharePost = null;
-                App.BaconMan.TelemetryMan.ReportEvent(this, "PostShared");
+               
             }
             else
             {
-                args.Request.FailWithDisplayText("Baconit doesn't have anything to share!");
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShareFilpViewPostNoSharePost");
+                App.BaconMan.MessageMan.ShowMessageSimple("Ops!", "Type anything and then try again!");
             }
         }
 
@@ -505,7 +509,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GoToSubreddit_Click(object sender, RoutedEventArgs e)
+        private void GoToSubreddit_Tapped(object sender, TappedRoutedEventArgs e)
         {
             FlipViewPostContext context = GetContext();
             if (context != null)
@@ -514,7 +518,7 @@ namespace Baconit.Panels.FlipView
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, context.Post.Subreddit);
                 context.Host.Navigate(typeof(SubredditPanel), context.Post.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToSubredditFlipView");
+                
             }
         }
 
@@ -523,7 +527,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GoToUser_Click(object sender, RoutedEventArgs e)
+        private void GoToUser_Tapped(object sender, TappedRoutedEventArgs e)
         {
             FlipViewPostContext context = GetContext();
             if (context != null)
@@ -531,8 +535,8 @@ namespace Baconit.Panels.FlipView
                 // Navigate to the user.
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, context.Post.Author);
-                context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFlipView");
+                context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);    
+                
             }
         }
 
@@ -542,8 +546,8 @@ namespace Baconit.Panels.FlipView
 
         private void SetupListViewForNewContext()
         {
-            // Hide the scroll bar.
-            ScrollViewer.SetVerticalScrollBarVisibility(ui_listView, ScrollBarVisibility.Hidden);
+            // Show scrollbar only when Windows don't detect touchpad/touch/scroll wheel
+            ScrollViewer.SetVerticalScrollBarVisibility(ui_listView, ScrollBarVisibility.Auto);
             m_lastKnownScrollOffset = 0;
         }
 
@@ -830,17 +834,27 @@ namespace Baconit.Panels.FlipView
             }
             else
             {
-                FlipViewPostContext context = GetContext();
-                if(context == null)
-                {
-                    return;
-                }
+                
+                
+            }
+        }
 
+        private void UserPanel_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            Comment comment = (sender as FrameworkElement).DataContext as Comment;
+            FlipViewPostContext context = GetContext();
+            if (context == null)
+            {
+                return;
+            }
+
+            else
+            {
                 // Navigate to the user
                 Dictionary<string, object> args = new Dictionary<string, object>();
                 args.Add(PanelManager.NAV_ARGS_USER_NAME, comment.Author);
                 context.Host.Navigate(typeof(UserProfile), comment.Author, args);
-                App.BaconMan.TelemetryMan.ReportEvent(this, "GoToUserFromComment");
             }
         }
 
@@ -856,7 +870,7 @@ namespace Baconit.Panels.FlipView
                 FlyoutBase.ShowAttachedFlyout(element);
             }
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentMoreTapped");
+            
         }
 
         private void CommentSave_Click(object sender, RoutedEventArgs e)
@@ -867,7 +881,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.Save_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSaveTapped");
+            
         }
 
         private void CommentShare_Click(object sender, RoutedEventArgs e)
@@ -878,7 +892,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.Share_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentShareTapped");
+            
         }
 
         private void CommentPermalink_Click(object sender, RoutedEventArgs e)
@@ -889,7 +903,7 @@ namespace Baconit.Panels.FlipView
             {
                 manager.CopyPermalink_Tapped(comment);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentPermalinkTapped");
+           
         }
 
         private void CommentCollapse_Tapped(object sender, TappedRoutedEventArgs e)
@@ -1166,7 +1180,7 @@ namespace Baconit.Panels.FlipView
             }
             catch(Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, $"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
+              
                 App.BaconMan.MessageMan.DebugDia($"FullscreenToggleFailed IsVis:{IsVisible}, gofull:{goFullscreen}, trace string [{traceString}]", e);
             }
         }
@@ -1205,7 +1219,7 @@ namespace Baconit.Panels.FlipView
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentSortTapped");
+            
         }
 
         /// <summary>
@@ -1214,58 +1228,111 @@ namespace Baconit.Panels.FlipView
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CommentSortMenu_Click(object sender, RoutedEventArgs e)
+
         {
+
             FlipViewPostContext context = GetContext();
-            if(context == null)
+
+            if (context == null)
+
             {
+
                 return;
+
             }
+
+
 
             // Update sort type
+
             MenuFlyoutItem item = sender as MenuFlyoutItem;
+
             context.Post.CommentSortType = GetCommentSortFromString(item.Text);
 
+
+
             // Get the collector and update the sort
+
             FlipViewPostCommentManager commentManager = GetCommentManger();
+
             commentManager.ChangeCommentSort();
+
         }
+
+
 
         private CommentSortTypes GetCommentSortFromString(string typeString)
+
         {
+
             typeString = typeString.ToLower();
+
             switch (typeString)
+
             {
+
                 case "best":
+
                 default:
+
                     return CommentSortTypes.Best;
+
                 case "controversial":
+
                     return CommentSortTypes.Controversial;
+
                 case "new":
+
                     return CommentSortTypes.New;
+
                 case "old":
+
                     return CommentSortTypes.Old;
+
                 case "q&a":
+
                     return CommentSortTypes.QA;
+
                 case "top":
+
                     return CommentSortTypes.Top;
+
             }
+
         }
 
+
+
         private void CommentShowingCountMenu_Click(object sender, RoutedEventArgs e)
+
         {
+
             FlipViewPostContext context = GetContext();
+
             if (context == null)
+
             {
+
                 return;
+
             }
 
+
+
             // Parse the new comment count
+
             MenuFlyoutItem item = sender as MenuFlyoutItem;
+
             context.Post.CurrentCommentShowingCount = int.Parse(item.Text);
 
+
+
             // Get the collector and update the sort
+
             FlipViewPostCommentManager commentManager = GetCommentManger();
+
             commentManager.UpdateShowingCommentCount(context.Post.CurrentCommentShowingCount);
+
         }
 
         #endregion
@@ -1478,13 +1545,13 @@ namespace Baconit.Panels.FlipView
                         }
                         else
                         {
-                            App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
+                            
                         }
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitPostObjNull");
+                    
                 }
             }
             else if (e.RedditId.StartsWith("t1_"))
@@ -1500,12 +1567,12 @@ namespace Baconit.Panels.FlipView
                     }
                     else
                     {
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitManagerObjNull");
+                        
                     }
                 }
                 else
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentSubmitCommentObjNull");
+                   
                 }
             }
 

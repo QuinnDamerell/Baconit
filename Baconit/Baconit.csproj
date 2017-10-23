@@ -9,21 +9,23 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Baconit</RootNamespace>
     <AssemblyName>Baconit</AssemblyName>
-    <DefaultLanguage>en-us</DefaultLanguage>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Baconit_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>D2A7EFF815E3D9D216A7918D58C55E5B81CEA694</PackageCertificateThumbprint>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <PackageCertificateKeyFile>Baconit_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>33B2DE16F7E9588A7AB690FCAFC1C27B65512F58</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <AppxPackageDir>D:\Users\Quinn\OneDrive\BaconitBuilds\</AppxPackageDir>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <AppxPackageDir>C:\Users\vitor\Documents\Reddunt\n\nn\</AppxPackageDir>
     <ApplicationInsightsResourceId>/subscriptions/8cb09ec7-eef0-4505-923e-a8965130da21/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Baconit</ApplicationInsightsResourceId>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <HockeyAppResourceId>b9aacd166c864ee6892ae436c1157ad6</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +60,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <WarningLevel>3</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -94,14 +97,20 @@
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
+  <PropertyGroup Label="MultilingualAppToolkit">
+    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
+    <MultilingualFallbackLanguage>en-US</MultilingualFallbackLanguage>
+  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Baconit_StoreKey.pfx" />
+    <None Include="Baconit_TemporaryKey.pfx" />
+    <PRIResource Include="Microsoft.UI.Xaml\Resources\en-US\Resources.resw" />
     <None Include="project.json" />
-    <None Include="Service References\Application Insights\ConnectedService.json" />
+    <PRIResource Include="Strings\it-IT\Resources.resw" />
+    <PRIResource Include="Strings\pt-BR\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+    <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -133,10 +142,10 @@
     <Compile Include="ContentPanels\Panels\WindowsAppContentPanel.xaml.cs">
       <DependentUpon>WindowsAppContentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ContentPanels\ContentPanelMaster.cs" />
     <Compile Include="ContentPanels\Panels\YoutubeContentPanel.xaml.cs">
       <DependentUpon>YoutubeContentPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContentPanels\ContentPanelMaster.cs" />
     <Compile Include="HelperControls\CircleIconButton.xaml.cs">
       <DependentUpon>CircleIconButton.xaml</DependentUpon>
     </Compile>
@@ -256,74 +265,70 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-100.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-125.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-150.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-200.png" />
-    <Content Include="Assets\AppAssets\BadgeLogo\96.scale-400.png" />
-    <Content Include="Assets\AppAssets\BandIcons\BandImage24.png" />
-    <Content Include="Assets\AppAssets\BandIcons\BandImage46.png" />
-    <Content Include="Assets\AppAssets\IconicTiles\Iconic144.png" />
-    <Content Include="Assets\AppAssets\IconicTiles\Iconic200.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-100.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-125.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-150.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-200.png" />
-    <Content Include="Assets\AppAssets\SplashScreen\Splash.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square150x150\Square150.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square310x310\Square210.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-100_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-125_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-150_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-200_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-400.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.scale-400_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-16.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-16_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-24.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-256.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-256_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-48.png" />
-    <Content Include="Assets\AppAssets\Square44x44\Square44.targetsize-48_altform-unplated.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-100.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-125.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-150.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-200.png" />
-    <Content Include="Assets\AppAssets\Square71x71\Square71.scale-400.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-100.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-125.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-150.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-200.png" />
-    <Content Include="Assets\AppAssets\StoreLogo\StoreLogo.scale-400.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-100.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-125.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-150.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-200.png" />
-    <Content Include="Assets\AppAssets\Wide310x310\Wide310.scale-400.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-125.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-150.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\AppAssets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-100.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-125.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-150.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-200.png" />
+    <Content Include="Assets\AppAssets\NewStoreLogo.scale-400.png" />
+    <Content Include="Assets\AppAssets\RedduntLogo.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-125.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-150.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\AppAssets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square310x310Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-16.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-16_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-24.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-256.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-256_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-32.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-32_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-48.png" />
+    <Content Include="Assets\AppAssets\Square44x44Logo.targetsize-48_altform-unplated.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Square71x71Logo.scale-400.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-125.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-150.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\AppAssets\Wide310x150Logo.scale-400.png" />
     <Content Include="Assets\FlipView\MenuIcon.png" />
     <Content Include="Assets\FlipView\UpCarret.png" />
+    <Content Include="Assets\IconicTiles\Iconic200.png" />
     <Content Include="Assets\MainPage\BaconitLogo.png" />
     <Content Include="Assets\MainPage\FavoriteIcon.png" />
     <Content Include="Assets\MainPage\NotFavoriteIcon.png" />
     <None Include="Package.StoreAssociation.xml">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Assets\Settings\AboutBaconitIcon.png" />
+    <Content Include="Assets\Settings\AboutRedduntIcon.png" />
     <Content Include="Assets\Welcome\MarilynImageMedium.jpg" />
     <Content Include="Assets\Welcome\QuinnImageMedium.jpg" />
+    <Content Include="Microsoft.UI.Xaml\Assets\NoiseAsset_256X256_PNG.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -419,6 +424,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Microsoft.UI.Xaml\Package_Themes_Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Package_Themes_rs1_themeresources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Package_Themes_rs2_generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Package_Themes_rs2_themeresources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Themes\rs1_themeresources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Themes\rs2_generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Microsoft.UI.Xaml\Themes\rs2_themeresources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PanelManager.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -495,6 +532,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\RedduntResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -512,21 +553,34 @@
       <Project>{c79ac423-5427-4379-ab5b-11f531b5229c}</Project>
       <Name>BaconBackground</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UniversalMarkdown\UniversalMarkdown\UniversalMarkdown.csproj">
-      <Project>{9ffc3b68-696a-4342-a2b8-2eadddef7ff9}</Project>
-      <Name>UniversalMarkdown</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.10240.0">
+    <XliffResource Include="MultilingualResources\Baconit.pt-BR.xlf" />
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">
+      <Name>Microsoft Engagement Framework</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0">
+      <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.15063.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Microsoft.UI.Xaml">
+      <HintPath>..\..\lol\Microsoft.UI.Xaml\Libraries\$(PlatformTarget)\Microsoft.UI.Xaml.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets')" />
+  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.PriResources.targets')" Label="MultilingualAppToolkit">
+    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -20,22 +20,24 @@
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SETTINGS" />
+                       Text="Settings" x:Uid="SettingsTB" FontSize="40" TextWrapping="Wrap"/>
         </StackPanel>
 
         <ListView x:Name="ui_settingsList"
                   Grid.Row="1"
-                  Background="#000000"
+                  Background="Black"
                   ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
                   Padding="12"
                   SelectionChanged="SettingsList_SelectionChanged"
                   Style="{StaticResource ListViewStyle}">
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
-                    <EntranceThemeTransition IsStaggeringEnabled="True" />
+                    <EntranceThemeTransition />
                     <AddDeleteThemeTransition />
                 </TransitionCollection>
             </ListView.ItemContainerTransitions>
+            
+            
         </ListView>
     </Grid>
 </UserControl>

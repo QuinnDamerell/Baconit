@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -26,6 +27,8 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class BackgroundUpdatingSettings : UserControl, IPanel
     {
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
         const string c_earthPornReplace = "earthimages";
         List<string> m_updateFrequencys = new List<string> { "30 minutes", "1 hour", "2 hours", "3 hours", "4 hours", "5 hours", "daily" };
         List<string> m_subredditNameList = new List<string> { "earthporn" };
@@ -108,9 +111,12 @@ namespace Baconit.Panels.SettingsPanels
 
             m_ingoreUpdates = false;
 
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             // Set our status
-            ui_lastUpdate.Text = "Last Update: " + (App.BaconMan.BackgroundMan.LastUpdateTime.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastUpdateTime.ToString("g"));
-            ui_currentSystemUpdateStatus.Text = "System State: " + (App.BaconMan.BackgroundMan.LastSystemBackgroundUpdateStatus != 3 ? "Allowed" : "Denied");
+            ui_lastUpdate.Text = resourceMap.GetValue("LastUpdateCode/Text", resourceContext).ValueAsString + (App.BaconMan.BackgroundMan.LastUpdateTime.Equals(new DateTime(0)) ? resourceMap.GetValue("NeverCode/Text", resourceContext).ValueAsString : App.BaconMan.BackgroundMan.LastUpdateTime.ToString("g"));
+            ui_currentSystemUpdateStatus.Text = resourceMap.GetValue("SystemStateCode/Text", resourceContext).ValueAsString + (App.BaconMan.BackgroundMan.LastSystemBackgroundUpdateStatus != 3 ? resourceMap.GetValue("AllowedCode/Text", resourceContext).ValueAsString : resourceMap.GetValue("DeniedCode/Text", resourceContext).ValueAsString);
 
             // Setup the listener
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;

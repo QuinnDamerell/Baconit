@@ -130,16 +130,16 @@
 
             <TextBlock Margin="0,0,0,4"
                        FontSize="24"
-                       Text="Pro Tip" />
+                       Text="Pro Tip" x:Uid="ProTip" />
             <TextBlock Grid.Row="1"
                        Margin="0,0,0,18"
                        Text="To view the comments for this or any post, put your mouse pointer or finger on the title bar and scroll down."
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="ViewCommentTip" />
             <TextBlock Grid.Row="2"
                        Margin="0,0,0,4"
                        FontWeight="SemiBold"
                        Text="Go ahead! Try it now!"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap" x:Uid="TryItTip" />
         </Grid>
     </Grid>
 </UserControl>

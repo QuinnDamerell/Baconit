@@ -9,11 +9,15 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot"
-          Background="#191919"
+          Background="Black"
           SizeChanged="ContentRoot_SizeChanged">
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">
-                <MenuFlyoutItem Click="SaveImage_Click" Text="Save image" />
+                <MenuFlyoutItem Click="SaveImage_Click" x:Uid="contentRootFM"/>
+                <MenuFlyoutItem Click="SaveImageAt_Click" x:Uid="SaveImageAt" Text="Save image at..."/>
+                <MenuFlyoutItem Click="CopyImage_Click" Text="Copy image" />
+                <MenuFlyoutItem Click="CopyImageUrl_Click" Text="Copy image link" />
+                <MenuFlyoutItem Click="AskGoogle_Click"  Text="Ask Google" />
             </MenuFlyout>
         </FlyoutBase.AttachedFlyout>
 

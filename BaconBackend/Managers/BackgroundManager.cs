@@ -14,7 +14,7 @@ namespace BaconBackend.Managers
     {
         // Since this updater will do multiple things, it will always fire at 30 minutes
         // and each action will check if they should act or not.
-        private const int c_backgroundUpdateTime = 30;
+        private const int c_backgroundUpdateTime = 15;
         private const string c_backgroundTaskName = "Baconit Background Updater";
 
         private BaconManager m_baconMan;
@@ -77,7 +77,7 @@ namespace BaconBackend.Managers
             // Request access to run in the background.
             BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
             LastSystemBackgroundUpdateStatus = (int)status;
-            if(status != BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity && status != BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
+            if(status != BackgroundAccessStatus.AllowedSubjectToSystemPolicy && status != BackgroundAccessStatus.AlwaysAllowed)
             {
                 m_baconMan.MessageMan.DebugDia("System denied us access from running in the background");
             }
@@ -99,7 +99,6 @@ namespace BaconBackend.Managers
                     }
                     catch(Exception e)
                     {
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to register background task", e);
                         m_baconMan.MessageMan.DebugDia("failed to register background task", e);
                     }
                 }

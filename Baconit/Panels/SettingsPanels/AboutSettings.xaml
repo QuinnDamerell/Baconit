@@ -9,7 +9,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
@@ -18,15 +18,15 @@
 
             <!--  Subreddit Header  -->
             <StackPanel Grid.Row="0"
-                        Background="#333333"
+                        Background="Black"
                         Orientation="Horizontal"
                         Padding="12">
                 <TextBlock VerticalAlignment="Bottom"
                            FontWeight="Bold"
-                           Text="ABOUT" />
+                           Text="About" FontSize="32" x:Uid="HeaderAboutTB"/>
             </StackPanel>
 
-            <Grid Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid Grid.Row="1" Background="Black">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -49,13 +49,13 @@
                           Height="70"
                           Background="{StaticResource SystemControlBackgroundAccentBrush}"
                           Tapped="Logo_Tapped">
-                        <Image Margin="8" Source="ms-appx:///Assets/Settings/AboutBaconitIcon.png" />
+                        <Image Margin="8" Source="ms-appx:///Assets/Settings/AboutRedduntIcon.png" />
                     </Grid>
 
                     <StackPanel Grid.Column="1">
                         <TextBlock Margin="8,-10,8,0"
                                    FontSize="32"
-                                   Text="Baconit" />
+                                   Text="Reddunt" />
                         <TextBlock x:Name="ui_buildString"
                                    Margin="8,0,0,0"
                                    Text="Build:" />
@@ -65,57 +65,39 @@
 
                 <TextBlock Grid.Row="1"
                            Margin="12"
-                           Text="Baconit is an open source reddit client for Windows 10. Baconit was born in the mind of Quinn Damerell back in 2010 and originally ran on Windows Phone 7.1. The community embraced Baconit and helped it grow to be the highest rated app in the Windows Phone store. In 2015 it was announced that Baconit would be rewritten from the ground up for the new Windows 10 platform and open sourced. The Windows 10 version of Baconit went live November 13th, 2015. Many thanks to all who have contributed."
-                           TextWrapping="Wrap" />
+                           
+                           TextWrapping="Wrap" Text="Reddunt is a gorgeous Reddit® client based on Baconit, an open source app. It's available on all Windows 10 devices. 
+The main focus is on optimization as well great Windows 10 focused features!" x:Uid="AboutDescription"/>
 
                 <Grid Grid.Row="2"
                       Margin="12"
                       Background="Transparent"
                       Tapped="RateAndReview_Tapped">
-                    <TextBlock Text="Rate and review" />
+                    <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
+                        <Underline>
+                             <Run Text="Rate and review at Windows Store" x:Uid="RateUnder"/>
+                       </Underline>
+                    </TextBlock>
                 </Grid>
 
                 <Grid Grid.Row="3"
                       Margin="12"
                       Background="Transparent"
                       Tapped="ShowSource_Tapped">
-                    <TextBlock Text="Check out the source code" />
+                    <TextBlock Foreground="{ThemeResource SystemAccentColor}" >
+                        <Underline>
+                           <Run Text="Check out the source code" x:Uid="CheckUnder"/>  
+                        </Underline>
+                    </TextBlock>
                 </Grid>
 
-                <Grid Grid.Row="4"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="OpenBaconitSub_Tapped">
-                    <TextBlock Text="Baconit's subreddit" />
-                </Grid>
+                
 
-                <Grid Grid.Row="5"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Website_Tapped">
-                    <TextBlock Text="Baconit's website" />
-                </Grid>
+                
 
-                <Grid Grid.Row="6"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Facebook_Tapped">
-                    <TextBlock Text="Facebook" />
-                </Grid>
+            
 
-                <Grid Grid.Row="7"
-                      Margin="12"
-                      Background="Transparent"
-                      Tapped="Twitter_Tapped">
-                    <TextBlock Text="Twitter" />
-                </Grid>
-
-                <HyperlinkButton Grid.Row="7"
-                                 Margin="11,6"
-                                 VerticalAlignment="Bottom"
-                                 Content="QuinnDamerell.com"
-                                 Foreground="White"
-                                 NavigateUri="http://www.quinndamerell.com" />
+                
             </Grid>
         </Grid>
 

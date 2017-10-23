@@ -8,7 +8,7 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -16,49 +16,49 @@
 
         <!--  Subreddit Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="Black"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="SUBREDDIT VIEW SETTINGS" />
+                       Text="Subreddit settings" x:Uid="SVS1" FontSize="32" TextWrapping="Wrap"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1"
-                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Background="Black"
                     Padding="12">
-            <TextBlock Text="Subreddit to view when the app opens" TextWrapping="Wrap" />
+            <TextBlock Text="Subreddit to view when the app opens" TextWrapping="Wrap" x:Uid="SVS2"/>
             <ComboBox x:Name="ui_defaultSubreddit"
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSubreddit_SelectionChanged" />
 
-            <TextBlock Text="Default sort" TextWrapping="Wrap" />
+            <TextBlock Text="Default sort" TextWrapping="Wrap" x:Uid="DefaultSortsTB"/>
             <ComboBox x:Name="ui_defaultSort"
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSort_SelectionChanged">
-                <ComboBoxItem Content="hot" />
-                <ComboBoxItem Content="new" />
-                <ComboBoxItem Content="rising" />
-                <ComboBoxItem Content="controversial" />
-                <ComboBoxItem Content="top" />
+                <ComboBoxItem Content="hot" x:Uid="CBIhot"/>
+                <ComboBoxItem Content="new" x:Uid="CBInew" />
+                <ComboBoxItem Content="rising" x:Uid="CBIrising" />
+                <ComboBoxItem Content="controversial" x:Uid="CBIcontro" />
+                <ComboBoxItem Content="top" x:Uid="CBItop" />
             </ComboBox>
 
-            <TextBlock Text="Default time sort" TextWrapping="Wrap" />
+            <TextBlock Text="Default time sort" TextWrapping="Wrap" x:Uid="DefaulttimesortTB"/>
             <ComboBox x:Name="ui_defaultTimeSort"
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultTimeSort_SelectionChanged">
-                <ComboBoxItem Content="past hour" />
-                <ComboBoxItem Content="past day" />
-                <ComboBoxItem Content="past week" />
-                <ComboBoxItem Content="past month" />
-                <ComboBoxItem Content="past year" />
-                <ComboBoxItem Content="all time" />
+                <ComboBoxItem Content="past hour" x:Uid="CBIphour"/>
+                <ComboBoxItem Content="past day" x:Uid="CBIpday"/>
+                <ComboBoxItem Content="past week" x:Uid="CBIpweek" />
+                <ComboBoxItem Content="past month" x:Uid="CBIpmonth" />
+                <ComboBoxItem Content="past year" x:Uid="CBIpyear" />
+                <ComboBoxItem Content="all time" x:Uid="CBIalltime" />
             </ComboBox>
 
-            <TextBlock Text="Show full post titles" TextWrapping="Wrap" />
+            <TextBlock Text="Show full post titles" TextWrapping="Wrap" x:Uid="fullpost" />
             <ToggleSwitch x:Name="ui_showFullTitles" Toggled="ShowFullTitles_Toggled" />
         </StackPanel>
     </Grid>

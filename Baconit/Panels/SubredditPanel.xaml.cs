@@ -26,11 +26,19 @@ using Baconit.HelperControls;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI;
 using Baconit.Panels.FlipView;
+using Windows.ApplicationModel.Resources.Core;
+using Microsoft.Services;
+using Microsoft.Services.Store.Engagement;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml.Media.Animation;
+using Baconit.ContentPanels;
 
 namespace Baconit.Panels
 {
+
     public sealed partial class SubredditPanel : UserControl, IPanel
     {
+
         //
         // Private vars
         //
@@ -43,14 +51,24 @@ namespace Baconit.Panels
         SortTimeTypes m_currentSortTimeType;
         LoadingOverlay m_loadingOverlay = null;
 
+        // we use for putting strings on resources 
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
         public SubredditPanel()
         {
             this.InitializeComponent();
             this.DataContext = this;
             Loaded += SubredditPanel_Loaded;
 
+            if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+            {
+                this.feedbackButton.Visibility = Visibility.Visible;
+            }
+
             // Set the post list
             ui_postList.ItemsSource = m_postsLists;
+
         }
 
         private void SubredditPanel_Loaded(object sender, RoutedEventArgs e)
@@ -419,6 +437,8 @@ namespace Baconit.Panels
             m_collector.ChangePostVote(post, PostVoteAction.UpVote);
         }
 
+       
+
         /// <summary>
         /// Fired when a down vote arrow is tapped
         /// </summary>
@@ -448,7 +468,7 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "PostHeldOpenedContextMenu");
+           
         }
 
         private void Post_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -458,21 +478,20 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
-            App.BaconMan.TelemetryMan.ReportEvent(this, "RightClickedOpenedContextMenu");
+           
         }
 
         private void SavePost_Click(object sender, RoutedEventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.SaveOrHidePost(post, !post.IsSaved, null);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "PostSavedTapped");
+          
         }
 
         private void HidePost_Click(object sender, RoutedEventArgs e)
         {
             Post post = (sender as FrameworkElement).DataContext as Post;
             m_collector.SaveOrHidePost(post, null, !post.IsHidden);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "HidePostTapped");
         }
 
         private void CopyLink_Click(object sender, RoutedEventArgs e)
@@ -489,7 +508,6 @@ namespace Baconit.Panels
                 data.SetText(post.Url);
             }
             Clipboard.SetContent(data);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         private void CopyPermalink_Click(object sender, RoutedEventArgs e)
@@ -499,7 +517,6 @@ namespace Baconit.Panels
             DataPackage data = new DataPackage();
             data.SetText("http://www.reddit.com" + post.Permalink);
             Clipboard.SetContent(data);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
         private void ViewUser_Click(object sender, RoutedEventArgs e)
@@ -509,7 +526,7 @@ namespace Baconit.Panels
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
             m_host.Navigate(typeof(UserProfile), post.Author, args);
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditNavToUser");
+
         }
 
         private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)
@@ -544,6 +561,36 @@ namespace Baconit.Panels
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
+        }
+
+        private async void FeedbackHub_Click(object sender, RoutedEventArgs e)
+        {
+
+            var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+            await launcher.LaunchAsync();
+
+
+        }
+
+        // Create AppBar button to enter in full screen mode
+        private void FullScreenMode_Clicked(object sender, RoutedEventArgs e)
+        {
+            ApplicationView FSView = ApplicationView.GetForCurrentView();
+            bool isFullMode = FSView.IsFullScreenMode; 
+
+            if (isFullMode)
+            {
+                FullScreenAppBar.Label = resourceMap.GetValue("EnterFullScreenModeCode/Label",
+                    resourceContext).ValueAsString;
+                FSView.ExitFullScreenMode();
+            }
+
+            else
+            {  
+                FullScreenAppBar.Label = resourceMap.GetValue("ExitFullScreenModeCode/Label",
+                    resourceContext).ValueAsString;
+                FSView.TryEnterFullScreenMode();
+            }   
         }
 
         /// <summary>
@@ -592,23 +639,27 @@ namespace Baconit.Panels
 
         private void SetCurrentSort(SortTypes type)
         {
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             m_currentSortType = type;
             switch (type)
             {
+
                 case SortTypes.Rising:
-                    ui_sortText.Text = "Rising";
+                    ui_sortText.Text = resourceMap.GetValue("RisingCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Hot:
-                    ui_sortText.Text = "Hot";
+                    ui_sortText.Text = resourceMap.GetValue("HotCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Controversial:
-                    ui_sortText.Text = "Controversial";
+                    ui_sortText.Text = resourceMap.GetValue("ControCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.New:
-                    ui_sortText.Text = "New";
+                    ui_sortText.Text = resourceMap.GetValue("NewCode/Text", resourceContext).ValueAsString; 
                     break;
                 case SortTypes.Top:
-                    ui_sortText.Text = "Top";
+                    ui_sortText.Text = resourceMap.GetValue("TopCode/Text", resourceContext).ValueAsString; 
                     break;
             }
 
@@ -682,26 +733,30 @@ namespace Baconit.Panels
 
         private void SetCurrentTimeSort(SortTimeTypes type)
         {
+            
+
             m_currentSortTimeType = type;
             switch (type)
             {
                 case SortTimeTypes.AllTime:
-                    ui_sortTimeText.Text = "All Time";
+                    ui_sortTimeText.Text = resourceMap.GetValue("AllTimeCode/Text", resourceContext).ValueAsString;
+                    ;
                     break;
                 case SortTimeTypes.Day:
-                    ui_sortTimeText.Text = "Past Day";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastDayCode/Text", resourceContext).ValueAsString;
+                    ;
                     break;
                 case SortTimeTypes.Hour:
-                    ui_sortTimeText.Text = "Past Hour";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastHourCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Month:
-                    ui_sortTimeText.Text = "Past Month";
+                    ui_sortTimeText.Text = ui_sortTimeText.Text = resourceMap.GetValue("PastMonthCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Week:
-                    ui_sortTimeText.Text = "Past Week";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastWeekCode/Text", resourceContext).ValueAsString;
                     break;
                 case SortTimeTypes.Year:
-                    ui_sortTimeText.Text = "Past Year";
+                    ui_sortTimeText.Text = resourceMap.GetValue("PastYearCode/Text", resourceContext).ValueAsString;
                     break;
             }
         }
@@ -715,11 +770,12 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppBarSideBarOpen_OnIconTapped(object sender, EventArgs e)
+        private void AppBarSideBarOpen_OnIconClicked(object sender, RoutedEventArgs e)
         {
             // Make sure we have a sub
             if(m_subreddit == null)
             {
+
                 return;
             }
 
@@ -732,6 +788,8 @@ namespace Baconit.Panels
             // Show the blocking UI
             ShowFullScreenLoading(false);
         }
+
+
 
         /// <summary>
         /// Fired when the subreddit panel is closed.
@@ -829,12 +887,12 @@ namespace Baconit.Panels
             });
         }
 
-        private void MenuButton_Click(object sender, EventArgs e)
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             m_host.ToggleMenu(true);
         }
 
-        private void Refresh_Click(object sender, EventArgs e)
+        private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             // Kick off an update.
             m_collector.Update(true);

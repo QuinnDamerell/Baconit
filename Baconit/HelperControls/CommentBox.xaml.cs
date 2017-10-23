@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -180,8 +181,7 @@ namespace Baconit.HelperControls
         /// </summary>
         private void ShowBoxInternal()
         {
-            // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentBoxOpened");
+           
 
             // Show the box
             VisualStateManager.GoToState(this, "ShowCommentBox", true);
@@ -216,8 +216,11 @@ namespace Baconit.HelperControls
             // Set the current context
             m_context = context;
 
+            ResourceContext resourceContext = new ResourceContext();
+            ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
             // Update the button text
-            ui_sendButton.Content = m_isEdit ? "Update" : "Send";
+            ui_sendButton.Content = m_isEdit ? resourceMap.GetValue("UpdateCode/Content", resourceContext).ValueAsString : resourceMap.GetValue("SendCode/Content", resourceContext).ValueAsString;
 
             // If we are opening to a new item clear the text
             if (!m_itemRedditId.Equals(newRedditId) || wasPastOpenEdit != m_isEdit)
@@ -375,7 +378,7 @@ namespace Baconit.HelperControls
                 catch (Exception ex)
                 {
                     App.BaconMan.MessageMan.DebugDia("failed to fire OnCommentSubmitted", ex);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
+                   
                 }
             }
             else

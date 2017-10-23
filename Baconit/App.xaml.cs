@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.StartScreen;
+using System.Threading.Tasks;
 
 namespace Baconit
 {
@@ -43,6 +45,7 @@ namespace Baconit
         /// The main reference in the app to the backend of Baconit
         /// </summary>
         public static BaconManager BaconMan;
+        public static MediaElement MPE;
 
         /// <summary>
         /// Indicates if we have already registered for back.
@@ -64,24 +67,23 @@ namespace Baconit
             // Now setup the baconman
             BaconMan = new BaconManager(false);
 
-            // Now telemetry
-            Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-                Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-                Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException |
-                Microsoft.ApplicationInsights.WindowsCollectors.Session);
 
+            
             // Init the app
             this.InitializeComponent();
+            
 
             // Register for events.
             this.Suspending += OnSuspending_Fired;
             this.Resuming += OnResuming_Fired;
+            Microsoft.UI.Xaml.Controls.DEPControlsClass.Initialize();
         }
 
         /// <summary>
         /// Fired when the app is opened from a toast message.
         /// </summary>
         /// <param name="args"></param>
+        /// <param name="e"></param>
         protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
@@ -91,7 +93,7 @@ namespace Baconit
                 ToastNotificationActivatedEventArgs toastArgs = (ToastNotificationActivatedEventArgs)args;
                 SetupAndALaunchApp(toastArgs.Argument);
             }
-            else if(args is ProtocolActivatedEventArgs)
+            else if (args is ProtocolActivatedEventArgs)
             {
                 ProtocolActivatedEventArgs protcolArgs = (ProtocolActivatedEventArgs)args;
                 string argsString = protcolArgs.Uri.OriginalString;
@@ -103,6 +105,7 @@ namespace Baconit
             {
                 SetupAndALaunchApp(String.Empty);
             }
+           
         }
 
         /// <summary>
@@ -115,6 +118,7 @@ namespace Baconit
             SetupAndALaunchApp(e.Arguments);
         }
 
+        
         /// <summary>
         /// Does the work necessary to setup and launch the app.
         /// </summary>

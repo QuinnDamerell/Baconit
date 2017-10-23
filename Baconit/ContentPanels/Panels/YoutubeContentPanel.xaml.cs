@@ -7,17 +7,25 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
+using Windows.Media;
+using Windows.Storage.Streams;
 using Windows.System.Display;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Core;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -33,18 +41,24 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a ref to the media element that is playing.
         /// </summary>
-        MediaElement m_youTubeVideo;
+
 
         /// <summary>
         /// Holds the request to not sleep the computer while a video is playing.
         /// </summary>
         DisplayRequest m_displayRequest;
 
+
         public YoutubeContentPanel(IContentPanelBaseInternal panelBase)
         {
             this.InitializeComponent();
+
             m_base = panelBase;
+
+
         }
+
+
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
@@ -74,6 +88,8 @@ namespace Baconit.ContentPanels.Panels
             }
         }
 
+
+
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
@@ -94,20 +110,21 @@ namespace Baconit.ContentPanels.Panels
                     {
                         // If we failed fallback to the browser.
                         m_base.FireOnFallbackToBrowser();
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToGetYoutubeVideoAfterSuccess");
+
                         return;
                     }
 
                     // Setup the video
-                    m_youTubeVideo = new MediaElement();
+
                     m_youTubeVideo.AutoPlay = false;
-                    m_youTubeVideo.AreTransportControlsEnabled = true;
                     m_youTubeVideo.CurrentStateChanged += MediaElement_CurrentStateChanged;
                     m_youTubeVideo.Source = youTubeUri.Uri;
-                    ui_contentRoot.Children.Add(m_youTubeVideo);
+
+
                 });
             });
         }
+
 
         /// <summary>
         /// Fired when we should destroy our content.
@@ -144,7 +161,7 @@ namespace Baconit.ContentPanels.Panels
         {
             // If we are not visible and still have a video
             // pause it.
-            if(m_youTubeVideo != null && !isVisible)
+            if (m_youTubeVideo != null && !isVisible)
             {
                 m_youTubeVideo.Pause();
             }
@@ -222,7 +239,7 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception)
             {
-                App.BaconMan.TelemetryMan.ReportEvent("YoutubeString", "Failed to find youtube video");
+
             }
 
             return null;
@@ -300,11 +317,12 @@ namespace Baconit.ContentPanels.Panels
             }
             catch (Exception)
             {
-                App.BaconMan.TelemetryMan.ReportEvent("YoutubeString", "Failed to find youtube video");
+
             }
             return null;
         }
 
         #endregion
+      
     }
 }

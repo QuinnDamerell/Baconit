@@ -139,9 +139,8 @@ namespace Baconit.ContentPanels.Panels
             {
                 m_webView.Navigate(new Uri(m_base.Source.Url, UriKind.Absolute));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToMakeUriInWebControl", e);
                 m_base.FireOnError(true, "This web page failed to load");
             }
 
@@ -223,12 +222,9 @@ namespace Baconit.ContentPanels.Panels
             {
                 m_webView.Navigate(new Uri("http://www.readability.com/m?url=" + m_base.Source.Url, UriKind.Absolute) );
             }
-            catch (Exception ex)
-            {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToNavReadingMode", ex);
+            catch (Exception)
+            {    
             }
-
-            App.BaconMan.TelemetryMan.ReportEvent(this, "ReadingModeEnabled");
         }
 
         private void HideReadingModeLoading()

@@ -35,9 +35,8 @@ namespace BaconBackend.Managers
                         m_baconMan.ShowGlobalContent("http://www.redditstatus.com/");
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage", e);
                 }
             });
         }
@@ -81,9 +80,8 @@ namespace BaconBackend.Managers
                     MessageDialog message = new MessageDialog(content, title);
                     await message.ShowAsync();
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage",e);
                 }
             });
         }

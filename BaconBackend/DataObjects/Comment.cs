@@ -6,9 +6,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources.Core;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+
 
 namespace BaconBackend.DataObjects
 {
@@ -18,6 +20,9 @@ namespace BaconBackend.DataObjects
     /// </summary>
     public class Comment : INotifyPropertyChanged
     {
+        ResourceContext resourceContext = new ResourceContext();
+        ResourceMap resourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
+
         /// <summary>
         /// The comment's unique ID. Prefixed with "t1_", this 
         /// is the comment's fullname.
@@ -168,6 +173,8 @@ namespace BaconBackend.DataObjects
             return s_accentBrush;
         }
 
+       
+
         private static SolidColorBrush GetBrightAccentColor()
         {            
             // Not thread safe, but that's ok
@@ -265,7 +272,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave comment" : "Save comment";
+                return IsSaved ? resourceMap.GetValue("UnsaveComment", resourceContext).ValueAsString : resourceMap.GetValue("SaveComment", resourceContext).ValueAsString;
             }
         }
 
@@ -299,10 +306,9 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        /// <summary>
-        /// The color this comment's downvote button should be in the UI.
-        /// It is accented if and only if the user has downvoted this comment.
-        /// </summary>
+        
+        // It is accented if and only if the user has downvoted this comment.
+        
         [JsonIgnore]
         public SolidColorBrush DownVoteColor
         {
@@ -310,7 +316,7 @@ namespace BaconBackend.DataObjects
             {
                 if (Likes.HasValue && !Likes.Value)
                 {
-                    return GetAccentBrush();
+                    return new SolidColorBrush(Color.FromArgb(255, 223, 35, 41));
                 }
                 else
                 {
@@ -319,10 +325,7 @@ namespace BaconBackend.DataObjects
             }
         }
 
-        /// <summary>
-        /// The color this comment's upvote button should be in the UI.
-        /// It is accented if and only if the user has upvoted this comment.
-        /// </summary>
+        // It is accented if and only if the user has downvoted this comment.
         [JsonIgnore]
         public SolidColorBrush UpVoteColor
         {
@@ -330,10 +333,11 @@ namespace BaconBackend.DataObjects
             {
                 if (Likes.HasValue && Likes.Value)
                 {
-                    return GetAccentBrush();
+                    return new SolidColorBrush(Color.FromArgb(255, 57, 163, 26));
+                    
                 }
                 else
-                {
+                { 
                     return new SolidColorBrush(s_colorGray);
                 }
             }
@@ -411,6 +415,8 @@ namespace BaconBackend.DataObjects
                 }
             }
         }
+
+        
 
         /// <summary>
         /// The visibility of this comment uncollapsed.
@@ -560,7 +566,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsCommentOwnedByUser ? "edit" : "reply";
+                return IsCommentOwnedByUser ? resourceMap.GetValue("EditComment", resourceContext).ValueAsString : resourceMap.GetValue("ReplyComment", resourceContext).ValueAsString;
             }
         }
 
@@ -568,13 +574,16 @@ namespace BaconBackend.DataObjects
         /// Text that is shown on the UI for comment button 4
         /// </summary>
         [JsonIgnore]
+
         public string CommentButton4Text
         {
             get
             {
-                return IsCommentOwnedByUser ? "delete" : "user";
+                return IsCommentOwnedByUser ? resourceMap.GetValue("DeleteComment", resourceContext).ValueAsString : "|";
+
             }
         }
+
 
         /// <summary>
         /// Indicates if the comment has been deleted or not.

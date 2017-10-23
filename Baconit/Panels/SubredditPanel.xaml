@@ -1,11 +1,10 @@
 ﻿<UserControl x:Class="Baconit.Panels.SubredditPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dataObjects="using:BaconBackend.DataObjects"
              xmlns:helperControl="using:Baconit.HelperControls"
-             xmlns:local="using:Baconit.Panels"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              RequestedTheme="Dark"
              d:DesignHeight="600"
              d:DesignWidth="480"
@@ -14,74 +13,56 @@
     <UserControl.Resources>
 
         <DataTemplate x:Key="SubredditItemItemDataTemplate" x:DataType="dataObjects:Post">
-            <Grid Margin="0,0,6,15"
+            <Grid Margin="0,0,6,10"
                   Background="Transparent"
                   Holding="Post_Holding"
-                  RightTapped="Post_RightTapped">
+                  RightTapped="Post_RightTapped" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="45" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto"  />
                 </Grid.ColumnDefinitions>
                 <FlyoutBase.AttachedFlyout>
-                    <MenuFlyout>
+                    <MenuFlyout >
                         <MenuFlyoutItem Click="SavePost_Click" Text="{x:Bind IsSavedMenuText, Mode=OneWay}" />
                         <MenuFlyoutItem Click="HidePost_Click" Text="{x:Bind IsHiddenMenuText, Mode=OneWay}" />
-                        <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" />
-                        <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" />
-                        <MenuFlyoutSeparator />
-                        <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" />
+                        <MenuFlyoutItem Click="CopyLink_Click" Text="Copy link" x:Uid="CopyLinkMFITB"/>
+                        <MenuFlyoutItem Click="CopyPermalink_Click" Text="Copy permalink" x:Uid="CopyPermaLinkMFITB"/>
+                        <MenuFlyoutItem Click="ViewUser_Click" Text="Go to user" x:Uid="GoToUserTB"/>
+                     
                     </MenuFlyout>
                 </FlyoutBase.AttachedFlyout>
 
                 <StackPanel Grid.Column="0"
                             Margin="0,0,0,0"
-                            VerticalAlignment="Top"
-                            Orientation="Vertical">
-                    <StackPanel Margin="0,0,0,0"
-                                Background="Transparent"
-                                Tapped="UpVote_Tapped">
-                        <StackPanel Width="45"
-                                    Height="35"
-                                    Margin="0,5,0,0"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical" >
+
+                    <StackPanel Width="45"
+                                    Height="45"
+                                    Margin="0,10,0,0"
                                     HorizontalAlignment="Left"
-                                    Orientation="Vertical">
-                            <Polygon HorizontalAlignment="Center"
-                                     Fill="{x:Bind UpVoteColor, Mode=OneWay}"
-                                     Points="0,15 20,15 10,0" />
-                            <Rectangle Width="8"
-                                       Height="9"
-                                       Margin="0,-1,1,0"
-                                       HorizontalAlignment="Center"
-                                       Fill="{x:Bind UpVoteColor, Mode=OneWay}" />
-                        </StackPanel>
+                                    Orientation="Vertical" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE935;" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" HorizontalAlignment="Stretch" Margin="-20, 0, 0, 0" Tapped="UpVote_Tapped"/>
                     </StackPanel>
-                    <TextBlock Margin="0,-9,0,0"
+
+                    <TextBlock Margin="-20,-20,0,0"
                                HorizontalAlignment="Center"
-                               Text="{x:Bind Score, Mode=OneWay}" />
-                    <StackPanel Margin="0,-9,0,0"
-                                Background="Transparent"
-                                Tapped="DownVote_Tapped">
-                        <StackPanel Height="35"
+                               Text="{x:Bind Score, Mode=OneWay}" VerticalAlignment="Center"/>
+
+                    <StackPanel Height="35"
                                     Margin="0,8,0,0"
                                     Orientation="Vertical">
-                            <Rectangle Width="7"
-                                       Height="9"
-                                       Margin="0,6,0,-1"
-                                       HorizontalAlignment="Center"
-                                       Fill="{x:Bind DownVoteColor, Mode=OneWay}" />
-                            <Polygon HorizontalAlignment="Center"
-                                     Fill="{x:Bind DownVoteColor, Mode=OneWay}"
-                                     Points="0,0 20,0 10,15" />
-                        </StackPanel>
+                        <FontIcon Glyph="&#xE936;" Foreground="{x:Bind DownVoteColor, Mode=OneWay}" HorizontalAlignment="Stretch" Margin="-20, 0, 0, 0" Tapped="DownVote_Tapped"/>
                     </StackPanel>
+
                 </StackPanel>
                 <StackPanel Grid.Column="1"
-                            Margin="0,0,0,0"
+                            Margin="0,0,0,-6"
                             HorizontalAlignment="Stretch"
                             Background="Transparent"
                             Orientation="Vertical"
-                            Tapped="PostTitle_Tapped">
+                            Tapped="PostTitle_Tapped" VerticalAlignment="Center">
                     <Grid>
                         <TextBlock Margin="0,0,10,0"
                                    HorizontalAlignment="Left"
@@ -123,7 +104,7 @@
                                 Visibility="{x:Bind StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="Sticky" />
+                                       Text="Sticky" x:Uid="StickyTB" />
                         </Border>
                         <Border Margin="0,0,8,0"
                                 HorizontalAlignment="Left"
@@ -140,89 +121,89 @@
                                 Visibility="{x:Bind GildedVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="White"
-                                       Text="Gilded" />
+                                       Text="Gilded" x:Uid="GildedTB"/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="2"
                             Margin="0,4,0,0"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Center" 
                             Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                             Tapped="PostTitle_Tapped"
-                            Visibility="{x:Bind ImageVisibility, Mode=OneWay}">
+                            Visibility="{x:Bind ImageVisibility, Mode=OneWay}" HorizontalAlignment="Stretch">
                     <Image Width="70"
                            Margin="2"
-                           HorizontalAlignment="Right"
+                           HorizontalAlignment="Stretch"
                            Source="{x:Bind Image, Mode=OneWay}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
-
-    <!--  This holds all of the UI except the loading overlay  -->
-    <SplitView x:Name="ui_splitView"
-               Background="#0A0A0A"
+    <Grid x:Name="SplitViewGrid">
+        <!--  This holds all of the UI except the loading overlay  -->
+        <SplitView x:Name="ui_splitView"
+               Background="Black"
                PanePlacement="Right"
                SizeChanged="SplitView_SizeChanged">
-        <SplitView.Content>
-            <Grid x:Name="ui_contentRoot">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+            <SplitView.Content>
+                <Grid x:Name="ui_contentRoot" Background="{StaticResource BackgroundBehindBlur}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
 
-                <!--  Subreddit Header  -->
-                <Grid Grid.Row="0" Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
-                        <TextBlock x:Name="ui_subredditName"
+                    <!--  Subreddit Header  -->
+                    <Grid Grid.Row="0" Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Background="Transparent" Tapped="SubredditHeader_Tapped">
+                            <TextBlock x:Name="ui_subredditName"
                                    Margin="12,12,0,12"
                                    VerticalAlignment="Bottom"
                                    Text="/r/baconit" />
-                    </Grid>
+                        </Grid>
 
-                    <!--  Sort Menu  -->
-                    <StackPanel Grid.Column="1"
+                        <!--  Sort Menu  -->
+                        <StackPanel Grid.Column="1"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
-                                Background="Transparent"
+                                Background="{StaticResource BackgroundBehindBlur}"
                                 Orientation="Horizontal"
                                 Padding="12"
                                 Tapped="Sort_Tapped">
-                        <FlyoutBase.AttachedFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" />
-                                <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" />
-                            </MenuFlyout>
-                        </FlyoutBase.AttachedFlyout>
-                        <TextBlock Margin="0,0,2,0"
+                            <FlyoutBase.AttachedFlyout>
+                                <MenuFlyout >
+                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Hot" x:Uid="SMIHot"/>
+                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="New" x:Uid="SMINew"/>
+                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Rising" x:Uid="SMIRising"/>
+                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Controversial" x:Uid="SMIContro"/>
+                                    <MenuFlyoutItem Click="SortMenuItem_Click" Text="Top" x:Uid="SMITop"/>
+                                </MenuFlyout>
+                            </FlyoutBase.AttachedFlyout>
+                            <TextBlock Margin="0,0,2,0"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="#989898"
-                                   Text="Sort:" />
-                        <TextBlock x:Name="ui_sortText"
+                                   Text="Sort:" x:Uid="SortDTB"/>
+                            <TextBlock x:Name="ui_sortText"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="Hot" />
-                        <TextBlock Margin="2,1,0,0"
+                                   Text="Hot" x:Uid="SortTextHotTB"/>
+                            <TextBlock Margin="2,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                    FontSize="9"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text=" &#xE0E5;" />
-                    </StackPanel>
+                        </StackPanel>
 
-                    <!--  Top Sort Time  -->
-                    <StackPanel x:Name="ui_timeSortHolder"
+                        <!--  Top Sort Time  -->
+                        <StackPanel x:Name="ui_timeSortHolder"
                                 Grid.Column="2"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
@@ -231,95 +212,100 @@
                                 Padding="0,12,12,12"
                                 Tapped="SortTime_Tapped"
                                 Visibility="Collapsed">
-                        <FlyoutBase.AttachedFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" />
-                                <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" />
-                            </MenuFlyout>
-                        </FlyoutBase.AttachedFlyout>
-                        <TextBlock Margin="0,0,2,0"
+                            <FlyoutBase.AttachedFlyout>
+                                <MenuFlyout >
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Hour" x:Uid="PastHour"/>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Day" x:Uid="PastDay"/>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Week" x:Uid="PastHWeek"/>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Month" x:Uid="PastMonth"/>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="Past Year" x:Uid="PastYear"/>
+                                    <MenuFlyoutItem Click="SortTimeMenuItem_Click" Text="All Time" x:Uid="AllTime"/>
+                                </MenuFlyout>
+                            </FlyoutBase.AttachedFlyout>
+                            <TextBlock Margin="0,0,2,0"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="#989898"
-                                   Text="Time:" />
-                        <TextBlock x:Name="ui_sortTimeText"
+                                   Text="Time:" x:Uid="TimeTB"/>
+                            <TextBlock x:Name="ui_sortTimeText"
                                    VerticalAlignment="Bottom"
                                    FontSize="12"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
-                                   Text="Past Week" />
-                        <TextBlock Margin="2,1,0,0"
+                                   Text="Past Week" x:Uid="SortTimeTB"/>
+                            <TextBlock Margin="2,1,0,0"
                                    VerticalAlignment="Center"
                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                    FontSize="9"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text=" &#xE0E5;" />
-                    </StackPanel>
-                </Grid>
-                <!--  Loading indicator  -->
-                <ProgressBar x:Name="ui_progressBar"
+                        </StackPanel>
+                    </Grid>
+                    <!--  Loading indicator  -->
+                    <ProgressBar x:Name="ui_progressBar"
                              Grid.Row="0"
                              VerticalAlignment="Bottom"
                              Background="Transparent" />
 
-                <!--  Posts list  -->
-                <helperControl:EndDetectingListView x:Name="ui_postList"
+                    <!--  Posts list  -->
+                    <helperControl:EndDetectingListView x:Name="ui_postList"
                                                     Grid.Row="1"
                                                     IsTapEnabled="False"
-                                                    ItemContainerStyle="{StaticResource ListViewItemNoHighlight}"
+                                                    
                                                     ItemTemplate="{StaticResource SubredditItemItemDataTemplate}"
                                                     Padding="0,0,8,0"
                                                     SelectionChanged="PostList_SelectionChanged"
-                                                    Style="{StaticResource ListViewStyle}">
-                    <ListView.ItemContainerTransitions>
-                        <TransitionCollection>
-                            <EntranceThemeTransition IsStaggeringEnabled="True" />
-                            <AddDeleteThemeTransition />
-                        </TransitionCollection>
-                    </ListView.ItemContainerTransitions>
-                </helperControl:EndDetectingListView>
+                                                       
+                                                    >
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition/>
+                                <AddDeleteThemeTransition />
+                            </TransitionCollection>
+                        </ListView.ItemContainerTransitions>
+                    </helperControl:EndDetectingListView>
 
-                <!--  There are not post here text  -->
-                <TextBlock x:Name="ui_noPostText"
+                    <!--  There are not post here text  -->
+                    <TextBlock x:Name="ui_noPostText"
                            Grid.Row="1"
                            Margin="12,0,12,12"
                            Foreground="#999999"
                            Text="There are no posts here."
-                           Visibility="Collapsed" />
+                           Visibility="Collapsed" x:Uid="NoPostHereTB"/>
 
-                <!--  Custom App bar  -->
-                <Grid Grid.Row="2"
-                      Background="#1F1F1F"
-                      Padding="4">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <helperControl:CircleIconButton Grid.Column="0"
-                                                        OnIconTapped="Refresh_Click"
-                                                        SymbolIcon="Refresh" />
-                        <helperControl:CircleIconButton Grid.Column="1"
-                                                        FontIconGlyph="&#xE700;"
-                                                        OnIconTapped="MenuButton_Click" />
-                        <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
-                                                        Grid.Column="2"
-                                                        OnIconTapped="AppBarSideBarOpen_OnIconTapped"
-                                                        SymbolIcon="DockRight" />
-                    </Grid>
+
+                    <CommandBar Grid.Row="2" Background="{StaticResource BackgroundTopBlur}">
+                        <CommandBar.CommandBarOverflowPresenterStyle>
+                            <Style TargetType="CommandBarOverflowPresenter">
+                                <Setter Property="Background"
+                        Value="{StaticResource BackgroundTopBlur}" />
+                            </Style>
+                        </CommandBar.CommandBarOverflowPresenterStyle>
+
+                        <CommandBar.PrimaryCommands>
+                            <AppBarButton Icon="Refresh"
+                      Click="Refresh_Click"
+                      Label="Refresh" x:Uid="RefreshButton" AccessKey="R"/>
+                            <AppBarButton x:Name="ui_appBarSubButton"
+                      Icon="Add"
+                      Click="AppBarSideBarOpen_OnIconClicked"
+                      Label="Add" x:Uid="AddButton"  AccessKey="N"/>
+                            <AppBarButton Icon="List"
+                      Click="MenuButton_Click"
+                      Label="More" x:Uid="AppBarMenuButton" AccessKey="M"/>
+                        </CommandBar.PrimaryCommands>
+                        <CommandBar.SecondaryCommands>
+                            <AppBarButton Label="Feedback Hub" x:Uid="FeedbackHubLabel" Click="FeedbackHub_Click" x:Name="feedbackButton" />
+                            <AppBarButton Label="Enter Full Screen Mode" x:Uid="FullScreenModeXAML" Click="FullScreenMode_Clicked" x:Name="FullScreenAppBar"/>
+                        </CommandBar.SecondaryCommands>
+                    </CommandBar>
                 </Grid>
-            </Grid>
-        </SplitView.Content>
+            </SplitView.Content>
 
-        <SplitView.Pane>
-            <helperControl:SubredditSideBar x:Name="ui_subredditSideBar"
+            <SplitView.Pane>
+                <helperControl:SubredditSideBar x:Name="ui_subredditSideBar"
                                             Background="#171717"
                                             OnShouldClose="SubredditSideBar_OnShouldClose" />
-        </SplitView.Pane>
-    </SplitView>
+            </SplitView.Pane>
+        </SplitView>
+    </Grid>
 </UserControl>

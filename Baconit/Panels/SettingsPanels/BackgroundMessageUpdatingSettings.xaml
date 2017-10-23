@@ -10,7 +10,7 @@
              mc:Ignorable="d">
 
     <Grid>
-        <Grid x:Name="ui_contentRoot" Background="#333333">
+        <Grid x:Name="ui_contentRoot" Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
@@ -18,36 +18,36 @@
 
             <!--  Header  -->
             <StackPanel Grid.Row="0"
-                        Background="#333333"
+                        Background="Black"
                         Orientation="Horizontal"
                         Padding="12">
                 <TextBlock VerticalAlignment="Bottom"
                            FontWeight="Bold"
-                           Text="BACKGROUND INBOX UPDATING" />
+                           Text="Background inbox updating" x:Uid="BackgroundInboxCTB" FontSize="32" TextWrapping="WrapWholeWords"/>
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Style="{StaticResource ScrollViewerStyle}">
+            <ScrollViewer Grid.Row="1" Background="Black" Style="{StaticResource ScrollViewerStyle}">
                 <StackPanel Grid.Row="1" Margin="12">
                     <TextBlock Margin="0,0,0,0"
                                Text="Background inbox updating"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="BackgroundInboxTB"/>
                     <ToggleSwitch x:Name="ui_enableBackgroundMessages" Toggled="EnableBackgroundMessages_Toggled" />
 
                     <TextBlock Margin="0,12,0,0"
                                Text="Add messages to the notification center silently"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="AddMessagesTB"/>
                     <ToggleSwitch x:Name="ui_addNotesSliently" Toggled="AddNotesSliently_Toggled" />
 
                     <TextBlock Margin="0,12,0,0"
                                Text="How messages appear in the notification center"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" x:Uid="HowMessagesTB"/>
                     <ComboBox x:Name="ui_messageNotificationType"
                               MinWidth="150"
                               Margin="0,8,0,8"
                               SelectedIndex="0"
                               SelectionChanged="MessageNotificationType_SelectionChanged">
-                        <ComboBoxItem>Show each message</ComboBoxItem>
-                        <ComboBoxItem>Show one total unread count</ComboBoxItem>
+                        <ComboBoxItem x:Uid="ShowEachMessageCBI">Show each message</ComboBoxItem>
+                        <ComboBoxItem x:Uid="ShowOneTotalUnreadCBI">Show one total unread count</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
             </ScrollViewer>

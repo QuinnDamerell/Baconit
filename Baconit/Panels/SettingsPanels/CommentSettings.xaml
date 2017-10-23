@@ -8,40 +8,43 @@
              d:DesignWidth="400"
              mc:Ignorable="d">
 
-    <Grid x:Name="ui_contentRoot" Background="#333333">
+    <Grid x:Name="ui_contentRoot" Background="Black">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            
         </Grid.RowDefinitions>
 
         <!--  Comment Header  -->
         <StackPanel Grid.Row="0"
-                    Background="#333333"
+                    Background="Black"
                     Orientation="Horizontal"
                     Padding="12">
             <TextBlock VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Text="COMMENT SETTINGS" />
+                       Text="Comment settings" x:Uid="CSettings" FontSize="32" TextWrapping="Wrap"/>
+           
         </StackPanel>
 
         <StackPanel Grid.Row="1"
-                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    Background="Black"
                     Padding="12">
 
-            <TextBlock Text="Default sort" TextWrapping="Wrap" />
+            <TextBlock Text="Default sort" TextWrapping="Wrap" x:Uid="DefaultsortTB"/>
             <ComboBox x:Name="ui_defaultSort"
                       MinWidth="150"
                       Margin="0,8,12,18"
                       SelectionChanged="DefaultSort_SelectionChanged">
-                <ComboBoxItem Content="Best" />
-                <ComboBoxItem Content="Top" />
-                <ComboBoxItem Content="Controversial" />
-                <ComboBoxItem Content="New" />
-                <ComboBoxItem Content="Old" />
-                <ComboBoxItem Content="Q&amp;A" />
+                <ComboBoxItem Content="Best" x:Uid="CBestCB"/>
+                <ComboBoxItem Content="Top" x:Uid="CTopCB" />
+                <ComboBoxItem Content="Controversial" x:Uid="CControCB" />
+                <ComboBoxItem Content="New" x:Uid="CNewCB" />
+                <ComboBoxItem Content="Old" x:Uid="COldCB"/>
+                <ComboBoxItem Content="Q&amp;A" x:Uid="CQACB" />
             </ComboBox>
 
-            <TextBlock Text="Default count" TextWrapping="Wrap" />
+            <TextBlock Text="Default count" TextWrapping="Wrap" x:Uid="DefaultcountTB"/>
             <ComboBox x:Name="ui_defaultCommentCount"
                       MinWidth="150"
                       Margin="0,8,12,18"
@@ -50,7 +53,12 @@
                 <ComboBoxItem Content="150" />
                 <ComboBoxItem Content="200" />
                 <ComboBoxItem Content="300" />
+                
+                
             </ComboBox>
+            
         </StackPanel>
+        
     </Grid>
+    
 </UserControl>

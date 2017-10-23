@@ -140,7 +140,6 @@ namespace BaconBackend.Helpers
                 }
                 catch(Exception ex)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedtoParseTrendingPost", ex);
                     m_baconMan.MessageMan.DebugDia("failed to parse trending subs post", ex);
                 }
             }
@@ -167,7 +166,7 @@ namespace BaconBackend.Helpers
             }
             catch(Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToFireReadyEvent", e);
+               
                 m_baconMan.MessageMan.DebugDia("failed to fire trending subs ready event", e);
             }
         }

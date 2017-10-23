@@ -59,8 +59,7 @@ namespace Baconit.HelperControls
             // Show the close button
             VisualStateManager.GoToState(this, "ShowCloseButton", true);
 
-            // Review and feedback shown
-            App.BaconMan.TelemetryMan.ReportEvent(this, "ReviewAndFeedbackShown");
+          
         }
 
         private void Close_OnIconTapped(object sender, EventArgs e)
@@ -71,7 +70,7 @@ namespace Baconit.HelperControls
             // Fire this if we have a sender.
             if(sender != null)
             {
-                App.BaconMan.TelemetryMan.ReportEvent(this, "ClosedWithCloseButton");
+                
             }
         }
 
@@ -101,8 +100,7 @@ namespace Baconit.HelperControls
             // #todo if our app package ever changes change this!!!
             await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9wzdncrfj0bc"));
 
-            // Send telemetry
-            App.BaconMan.TelemetryMan.ReportEvent(this, "StoreReviewOpened");
+           
             m_wasReviewGiven = true;
 
             // Close the box
