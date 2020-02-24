@@ -347,10 +347,6 @@ namespace Baconit.ContentPanels.Panels
             bitmapImage.ImageOpened += BitmapImage_ImageOpened;
             bitmapImage.ImageFailed += BitmapImage_ImageFailed;
 
-            // Set the source.
-            stream.Seek(0);
-            bitmapImage.SetSource(stream);
-
             // Get the decode height and width.
             int decodeWidth = 0;
             int decodeHeight = 0;
@@ -378,6 +374,10 @@ namespace Baconit.ContentPanels.Panels
             // But since this is scaled, the control size is something like 3 physical pixels for each logical pixel, so the image is lower res
             // if we use physical.
             bitmapImage.DecodePixelType = App.BaconMan.MemoryMan.MemoryPressure < MemoryPressureStates.Medium ? DecodePixelType.Logical : DecodePixelType.Physical;
+
+            // Set the source. This must be done after setting decode size and other parameters, so those are respected.
+            stream.Seek(0);
+            bitmapImage.SetSource(stream);
 
             // Destroy the old image.
             if (m_image.Source != null)
