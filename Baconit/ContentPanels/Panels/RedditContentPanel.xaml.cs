@@ -3,40 +3,36 @@ using Baconit.Interfaces;
 using System;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using BaconBackend.Managers;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class RedditContentPanel : UserControl, IContentPanel
+    public sealed partial class RedditContentPanel : IContentPanel
     {
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        private readonly IContentPanelBaseInternal _mBase;
+        private readonly IContentPanelBaseInternal _contentPanelBase;
 
         /// <summary>
         /// The current reddit content we have.
         /// </summary>
-        private RedditContentContainer _mContent;
+        private RedditContentContainer _content;
 
 
         public RedditContentPanel(IContentPanelBaseInternal panelBase)
         {
             InitializeComponent();
-            _mBase = panelBase;
+            _contentPanelBase = panelBase;
         }
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+        public static bool CanHandlePost(ContentPanelSource source)
         {
             // If this is a self post with no text we will handle this.
             if (source.IsSelf && string.IsNullOrWhiteSpace(source.SelfText))
@@ -45,18 +41,13 @@ namespace Baconit.ContentPanels.Panels
             }
 
             // Check if this is a reddit content post, if so this is us
-            if (!string.IsNullOrWhiteSpace(source.Url))
-            {
-                // Check the content
-                var container = MiscellaneousHelper.TryToFindRedditContentInLink(source.Url);
+            if (string.IsNullOrWhiteSpace(source.Url)) return false;
 
-                // If we got a container and it isn't a web site return it.
-                if (container != null && container.Type != RedditContentType.Website)
-                {
-                    return true;
-                }
-            }
-            return false;
+            // Check the content
+            var container = MiscellaneousHelper.TryToFindRedditContentInLink(source.Url);
+
+            // If we got a container and it isn't a web site return it.
+            return container != null && container.Type != RedditContentType.Website;
         }
 
         #region IContentPanel
@@ -69,7 +60,6 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
-        /// <param name="source"></param>
         public async void OnPrepareContent()
         {
             // Defer so we give the UI time to work.
@@ -78,20 +68,20 @@ namespace Baconit.ContentPanels.Panels
                 var headerText = "";
                 var minorText = "";
 
-                if (_mBase.Source.IsSelf)
+                if (_contentPanelBase.Source.IsSelf)
                 {
                     headerText = "There's no content here!";
                     minorText = "Scroll down to view the discussion.";
                 }
                 else
                 {
-                    _mContent = MiscellaneousHelper.TryToFindRedditContentInLink(_mBase.Source.Url);
+                    _content = MiscellaneousHelper.TryToFindRedditContentInLink(_contentPanelBase.Source.Url);
 
-                    switch (_mContent.Type)
+                    switch (_content.Type)
                     {
                         case RedditContentType.Subreddit:
                             headerText = "This post links to a subreddit";
-                            minorText = $"Tap anywhere to view /r/{_mContent.Subreddit}";
+                            minorText = $"Tap anywhere to view /r/{_content.Subreddit}";
                             break;
                         case RedditContentType.Comment:
                             headerText = "This post links to a comment thread";
@@ -103,13 +93,15 @@ namespace Baconit.ContentPanels.Panels
                             break;
                         case RedditContentType.User:
                             headerText = "This post links to a reddit user page";
-                            minorText = $"Tap anywhere to view {_mContent.User}";
+                            minorText = $"Tap anywhere to view {_content.User}";
                             break;
                         case RedditContentType.Website:
                             // This shouldn't happen
                             App.BaconMan.MessageMan.DebugDia("Got website back when prepare on reddit content control");
                             TelemetryManager.ReportUnexpectedEvent(this, "GotWebsiteOnPrepareRedditContent");
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 }
 
@@ -117,7 +109,7 @@ namespace Baconit.ContentPanels.Panels
                 ui_minorText.Text = minorText;
 
                 // Hide loading
-                _mBase.FireOnLoading(false);
+                _contentPanelBase.FireOnLoading(false);
             });
         }
 
@@ -126,7 +118,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         public void OnDestroyContent()
         {
-            _mContent = null;
+            _content = null;
         }
 
         /// <summary>
@@ -154,10 +146,10 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (_mContent != null)
+            if (_content != null)
             {
                 // If we have content pass it!
-                App.BaconMan.ShowGlobalContent(_mContent);
+                App.BaconMan.ShowGlobalContent(_content);
             }
         }
     }

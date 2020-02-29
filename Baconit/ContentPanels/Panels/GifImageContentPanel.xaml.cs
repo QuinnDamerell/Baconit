@@ -40,7 +40,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+        public static bool CanHandlePost(ContentPanelSource source)
         {
             // See if we can find a imgur, gfycat gif, or a normal gif we can send to gfycat.
             if (string.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGifUrl(source.Url)))
@@ -91,7 +91,7 @@ namespace Baconit.ContentPanels.Panels
                     lock(this)
                     {
                         // Make sure we aren't destroyed.
-                        if (_mBase.IsDestoryed)
+                        if (_mBase.IsDestroyed)
                         {
                             return;
                         }

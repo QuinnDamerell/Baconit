@@ -504,24 +504,24 @@ namespace Baconit.Panels.FlipView
 
         #region Comment Click Listeners
 
-        public void UpVote_Tapped(Comment comment)
+        public void OnUpVoteTapped(Comment comment)
         {
             var collector = EnsureCollector();
             ((CommentCollector)collector.GetCollector()).ChangeCommentVote(comment, PostVoteAction.UpVote);
         }
 
-        public void DownVote_Tapped(Comment comment)
+        public void OnDownVoteTapped(Comment comment)
         {
             var collector = EnsureCollector();
             ((CommentCollector)collector.GetCollector()).ChangeCommentVote(comment, PostVoteAction.DownVote);
         }
 
-        public void Share_Tapped(Comment comment)
+        public void OnShareTapped(Comment comment)
         {
             ShareComment(comment);
         }
 
-        public async void Save_Tapped(Comment comment)
+        public static async void OnSaveTapped(Comment comment)
         {
             // Update the UI now
             comment.IsSaved = !comment.IsSaved;
@@ -536,7 +536,7 @@ namespace Baconit.Panels.FlipView
             }
         }
 
-        public void CopyPermalink_Tapped(Comment comment)
+        public void OnCopyPermalinkTapped(Comment comment)
         {
             // Get the link and copy the url into the clipboard
             var commentLink = "https://reddit.com" + _post.Permalink + comment.Id;
@@ -545,7 +545,7 @@ namespace Baconit.Panels.FlipView
             Clipboard.SetContent(data);
         }
 
-        public async void Collpase_Tapped(Comment comment)
+        public async void OnCollapseTapped(Comment comment)
         {
             // Kick delay to the UI thread so the animations can continue
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
@@ -554,7 +554,7 @@ namespace Baconit.Panels.FlipView
             });
         }
 
-        public async void Expand_Tapped(Comment comment)
+        public async void OnExpandTapped(Comment comment)
         {
             // Kick delay to the UI thread so the animations can continue
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
@@ -566,10 +566,10 @@ namespace Baconit.Panels.FlipView
         /// <summary>
         /// Called when is added or edited
         /// </summary>
-        public bool CommentAddedOrEdited(string parentOrOrgionalId, CommentSubmittedArgs args)
+        public bool CommentAddedOrEdited(string parentOrOriginalId, CommentSubmittedArgs args)
         {
             var collector = EnsureCollector();
-            return ((CommentCollector)collector.GetCollector()).CommentAddedOrEdited(parentOrOrgionalId, args.Response, args.IsEdit);
+            return ((CommentCollector)collector.GetCollector()).CommentAddedOrEdited(parentOrOriginalId, args.Response, args.IsEdit);
         }
 
         /// <summary>

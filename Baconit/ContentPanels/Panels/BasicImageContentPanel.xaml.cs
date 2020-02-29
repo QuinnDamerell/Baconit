@@ -154,7 +154,7 @@ namespace Baconit.ContentPanels.Panels
                 }
 
                 // Make sure we aren't destroyed.
-                if (_baseContentPanel.IsDestoryed)
+                if (_baseContentPanel.IsDestroyed)
                 {
                     return;
                 }
@@ -252,7 +252,7 @@ namespace Baconit.ContentPanels.Panels
 
                 lock (this)
                 {
-                    if (_baseContentPanel.IsDestoryed)
+                    if (_baseContentPanel.IsDestroyed)
                     {
                         // Get out of here if we should be destroyed.
                         return;
@@ -288,7 +288,7 @@ namespace Baconit.ContentPanels.Panels
         private bool ReloadImage(bool useFullSize)
         {
             // Don't worry about this if we are destroyed.
-            if (_baseContentPanel.IsDestoryed)
+            if (_baseContentPanel.IsDestroyed)
             {
                 return false;
             }
@@ -403,7 +403,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private async void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
         {
-            if(_baseContentPanel.IsDestoryed)
+            if(_baseContentPanel.IsDestroyed)
             {
                 return;
             }

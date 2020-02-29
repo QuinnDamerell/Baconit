@@ -81,8 +81,9 @@ namespace BaconBackend.Managers
         /// </summary>
         /// <param name="url"></param>
         /// <param name="authHeader"></param>
+        /// <param name="userAgent"></param>
         /// <returns></returns>
-        public static async Task<IHttpContent> MakeGetRequest(string url, string authHeader = "")
+        public static async Task<IHttpContent> MakeGetRequest(string url, string authHeader = "", string userAgent = "baconit")
         {
             if(string.IsNullOrWhiteSpace(url))
             {
@@ -90,14 +91,17 @@ namespace BaconBackend.Managers
             }
             var request = new HttpClient();
             var message = new HttpRequestMessage(HttpMethod.Get, new Uri(url, UriKind.Absolute));
+
             // Set the user agent
-            message.Headers.Add("User-Agent", "Baconit");
+            message.Headers.Add("User-Agent", userAgent);
+
             // Set the auth header
             if (!string.IsNullOrWhiteSpace(authHeader))
             {
                 message.Headers["Authorization"] = authHeader;
             }
             var response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
+
             if(response.StatusCode == HttpStatusCode.ServiceUnavailable ||
                 response.StatusCode == HttpStatusCode.BadGateway ||
                 response.StatusCode == HttpStatusCode.GatewayTimeout ||

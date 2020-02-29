@@ -120,6 +120,7 @@
     <Compile Include="Helpers\SmartWeakEvent.cs" />
     <Compile Include="Helpers\TimeToTextHelper.cs" />
     <Compile Include="Helpers\TrendingSubredditsHelper.cs" />
+    <Compile Include="Helpers\YouTubeHelper.cs" />
     <Compile Include="Interfaces\IBackendActionListener.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\BackgroundManager.cs" />

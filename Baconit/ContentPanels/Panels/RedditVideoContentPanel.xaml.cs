@@ -9,7 +9,7 @@ using Baconit.Interfaces;
 
 namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class RedditVideoContentPanel : UserControl, IContentPanel
+    public sealed partial class RedditVideoContentPanel : IContentPanel
     {
         private readonly IContentPanelBaseInternal _contentPanelBase;
         private MediaElement _videoPlayer;

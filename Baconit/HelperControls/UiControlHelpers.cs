@@ -6,7 +6,7 @@ namespace Baconit.HelperControls
 {
     internal class UiControlHelpers<T>
     {
-        static public void RecursivelyFindElement(DependencyObject root, ref List<DependencyObject> foundList, int maxListCount = 9999999)
+        public static void RecursivelyFindElement(DependencyObject root, ref List<DependencyObject> foundList, int maxListCount = 9999999)
         {
             // Check for null
             if (root == null || foundList == null)

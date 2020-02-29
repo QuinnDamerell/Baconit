@@ -17,7 +17,7 @@ namespace Baconit.Interfaces
         /// <summary>
         /// Indicates if the panel is destroyed.
         /// </summary>
-        bool IsDestoryed { get; }
+        bool IsDestroyed { get; }
 
         /// <summary>
         /// Indicates if we are full screen.

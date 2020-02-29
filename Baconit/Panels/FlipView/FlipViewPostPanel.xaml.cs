@@ -734,7 +734,7 @@ namespace Baconit.Panels.FlipView
             // We don't need to animate here, the vote will do it for us
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.UpVote_Tapped(comment);
+            manager?.OnUpVoteTapped(comment);
         }
 
         private void CommentDown_Tapped(object sender, TappedRoutedEventArgs e)
@@ -742,7 +742,7 @@ namespace Baconit.Panels.FlipView
             // We don't need to animate here, the vote will do it for us
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.DownVote_Tapped(comment);
+            manager?.OnDownVoteTapped(comment);
         }
 
         private void CommentButton3_Tapped(object sender, TappedRoutedEventArgs e)
@@ -827,7 +827,7 @@ namespace Baconit.Panels.FlipView
         {
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.Save_Tapped(comment);
+            FlipViewPostCommentManager.OnSaveTapped(comment);
             TelemetryManager.ReportEvent(this, "CommentSaveTapped");
         }
 
@@ -835,7 +835,7 @@ namespace Baconit.Panels.FlipView
         {
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.Share_Tapped(comment);
+            manager?.OnShareTapped(comment);
             TelemetryManager.ReportEvent(this, "CommentShareTapped");
         }
 
@@ -843,7 +843,7 @@ namespace Baconit.Panels.FlipView
         {
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.CopyPermalink_Tapped(comment);
+            manager?.OnCopyPermalinkTapped(comment);
             TelemetryManager.ReportEvent(this, "CommentPermalinkTapped");
         }
 
@@ -854,14 +854,14 @@ namespace Baconit.Panels.FlipView
 
             var comment = ((FrameworkElement) sender)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.Collpase_Tapped(comment);
+            manager?.OnCollapseTapped(comment);
         }
 
         private void CollapsedComment_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var comment = (sender as FrameworkElement)?.DataContext as Comment;
             var manager = GetCommentManger();
-            manager?.Expand_Tapped(comment);
+            manager?.OnExpandTapped(comment);
         }
 
         /// <summary>

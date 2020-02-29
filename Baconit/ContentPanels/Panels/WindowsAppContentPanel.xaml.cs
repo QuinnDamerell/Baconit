@@ -4,41 +4,35 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using BaconBackend.Managers;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class WindowsAppContentPanel : UserControl, IContentPanel
+    public sealed partial class WindowsAppContentPanel : IContentPanel
     {
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        private readonly IContentPanelBaseInternal _mBase;
+        private readonly IContentPanelBaseInternal _contentPanelBase;
 
         /// <summary>
         /// A hidden webview used if we can't parse the string.
         /// </summary>
-        private WebView _mHiddenWebView;
+        private WebView _hiddenWebView;
 
         public WindowsAppContentPanel(IContentPanelBaseInternal panelBase)
         {
             InitializeComponent();
-            _mBase = panelBase;
+            _contentPanelBase = panelBase;
         }
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+        public static bool CanHandlePost(ContentPanelSource source)
         {
             var urlLower = source.Url.ToLower();
-            if (urlLower.Contains("microsoft.com") && (urlLower.Contains("/store/apps/") || urlLower.Contains("/store/games/")))
-            {
-                return true;
-            }
-            return false;
+            return urlLower.Contains("microsoft.com") && (urlLower.Contains("/store/apps/") || urlLower.Contains("/store/games/"));
         }
 
         #region IContentPanel
@@ -51,11 +45,10 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
-        /// <param name="source"></param>
         public void OnPrepareContent()
         {
             // Hide loading
-            _mBase.FireOnLoading(false);
+            _contentPanelBase.FireOnLoading(false);
         }
 
         /// <summary>
@@ -64,11 +57,11 @@ namespace Baconit.ContentPanels.Panels
         public void OnDestroyContent()
         {
             // Kill the web view
-            if (_mHiddenWebView != null)
+            if (_hiddenWebView != null)
             {
-                _mHiddenWebView.NavigationCompleted -= HiddenWebView_NavigationCompleted;
+                _hiddenWebView.NavigationCompleted -= HiddenWebView_NavigationCompleted;
             }
-            _mHiddenWebView = null;
+            _hiddenWebView = null;
         }
 
         /// <summary>
@@ -98,7 +91,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private async void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(_mBase.Source.Url))
+            if (!string.IsNullOrWhiteSpace(_contentPanelBase.Source.Url))
             {
                 // Try to parse out the app id if we can, loading the webpage can take a long
                 // time so we want to avoid it if possible
@@ -113,20 +106,20 @@ namespace Baconit.ContentPanels.Panels
                     // Note the /apps/ changes also
 
                     // Find the last / this should be just before the app id.
-                    var appIdStart = _mBase.Source.Url.LastIndexOf('/') + 1;
+                    var appIdStart = _contentPanelBase.Source.Url.LastIndexOf('/') + 1;
 
                     // Make sure we found one.
                     if (appIdStart != 0)
                     {
                         // Find the ending, look for a ? if there is one.
-                        var appIdEnd = _mBase.Source.Url.IndexOf('?', appIdStart);
+                        var appIdEnd = _contentPanelBase.Source.Url.IndexOf('?', appIdStart);
                         if (appIdEnd == -1)
                         {
-                            appIdEnd = _mBase.Source.Url.Length;
+                            appIdEnd = _contentPanelBase.Source.Url.Length;
                         }
 
                         // Get the app id
-                        var appId = _mBase.Source.Url.Substring(appIdStart, appIdEnd - appIdStart);
+                        var appId = _contentPanelBase.Source.Url.Substring(appIdStart, appIdEnd - appIdStart);
 
                         // Do a quick sanity check
                         if (appId.Length > 4)
@@ -142,17 +135,16 @@ namespace Baconit.ContentPanels.Panels
                 }
 
                 // If we failed use the web browser
-                if (!successfullyParsedAppId)
-                {
-                    // Show our loading overlay
-                    ui_loadingOverlay.Show(true);
+                if (successfullyParsedAppId) return;
 
-                    // If we have a link open it in our hidden webview, this will cause the store
-                    // to redirect us.
-                    _mHiddenWebView = new WebView(WebViewExecutionMode.SeparateThread);
-                    _mHiddenWebView.NavigationCompleted += HiddenWebView_NavigationCompleted;
-                    _mHiddenWebView.Navigate(new Uri(_mBase.Source.Url, UriKind.Absolute));
-                }
+                // Show our loading overlay
+                ui_loadingOverlay.Show();
+
+                // If we have a link open it in our hidden webview, this will cause the store
+                // to redirect us.
+                _hiddenWebView = new WebView(WebViewExecutionMode.SeparateThread);
+                _hiddenWebView.NavigationCompleted += HiddenWebView_NavigationCompleted;
+                _hiddenWebView.Navigate(new Uri(_contentPanelBase.Source.Url, UriKind.Absolute));
             }
         }
 
@@ -168,7 +160,7 @@ namespace Baconit.ContentPanels.Panels
         private void HiddenWebView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
             // Stop the callbacks
-            _mHiddenWebView.NavigationCompleted -= HiddenWebView_NavigationCompleted;
+            _hiddenWebView.NavigationCompleted -= HiddenWebView_NavigationCompleted;
 
             // Hide the overlay
             ui_loadingOverlay.Hide();

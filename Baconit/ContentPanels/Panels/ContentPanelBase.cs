@@ -36,7 +36,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Indicates if the control is destroyed.
         /// </summary>
-        public bool IsDestoryed { get; private set; } = false;
+        public bool IsDestroyed { get; private set; } = false;
 
         /// <summary>
         /// The actual panel contained within.
@@ -50,12 +50,12 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds the current panel host.
         /// </summary>
-        private IContentPanelHost _mHost;
+        private IContentPanelHost _host;
 
         /// <summary>
         /// Indicates if we have told the master we are done loading.
         /// </summary>
-        private bool _mHasDeclaredLoaded;
+        private bool _hasDeclaredLoaded;
 
         #region IContentPanelBaseInternal
 
@@ -65,12 +65,8 @@ namespace Baconit.ContentPanels.Panels
         public bool IsFullscreen {
             get
             {
-                var host = _mHost;
-                if(host != null)
-                {
-                    return host.IsFullscreen;
-                }
-                return false;
+                var host = _host;
+                return host != null && host.IsFullscreen;
             }
         }
 
@@ -81,7 +77,7 @@ namespace Baconit.ContentPanels.Panels
         {
             get
             {
-                var host = _mHost;
+                var host = _host;
                 if (host != null)
                 {
                     return host.CanGoFullscreen;
@@ -95,7 +91,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Fires toggle loading.
         /// </summary>
-        /// <param name="show"></param>
+        /// <param name="isLoading"></param>
         public void FireOnLoading(bool isLoading)
         {
             // If is the same leave.
@@ -108,13 +104,13 @@ namespace Baconit.ContentPanels.Panels
             IsLoading = isLoading;
 
             // Try to tell the host
-            var host = _mHost;
+            var host = _host;
             host?.OnLoadingChanged();
 
             // When loading is done and we haven't before report it to the master
-            if (!_mHasDeclaredLoaded && !IsLoading)
+            if (!_hasDeclaredLoaded && !IsLoading)
             {
-                _mHasDeclaredLoaded = true;
+                _hasDeclaredLoaded = true;
                 // Tell the manager that we are loaded.
                 Task.Run(() =>
                 {
@@ -126,7 +122,8 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Fires show error
         /// </summary>
-        /// <param name="show"></param>
+        /// <param name="hasError"></param>
+        /// <param name="errorText"></param>
         public void FireOnError(bool hasError, string errorText = null)
         {
             // Set the value
@@ -134,13 +131,13 @@ namespace Baconit.ContentPanels.Panels
             ErrorText = errorText;
 
             // Try to tell the host
-            var host = _mHost;
+            var host = _host;
             host?.OnErrorChanged();
 
             // When loading is done report it to the master
-            if (!_mHasDeclaredLoaded && HasError)
+            if (!_hasDeclaredLoaded && HasError)
             {
-                _mHasDeclaredLoaded = true;
+                _hasDeclaredLoaded = true;
                 // Tell the manager that we are loaded.
                 Task.Run(() =>
                 {
@@ -152,11 +149,11 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Fires ToggleFullscreen
         /// </summary>
-        /// <param name="show"></param>
+        /// <param name="goFullscreen"></param>
         public bool FireOnFullscreenChanged(bool goFullscreen)
         {
             // Try to tell the host
-            var host = _mHost;
+            var host = _host;
             if (host != null)
             {
                 return host.OnFullscreenChanged(goFullscreen);
@@ -207,7 +204,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="host"></param>
         public void OnHostAdded(IContentPanelHost host)
         {
-            _mHost = host;
+            _host = host;
             Panel.OnHostAdded();
 
             // Also fire on visibility changed so the panel is in the correct state
@@ -219,7 +216,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         public void OnHostRemoved()
         {
-            _mHost = null;
+            _host = null;
         }
 
         /// <summary>
