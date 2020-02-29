@@ -1,15 +1,13 @@
 ﻿using Baconit.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
 {
-    class ContentPanelBase : IContentPanelBase, IContentPanelBaseInternal
+    internal class ContentPanelBase : IContentPanelBase, IContentPanelBaseInternal
     {
         ///
         /// Common Vars
@@ -23,12 +21,12 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// If we are in error or not.
         /// </summary>
-        public bool HasError { get; private set; } = false;
+        public bool HasError { get; private set; }
 
         /// <summary>
         /// The text of the error if we have one.
         /// </summary>
-        public string ErrorText { get; private set; } = null;
+        public string ErrorText { get; private set; }
 
         /// <summary>
         /// Holds a reference to the source we are currently showing.
@@ -52,12 +50,12 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds the current panel host.
         /// </summary>
-        IContentPanelHost m_host;
+        private IContentPanelHost _mHost;
 
         /// <summary>
         /// Indicates if we have told the master we are done loading.
         /// </summary>
-        bool m_hasDeclaredLoaded = false;
+        private bool _mHasDeclaredLoaded;
 
         #region IContentPanelBaseInternal
 
@@ -67,7 +65,7 @@ namespace Baconit.ContentPanels.Panels
         public bool IsFullscreen {
             get
             {
-                IContentPanelHost host = m_host;
+                var host = _mHost;
                 if(host != null)
                 {
                     return host.IsFullscreen;
@@ -83,7 +81,7 @@ namespace Baconit.ContentPanels.Panels
         {
             get
             {
-                IContentPanelHost host = m_host;
+                var host = _mHost;
                 if (host != null)
                 {
                     return host.CanGoFullscreen;
@@ -110,16 +108,13 @@ namespace Baconit.ContentPanels.Panels
             IsLoading = isLoading;
 
             // Try to tell the host
-            IContentPanelHost host = m_host;
-            if (host != null)
-            {
-                host.OnLoadingChanged();
-            }
+            var host = _mHost;
+            host?.OnLoadingChanged();
 
             // When loading is done and we haven't before report it to the master
-            if (!m_hasDeclaredLoaded && !IsLoading)
+            if (!_mHasDeclaredLoaded && !IsLoading)
             {
-                m_hasDeclaredLoaded = true;
+                _mHasDeclaredLoaded = true;
                 // Tell the manager that we are loaded.
                 Task.Run(() =>
                 {
@@ -139,16 +134,13 @@ namespace Baconit.ContentPanels.Panels
             ErrorText = errorText;
 
             // Try to tell the host
-            IContentPanelHost host = m_host;
-            if (host != null)
-            {
-                host.OnErrorChanged();
-            }
+            var host = _mHost;
+            host?.OnErrorChanged();
 
             // When loading is done report it to the master
-            if (!m_hasDeclaredLoaded && HasError)
+            if (!_mHasDeclaredLoaded && HasError)
             {
-                m_hasDeclaredLoaded = true;
+                _mHasDeclaredLoaded = true;
                 // Tell the manager that we are loaded.
                 Task.Run(() =>
                 {
@@ -164,7 +156,7 @@ namespace Baconit.ContentPanels.Panels
         public bool FireOnFullscreenChanged(bool goFullscreen)
         {
             // Try to tell the host
-            IContentPanelHost host = m_host;
+            var host = _mHost;
             if (host != null)
             {
                 return host.OnFullscreenChanged(goFullscreen);
@@ -206,10 +198,7 @@ namespace Baconit.ContentPanels.Panels
             // Make sure the panel isn't null, in the case where we 
             // can't load the panel we will be be destroyed before
             // the base is nulled.
-            if(Panel != null)
-            {
-                Panel.OnDestroyContent();
-            }
+            Panel?.OnDestroyContent();
         }
 
         /// <summary>
@@ -218,7 +207,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="host"></param>
         public void OnHostAdded(IContentPanelHost host)
         {
-            m_host = host;
+            _mHost = host;
             Panel.OnHostAdded();
 
             // Also fire on visibility changed so the panel is in the correct state
@@ -230,7 +219,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         public void OnHostRemoved()
         {
-            m_host = null;
+            _mHost = null;
         }
 
         /// <summary>
@@ -252,34 +241,38 @@ namespace Baconit.ContentPanels.Panels
 
         #region Create Control
 
-        public static Type getControlType(ContentPanelSource source, Object callingClass = null) {
+        public static Type GetControlType(ContentPanelSource source, object callingClass = null) {
             try
             {
                 if (GifImageContentPanel.CanHandlePost(source))
                 {
                     return typeof(GifImageContentPanel);
                 }
-                else if (YoutubeContentPanel.CanHandlePost(source))
+                if (RedditVideoContentPanel.CanHandlePost(source))
+                {
+                    return typeof(RedditVideoContentPanel);
+                }
+                if (YoutubeContentPanel.CanHandlePost(source))
                 {
                     return typeof(YoutubeContentPanel);
                 }
-                else if (BasicImageContentPanel.CanHandlePost(source))
+                if (BasicImageContentPanel.CanHandlePost(source))
                 {
                     return typeof(BasicImageContentPanel);
                 }
-                else if (MarkdownContentPanel.CanHandlePost(source))
+                if (MarkdownContentPanel.CanHandlePost(source))
                 {
                     return typeof(MarkdownContentPanel);
                 }
-                else if (RedditContentPanel.CanHandlePost(source))
+                if (RedditContentPanel.CanHandlePost(source))
                 {
                     return typeof(RedditContentPanel);
                 }
-                else if (CommentSpoilerContentPanel.CanHandlePost(source))
+                if (CommentSpoilerContentPanel.CanHandlePost(source))
                 {
                     return typeof(CommentSpoilerContentPanel);
                 }
-                else if (WindowsAppContentPanel.CanHandlePost(source))
+                if (WindowsAppContentPanel.CanHandlePost(source))
                 {
                     return typeof(WindowsAppContentPanel);
                 }
@@ -288,7 +281,7 @@ namespace Baconit.ContentPanels.Panels
             {
                 // If we fail here we will fall back to the web browser.
                 App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(callingClass, "FailedToQueryCanHandlePost", e);
+                TelemetryManager.ReportUnexpectedEvent(callingClass, "FailedToQueryCanHandlePost", e);
             }
             return typeof(WebPageContentPanel);
         }
@@ -296,19 +289,19 @@ namespace Baconit.ContentPanels.Panels
         public async Task<bool> CreateContentPanel(ContentPanelSource source, bool canLoadLargePanels)
         {
             // Indicates if the panel was loaded.
-            bool loadedPanel = true;
+            var loadedPanel = true;
 
             // Capture the source 
             Source = source;
 
             // We default to web page
-            Type controlType = typeof(WebPageContentPanel);
+            var controlType = typeof(WebPageContentPanel);
 
             // If we are not forcing web find the control type.
             if (!source.ForceWeb)
             {
                 // Try to figure out the type.
-                controlType = getControlType(source, this);
+                controlType = GetControlType(source, this);
                 if (controlType == typeof(WebPageContentPanel)) {
                     // This is a web browser
 
@@ -340,7 +333,7 @@ namespace Baconit.ContentPanels.Panels
                         loadedPanel = false;
                         HasError = true;
                         App.BaconMan.MessageMan.DebugDia("failed to create content control", e);
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToCreateContentPanel", e);
+                        TelemetryManager.ReportUnexpectedEvent(this, "FailedToCreateContentPanel", e);
                     }
                 });
             }

@@ -1,11 +1,7 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
@@ -20,7 +16,7 @@ namespace BaconBackend.Managers
     /// <summary>
     /// The event args for the OnUserUpdated event.
     /// </summary>
-    public class OnUserUpdatedArgs : EventArgs
+    public class UserUpdatedArgs : EventArgs
     {
         public UserCallbackAction Action;
     }
@@ -30,31 +26,32 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Fired when the user is updated, added, or removed
         /// </summary>
-        public event EventHandler<OnUserUpdatedArgs> OnUserUpdated
+        public event EventHandler<UserUpdatedArgs> OnUserUpdated
         {
-            add { m_onUserUpdated.Add(value); }
-            remove { m_onUserUpdated.Remove(value); }
+            add => _userUpdated.Add(value);
+            remove => _userUpdated.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnUserUpdatedArgs>> m_onUserUpdated = new SmartWeakEvent<EventHandler<OnUserUpdatedArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<UserUpdatedArgs>> _userUpdated = new SmartWeakEvent<EventHandler<UserUpdatedArgs>>();
 
         /// <summary>
         /// This class is used to represent a sign in request. 
         /// </summary>
         public class SignInResult
         {
-            public bool WasSuccess = false;
+            public bool WasSuccess;
             public bool WasErrorNetwork = false;
             public bool WasUserCanceled = false;
             public string Message = "";
         }
 
-        private BaconManager m_baconMan;
-        private AuthManager m_authMan;
+        private readonly BaconManager _baconMan;
+        private readonly AuthManager _authMan;
 
         public UserManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
-            m_authMan = new AuthManager(m_baconMan);
+            _baconMan = baconMan;
+            _authMan = new AuthManager(_baconMan);
         }
 
         /// <summary>
@@ -62,13 +59,13 @@ namespace BaconBackend.Managers
         /// </summary>
         public async Task<string> GetAccessToken()
         {
-            return await m_authMan.GetAccessToken();
+            return await _authMan.GetAccessToken();
         }
 
         public async Task<SignInResult> SignInNewUser()
         {
             // Start the process by trying to auth a new user
-            SignInResult result = await m_authMan.AuthNewUser();
+            var result = await _authMan.AuthNewUser();
 
             // Check the result
             if(!result.WasSuccess)
@@ -85,7 +82,7 @@ namespace BaconBackend.Managers
 
         public bool UpdateUser(bool forceUpdate = false)
         {
-            TimeSpan timeSinceLateUpdate = DateTime.Now - LastUpdate;
+            var timeSinceLateUpdate = DateTime.Now - LastUpdate;
             if(timeSinceLateUpdate.TotalHours < 24 && !forceUpdate)
             {
                 return false;
@@ -100,7 +97,7 @@ namespace BaconBackend.Managers
         public void SignOut()
         {
             // Remove the auth
-            m_authMan.DeleteCurrentAuth();
+            _authMan.DeleteCurrentAuth();
 
             // Rest the current user object
             CurrentUser = null;
@@ -115,13 +112,13 @@ namespace BaconBackend.Managers
             try
             {
                 // Record if we had a user
-                string lastUserName = CurrentUser == null ? "" : CurrentUser.Name;
+                var lastUserName = CurrentUser == null ? "" : CurrentUser.Name;
 
                 // Make the web call
-                IHttpContent resonse = await m_baconMan.NetworkMan.MakeRedditGetRequest("/api/v1/me/.json");
+                var response = await _baconMan.NetworkMan.MakeRedditGetRequest("/api/v1/me/.json");
 
                 // Parse the user
-                User user = await m_baconMan.NetworkMan.DeseralizeObject<User>(resonse);
+                var user = await NetworkManager.DeserializeObject<User>(response);
 
                 // Set the new user
                 CurrentUser = user;
@@ -131,14 +128,14 @@ namespace BaconBackend.Managers
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to parse user", e);
-                return new SignInResult()
+                _baconMan.MessageMan.DebugDia("Failed to parse user", e);
+                return new SignInResult
                 {
                     Message = "Failed to parse user"
                 };
             }
 
-            return new SignInResult()
+            return new SignInResult
             {
                 WasSuccess = true
             };
@@ -146,16 +143,14 @@ namespace BaconBackend.Managers
 
         public void UpdateUnReadMessageCount(int unreadMessages)
         {
-            if (CurrentUser != null)
-            {
-                // Update
-                CurrentUser.HasMail = unreadMessages != 0;
-                CurrentUser.InboxCount = unreadMessages;
-                // Force a save
-                CurrentUser = CurrentUser;
-                // Fire the callback
-                FireOnUserUpdated(UserCallbackAction.Updated);
-            }
+            if (CurrentUser == null) return;
+            // Update
+            CurrentUser.HasMail = unreadMessages != 0;
+            CurrentUser.InboxCount = unreadMessages;
+            // Force a save
+            CurrentUser = CurrentUser;
+            // Fire the callback
+            FireOnUserUpdated(UserCallbackAction.Updated);
         }
 
         private void FireOnUserUpdated(UserCallbackAction action)
@@ -163,25 +158,19 @@ namespace BaconBackend.Managers
             // Tell our listeners, but ignore any errors from them
             try
             {
-                m_onUserUpdated.Raise(this, new OnUserUpdatedArgs() { Action = action });
+                _userUpdated.Raise(this, new UserUpdatedArgs { Action = action });
             }
             catch (Exception ex)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to notify user listener of update", ex);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to fire OnUserUpdated", ex);
+                _baconMan.MessageMan.DebugDia("Failed to notify user listener of update", ex);
+                TelemetryManager.ReportUnexpectedEvent(this, "failed to fire OnUserUpdated", ex);
             }
         }
 
         /// <summary>
         /// Returns is a current user exists
         /// </summary>
-        public bool IsUserSignedIn
-        {
-            get
-            {
-                return m_authMan.IsUserSignedIn;
-            }
-        }
+        public bool IsUserSignedIn => _authMan.IsUserSignedIn;
 
         /// <summary>
         /// Holds the current user information
@@ -190,26 +179,19 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_currentUser == null)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UserManager.CurrentUser"))
-                    {
-                        m_currentUser = m_baconMan.SettingsMan.ReadFromRoamingSettings<User>("UserManager.CurrentUser");
-                    }
-                    else
-                    {
-                        m_currentUser = null;
-                    }
-                }
-                return m_currentUser;
+                if (_currentUser != null) return _currentUser;
+                _currentUser = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UserManager.CurrentUser") 
+                    ? _baconMan.SettingsMan.ReadFromRoamingSettings<User>("UserManager.CurrentUser") 
+                    : null;
+                return _currentUser;
             }
             private set
             {
-                m_currentUser = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<User>("UserManager.CurrentUser", m_currentUser);
+                _currentUser = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UserManager.CurrentUser", _currentUser);
             }
         }
-        private User m_currentUser = null;
+        private User _currentUser;
 
         /// <summary>
         /// The last time the user was updated
@@ -218,21 +200,19 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_lastUpdated.Equals(new DateTime(0)))
+                if (!_lastUpdated.Equals(new DateTime(0))) return _lastUpdated;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("UserManager.LastUpdate"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UserManager.LastUpdate"))
-                    {
-                        m_lastUpdated = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("UserManager.LastUpdate");
-                    }
+                    _lastUpdated = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("UserManager.LastUpdate");
                 }
-                return m_lastUpdated;
+                return _lastUpdated;
             }
             set
             {
-                m_lastUpdated = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("UserManager.LastUpdate", m_lastUpdated);
+                _lastUpdated = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("UserManager.LastUpdate", _lastUpdated);
             }
         }
-        private DateTime m_lastUpdated = new DateTime(0);
+        private DateTime _lastUpdated = new DateTime(0);
     }
 }

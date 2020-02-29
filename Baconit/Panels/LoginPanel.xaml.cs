@@ -2,19 +2,9 @@
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 
 namespace Baconit.Panels
@@ -24,43 +14,43 @@ namespace Baconit.Panels
         /// <summary>
         /// A reference to the host
         /// </summary>
-        IPanelHost m_host;
+        private IPanelHost _mHost;
 
         /// <summary>
         /// Indicates if this panel is visible or not.
         /// </summary>
-        bool m_isVisible = false;
+        private bool _mIsVisible;
 
         public LoginPanel()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Setup the image.
-            List<Uri> uriList = new List<Uri>();
+            var uriList = new List<Uri>();
             uriList.Add(new Uri("ms-appx:///Assets/Welcome/QuinnImageMedium.jpg", UriKind.Absolute));
             ui_imageScrolBackground.SetImages(uriList);
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public async void OnNavigatingTo()
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight  = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight  = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
 
             ui_imageScrolBackground.BeginAnimation();
-            m_isVisible = true;
+            _mIsVisible = true;
         }
 
         public void OnNavigatingFrom()
         {
             ui_imageScrolBackground.StopAnimation();
-            m_isVisible = false;
+            _mIsVisible = false;
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
@@ -84,19 +74,19 @@ namespace Baconit.Panels
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            App.BaconMan.TelemetryMan.ReportEvent(this, "LoginButtonClicked");
-            DateTime loginBegin = DateTime.Now;
+            TelemetryManager.ReportEvent(this, "LoginButtonClicked");
+            var loginBegin = DateTime.Now;
 
             // Change the UI
             CrossfadeUi(true);
 
             // Make the call
-            UserManager.SignInResult result = await App.BaconMan.UserMan.SignInNewUser();
+            var result = await App.BaconMan.UserMan.SignInNewUser();
 
             if(result.WasSuccess)
             {
-                App.BaconMan.TelemetryMan.ReportEvent(this, "LoginSuccess");
-                App.BaconMan.TelemetryMan.ReportPerfEvent(this,"LoginTime", loginBegin);
+                TelemetryManager.ReportEvent(this, "LoginSuccess");
+                TelemetryManager.ReportPerfEvent(this,"LoginTime", loginBegin);
                 ShowWelcomeAndLeave();
             }
             else
@@ -106,18 +96,18 @@ namespace Baconit.Panels
 
                 if (result.WasErrorNetwork)
                 {
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "LoginFailedNetworkError");
+                    TelemetryManager.ReportEvent(this, "LoginFailedNetworkError");
                     App.BaconMan.MessageMan.ShowMessageSimple("Check Your Connection", "We can't talk to reddit right now, check your internet connection.");
                 }
                 if(result.WasUserCanceled)
                 {
                     // Don't do anything, they know what they did.
-                    App.BaconMan.TelemetryMan.ReportEvent(this, "LoginFailedUserCancled");
+                    TelemetryManager.ReportEvent(this, "LoginFailedUserCancled");
                 }
                 else
                 {
                     App.BaconMan.MessageMan.ShowMessageSimple("Something Went Wrong", "We can't log you in right now, try again later.");
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "LoginFailedUnknown");
+                    TelemetryManager.ReportUnexpectedEvent(this, "LoginFailedUnknown");
                 }
             }
         }
@@ -186,10 +176,10 @@ namespace Baconit.Panels
             // Give it some screen time
             await Task.Delay(1000);
 
-            if (m_isVisible)
+            if (_mIsVisible)
             {
                 // Tell the host to get us out of here.
-                m_host.GoBack();
+                _mHost.GoBack();
             }
         }
 

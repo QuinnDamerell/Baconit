@@ -1,13 +1,4 @@
-﻿using BaconBackend.DataObjects;
-using Baconit.ContentPanels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
-
-namespace Baconit.Interfaces
+﻿namespace Baconit.Interfaces
 {
     public interface IContentPanel
     {

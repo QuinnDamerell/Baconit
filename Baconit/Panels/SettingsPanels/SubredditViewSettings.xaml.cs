@@ -1,20 +1,8 @@
 ﻿using BaconBackend.Collectors;
-using BaconBackend.DataObjects;
 using Baconit.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -22,18 +10,18 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class SubredditViewSettings : UserControl, IPanel
     {
-        bool m_takeChangeAction = false;
-        IPanelHost m_host;
+        private bool _mTakeChangeAction;
+        private IPanelHost _mHost;
 
         public SubredditViewSettings()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             App.BaconMan.SubredditMan.OnSubredditsUpdated += SubredditMan_OnSubredditsUpdated;
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public void OnNavigatingFrom()
@@ -50,18 +38,18 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
-            m_takeChangeAction = false;
+            _mTakeChangeAction = false;
 
-            ui_showFullTitles.IsOn = App.BaconMan.UiSettingsMan.SubredditList_ShowFullTitles;
-            SetDefaultSortType(App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType);
-            SetDefaultSortTimeType(App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType);
+            ui_showFullTitles.IsOn = App.BaconMan.UiSettingsMan.SubredditListShowFullTitles;
+            SetDefaultSortType(App.BaconMan.UiSettingsMan.SubredditListDefaultSortType);
+            SetDefaultSortTimeType(App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType);
             SetSubredditList();
 
-            m_takeChangeAction = true;
+            _mTakeChangeAction = true;
         }
 
         public void OnCleanupPanel()
@@ -78,25 +66,25 @@ namespace Baconit.Panels.SettingsPanels
             // Ignore for now.
         }
 
-        private void SubredditMan_OnSubredditsUpdated(object sender, BaconBackend.Managers.OnSubredditsUpdatedArgs e)
+        private void SubredditMan_OnSubredditsUpdated(object sender, BaconBackend.Managers.SubredditsUpdatedArgs e)
         {
-            m_takeChangeAction = false;
+            _mTakeChangeAction = false;
             SetSubredditList();
-            m_takeChangeAction = true;
+            _mTakeChangeAction = true;
         }
 
         private void SetSubredditList()
         {
             // Get the subreddits
-            List<Subreddit> subreddits = App.BaconMan.SubredditMan.SubredditList;
+            var subreddits = App.BaconMan.SubredditMan.SubredditList;
 
             // Get the current defaults
-            string defaultSubreddit = App.BaconMan.UiSettingsMan.SubredditList_DefaultSubredditDisplayName;
+            var defaultSubreddit = App.BaconMan.UiSettingsMan.SubredditListDefaultSubredditDisplayName;
 
-            List<string> displayNames = new List<string>();
-            int count = 0;
-            int defaultDispNameIndex = -1;
-            foreach(Subreddit sub in subreddits)
+            var displayNames = new List<string>();
+            var count = 0;
+            var defaultDispNameIndex = -1;
+            foreach(var sub in subreddits)
             {
                 displayNames.Add(sub.DisplayName);
 
@@ -121,12 +109,12 @@ namespace Baconit.Panels.SettingsPanels
 
         private void ShowFullTitles_Toggled(object sender, RoutedEventArgs e)
         {
-            if (!m_takeChangeAction)
+            if (!_mTakeChangeAction)
             {
                 return;
             }
 
-            App.BaconMan.UiSettingsMan.SubredditList_ShowFullTitles = ui_showFullTitles.IsOn;
+            App.BaconMan.UiSettingsMan.SubredditListShowFullTitles = ui_showFullTitles.IsOn;
 
             // Show message
             App.BaconMan.MessageMan.ShowMessageSimple("Please Note", "You will have to refresh any open subreddits for this to apply.");
@@ -134,17 +122,17 @@ namespace Baconit.Panels.SettingsPanels
 
         private void DefaultSubreddit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!m_takeChangeAction)
+            if (!_mTakeChangeAction)
             {
                 return;
             }
 
-            App.BaconMan.UiSettingsMan.SubredditList_DefaultSubredditDisplayName = (string)ui_defaultSubreddit.SelectedItem;
+            App.BaconMan.UiSettingsMan.SubredditListDefaultSubredditDisplayName = (string)ui_defaultSubreddit.SelectedItem;
         }
 
         private void DefaultSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!m_takeChangeAction || ui_defaultSort.SelectedIndex == -1)
+            if (!_mTakeChangeAction || ui_defaultSort.SelectedIndex == -1)
             {
                 return;
             }
@@ -152,19 +140,19 @@ namespace Baconit.Panels.SettingsPanels
             switch (ui_defaultSort.SelectedIndex)
             {
                 case 0:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Hot;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortType = SortTypes.Hot;
                     break;
                 case 1:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.New;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortType = SortTypes.New;
                     break;
                 case 2:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Rising;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortType = SortTypes.Rising;
                     break;
                 case 3:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Controversial;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortType = SortTypes.Controversial;
                     break;
                 case 4:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortType = SortTypes.Top;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortType = SortTypes.Top;
                     break;
             }
         }
@@ -193,7 +181,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void DefaultTimeSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!m_takeChangeAction || ui_defaultTimeSort.SelectedIndex == -1)
+            if (!_mTakeChangeAction || ui_defaultTimeSort.SelectedIndex == -1)
             {
                 return;
             }
@@ -201,22 +189,22 @@ namespace Baconit.Panels.SettingsPanels
             switch (ui_defaultTimeSort.SelectedIndex)
             {
                 case 0:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Hour;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.Hour;
                     break;
                 case 1:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Day;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.Day;
                     break;
                 case 2:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Week;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.Week;
                     break;
                 case 3:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Month;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.Month;
                     break;
                 case 4:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.Year;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.Year;
                     break;
                 case 5:
-                    App.BaconMan.UiSettingsMan.SubredditList_DefaultSortTimeType = SortTimeTypes.AllTime;
+                    App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType = SortTimeTypes.AllTime;
                     break;
             }
         }

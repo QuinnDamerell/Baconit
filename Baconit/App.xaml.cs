@@ -1,34 +1,26 @@
 ﻿using BaconBackend;
 using BaconBackend.Helpers;
-using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
-using Windows.UI;
 using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 namespace Baconit
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    public sealed partial class App
     {
         public const string AccentColorLevel1Resource = "BaconitAccentColorLevel1Brush";
         public const string AccentColorLevel2Resource = "BaconitAccentColorLevel2Brush";
@@ -36,8 +28,8 @@ namespace Baconit
         public const string AccentColorLevel4Resource = "BaconitAccentColorLevel4Brush";
 
         // Usage baconit://debug?preventcrashes=true
-        private const string c_protocolPreventCrashesEnabled = "preventcrashes=true";
-        private const string c_protocolPreventCrashesDisabled = "preventcrashes=false";
+        private const string CProtocolPreventCrashesEnabled = "preventcrashes=true";
+        private const string CProtocolPreventCrashesDisabled = "preventcrashes=false";
 
         /// <summary>
         /// The main reference in the app to the backend of Baconit
@@ -47,7 +39,7 @@ namespace Baconit
         /// <summary>
         /// Indicates if we have already registered for back.
         /// </summary>
-        private bool m_hasRegisteredForBack = false;
+        private bool _mHasRegisteredForBack;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -59,7 +51,8 @@ namespace Baconit
             //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(true);
 
             // Setup the exception handler first
-            this.UnhandledException += OnUnhandledException;
+            UnhandledException += OnUnhandledException;
+            CoreApplication.UnhandledErrorDetected += OnUnhandledErrorDetected;
 
             // Now setup the baconman
             BaconMan = new BaconManager(false);
@@ -71,11 +64,11 @@ namespace Baconit
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
 
             // Init the app
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Register for events.
-            this.Suspending += OnSuspending_Fired;
-            this.Resuming += OnResuming_Fired;
+            Suspending += OnSuspending_Fired;
+            Resuming += OnResuming_Fired;
         }
 
         /// <summary>
@@ -86,22 +79,26 @@ namespace Baconit
         {
             base.OnActivated(args);
 
-            if (args is ToastNotificationActivatedEventArgs)
+            switch (args)
             {
-                ToastNotificationActivatedEventArgs toastArgs = (ToastNotificationActivatedEventArgs)args;
-                SetupAndALaunchApp(toastArgs.Argument);
-            }
-            else if(args is ProtocolActivatedEventArgs)
-            {
-                ProtocolActivatedEventArgs protcolArgs = (ProtocolActivatedEventArgs)args;
-                string argsString = protcolArgs.Uri.OriginalString;
-                int protEnd = argsString.IndexOf("://");
-                argsString = protEnd == -1 ? argsString : argsString.Substring(protEnd + 3);
-                SetupAndALaunchApp(argsString);
-            }
-            else
-            {
-                SetupAndALaunchApp(String.Empty);
+                case ToastNotificationActivatedEventArgs eventArgs:
+                {
+                    var toastArgs = eventArgs;
+                    SetupAndALaunchApp(toastArgs.Argument);
+                    break;
+                }
+                case ProtocolActivatedEventArgs eventArgs:
+                {
+                    var protocolArgs = eventArgs;
+                    var argsString = protocolArgs.Uri.OriginalString;
+                    var portEnd = argsString.IndexOf("://", StringComparison.Ordinal);
+                    argsString = portEnd == -1 ? argsString : argsString.Substring(portEnd + 3);
+                    SetupAndALaunchApp(argsString);
+                    break;
+                }
+                default:
+                    SetupAndALaunchApp(string.Empty);
+                    break;
             }
         }
 
@@ -122,16 +119,16 @@ namespace Baconit
         private void SetupAndALaunchApp(string arguments)
         {
             // Check the args for prevent crash
-            if(!String.IsNullOrWhiteSpace(arguments))
+            if(!string.IsNullOrWhiteSpace(arguments))
             {
-                string lowerArgs = arguments.ToLower();
-                if(lowerArgs.Contains(c_protocolPreventCrashesDisabled))
+                var lowerArgs = arguments.ToLower();
+                if(lowerArgs.Contains(CProtocolPreventCrashesDisabled))
                 {
-                    BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = false;
+                    BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport = false;
                 }
-                else if (lowerArgs.Contains(c_protocolPreventCrashesEnabled))
+                else if (lowerArgs.Contains(CProtocolPreventCrashesEnabled))
                 {
-                    BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = true;
+                    BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport = true;
                 }
             }
 
@@ -144,7 +141,7 @@ namespace Baconit
             // Grab the accent color and make our custom accent color brushes.
             if (!Current.Resources.ContainsKey(AccentColorLevel1Resource))
             {
-                Color accentColor = ((SolidColorBrush)Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
+                var accentColor = ((SolidColorBrush)Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
                 accentColor.A = 200;
                 Current.Resources[AccentColorLevel1Resource] = new SolidColorBrush(accentColor);
                 accentColor.A = 137;
@@ -156,17 +153,15 @@ namespace Baconit
             }
 
             // Register for back, if we haven't already.
-            if (!m_hasRegisteredForBack)
+            if (!_mHasRegisteredForBack)
             {
-                m_hasRegisteredForBack = true;
+                _mHasRegisteredForBack = true;
                 SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
             }
 
-            Frame rootFrame = Window.Current.Content as Frame;
-
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
-            if (rootFrame == null)
+            if (!(Window.Current.Content is Frame rootFrame))
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
@@ -177,28 +172,25 @@ namespace Baconit
                 Window.Current.Content = rootFrame;
             }
 
-            if (rootFrame.Content == null)
+            switch (rootFrame.Content)
             {
-                // When the navigation stack isn't restored navigate to the first page,
-                // configuring the new page by passing required information as a navigation
-                // parameter
-                rootFrame.Navigate(typeof(MainPage), arguments);
-            }
-            else
-            {
+                case null:
+                    // When the navigation stack isn't restored navigate to the first page,
+                    // configuring the new page by passing required information as a navigation
+                    // parameter
+                    rootFrame.Navigate(typeof(MainPage), arguments);
+                    break;
                 // If we have already navigated, we should tell the main page
                 // we are being activated again.
-                if (rootFrame.Content.GetType() == typeof(MainPage))
-                {
-                    MainPage main = (MainPage)rootFrame.Content;
+                case MainPage main:
                     main.OnReActivated(arguments);
-                }
+                    break;
             }
 
             // We have to get the screen res before we call activate or it will be wrong and include the system tray.
             var bounds = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().VisibleBounds;
             var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-            BaconMan.BackgroundMan.ImageUpdaterMan.LastKnownScreenResoultion = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
+            BaconMan.BackgroundMan.ImageUpdaterMan.LastKnownScreenResolution = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
             // Ensure the current window is active
             Window.Current.Activate();
@@ -209,7 +201,7 @@ namespace Baconit
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
         /// <param name="e">Details about the navigation failure</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        private static void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
@@ -221,7 +213,7 @@ namespace Baconit
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending_Fired(object sender, SuspendingEventArgs e)
+        private static void OnSuspending_Fired(object sender, SuspendingEventArgs e)
         {
             BaconMan.OnSuspending_Fired(sender, e);
         }
@@ -231,7 +223,7 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnResuming_Fired(object sender, object e)
+        private static void OnResuming_Fired(object sender, object e)
         {
             BaconMan.OnResuming_Fired(sender, e);
         }
@@ -241,9 +233,9 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnBackRequested(object sender, BackRequestedEventArgs e)
+        private static void OnBackRequested(object sender, BackRequestedEventArgs e)
         {
-            bool isHandled = false;
+            var isHandled = false;
             BaconMan.OnBackButton_Fired(ref isHandled);
             e.Handled = isHandled;
         }
@@ -253,18 +245,35 @@ namespace Baconit
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             if (Debugger.IsAttached)
             {
                 Debugger.Break();
             }
 
-            if (App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport)
+            if (BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport)
             {
                 // Warning this will report the error but leave us in a very bad state. Only use this for debugging.
                 e.Handled = true;
                 BaconMan.MessageMan.ShowMessageSimple("Fatal Crash", "The app tried to crash. \n\nMessage: " + e.Message + "\n\nException Msg: " + e.Exception.Message + "\n\nStack Trace:\n"+e.Exception.StackTrace);
+            }
+        }
+
+        private static void OnUnhandledErrorDetected(object sender, UnhandledErrorDetectedEventArgs e)
+        {
+            try
+            {
+                e.UnhandledError.Propagate();
+            }
+            catch (Exception ex)
+            {
+                var properties = new Dictionary<string, string>
+                {
+                    { "StackTrace", ex.StackTrace },
+                    { "Message", ex.Message },
+                };
+                TelemetryManager.TrackCrash(ex, properties);
             }
         }
     }

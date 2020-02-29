@@ -1,9 +1,5 @@
 ﻿using BaconBackend.DataObjects;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Baconit.ContentPanels
 {
@@ -12,15 +8,19 @@ namespace Baconit.ContentPanels
     /// </summary>
     public class ContentPanelSource
     {
-        public const string c_genericIdBase = "generic_";
+        public const string CGenericIdBase = "generic_";
 
         public string Id;
-        public string Url = null;
-        public string SelfText = null;
-        public string Subreddit = null;
-        public bool IsNSFW = false;
-        public bool IsSelf = false;
+        public string Url;
+        public string SelfText;
+        public string Subreddit;
+        public bool IsNsfw;
+        public bool IsSelf;
         public bool ForceWeb = false;
+
+        public bool IsVideo = false;
+
+        public Uri VideoUrl;
 
         // Make a private constructor so they can be only created by
         // this class internally.
@@ -29,21 +29,27 @@ namespace Baconit.ContentPanels
 
         public static ContentPanelSource CreateFromPost(Post post)
         {
-            ContentPanelSource source = new ContentPanelSource();
-            source.Id = post.Id;
-            source.Url = post.Url;
-            source.SelfText = post.Selftext;
-            source.Subreddit = post.Subreddit;
-            source.IsNSFW = post.IsOver18;
-            source.IsSelf = post.IsSelf;
+            var source = new ContentPanelSource
+            {
+                Id = post.Id,
+                Url = post.Url,
+                SelfText = post.Selftext,
+                Subreddit = post.Subreddit,
+                IsNsfw = post.IsOver18,
+                IsSelf = post.IsSelf,
+                IsVideo = post.IsVideo && post.SecureMedia.RedditVideo != null
+            };
+
+            if (source.IsVideo)
+            {
+                source.VideoUrl = new Uri(post.SecureMedia?.RedditVideo?.Url);
+            }
             return source;
         }
 
         public static ContentPanelSource CreateFromUrl(string url)
         {
-            ContentPanelSource source = new ContentPanelSource();
-            source.Id = c_genericIdBase + DateTime.Now.Ticks;
-            source.Url = url;
+            var source = new ContentPanelSource {Id = CGenericIdBase + DateTime.Now.Ticks, Url = url};
             return source;
         }
     }

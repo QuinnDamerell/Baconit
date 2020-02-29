@@ -1,19 +1,8 @@
 ﻿using BaconBackend.Collectors;
 using Baconit.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,17 +10,17 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class CommentSettings : UserControl, IPanel
     {
-        bool m_takeChangeAction = false;
-        IPanelHost m_host;
+        private bool _mTakeChangeAction;
+        private IPanelHost _mHost;
 
         public CommentSettings()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public void OnNavigatingFrom()
@@ -48,16 +37,16 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
-            m_takeChangeAction = false;
+            _mTakeChangeAction = false;
 
-            SetDefaultSortType(App.BaconMan.UiSettingsMan.Comments_DefaultSortType);
-            SetCount(App.BaconMan.UiSettingsMan.Comments_DefaultCount);
+            SetDefaultSortType(App.BaconMan.UiSettingsMan.CommentsDefaultSortType);
+            SetCount(App.BaconMan.UiSettingsMan.CommentsDefaultCount);
 
-            m_takeChangeAction = true;
+            _mTakeChangeAction = true;
         }
 
         public void OnCleanupPanel()
@@ -76,7 +65,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void DefaultSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(!m_takeChangeAction)
+            if(!_mTakeChangeAction)
             {
                 return;
             }
@@ -84,29 +73,29 @@ namespace Baconit.Panels.SettingsPanels
             switch (ui_defaultSort.SelectedIndex)
             {
                 case 0:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.Best;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.Best;
                     break;
                 case 1:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.Top;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.Top;
                     break;
                 case 2:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.Controversial;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.Controversial;
                     break;
                 case 3:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.New;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.New;
                     break;
                 case 4:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.Old;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.Old;
                     break;
                 case 5:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultSortType = CommentSortTypes.QA;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultSortType = CommentSortTypes.Qa;
                     break;
             }
         }
 
         private void DefaultCommentCount_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!m_takeChangeAction)
+            if (!_mTakeChangeAction)
             {
                 return;
             }
@@ -114,16 +103,16 @@ namespace Baconit.Panels.SettingsPanels
             switch (ui_defaultCommentCount.SelectedIndex)
             {
                 case 0:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultCount = 50;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultCount = 50;
                     break;
                 case 1:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultCount = 150;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultCount = 150;
                     break;
                 case 2:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultCount = 200;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultCount = 200;
                     break;
                 case 3:
-                    App.BaconMan.UiSettingsMan.Comments_DefaultCount = 300;
+                    App.BaconMan.UiSettingsMan.CommentsDefaultCount = 300;
                     break;
                 case 4:
                     // We don't allow setting the default to 500 even though the user can still do so
@@ -149,7 +138,7 @@ namespace Baconit.Panels.SettingsPanels
                 case CommentSortTypes.Old:
                     ui_defaultSort.SelectedIndex = 4;
                     break;
-                case CommentSortTypes.QA:
+                case CommentSortTypes.Qa:
                     ui_defaultSort.SelectedIndex = 5;
                     break;
                 case CommentSortTypes.Top:

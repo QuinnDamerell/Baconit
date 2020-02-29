@@ -1,37 +1,22 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
-using BaconBackend.Helpers;
-using BaconBackend.Managers;
 using Baconit.ContentPanels;
 using Baconit.HelperControls;
 using Baconit.Interfaces;
-using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 namespace Baconit.Panels.FlipView
 {
-    public sealed partial class FlipViewPanel : UserControl, IPanel
+    public sealed partial class FlipViewPanel : IPanel
     {
         //
         // Private Vars
@@ -40,70 +25,70 @@ namespace Baconit.Panels.FlipView
         /// <summary>
         /// The subreddit this flip view is representing.
         /// </summary>
-        Subreddit m_subreddit;
+        private Subreddit _subreddit;
 
         /// <summary>
         /// The current sort for this flip view instance
         /// </summary>
-        SortTypes m_currentSort;
+        private SortTypes _currentSort;
 
         /// <summary>
         /// The current sort time for this flip view instance
         /// </summary>
-        SortTimeTypes m_currentSortTime;
+        private SortTimeTypes _currentSortTime;
 
         /// <summary>
         /// The collector backing this flip view
         /// </summary>
-        PostCollector m_collector;
+        private PostCollector _collector;
 
         /// <summary>
         /// A reference to the main panel host.
         /// </summary>
-        IPanelHost m_host;
+        private IPanelHost _host;
 
         /// <summary>
         /// The list of posts that back the flip view
         /// </summary>
-        ObservableCollection<FlipViewPostItem> m_postsLists = new ObservableCollection<FlipViewPostItem>();
+        private readonly ObservableCollection<FlipViewPostItem> _postsLists = new ObservableCollection<FlipViewPostItem>();
 
         /// <summary>
         /// This list holds posts that we defer loaded if we have any.
         /// </summary>
-        List<Post> m_deferredPostList = new List<Post>();
+        private readonly List<Post> _deferredPostList = new List<Post>();
 
         /// <summary>
         /// Indicates that there is a target post we are trying to get to.
         /// </summary>
-        string m_targetPost = "";
+        private string _targetPost = "";
 
         /// <summary>
         /// Indicates that there is a target comment we are trying to get to.
         /// </summary>
-        string m_targetComment = "";
+        private string _targetComment = "";
 
         /// <summary>
         /// Holds a reference to the loading overlay if there is one.
         /// </summary>
-        LoadingOverlay m_loadingOverlay = null;
+        private LoadingOverlay _loadingOverlay;
 
         /// <summary>
         /// Used to defer the first comments loading so we give the UI time to load before we start
         /// the intense work of loading comments.
         /// </summary>
-        bool m_isFirstPostLoad = true;
+        private bool _isFirstPostLoad = true;
 
         /// <summary>
         /// Holds a unique id for this flipview.
         /// </summary>
-        string m_uniqueId = String.Empty;
+        private readonly string _uniqueId;
 
         public FlipViewPanel()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Create a unique id for this
-            m_uniqueId = DateTime.Now.Ticks.ToString();
+            _uniqueId = DateTime.Now.Ticks.ToString();
         }
 
         /// <summary>
@@ -114,20 +99,20 @@ namespace Baconit.Panels.FlipView
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
             // Capture the host
-            m_host = host;
+            _host = host;
 
             // Check for the subreddit arg
-            if (!arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_NAME))
+            if (!arguments.ContainsKey(PanelManager.NavArgsSubredditName))
             {
                 throw new Exception("No subreddit was given!");
             }
-            string subredditName = (string)arguments[PanelManager.NAV_ARGS_SUBREDDIT_NAME];
+            var subredditName = (string)arguments[PanelManager.NavArgsSubredditName];
 
             // Kick off a background task to do the work
             Task.Run(async () =>
             {
                 // Try to get the subreddit from the local cache.
-                Subreddit subreddit = App.BaconMan.SubredditMan.GetSubredditByDisplayName(subredditName);
+                var subreddit = App.BaconMan.SubredditMan.GetSubredditByDisplayName(subredditName);
 
                 // It is very rare that we can't get it from the cache because something
                 // else usually request it from the web and then it will be cached.
@@ -137,7 +122,7 @@ namespace Baconit.Panels.FlipView
                     ShowFullScreenLoading();
 
                     // Try to get the subreddit from the web
-                    subreddit = await App.BaconMan.SubredditMan.GetSubredditFromWebByDisplayName((string)arguments[PanelManager.NAV_ARGS_SUBREDDIT_NAME]);
+                    subreddit = await App.BaconMan.SubredditMan.GetSubredditFromWebByDisplayName((string)arguments[PanelManager.NavArgsSubredditName]);
                 }
 
                 // Check again.
@@ -153,7 +138,7 @@ namespace Baconit.Panels.FlipView
                     // Now try to go back.
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                     {
-                        m_host.GoBack();
+                        _host.GoBack();
                     });
 
                     // Get out of here.
@@ -161,26 +146,26 @@ namespace Baconit.Panels.FlipView
                 }
 
                 // Capture the subreddit
-                m_subreddit = subreddit;
+                _subreddit = subreddit;
 
                 // Get the current sort
-                m_currentSort = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT) ? (SortTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT] : SortTypes.Hot;
+                _currentSort = arguments.ContainsKey(PanelManager.NavArgsSubredditSort) ? (SortTypes)arguments[PanelManager.NavArgsSubredditSort] : SortTypes.Hot;
 
                 // Get the current sort time
-                m_currentSortTime = arguments.ContainsKey(PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME) ? (SortTimeTypes)arguments[PanelManager.NAV_ARGS_SUBREDDIT_SORT_TIME] : SortTimeTypes.Week;
+                _currentSortTime = arguments.ContainsKey(PanelManager.NavArgsSubredditSortTime) ? (SortTimeTypes)arguments[PanelManager.NavArgsSubredditSortTime] : SortTimeTypes.Week;
 
                 // Try to get the target post id
-                if (arguments.ContainsKey(PanelManager.NAV_ARGS_POST_ID))
+                if (arguments.ContainsKey(PanelManager.NavArgsPostId))
                 {
-                    m_targetPost = (string)arguments[PanelManager.NAV_ARGS_POST_ID];
+                    _targetPost = (string)arguments[PanelManager.NavArgsPostId];
                 }
 
                 // Try to get the force post, this will make us show only one post for the subreddit,
                 // which is the post given.
                 string forcePostId = null;
-                if (arguments.ContainsKey(PanelManager.NAV_ARGS_FORCE_POST_ID))
+                if (arguments.ContainsKey(PanelManager.NavArgsForcePostId))
                 {
-                    forcePostId = (string)arguments[PanelManager.NAV_ARGS_FORCE_POST_ID];
+                    forcePostId = (string)arguments[PanelManager.NavArgsForcePostId];
 
                     // If the UI isn't already shown show the loading UI. Most of the time this post wont' be cached
                     // so it can take some time to load.
@@ -188,20 +173,20 @@ namespace Baconit.Panels.FlipView
                 }
 
                 // See if we are targeting a comment
-                if (arguments.ContainsKey(PanelManager.NAV_ARGS_FORCE_COMMENT_ID))
+                if (arguments.ContainsKey(PanelManager.NavArgsForceCommentId))
                 {
-                    m_targetComment = (string)arguments[PanelManager.NAV_ARGS_FORCE_COMMENT_ID];
+                    _targetComment = (string)arguments[PanelManager.NavArgsForceCommentId];
                 }
 
                 // Get the collector and register for updates.
-                m_collector = PostCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
-                m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
+                _collector = PostCollector.GetCollector(_subreddit, App.BaconMan, _currentSort, _currentSortTime, forcePostId);
+                _collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
                 // Kick off an update of the subreddits if needed.
-                m_collector.Update();
+                _collector.Update();
 
                 // Set any posts that exist right now
-                UpdatePosts(0, m_collector.GetCurrentPosts());
+                UpdatePosts(0, _collector.GetCurrentPosts());
             });
         }
 
@@ -211,7 +196,7 @@ namespace Baconit.Panels.FlipView
         public void OnNavigatingTo()
         {
             // Set the task bar color
-            m_host.SetStatusBar(Color.FromArgb(255, 25, 25, 25));
+            _host.SetStatusBar(Color.FromArgb(255, 25, 25, 25));
 
             // If we have a current panel, set it visible.
             if(ui_flipView.SelectedItem != null)
@@ -230,9 +215,9 @@ namespace Baconit.Panels.FlipView
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 // Tell all of the posts they are not visible.
-                lock (m_postsLists)
+                lock (_postsLists)
                 {
-                    foreach (FlipViewPostItem item in m_postsLists)
+                    foreach (var item in _postsLists)
                     {
                         item.IsVisible = false;
                     }
@@ -246,30 +231,30 @@ namespace Baconit.Panels.FlipView
         public async void OnCleanupPanel()
         {
             // If we have a collector unregister for updates.
-            if(m_collector != null)
+            if(_collector != null)
             {
-                m_collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
+                _collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
             }
 
             // Kick to a background thread, remove all of our content.
             await Task.Run(() =>
             {
                 // Remove all of our content
-                ContentPanelMaster.Current.RemoveAllAllowedContent(m_uniqueId);
+                ContentPanelMaster.Current.RemoveAllAllowedContent(_uniqueId);
             });
 
             // Deffer the action so we don't mess up any animations.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 // Clear out all of the posts, and comments.
-                lock (m_postsLists)
+                lock (_postsLists)
                 {
-                    foreach (FlipViewPostItem item in m_postsLists)
+                    foreach (var item in _postsLists)
                     {
                         item.IsVisible = false;
                         item.LoadComments = false;
                     }
-                    m_postsLists.Clear();
+                    _postsLists.Clear();
                 }
             });
         }
@@ -285,7 +270,7 @@ namespace Baconit.Panels.FlipView
             {
                 // When we are asked to reduce memory unload all of our panels.
                 // If the user comes back they will be reloaded as they view them.
-                ContentPanelMaster.Current.UnloadContentForGroup(m_uniqueId);
+                ContentPanelMaster.Current.UnloadContentForGroup(_uniqueId);
             });
         }
 
@@ -299,34 +284,34 @@ namespace Baconit.Panels.FlipView
             // Do this logic here.
             OnNavigatingTo();
 
-            if(!arguments.ContainsKey(PanelManager.NAV_ARGS_POST_ID))
+            if(!arguments.ContainsKey(PanelManager.NavArgsPostId))
             {
                 return;
             }
 
             // Set the target post.
-            m_targetPost = (string)arguments[PanelManager.NAV_ARGS_POST_ID];
+            _targetPost = (string)arguments[PanelManager.NavArgsPostId];
 
             // Kick off to the UI thread
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Lock the post list
-                lock(m_postsLists)
+                lock(_postsLists)
                 {
                     // Make sure the string is still valid
-                    if (String.IsNullOrWhiteSpace(m_targetPost))
+                    if (string.IsNullOrWhiteSpace(_targetPost))
                     {
                         return;
                     }
 
                     // Set up the objects for the UI
-                    for (int i = 0; i < m_postsLists.Count; i++)
+                    for (var i = 0; i < _postsLists.Count; i++)
                     {
                         // Check if this post is it
-                        if (m_postsLists[i].Context.Post.Id == m_targetPost)
+                        if (_postsLists[i].Context.Post.Id == _targetPost)
                         {
                             // It is important we set the target post to empty string first!
-                            m_targetPost = string.Empty;
+                            _targetPost = string.Empty;
 
                             // Found it! Only set the index it we aren't already there.
                             if (ui_flipView.SelectedIndex != i)
@@ -342,9 +327,9 @@ namespace Baconit.Panels.FlipView
         /// <summary>
         /// Fired when the collection list has been updated.
         /// </summary>
-        /// <param name="startingPos"></param>
-        /// <param name="changedPosts"></param>
-        private void Collector_OnCollectionUpdated(object sender , OnCollectionUpdatedArgs<Post> args)
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void Collector_OnCollectionUpdated(object sender , CollectionUpdatedArgs<Post> args)
         {
             // Update the posts
             UpdatePosts(args.StartingPosition, args.ChangedItems);
@@ -355,33 +340,30 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="startingPos"></param>
         /// <param name="newPosts"></param>
-        private async void UpdatePosts(int startingPos, List<Post> newPosts)
+        private async void UpdatePosts(int startingPos, IReadOnlyList<Post> newPosts)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
-                Visibility flipViewMenuVis = m_host.CurrentScreenMode() == ScreenMode.Single ? Visibility.Visible : Visibility.Collapsed;
+                var flipViewMenuVis = _host.CurrentScreenMode() == ScreenMode.Single ? Visibility.Visible : Visibility.Collapsed;
 
-                bool deferLoadPosts = false;
                 // Grab the list lock
-                lock (m_postsLists)
+                lock (_postsLists)
                 {
                     // If we are currently in a deferred scenario then we need to handle updates
                     // differently since the list won't match the list that is expected
-                    if(m_deferredPostList.Count != 0)
+                    if(_deferredPostList.Count != 0)
                     {
-                        if (m_postsLists.Count > 0 && newPosts.Count > 0 &&
-                            m_postsLists[0].Context.Post.Id.Equals(newPosts[0].Id))
-                        {
-                            // The current post is updated, so update it.
-                            // We can't replace the time because flip view will freak out
-                            // so just update whatever UI we need to update.
-                            m_postsLists[0].Context.Post.Likes = newPosts[0].Likes;
-                            m_postsLists[0].Context.Post.SubTextLine1 = newPosts[0].SubTextLine1;
-                            m_postsLists[0].Context.Post.SubTextLine2PartOne = newPosts[0].SubTextLine2PartOne;
-                            m_postsLists[0].Context.Post.SubTextLine2PartTwo = newPosts[0].SubTextLine2PartTwo;
-                            m_postsLists[0].Context.Post.Domain = newPosts[0].Domain;
-                            m_postsLists[0].Context.Post.Score = newPosts[0].Score;
-                        }
+                        if (_postsLists.Count <= 0 || newPosts.Count <= 0 ||
+                            !_postsLists[0].Context.Post.Id.Equals(newPosts[0].Id)) return;
+                        // The current post is updated, so update it.
+                        // We can't replace the time because flip view will freak out
+                        // so just update whatever UI we need to update.
+                        _postsLists[0].Context.Post.Likes = newPosts[0].Likes;
+                        _postsLists[0].Context.Post.SubTextLine1 = newPosts[0].SubTextLine1;
+                        _postsLists[0].Context.Post.SubTextLine2PartOne = newPosts[0].SubTextLine2PartOne;
+                        _postsLists[0].Context.Post.SubTextLine2PartTwo = newPosts[0].SubTextLine2PartTwo;
+                        _postsLists[0].Context.Post.Domain = newPosts[0].Domain;
+                        _postsLists[0].Context.Post.Score = newPosts[0].Score;
 
                         // We have done all we want to do, leave now.
                         return;
@@ -389,44 +371,46 @@ namespace Baconit.Panels.FlipView
 
                     // If the list is currently empty we want to only load the first element and defer the rest of the
                     // elements. If the target post is -1 we load the first element, if not we load it only.
-                    deferLoadPosts = m_postsLists.Count == 0;
-                    string deferTargetPost = m_targetPost;
-                    m_targetPost = null;
+                    var deferLoadPosts = _postsLists.Count == 0;
+                    var deferTargetPost = _targetPost;
+                    _targetPost = null;
                     if (deferLoadPosts)
                     {
                         // If we are doing a defer make sure we have a target
-                        if (String.IsNullOrWhiteSpace(deferTargetPost) && newPosts.Count > 0)
+                        if (string.IsNullOrWhiteSpace(deferTargetPost) && newPosts.Count > 0)
                         {
                             deferTargetPost = newPosts[0].Id;
                         }
                     }
 
                     // Now setup the post update
-                    int insertIndex = startingPos;
+                    var insertIndex = startingPos;
 
                     // Set up the objects for the UI
-                    foreach (Post post in newPosts)
+                    foreach (var post in newPosts)
                     {
+                        if(post == null) continue;
+                        
                         // Check if we are adding or inserting.
-                        bool isReplace = insertIndex < m_postsLists.Count;
+                        var isReplace = insertIndex < _postsLists.Count;
 
                         if (isReplace)
                         {
-                            if (m_postsLists[insertIndex].Context.Post.Id.Equals(post.Id))
+                            if (_postsLists[insertIndex].Context.Post.Id.Equals(post.Id))
                             {
                                 // We can't replace the time because flip view will freak out
                                 // so just update whatever UI we need to update.
-                                m_postsLists[insertIndex].Context.Post.Likes = post.Likes;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine1 = post.SubTextLine1;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine2PartOne = post.SubTextLine2PartOne;
-                                m_postsLists[insertIndex].Context.Post.SubTextLine2PartTwo = post.SubTextLine2PartTwo;
-                                m_postsLists[insertIndex].Context.Post.Domain = post.Domain;
-                                m_postsLists[insertIndex].Context.Post.Score = post.Score;
+                                _postsLists[insertIndex].Context.Post.Likes = post.Likes;
+                                _postsLists[insertIndex].Context.Post.SubTextLine1 = post.SubTextLine1;
+                                _postsLists[insertIndex].Context.Post.SubTextLine2PartOne = post.SubTextLine2PartOne;
+                                _postsLists[insertIndex].Context.Post.SubTextLine2PartTwo = post.SubTextLine2PartTwo;
+                                _postsLists[insertIndex].Context.Post.Domain = post.Domain;
+                                _postsLists[insertIndex].Context.Post.Score = post.Score;
                             }
                             else
                             {
                                 // Replace the entire post if it brand new
-                                m_postsLists[insertIndex].Context.Post = post;
+                                _postsLists[insertIndex].Context.Post = post;
                             }
                         }
                         else
@@ -439,18 +423,18 @@ namespace Baconit.Panels.FlipView
                                     // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
                                     try
                                     {
-                                        m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
+                                        _postsLists.Add(new FlipViewPostItem(_host, _collector, post, _targetComment));
                                     }
                                     catch (Exception e)
                                     {
-                                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "mPostListAddFailedSpot1", e);
-                                        App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
+                                        TelemetryManager.ReportUnexpectedEvent(this, "UpdatePosts", e);
+                                        App.BaconMan.MessageMan.DebugDia("Adding to postList failed! (deferLoadPosts)", e);
                                     }
                                 }
 
                                 // Add it to the deferred list, also add the deferred post so we know
                                 // where it is in the list.
-                                m_deferredPostList.Add(post);
+                                _deferredPostList.Add(post);
                             }
                             else
                             {
@@ -458,12 +442,12 @@ namespace Baconit.Panels.FlipView
                                 // Try catch is a work around for bug https://github.com/QuinnDamerell/Baconit/issues/53
                                 try
                                 {
-                                    m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
+                                    _postsLists.Add(new FlipViewPostItem(_host, _collector, post, _targetComment));
                                 }
                                 catch(Exception e)
                                 {
-                                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "mPostListAddFailedSpot2", e);
-                                    App.BaconMan.MessageMan.DebugDia("Adding to m_postList failed! " + (post == null ? "post was null!" : "post IS NOT NULL"), e);
+                                    TelemetryManager.ReportUnexpectedEvent(this, "UpdatePosts", e);
+                                    App.BaconMan.MessageMan.DebugDia("Adding to postList failed! (!deferLoadPosts)", e);
                                 }
                             }
                         }
@@ -478,7 +462,7 @@ namespace Baconit.Panels.FlipView
                     // If the item source hasn't been set yet do it now.
                     if (ui_flipView.ItemsSource == null)
                     {
-                        ui_flipView.ItemsSource = m_postsLists;
+                        ui_flipView.ItemsSource = _postsLists;
                     }
                 }
 
@@ -493,9 +477,9 @@ namespace Baconit.Panels.FlipView
         public async void DoDeferredPostUpdate()
         {
             // Check if we have work to do.
-            lock(m_postsLists)
+            lock(_postsLists)
             {
-                if(m_deferredPostList.Count == 0)
+                if(_deferredPostList.Count == 0)
                 {
                     return;
                 }
@@ -507,19 +491,19 @@ namespace Baconit.Panels.FlipView
             // Now kick off a UI thread on low to do the update.
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
             {
-                lock(m_postsLists)
+                lock(_postsLists)
                 {
                     // Ensure we sill have work do to.
-                    if (m_deferredPostList.Count == 0)
+                    if (_deferredPostList.Count == 0)
                     {
                         return;
                     }
 
-                    bool addBefore = true;
-                    string deferredPostId = m_postsLists.Count > 0 ? m_postsLists[0].Context.Post.Id : String.Empty;
-                    List<Post> insertList = new List<Post>();
+                    var addBefore = true;
+                    var deferredPostId = _postsLists.Count > 0 ? _postsLists[0].Context.Post.Id : string.Empty;
+                    var insertList = new List<Post>();
 
-                    foreach(Post post in m_deferredPostList)
+                    foreach(var post in _deferredPostList)
                     {
                         // If this is the post don't do anything but indicate we should add after
                         if(post.Id.Equals(deferredPostId))
@@ -540,7 +524,7 @@ namespace Baconit.Panels.FlipView
                             else
                             {
                                 // If not add it to the end.
-                                m_postsLists.Add(new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
+                                _postsLists.Add(new FlipViewPostItem(_host, _collector, post, _targetComment));
                             }
                         }
                     }
@@ -548,13 +532,13 @@ namespace Baconit.Panels.FlipView
                     // Now ad the inserts, but insert them from the element closest to the visible post to away.
                     // We want to do this so flipview doesn't keep changing which panels are virtualized as we add panels.
                     // as possible.
-                    foreach (Post post in insertList.Reverse<Post>())
+                    foreach (var post in insertList.Reverse<Post>())
                     {
-                        m_postsLists.Insert(0, new FlipViewPostItem(m_host, m_collector, post, m_targetComment));
+                        _postsLists.Insert(0, new FlipViewPostItem(_host, _collector, post, _targetComment));
                     }
 
                     // Clear the deferrals
-                    m_deferredPostList.Clear();
+                    _deferredPostList.Clear();
                 }
 
                 // And preload the content for the next post, but again defer this since it is a background task.
@@ -580,7 +564,7 @@ namespace Baconit.Panels.FlipView
             }
 
             // Mark the item read.
-            m_collector.MarkPostRead(((FlipViewPostItem)ui_flipView.SelectedItem).Context.Post, ui_flipView.SelectedIndex);
+            _collector.MarkPostRead(((FlipViewPostItem)ui_flipView.SelectedItem)?.Context.Post, ui_flipView.SelectedIndex);
 
             // Hide the comment box if open
             HideCommentBoxIfOpen();
@@ -595,11 +579,7 @@ namespace Baconit.Panels.FlipView
             else
             {
                 // Kick off the panel content update to the UI thread with idle pri to give the UI time to setup.
-                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
-                {
-                    // Update the posts
-                    UpdatePanelContent();
-                });
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, UpdatePanelContent);
             }
 
             // Now if we have deferred post add them
@@ -612,24 +592,24 @@ namespace Baconit.Panels.FlipView
         private async void UpdatePanelContent()
         {
             // Create a list we need to set to the UI.
-            List<Tuple<FlipViewPostItem, bool>> setToUiList = new List<Tuple<FlipViewPostItem, bool>>();
-            List<FlipViewPostItem> clearList = new List<FlipViewPostItem>();
-            bool extendCollection = false;
+            var setToUiList = new List<Tuple<FlipViewPostItem, bool>>();
+            var clearList = new List<FlipViewPostItem>();
+            var extendCollection = false;
 
             // Get the min and max number of posts to load.
-            int minContentLoad = ui_flipView.SelectedIndex;
-            int maxContentLoad = ui_flipView.SelectedIndex;
-            if (App.BaconMan.UiSettingsMan.FlipView_PreloadFutureContent)
+            var minContentLoad = ui_flipView.SelectedIndex;
+            var maxContentLoad = ui_flipView.SelectedIndex;
+            if (App.BaconMan.UiSettingsMan.FlipViewPreloadFutureContent)
             {
                 maxContentLoad++;
             }
 
             // Lock the list
-            lock (m_postsLists)
+            lock (_postsLists)
             {
-                for (int i = 0; i < m_postsLists.Count; i++)
+                for (var i = 0; i < _postsLists.Count; i++)
                 {
-                    FlipViewPostItem item = m_postsLists[i];
+                    var item = _postsLists[i];
                     if (i >= minContentLoad && i <= maxContentLoad)
                     {
                         // Add the post to the list of posts to set. We have to do this outside of the lock
@@ -647,7 +627,7 @@ namespace Baconit.Panels.FlipView
                 // Check if we should load more posts. Note we want to check how many post the
                 // collector has because this gets called when the m_postList is being built, thus
                 // the count will be wrong.
-                if(m_postsLists.Count > 5 && m_collector.GetCurrentPosts().Count < maxContentLoad + 4)
+                if(_postsLists.Count > 5 && _collector.GetCurrentPosts().Count < maxContentLoad + 4)
                 {
                     extendCollection = true;
                 }
@@ -656,19 +636,19 @@ namespace Baconit.Panels.FlipView
             // Extend if we should
             if(extendCollection)
             {
-                m_collector.ExtendCollection(25);
+                _collector.ExtendCollection(25);
             }
 
             // Now that we are out of lock set the items we want to set.
-            foreach(Tuple<FlipViewPostItem, bool> tuple in setToUiList)
+            foreach(var tuple in setToUiList)
             {
                 // We found an item to show or prelaod, do it.
                 await SetPostContent(tuple.Item1, tuple.Item2);
 
                 // If this is the first post to load delay for a while to give the UI time to setup.
-                if (m_isFirstPostLoad)
+                if (_isFirstPostLoad)
                 {
-                    m_isFirstPostLoad = false;
+                    _isFirstPostLoad = false;
                     await Task.Delay(1000);
                 }
 
@@ -681,7 +661,7 @@ namespace Baconit.Panels.FlipView
 
             // Now set them all to not be visible and clear
             // the comments.
-            foreach (FlipViewPostItem item in clearList)
+            foreach (var item in clearList)
             {
                 item.IsVisible = false;
                 item.LoadComments = false;
@@ -691,20 +671,17 @@ namespace Baconit.Panels.FlipView
             await Task.Run(() =>
             {
                 // Get all of our content.
-                List<string> allContent = ContentPanelMaster.Current.GetAllAllowedContentForGroup(m_uniqueId);
+                var allContent = ContentPanelMaster.Current.GetAllAllowedContentForGroup(_uniqueId);
 
                 // Find the ids that should be cleared and clear them.
-                List<string> removeId = new List<string>();
-                foreach (string contentId in allContent)
+                foreach (var contentId in allContent)
                 {
-                    bool found = false;
-                    foreach (Tuple<FlipViewPostItem, bool> tuple in setToUiList)
+                    var found = false;
+                    foreach (var tuple in setToUiList)
                     {
-                        if (tuple.Item1.Context.Post.Id.Equals(contentId))
-                        {
-                            found = true;
-                            break;
-                        }
+                        if (!tuple.Item1.Context.Post.Id.Equals(contentId)) continue;
+                        found = true;
+                        break;
                     }
 
                     if (!found)
@@ -730,17 +707,17 @@ namespace Baconit.Panels.FlipView
                 // Make sure we don't have one already, if so get out of here.
                 lock (this)
                 {
-                    if (m_loadingOverlay != null)
+                    if (_loadingOverlay != null)
                     {
                         return;
                     }
-                    m_loadingOverlay = new LoadingOverlay();
+                    _loadingOverlay = new LoadingOverlay();
                 }
 
-                m_loadingOverlay.OnHideComplete += LoadingOverlay_OnHideComplete;
-                Grid.SetRowSpan(m_loadingOverlay, 3);
-                ui_contentRoot.Children.Add(m_loadingOverlay);
-                m_loadingOverlay.Show();
+                _loadingOverlay.OnHideComplete += LoadingOverlay_OnHideComplete;
+                Grid.SetRowSpan(_loadingOverlay, 3);
+                ui_contentRoot.Children.Add(_loadingOverlay);
+                _loadingOverlay.Show();
             });
         }
 
@@ -749,14 +726,14 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         private void HideFullScreenLoading()
         {
-            LoadingOverlay overlay = null;
+            LoadingOverlay overlay;
             lock(this)
             {
-                if (m_loadingOverlay == null)
+                if (_loadingOverlay == null)
                 {
                     return;
                 }
-                overlay = m_loadingOverlay;
+                overlay = _loadingOverlay;
             }
 
             overlay.Hide();
@@ -769,10 +746,10 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private void LoadingOverlay_OnHideComplete(object sender, EventArgs e)
         {
-            ui_contentRoot.Children.Remove(m_loadingOverlay);
+            ui_contentRoot.Children.Remove(_loadingOverlay);
             lock(this)
             {
-                m_loadingOverlay = null;
+                _loadingOverlay = null;
             }
         }
 
@@ -785,10 +762,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         private void HideCommentBoxIfOpen()
         {
-            if (ui_commentBox != null)
-            {
-                ui_commentBox.HideBox();
-            }
+            ui_commentBox?.HideBox();
         }
 
         /// <summary>
@@ -796,7 +770,7 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void FlipViewPostPanel_OnOpenCommentBox(object sender, OnOpenCommentBox e)
+        private void FlipViewPostPanel_OnOpenCommentBox(object sender, OpenCommentBox e)
         {
             // Show the box with this data and the argument as the context.
             ShowCommentBox(e.RedditId, e.EditText, e);
@@ -811,7 +785,7 @@ namespace Baconit.Panels.FlipView
             FindName("ui_commentBox");
             ui_commentBox.Visibility = Visibility.Visible;
             ui_commentBox.ShowBox(redditId, editText, context);
-            SetCommentBoxHeight(this.ActualHeight);
+            SetCommentBoxHeight(ActualHeight);
         }
 
         /// <summary>
@@ -821,7 +795,7 @@ namespace Baconit.Panels.FlipView
         /// <param name="e"></param>
         private void CommentBox_OnBoxOpened(object sender, CommentBoxOnOpenedArgs e)
         {
-            OnOpenCommentBox openBoxContext = (OnOpenCommentBox)e.Context;
+            var openBoxContext = (OpenCommentBox)e.Context;
             if(openBoxContext != null)
             {
                 // Replace the context
@@ -835,14 +809,14 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CommentBox_OnCommentSubmitted(object sender, OnCommentSubmittedArgs e)
+        private void CommentBox_OnCommentSubmitted(object sender, CommentSubmittedArgs e)
         {
-            OnOpenCommentBox openBoxContext = (OnOpenCommentBox)e.Context;
+            var openBoxContext = (OpenCommentBox)e.Context;
             if (openBoxContext != null)
             {
                 // Replace the context
                 e.Context = openBoxContext.Context;
-                bool wasActionSuccessful = openBoxContext.CommentBoxSubmitted(sender, e);
+                var wasActionSuccessful = openBoxContext.CommentBoxSubmitted(sender, e);
 
                 // Hide the box if good
                 if (wasActionSuccessful)
@@ -889,18 +863,19 @@ namespace Baconit.Panels.FlipView
         /// Sets the post content. For now all we give the flip view control is the URL
         /// and it must figure out the rest on it's own.
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="item"></param>
+        /// <param name="isVisiblePost"></param>
         private async Task SetPostContent(FlipViewPostItem item, bool isVisiblePost)
         {
             // Set that the post is visible if it is
             item.IsVisible = isVisiblePost;
 
             // Only load the content if we are doing it with out action. (most of the time)
-            if (App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction)
+            if (App.BaconMan.UiSettingsMan.FlipViewLoadPostContentWithoutAction)
             {
                 await Task.Run(() =>
                 {
-                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(item.Context.Post), m_uniqueId, !isVisiblePost);
+                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(item.Context.Post), _uniqueId, !isVisiblePost);
                 });
             }
         }
@@ -910,19 +885,17 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void FlipViewPostPanel_OnContentLoadRequest(object sender, OnContentLoadRequestArgs e)
+        private async void FlipViewPostPanel_OnContentLoadRequest(object sender, ContentLoadRequestArgs e)
         {
             // Find the post
             Post post = null;
-            lock (m_postsLists)
+            lock (_postsLists)
             {
-                foreach (FlipViewPostItem item in m_postsLists)
+                foreach (var item in _postsLists)
                 {
-                    if (item.Context.Post.Id.Equals(e.SourceId))
-                    {
-                        post = item.Context.Post;
-                        break;
-                    }
+                    if (!item.Context.Post.Id.Equals(e.SourceId)) continue;
+                    post = item.Context.Post;
+                    break;
                 }
             }
 
@@ -931,18 +904,9 @@ namespace Baconit.Panels.FlipView
             {
                 await Task.Run(() =>
                 {
-                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), m_uniqueId, false);
+                    ContentPanelMaster.Current.AddAllowedContent(ContentPanelSource.CreateFromPost(post), _uniqueId);
                 });
             }
-        }
-
-        /// <summary>
-        /// Gets a unique id for this flipview.
-        /// </summary>
-        /// <returns></returns>
-        private string GetUniqueId()
-        {
-            return m_subreddit.Id + m_currentSort + m_currentSortTime;
         }
     }
 }

@@ -1,21 +1,9 @@
-﻿using BaconBackend.DataObjects;
-using Baconit.ContentPanels;
+﻿using Baconit.ContentPanels;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -42,16 +30,16 @@ namespace Baconit.HelperControls
         /// <summary>
         /// Holds a reference to the content control
         /// </summary>
-        ContentPanelHost m_contentControl;
+        private ContentPanelHost _mContentControl;
 
         /// <summary>
         /// The current source we are showing.
         /// </summary>
-        ContentPanelSource m_source;
+        private ContentPanelSource _mSource;
 
         public GlobalContentPresenter()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             ui_background.Visibility = Visibility.Collapsed;
             ui_mainHolder.Visibility = Visibility.Collapsed;
         }
@@ -73,26 +61,26 @@ namespace Baconit.HelperControls
             }
 
             // Create the content control
-            m_contentControl = new ContentPanelHost();
+            _mContentControl = new ContentPanelHost();
 
             // Disable full screen
-            m_contentControl.CanGoFullscreen = false;
+            _mContentControl.CanGoFullscreen = false;
 
             // This isn't great, but for now mock a post
-            m_source = ContentPanelSource.CreateFromUrl(link);
+            _mSource = ContentPanelSource.CreateFromUrl(link);
 
             // Approve the content to be shown
             Task.Run(() =>
             {                
-                ContentPanelMaster.Current.AddAllowedContent(m_source);
+                ContentPanelMaster.Current.AddAllowedContent(_mSource);
             });     
 
             // Add the control to the UI
-            ui_contentRoot.Children.Add(m_contentControl);
+            ui_contentRoot.Children.Add(_mContentControl);
 
             // Set the post to begin loading
-            m_contentControl.SourceId = m_source.Id;
-            m_contentControl.IsVisible = true;
+            _mContentControl.SourceId = _mSource.Id;
+            _mContentControl.IsVisible = true;
 
             // Show the panel
             ToggleShown(true);
@@ -113,7 +101,7 @@ namespace Baconit.HelperControls
             // Remove the content
             Task.Run(() =>
             {                
-                ContentPanelMaster.Current.RemoveAllowedContent(m_source.Id);
+                ContentPanelMaster.Current.RemoveAllowedContent(_mSource.Id);
             });           
 
             ToggleShown(false);
@@ -129,11 +117,11 @@ namespace Baconit.HelperControls
             ui_mainHolder.Visibility = Visibility.Collapsed;
 
             // Kill the story
-            if(m_contentControl != null)
+            if(_mContentControl != null)
             {
-                m_contentControl.SourceId = null;
+                _mContentControl.SourceId = null;
             }
-            m_contentControl = null;
+            _mContentControl = null;
 
             // Clear the UI
             ui_contentRoot.Children.Clear();
@@ -160,7 +148,7 @@ namespace Baconit.HelperControls
         {
             try
             {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(m_source.Url, UriKind.Absolute));
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(_mSource.Url, UriKind.Absolute));
             }
             catch(Exception)
             { }

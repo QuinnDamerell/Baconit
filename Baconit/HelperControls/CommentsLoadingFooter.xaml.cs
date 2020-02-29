@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,7 +9,7 @@ namespace Baconit.HelperControls
     {
         public CommentsLoadingFooter()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         #region ShowLoading Logic
@@ -31,10 +19,10 @@ namespace Baconit.HelperControls
         /// </summary>
         public Visibility ShowLoading
         {
-            get { return (Visibility)GetValue(ShowLoadingProperty); }
-            set { SetValue(ShowLoadingProperty, value); }
+            get => (Visibility)GetValue(ShowLoadingProperty);
+            set => SetValue(ShowLoadingProperty, value);
         }
-        private Visibility m_showLoading = Visibility.Collapsed;
+        private Visibility _mShowLoading = Visibility.Collapsed;
 
         public static readonly DependencyProperty ShowLoadingProperty =
             DependencyProperty.Register(
@@ -43,7 +31,7 @@ namespace Baconit.HelperControls
                 typeof(CommentsLoadingFooter), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     Visibility.Collapsed,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnShowLoadingChangedStatic)
+                    OnShowLoadingChangedStatic
                 ));
 
         private static void OnShowLoadingChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -51,10 +39,10 @@ namespace Baconit.HelperControls
             var instance = d as CommentsLoadingFooter;
             if (instance != null)
             {
-                Visibility newVis = (Visibility)e.NewValue;
-                if (instance.m_showLoading != newVis)
+                var newVis = (Visibility)e.NewValue;
+                if (instance._mShowLoading != newVis)
                 {
-                    instance.m_showLoading = newVis;
+                    instance._mShowLoading = newVis;
                     instance.OnShowLoadingChanged(newVis);
                 }
             }
@@ -69,8 +57,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public string ShowErrorText
         {
-            get { return (string)GetValue(ShowErrorTextProperty); }
-            set { SetValue(ShowErrorTextProperty, value); }
+            get => (string)GetValue(ShowErrorTextProperty);
+            set => SetValue(ShowErrorTextProperty, value);
         }
 
         public static readonly DependencyProperty ShowErrorTextProperty =
@@ -80,16 +68,13 @@ namespace Baconit.HelperControls
                 typeof(CommentsLoadingFooter), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     "",                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnShowErrorTextChangedStatic)
+                    OnShowErrorTextChangedStatic
                 ));
 
         private static void OnShowErrorTextChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CommentsLoadingFooter;
-            if (instance != null)
-            {
-                instance.OnShowErrorTextChanged((string)e.NewValue);
-            }
+            instance?.OnShowErrorTextChanged((string)e.NewValue);
         }
 
         #endregion
@@ -120,7 +105,7 @@ namespace Baconit.HelperControls
             ui_textBlock.Text = newString;
 
             // Animate
-            PlayAnimation(String.IsNullOrWhiteSpace(newString) ? Visibility.Collapsed : Visibility.Visible);
+            PlayAnimation(string.IsNullOrWhiteSpace(newString) ? Visibility.Collapsed : Visibility.Visible);
         }
 
         private void PlayAnimation(Visibility newVisibility)

@@ -1,11 +1,5 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaconBackend.Managers
 {
@@ -18,11 +12,11 @@ namespace BaconBackend.Managers
 
     public class UiSettingManager : BindableBase
     {
-        BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         public UiSettingManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
 
             // If we aren't a background +1 app opened.
             if(!baconMan.IsBackgroundTask)
@@ -35,7 +29,7 @@ namespace BaconBackend.Managers
 
         private void BaconMan_OnResuming(object sender, object e)
         {
-            // When we are resuemd +1 the count;
+            // When we are resumed +1 the count;
             AppOpenedCount++;
         }
 
@@ -46,112 +40,78 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (!m_appOpenedCount.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.AppOpenedCount"))
-                    {
-                        m_appOpenedCount = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.AppOpenedCount");
-                    }
-                    else
-                    {
-                        m_appOpenedCount = 0;
-                    }
-                }
-                return m_appOpenedCount.Value;
+                if (_appOpenedCount.HasValue) return _appOpenedCount.Value;
+                _appOpenedCount = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.AppOpenedCount") 
+                    ? _baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.AppOpenedCount") 
+                    : 0;
+                return _appOpenedCount.Value;
             }
-            set
+            private set
             {
-                m_appOpenedCount = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.AppOpenedCount", m_appOpenedCount.Value);
+                _appOpenedCount = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.AppOpenedCount", _appOpenedCount.Value);
             }
         }
-        private int? m_appOpenedCount = null;
+        private int? _appOpenedCount;
 
         #region Settings
 
         /// <summary>
         /// If the user is in debug mode or not.
         /// </summary>
-        public bool Developer_Debug
+        public bool DeveloperDebug
         {
             get
             {
-                if (!m_developer_Debug.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_Debug"))
-                    {
-                        m_developer_Debug = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_Debug");
-                    }
-                    else
-                    {
-                        m_developer_Debug = false;
-                    }
-                }
-                return m_developer_Debug.Value;
+                if (_developerDebug.HasValue) return _developerDebug.Value;
+                _developerDebug = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_Debug") && _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_Debug");
+                return _developerDebug.Value;
             }
             set
             {
-                m_developer_Debug = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_Debug", m_developer_Debug.Value);
+                _developerDebug = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.Developer_Debug", _developerDebug.Value);
             }
         }
-        private bool? m_developer_Debug = null;
+        private bool? _developerDebug;
 
         /// <summary>
         /// If the app will prevent crashing and report any fatal errors.
         /// </summary>
-        public bool Developer_StopFatalCrashesAndReport
+        public bool DeveloperStopFatalCrashesAndReport
         {
             get
             {
-                if (!m_developer_StopFatalCrashesAndReport.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_StopFatalCrashesAndReport"))
-                    {
-                        m_developer_StopFatalCrashesAndReport = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_StopFatalCrashesAndReport");
-                    }
-                    else
-                    {
-                        m_developer_StopFatalCrashesAndReport = false;
-                    }
-                }
-                return m_developer_StopFatalCrashesAndReport.Value;
+                if (_developerStopFatalCrashesAndReport.HasValue) return _developerStopFatalCrashesAndReport.Value;
+                _developerStopFatalCrashesAndReport = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_StopFatalCrashesAndReport") && _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_StopFatalCrashesAndReport");
+                return _developerStopFatalCrashesAndReport.Value;
             }
             set
             {
-                m_developer_StopFatalCrashesAndReport = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_StopFatalCrashesAndReport", m_developer_StopFatalCrashesAndReport.Value);
+                _developerStopFatalCrashesAndReport = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.Developer_StopFatalCrashesAndReport", _developerStopFatalCrashesAndReport.Value);
             }
         }
-        private bool? m_developer_StopFatalCrashesAndReport = null;
+        private bool? _developerStopFatalCrashesAndReport;
 
         /// <summary>
         /// Shows a memory overlay for the app.
         /// </summary>
-        public bool Developer_ShowMemoryOverlay
+        public bool DeveloperShowMemoryOverlay
         {
             get
             {
-                if (!m_developer_ShowMemoryOverlay.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_ShowMemoryOverlay"))
-                    {
-                        m_developer_ShowMemoryOverlay = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_ShowMemoryOverlay");
-                    }
-                    else
-                    {
-                        m_developer_ShowMemoryOverlay = false;
-                    }
-                }
-                return m_developer_ShowMemoryOverlay.Value;
+                if (_developerShowMemoryOverlay.HasValue) return _developerShowMemoryOverlay.Value;
+                _developerShowMemoryOverlay = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Developer_ShowMemoryOverlay") && _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.Developer_ShowMemoryOverlay");
+                return _developerShowMemoryOverlay.Value;
             }
             set
             {
-                m_developer_ShowMemoryOverlay = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.Developer_ShowMemoryOverlay", m_developer_ShowMemoryOverlay.Value);
+                _developerShowMemoryOverlay = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.Developer_ShowMemoryOverlay", _developerShowMemoryOverlay.Value);
             }
         }
-        private bool? m_developer_ShowMemoryOverlay = null;
+        private bool? _developerShowMemoryOverlay;
 
         #endregion
 
@@ -160,30 +120,21 @@ namespace BaconBackend.Managers
         /// <summary>
         /// The next time we should annoy the user to leave a review
         /// </summary>
-        public int MainPage_NextReviewAnnoy
+        public int MainPageNextReviewAnnoy
         {
             get
             {
-                if (!m_mainPage_NextReviewAnnoy.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.MainPage_NextReviewAnnoy"))
-                    {
-                        m_mainPage_NextReviewAnnoy = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.MainPage_NextReviewAnnoy");
-                    }
-                    else
-                    {
-                        m_mainPage_NextReviewAnnoy = 5;
-                    }
-                }
-                return m_mainPage_NextReviewAnnoy.Value;
+                if (_mainPageNextReviewAnnoy.HasValue) return _mainPageNextReviewAnnoy.Value;
+                _mainPageNextReviewAnnoy = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.MainPage_NextReviewAnnoy") ? _baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.MainPage_NextReviewAnnoy") : 5;
+                return _mainPageNextReviewAnnoy.Value;
             }
             set
             {
-                m_mainPage_NextReviewAnnoy = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.MainPage_NextReviewAnnoy", m_mainPage_NextReviewAnnoy.Value);
+                _mainPageNextReviewAnnoy = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.MainPage_NextReviewAnnoy", _mainPageNextReviewAnnoy.Value);
             }
         }
-        private int? m_mainPage_NextReviewAnnoy = null;
+        private int? _mainPageNextReviewAnnoy;
 
         #endregion
 
@@ -192,120 +143,84 @@ namespace BaconBackend.Managers
         /// <summary>
         /// If the user wants to show full titles or not.
         /// </summary>
-        public bool SubredditList_ShowFullTitles
+        public bool SubredditListShowFullTitles
         {
             get
             {
-                if (!m_subredditList_ShowFullTitles.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_ShowFullTitles"))
-                    {
-                        m_subredditList_ShowFullTitles = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.SubredditList_ShowFullTitles");
-                    }
-                    else
-                    {
-                        m_subredditList_ShowFullTitles = false;
-                    }
-                }
-                return m_subredditList_ShowFullTitles.Value;
+                if (_subredditListShowFullTitles.HasValue) return _subredditListShowFullTitles.Value;
+                _subredditListShowFullTitles = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_ShowFullTitles") && _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.SubredditList_ShowFullTitles");
+                return _subredditListShowFullTitles.Value;
             }
             set
             {
-                m_subredditList_ShowFullTitles = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.SubredditList_ShowFullTitles", m_subredditList_ShowFullTitles.Value);
+                _subredditListShowFullTitles = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.SubredditList_ShowFullTitles", _subredditListShowFullTitles.Value);
             }
         }
-        private bool? m_subredditList_ShowFullTitles = null;
+        private bool? _subredditListShowFullTitles;
 
         /// <summary>
         /// The default subreddit sort type
         /// </summary>
-        public SortTypes SubredditList_DefaultSortType
+        public SortTypes SubredditListDefaultSortType
         {
             get
             {
-                if (!m_subredditList_DefaultSortType.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSortType"))
-                    {
-                        m_subredditList_DefaultSortType = m_baconMan.SettingsMan.ReadFromRoamingSettings<SortTypes>("UiSettingManager.SubredditList_DefaultSortType");
-                    }
-                    else
-                    {
-                        m_subredditList_DefaultSortType = SortTypes.Hot;
-                    }
-                }
-                return m_subredditList_DefaultSortType.Value;
+                if (_subredditListDefaultSortType.HasValue) return _subredditListDefaultSortType.Value;
+                _subredditListDefaultSortType = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSortType") ? _baconMan.SettingsMan.ReadFromRoamingSettings<SortTypes>("UiSettingManager.SubredditList_DefaultSortType") : SortTypes.Hot;
+                return _subredditListDefaultSortType.Value;
             }
             set
             {
-                m_subredditList_DefaultSortType = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<SortTypes>("UiSettingManager.SubredditList_DefaultSortType", m_subredditList_DefaultSortType.Value);
+                _subredditListDefaultSortType = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.SubredditList_DefaultSortType", _subredditListDefaultSortType.Value);
             }
         }
-        private SortTypes? m_subredditList_DefaultSortType = null;
+        private SortTypes? _subredditListDefaultSortType;
 
         /// <summary>
         /// The default subreddit sort time type
         /// </summary>
-        public SortTimeTypes SubredditList_DefaultSortTimeType
+        public SortTimeTypes SubredditListDefaultSortTimeType
         {
             get
             {
-                if (!m_subredditList_DefaultSortTimeType.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSortTimeType"))
-                    {
-                        m_subredditList_DefaultSortTimeType = m_baconMan.SettingsMan.ReadFromRoamingSettings<SortTimeTypes>("UiSettingManager.SubredditList_DefaultSortTimeType");
-                    }
-                    else
-                    {
-                        m_subredditList_DefaultSortTimeType = SortTimeTypes.Week;
-                    }
-                }
-                return m_subredditList_DefaultSortTimeType.Value;
+                if (_subredditListDefaultSortTimeType.HasValue) return _subredditListDefaultSortTimeType.Value;
+                _subredditListDefaultSortTimeType = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSortTimeType") ? _baconMan.SettingsMan.ReadFromRoamingSettings<SortTimeTypes>("UiSettingManager.SubredditList_DefaultSortTimeType") : SortTimeTypes.Week;
+                return _subredditListDefaultSortTimeType.Value;
             }
             set
             {
-                m_subredditList_DefaultSortTimeType = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<SortTimeTypes>("UiSettingManager.SubredditList_DefaultSortTimeType", m_subredditList_DefaultSortTimeType.Value);
+                _subredditListDefaultSortTimeType = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.SubredditList_DefaultSortTimeType", _subredditListDefaultSortTimeType.Value);
             }
         }
-        private SortTimeTypes? m_subredditList_DefaultSortTimeType = null;
+        private SortTimeTypes? _subredditListDefaultSortTimeType;
 
         /// <summary>
         /// The default Subreddit to show when the app opens
         /// </summary>
-        public string SubredditList_DefaultSubredditDisplayName
+        public string SubredditListDefaultSubredditDisplayName
         {
             get
             {
-                if (m_subredditList_DefaultSubreddit == null)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSubredditDisplayName"))
-                    {
-                        m_subredditList_DefaultSubreddit = m_baconMan.SettingsMan.ReadFromRoamingSettings<string>("UiSettingManager.SubredditList_DefaultSubredditDisplayName");
-                    }
-                    else
-                    {
-                        m_subredditList_DefaultSubreddit = "frontpage";
-                    }
-                }
-                return m_subredditList_DefaultSubreddit;
+                if (_subredditListDefaultSubreddit != null) return _subredditListDefaultSubreddit;
+                _subredditListDefaultSubreddit = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.SubredditList_DefaultSubredditDisplayName") ? _baconMan.SettingsMan.ReadFromRoamingSettings<string>("UiSettingManager.SubredditList_DefaultSubredditDisplayName") : "frontpage";
+                return _subredditListDefaultSubreddit;
             }
             set
             {
                 // Validate
-                if(String.IsNullOrWhiteSpace(value))
+                if(string.IsNullOrWhiteSpace(value))
                 {
                     return;
                 }
 
-                m_subredditList_DefaultSubreddit = value.ToLower();
-                m_baconMan.SettingsMan.WriteToRoamingSettings<string>("UiSettingManager.SubredditList_DefaultSubredditDisplayName", m_subredditList_DefaultSubreddit);
+                _subredditListDefaultSubreddit = value.ToLower();
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.SubredditList_DefaultSubredditDisplayName", _subredditListDefaultSubreddit);
             }
         }
-        private string m_subredditList_DefaultSubreddit = null;
+        private string _subredditListDefaultSubreddit;
 
         #endregion
 
@@ -314,59 +229,41 @@ namespace BaconBackend.Managers
         /// <summary>
         /// The default comment sort type
         /// </summary>
-        public CommentSortTypes Comments_DefaultSortType
+        public CommentSortTypes CommentsDefaultSortType
         {
             get
             {
-                if (!m_comments_DefaultSortType.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultSortType"))
-                    {
-                        m_comments_DefaultSortType = m_baconMan.SettingsMan.ReadFromRoamingSettings<CommentSortTypes>("UiSettingManager.Comments_DefaultSortType");
-                    }
-                    else
-                    {
-                        m_comments_DefaultSortType = CommentSortTypes.Best;
-                    }
-                }
-                return m_comments_DefaultSortType.Value;
+                if (_commentsDefaultSortType.HasValue) return _commentsDefaultSortType.Value;
+                _commentsDefaultSortType = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultSortType") ? _baconMan.SettingsMan.ReadFromRoamingSettings<CommentSortTypes>("UiSettingManager.Comments_DefaultSortType") : CommentSortTypes.Best;
+                return _commentsDefaultSortType.Value;
             }
             set
             {
-                m_comments_DefaultSortType = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<CommentSortTypes>("UiSettingManager.Comments_DefaultSortType", m_comments_DefaultSortType.Value);
+                _commentsDefaultSortType = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.Comments_DefaultSortType", _commentsDefaultSortType.Value);
             }
         }
-        private CommentSortTypes? m_comments_DefaultSortType = null;
+        private CommentSortTypes? _commentsDefaultSortType;
 
 
         /// <summary>
         /// The default comment count number
         /// </summary>
-        public int Comments_DefaultCount
+        public int CommentsDefaultCount
         {
             get
             {
-                if (!m_comments_DefaultCount.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultCount"))
-                    {
-                        m_comments_DefaultCount = m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.Comments_DefaultCount");
-                    }
-                    else
-                    {
-                        m_comments_DefaultCount = 150;
-                    }
-                }
-                return m_comments_DefaultCount.Value;
+                if (_commentsDefaultCount.HasValue) return _commentsDefaultCount.Value;
+                _commentsDefaultCount = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.Comments_DefaultCount") ? _baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.Comments_DefaultCount") : 150;
+                return _commentsDefaultCount.Value;
             }
             set
             {
-                m_comments_DefaultCount = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.Comments_DefaultCount", m_comments_DefaultCount.Value);
+                _commentsDefaultCount = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.Comments_DefaultCount", _commentsDefaultCount.Value);
             }
         }
-        private int? m_comments_DefaultCount = null;
+        private int? _commentsDefaultCount;
 
         #endregion
 
@@ -375,170 +272,117 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Indicates what we should do with NSFW blocks
         /// </summary>
-        public NsfwBlockType FlipView_NsfwBlockingType
+        public NsfwBlockType FlipViewNsfwBlockingType
         {
             get
             {
-                if (!m_flipView_NsfwBlockingType.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_NsfwBlockingType"))
-                    {
-                        m_flipView_NsfwBlockingType = m_baconMan.SettingsMan.ReadFromRoamingSettings<NsfwBlockType>("UiSettingManager.FlipView_NsfwBlockingType");
-                    }
-                    else
-                    {
-                        m_flipView_NsfwBlockingType = NsfwBlockType.Always;
-                    }
-                }
-                return m_flipView_NsfwBlockingType.Value;
+                if (_flipViewNsfwBlockingType.HasValue) return _flipViewNsfwBlockingType.Value;
+                _flipViewNsfwBlockingType = _baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_NsfwBlockingType") ? _baconMan.SettingsMan.ReadFromRoamingSettings<NsfwBlockType>("UiSettingManager.FlipView_NsfwBlockingType") : NsfwBlockType.Always;
+                return _flipViewNsfwBlockingType.Value;
             }
             set
             {
-                m_flipView_NsfwBlockingType = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<NsfwBlockType>("UiSettingManager.FlipView_NsfwBlockingType", m_flipView_NsfwBlockingType.Value);
+                _flipViewNsfwBlockingType = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.FlipView_NsfwBlockingType", _flipViewNsfwBlockingType.Value);
             }
         }
-        private NsfwBlockType? m_flipView_NsfwBlockingType = null;
+        private NsfwBlockType? _flipViewNsfwBlockingType;
 
         /// <summary>
         /// If the user wants to pre load comments or not.
         /// </summary>
-        public bool FlipView_PreloadComments
+        public bool FlipViewPreloadComments
         {
             get
             {
-                if (!m_flipView_PreloadComments.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadComments"))
-                    {
-                        m_flipView_PreloadComments = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadComments");
-                    }
-                    else
-                    {
-                        m_flipView_PreloadComments = true;
-                    }
-                }
-                return m_flipView_PreloadComments.Value;
+                if (_flipViewPreloadComments.HasValue) return _flipViewPreloadComments.Value;
+                _flipViewPreloadComments = !_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadComments") || _baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadComments");
+                return _flipViewPreloadComments.Value;
             }
             set
             {
-                m_flipView_PreloadComments = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_PreloadComments", m_flipView_PreloadComments.Value);
+                _flipViewPreloadComments = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("UiSettingManager.FlipView_PreloadComments", _flipViewPreloadComments.Value);
             }
         }
-        private bool? m_flipView_PreloadComments = null;
+        private bool? _flipViewPreloadComments;
 
         /// <summary>
         /// If the user wants us to load post content before they tap the screen.
         /// </summary>
-        public bool FlipView_LoadPostContentWithoutAction
+        public bool FlipViewLoadPostContentWithoutAction
         {
             get
             {
-                if (!m_flipView_LoadPostContentWithoutAction.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_LoadPostContentWithoutAction"))
-                    {
-                        m_flipView_LoadPostContentWithoutAction = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_LoadPostContentWithoutAction");
-                    }
-                    else
-                    {
-                        m_flipView_LoadPostContentWithoutAction = true;
-                    }
-                }
-                return m_flipView_LoadPostContentWithoutAction.Value;
+                if (_flipViewLoadPostContentWithoutAction.HasValue)
+                    return _flipViewLoadPostContentWithoutAction.Value;
+                _flipViewLoadPostContentWithoutAction = !_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_LoadPostContentWithoutAction") || _baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_LoadPostContentWithoutAction");
+                return _flipViewLoadPostContentWithoutAction.Value;
             }
             set
             {
-                m_flipView_LoadPostContentWithoutAction = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_LoadPostContentWithoutAction", m_flipView_LoadPostContentWithoutAction.Value);
+                _flipViewLoadPostContentWithoutAction = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("UiSettingManager.FlipView_LoadPostContentWithoutAction", _flipViewLoadPostContentWithoutAction.Value);
             }
         }
-        private bool? m_flipView_LoadPostContentWithoutAction = null;
+        private bool? _flipViewLoadPostContentWithoutAction;
 
         /// <summary>
-        /// If the user wants us to prelaod future flip view content.
+        /// If the user wants us to pre-load future flip view content.
         /// </summary>
-        public bool FlipView_PreloadFutureContent
+        public bool FlipViewPreloadFutureContent
         {
             get
             {
-                if (!m_flipView_PreloadFutureContent.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadFutureContent"))
-                    {
-                        m_flipView_PreloadFutureContent = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadFutureContent");
-                    }
-                    else
-                    {
-                        m_flipView_PreloadFutureContent = true;
-                    }
-                }
-                return m_flipView_PreloadFutureContent.Value;
+                if (_flipViewPreloadFutureContent.HasValue) return _flipViewPreloadFutureContent.Value;
+                _flipViewPreloadFutureContent = !_baconMan.SettingsMan.LocalSettings.ContainsKey("UiSettingManager.FlipView_PreloadFutureContent") || _baconMan.SettingsMan.ReadFromLocalSettings<bool>("UiSettingManager.FlipView_PreloadFutureContent");
+                return _flipViewPreloadFutureContent.Value;
             }
             set
             {
-                m_flipView_PreloadFutureContent = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("UiSettingManager.FlipView_PreloadFutureContent", m_flipView_PreloadFutureContent.Value);
+                _flipViewPreloadFutureContent = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("UiSettingManager.FlipView_PreloadFutureContent", _flipViewPreloadFutureContent.Value);
             }
         }
-        private bool? m_flipView_PreloadFutureContent = null;
+        private bool? _flipViewPreloadFutureContent;
 
         /// <summary>
         /// If we should show the user the comment tip or not.
         /// </summary>
-        public bool FlipView_ShowCommentScrollTip
+        public bool FlipViewShowCommentScrollTip
         {
             get
             {
-                if (!m_flipView_ShowCommentScrollTip.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_ShowCommentScrollTip"))
-                    {
-                        m_flipView_ShowCommentScrollTip = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_ShowCommentScrollTip");
-                    }
-                    else
-                    {
-                        m_flipView_ShowCommentScrollTip = true;
-                    }
-                }
-                return m_flipView_ShowCommentScrollTip.Value;
+                if (_flipViewShowCommentScrollTip.HasValue) return _flipViewShowCommentScrollTip.Value;
+                _flipViewShowCommentScrollTip = !_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_ShowCommentScrollTip") || _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_ShowCommentScrollTip");
+                return _flipViewShowCommentScrollTip.Value;
             }
             set
             {
-                m_flipView_ShowCommentScrollTip = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.FlipView_ShowCommentScrollTip", m_flipView_ShowCommentScrollTip.Value);
+                _flipViewShowCommentScrollTip = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.FlipView_ShowCommentScrollTip", _flipViewShowCommentScrollTip.Value);
             }
         }
-        private bool? m_flipView_ShowCommentScrollTip = null;
+        private bool? _flipViewShowCommentScrollTip;
 
         /// <summary>
         /// If the user wants us to minimize the story header.
         /// </summary>
-        public bool FlipView_MinimizeStoryHeader
+        public bool FlipViewMinimizeStoryHeader
         {
             get
             {
-                if (!m_flipView_MinimizeStoryHeader.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_MinimizeStoryHeader"))
-                    {
-                        m_flipView_MinimizeStoryHeader = m_baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_MinimizeStoryHeader");
-                    }
-                    else
-                    {
-                        m_flipView_MinimizeStoryHeader = true;
-                    }
-                }
-                return m_flipView_MinimizeStoryHeader.Value;
+                if (_flipViewMinimizeStoryHeader.HasValue) return _flipViewMinimizeStoryHeader.Value;
+                _flipViewMinimizeStoryHeader = !_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.FlipView_MinimizeStoryHeader") || _baconMan.SettingsMan.ReadFromRoamingSettings<bool>("UiSettingManager.FlipView_MinimizeStoryHeader");
+                return _flipViewMinimizeStoryHeader.Value;
             }
             set
             {
-                m_flipView_MinimizeStoryHeader = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<bool>("UiSettingManager.FlipView_MinimizeStoryHeader", m_flipView_MinimizeStoryHeader.Value);
+                _flipViewMinimizeStoryHeader = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.FlipView_MinimizeStoryHeader", _flipViewMinimizeStoryHeader.Value);
             }
         }
-        private bool? m_flipView_MinimizeStoryHeader = null;
+        private bool? _flipViewMinimizeStoryHeader;
 
         #endregion
 
@@ -556,42 +400,40 @@ namespace BaconBackend.Managers
         /// <summary>
         /// The current zoom level for MarkDown View
         /// </summary>
-        public int PostView_Markdown_FontSize
+        public int PostViewMarkdownFontSize
         {
             get
             {
-                if (!m_postview_markdown_FontSize.HasValue)
+                if (_postViewMarkdownFontSize.HasValue) return _postViewMarkdownFontSize.Value;
+                if (_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.PostView_Markdown_FontSize"))
                 {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("UiSettingManager.PostView_Markdown_FontSize"))
-                    {
-                        SetProperty(
-                            ref m_postview_markdown_FontSize,
-                            m_baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.PostView_Markdown_FontSize"),
-                            "PostView_Markdown_FontSize"
-                        );
-                    }
-                    else
-                    {
-                        SetProperty(
-                            ref m_postview_markdown_FontSize,
-                            14,
-                            "PostView_Markdown_FontSize"
-                        );
-                    }
+                    SetProperty(
+                        ref _postViewMarkdownFontSize,
+                        _baconMan.SettingsMan.ReadFromRoamingSettings<int>("UiSettingManager.PostView_Markdown_FontSize"),
+                        "PostView_Markdown_FontSize"
+                    );
                 }
-                return m_postview_markdown_FontSize.Value;
+                else
+                {
+                    SetProperty(
+                        ref _postViewMarkdownFontSize,
+                        14,
+                        "PostView_Markdown_FontSize"
+                    );
+                }
+                return _postViewMarkdownFontSize.Value;
             }
             set
             {
                 SetProperty(
-                    ref m_postview_markdown_FontSize,
+                    ref _postViewMarkdownFontSize,
                     value,
                     "PostView_Markdown_FontSize"
                 );
-                m_baconMan.SettingsMan.WriteToRoamingSettings<int>("UiSettingManager.PostView_Markdown_FontSize", m_postview_markdown_FontSize.Value);
+                _baconMan.SettingsMan.WriteToRoamingSettings("UiSettingManager.PostView_Markdown_FontSize", _postViewMarkdownFontSize.Value);
             }
         }
-        private int? m_postview_markdown_FontSize = null;
+        private int? _postViewMarkdownFontSize;
 
         #endregion
     }

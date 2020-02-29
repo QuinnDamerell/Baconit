@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -68,18 +63,16 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "new")]
         public bool IsNew
         {
-            get
-            {
-                return m_isNew;
-            }
+            get => _isNew;
             set
             {
-                m_isNew = value;
+                _isNew = value;
                 NotifyPropertyChanged(nameof(BorderColor));
                 NotifyPropertyChanged(nameof(MarkAsReadText));
             }
         }
-        bool m_isNew = false;
+
+        private bool _isNew;
 
         /// <summary>
         /// Returns the full name of the message.
@@ -95,26 +88,19 @@ namespace BaconBackend.DataObjects
         //
 
         // Static Cache Colors
-        private static SolidColorBrush s_accentBrush = null;
-        private static SolidColorBrush s_grayBrush = null;
+        private static SolidColorBrush s_accentBrush;
+        private static SolidColorBrush s_grayBrush;
         private static SolidColorBrush GetAccentBrush()
         {
             // Not thread safe, but that's ok
-            if (s_accentBrush == null)
-            {
-                s_accentBrush = (SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"];
-            }
-            return s_accentBrush;
+            return s_accentBrush ?? (s_accentBrush =
+                (SolidColorBrush) Application.Current.Resources["SystemControlBackgroundAccentBrush"]);
         }
 
         private static SolidColorBrush GetGrayBrush()
         {
             // Not thread safe, but that's ok
-            if (s_grayBrush == null)
-            {
-                s_grayBrush = new SolidColorBrush(Color.FromArgb(153, 255, 255, 255));
-            }
-            return s_grayBrush;
+            return s_grayBrush ?? (s_grayBrush = new SolidColorBrush(Color.FromArgb(153, 255, 255, 255)));
         }
 
         /// <summary>
@@ -134,13 +120,7 @@ namespace BaconBackend.DataObjects
         /// It should be accented if and only if the message is unread.
         /// </summary>
         [JsonIgnore]
-        public SolidColorBrush BorderColor
-        {
-            get
-            {
-                return IsNew ? GetAccentBrush() : GetGrayBrush();
-            }
-        }
+        public SolidColorBrush BorderColor => IsNew ? GetAccentBrush() : GetGrayBrush();
 
         /// <summary>
         /// Get the text of the button to toggle the read state of this message.
@@ -148,25 +128,13 @@ namespace BaconBackend.DataObjects
         /// as it currently is.
         /// </summary>
         [JsonIgnore]
-        public string MarkAsReadText
-        {
-            get
-            {
-                return IsNew ? "mark as read" : "mark as unread";
-            }
-        }
+        public string MarkAsReadText => IsNew ? "mark as read" : "mark as unread";
 
         /// <summary>
         /// The visibility of the "view comment in context" button on the message in the inbox.
         /// </summary>
         [JsonIgnore]
-        public Visibility ShowViewContextUi
-        {
-            get
-            {
-                return WasComment ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility ShowViewContextUi => WasComment ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// UI property changed handler that's called when a property of this comment is changed.
@@ -177,13 +145,10 @@ namespace BaconBackend.DataObjects
         /// Called to indicate a property of this object has changed.
         /// </summary>
         /// <param name="propertyName">Name of the changed property.</param>
-        protected void NotifyPropertyChanged(String propertyName)
+        private void NotifyPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            var handler = PropertyChanged;
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

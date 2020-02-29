@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -11,16 +8,16 @@ namespace BaconBackend.Managers
 #pragma warning disable CS4014
     public class MessageManager
     {
-        BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         public MessageManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         public void ShowMessageSimple(string title, string content)
         {
-            ShowMessaage(content, title);
+            ShowMessage(content, title);
         }
 
         public async void ShowRedditDownMessage()
@@ -29,15 +26,15 @@ namespace BaconBackend.Managers
             {
                 try
                 {
-                    bool? showStatus = await ShowYesNoMessage("Reddit is Down", "It looks like reddit is down right now. Go outside for a while and try again in a few minutes.", "Check Reddit's Status", "Go Outside");
+                    var showStatus = await ShowYesNoMessage("Reddit is Down", "It looks like reddit is down right now. Go outside for a while and try again in a few minutes.", "Check Reddit's Status", "Go Outside");
                     if(showStatus.HasValue && showStatus.Value)
                     {
-                        m_baconMan.ShowGlobalContent("http://www.redditstatus.com/");
+                        _baconMan.ShowGlobalContent("http://www.redditstatus.com/");
                     }
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage", e);
+                    TelemetryManager.ReportUnexpectedEvent(this, "FailedToShowMessage", e);
                 }
             });
         }
@@ -47,11 +44,11 @@ namespace BaconBackend.Managers
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 // Add the buttons
-                bool? response = await ShowYesNoMessage("Login Required", $"You must be logged into to a reddit account to {toDoWhat}. Do you want to login or create a new account now?");
+                var response = await ShowYesNoMessage("Login Required", $"You must be logged into to a reddit account to {toDoWhat}. Do you want to login or create a new account now?");
 
                 if(response.HasValue && response.Value)
                 {
-                    m_baconMan.NavigateToLogin();
+                    _baconMan.NavigateToLogin();
                 }
             });
         }
@@ -59,17 +56,15 @@ namespace BaconBackend.Managers
 
         public void DebugDia(string str, Exception ex = null)
         {
-            if (m_baconMan.UiSettingsMan.Developer_Debug)
-            {
-                System.Diagnostics.Debug.WriteLine("Error, " + str + " Message: " + (ex == null ? "" : ex.Message));
-                ShowMessaage("DebugDia: str " + str + " \n\nMessage: " + (ex == null ? "" : ex.Message) + "\n\nCall Stack:\n"+(ex== null? "" : ex.StackTrace), "DebugDia");
-            }
+            if (!_baconMan.UiSettingsMan.DeveloperDebug) return;
+            System.Diagnostics.Debug.WriteLine("Error, " + str + " Message: " + (ex == null ? "" : ex.Message));
+            ShowMessage("DebugDia: str " + str + " \n\nMessage: " + (ex == null ? "" : ex.Message) + "\n\nCall Stack:\n"+(ex== null? "" : ex.StackTrace), "DebugDia");
         }
 
-        private async void ShowMessaage(string content, string title)
+        private async void ShowMessage(string content, string title)
         {
             // Don't show messages if we are in the background.
-            if(m_baconMan.IsBackgroundTask)
+            if(_baconMan.IsBackgroundTask)
             {
                 return;
             }
@@ -78,12 +73,12 @@ namespace BaconBackend.Managers
             {
                 try
                 {
-                    MessageDialog message = new MessageDialog(content, title);
+                    var message = new MessageDialog(content, title);
                     await message.ShowAsync();
                 }
                 catch(Exception e)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMessage",e);
+                    TelemetryManager.ReportUnexpectedEvent(this, "FailedToShowMessage",e);
                 }
             });
         }
@@ -94,11 +89,13 @@ namespace BaconBackend.Managers
         /// </summary>
         /// <param name="title"></param>
         /// <param name="content"></param>
+        /// <param name="positiveButton"></param>
+        /// <param name="negativeButton"></param>
         /// <returns></returns>
-        public async Task<bool?> ShowYesNoMessage(string title, string content, string postiveButton = "Yes", string negativeButton = "No")
+        public async Task<bool?> ShowYesNoMessage(string title, string content, string positiveButton = "Yes", string negativeButton = "No")
         {
             // Don't show messages if we are in the background.
-            if (m_baconMan.IsBackgroundTask)
+            if (_baconMan.IsBackgroundTask)
             {
                 return null;
             }
@@ -106,14 +103,14 @@ namespace BaconBackend.Managers
             bool? response = null;
 
             // Add the buttons
-            MessageDialog message = new MessageDialog(content, title);
+            var message = new MessageDialog(content, title);
             message.Commands.Add(new UICommand(
-                postiveButton,
-                (IUICommand command)=> {
+                positiveButton,
+                command=> {
                     response = true; }));
             message.Commands.Add(new UICommand(
                 negativeButton,
-                (IUICommand command) => { response = false; }));
+                command => { response = false; }));
             message.DefaultCommandIndex = 0;
             message.CancelCommandIndex = 1;
 

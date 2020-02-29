@@ -1,10 +1,6 @@
 ﻿using BaconBackend.Collectors;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -54,7 +50,7 @@ namespace BaconBackend.DataObjects
         /// The number of subs this subreddit has
         /// </summary>
         [JsonProperty(PropertyName = "subscribers")]
-        public int? SubscriberCount { get; set; } = null;
+        public int? SubscriberCount { get; set; }
         
         /// <summary>
         /// The type of subreddit this is
@@ -66,7 +62,7 @@ namespace BaconBackend.DataObjects
         /// Indicates this is not a real subreddit, we made it up.
         /// </summary>
         [JsonProperty(PropertyName = "isArtifical")]
-        public bool IsArtifical { get; set; } = false;        
+        public bool IsArtificial { get; set; }        
 
         /// <summary>
         /// Uri to the favorite icon
@@ -75,27 +71,22 @@ namespace BaconBackend.DataObjects
         public string FavIconUri { get; set; }
 
         /// <summary>
-        /// The color to display the subreddit's name in.
-        /// Is only accented if the subreddit is favorited by the logged in user.
+        /// The color to display the subreddits name in.
+        /// Is only accented if the subreddit is favored by the logged in user.
         /// </summary>
         [JsonIgnore]
         public SolidColorBrush SubTextBrush
         {
             get
             {
-                if(IsFavorite)
-                {
-                    SolidColorBrush accentBrush = (SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"];
-                    Color accentcolor = accentBrush.Color;
-                    accentcolor.B = (byte)Math.Min(255, accentBrush.Color.B + 50);
-                    accentcolor.R = (byte)Math.Min(255, accentBrush.Color.R + 50);
-                    accentcolor.G = (byte)Math.Min(255, accentBrush.Color.G + 50);
-                    return accentBrush;
-                }
-                else
-                {
-                    return new SolidColorBrush(Color.FromArgb(153, 255, 255, 255));
-                }
+                if (!IsFavorite) return new SolidColorBrush(Color.FromArgb(153, 255, 255, 255));
+                var accentBrush = (SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"];
+                var accentcolor = accentBrush.Color;
+                accentcolor.B = (byte)Math.Min(255, accentBrush.Color.B + 50);
+                accentcolor.R = (byte)Math.Min(255, accentBrush.Color.R + 50);
+                accentcolor.G = (byte)Math.Min(255, accentBrush.Color.G + 50);
+                return accentBrush;
+
             }
         }
 

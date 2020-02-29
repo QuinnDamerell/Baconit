@@ -1,21 +1,13 @@
 ﻿using Baconit.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UniversalMarkdown;
 using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
 {
@@ -24,18 +16,18 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        IContentPanelBaseInternal m_base;
+        private readonly IContentPanelBaseInternal _mBase;
 
         /// <summary>
         /// The current markdown text box.
         /// </summary>
-        MarkdownTextBlock m_markdownBlock;
+        private MarkdownTextBlock _mMarkdownBlock;
 
         public MarkdownContentPanel(IContentPanelBaseInternal panelBase)
         {
-            this.InitializeComponent();
-            m_base = panelBase;
-            this.initializePinchHandling();
+            InitializeComponent();
+            _mBase = panelBase;
+            InitializePinchHandling();
         }
 
         /// <summary>
@@ -46,7 +38,7 @@ namespace Baconit.ContentPanels.Panels
         static public bool CanHandlePost(ContentPanelSource source)
         {
             // If it is a self post and it has text it is for us.
-            return source.IsSelf && !String.IsNullOrWhiteSpace(source.SelfText);
+            return source.IsSelf && !string.IsNullOrWhiteSpace(source.SelfText);
         }
 
         #region IContentPanel
@@ -54,14 +46,8 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Indicates how large the panel is in memory.
         /// </summary>
-        public PanelMemorySizes PanelMemorySize
-        {
-            get
-            {
-                // #todo can we figure this out?
-                return PanelMemorySizes.Small;
-            }
-        }
+        // #todo can we figure this out?
+        public PanelMemorySizes PanelMemorySize => PanelMemorySizes.Small;
 
         /// <summary>
         /// Fired when we should load the content.
@@ -72,19 +58,19 @@ namespace Baconit.ContentPanels.Panels
             // Since some of this can be costly, delay the work load until we aren't animating.
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
-                m_markdownBlock = new MarkdownTextBlock();
-                m_markdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
-                m_markdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
-                m_markdownBlock.Markdown = m_base.Source.SelfText;
+                _mMarkdownBlock = new MarkdownTextBlock();
+                _mMarkdownBlock.OnMarkdownLinkTapped += MarkdownBlock_OnMarkdownLinkTapped;
+                _mMarkdownBlock.OnMarkdownReady += MarkdownBox_OnMarkdownReady;
+                _mMarkdownBlock.Markdown = _mBase.Source.SelfText;
 
-                Binding fontSizeBinding = new Binding
+                var fontSizeBinding = new Binding
                 {
                     Source = App.BaconMan.UiSettingsMan,
                     Path = new PropertyPath("PostView_Markdown_FontSize")
                 };
-                m_markdownBlock.SetBinding(MarkdownTextBlock.FontSizeProperty, fontSizeBinding);
+                _mMarkdownBlock.SetBinding(FontSizeProperty, fontSizeBinding);
 
-                ui_contentRoot.Children.Add(m_markdownBlock);
+                ui_contentRoot.Children.Add(_mMarkdownBlock);
             });
         }
 
@@ -94,12 +80,12 @@ namespace Baconit.ContentPanels.Panels
         public void OnDestroyContent()
         {
             // Clear the markdown
-            if (m_markdownBlock != null)
+            if (_mMarkdownBlock != null)
             {
-                m_markdownBlock.OnMarkdownReady -= MarkdownBox_OnMarkdownReady;
-                m_markdownBlock.OnMarkdownLinkTapped -= MarkdownBlock_OnMarkdownLinkTapped;
+                _mMarkdownBlock.OnMarkdownReady -= MarkdownBox_OnMarkdownReady;
+                _mMarkdownBlock.OnMarkdownLinkTapped -= MarkdownBlock_OnMarkdownLinkTapped;
             }
-            m_markdownBlock = null;
+            _mMarkdownBlock = null;
 
             // Clear the UI
             ui_contentRoot.Children.Clear();
@@ -130,7 +116,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MarkdownBlock_OnMarkdownLinkTapped(object sender, OnMarkdownLinkTappedArgs e)
+        private void MarkdownBlock_OnMarkdownLinkTapped(object sender, MarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
         }
@@ -140,17 +126,17 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MarkdownBox_OnMarkdownReady(object sender, OnMarkdownReadyArgs e)
+        private void MarkdownBox_OnMarkdownReady(object sender, MarkdownReadyArgs e)
         {
             if (e.WasError)
             {
-                m_base.FireOnFallbackToBrowser();
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowMarkdown", e.Exception);
+                _mBase.FireOnFallbackToBrowser();
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToShowMarkdown", e.Exception);
             }
             else
             {
                 // Hide loading
-                m_base.FireOnLoading(false);
+                _mBase.FireOnLoading(false);
             }
         }
 
@@ -160,7 +146,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// enables listening for "pinch" scaling events
         /// </summary>
-        private void initializePinchHandling()
+        private void InitializePinchHandling()
         {
             ManipulationMode |= ManipulationModes.Scale;
             ManipulationStarted += PinchManipulationStarted;
@@ -170,7 +156,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// font size at pinch start
         /// </summary>
-        private int m_initialFontSize;
+        private int _mInitialFontSize;
 
         /// <summary>
         /// save font size at pinch start
@@ -179,7 +165,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void PinchManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            m_initialFontSize = App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize;
+            _mInitialFontSize = App.BaconMan.UiSettingsMan.PostViewMarkdownFontSize;
         }
 
         /// <summary>
@@ -189,10 +175,10 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void PinchManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            double newSize = e.Cumulative.Scale * m_initialFontSize;
+            double newSize = e.Cumulative.Scale * _mInitialFontSize;
 
-            if (Math.Abs(newSize - App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize) >= 1) {
-                App.BaconMan.UiSettingsMan.PostView_Markdown_FontSize = (int)newSize;
+            if (Math.Abs(newSize - App.BaconMan.UiSettingsMan.PostViewMarkdownFontSize) >= 1) {
+                App.BaconMan.UiSettingsMan.PostViewMarkdownFontSize = (int)newSize;
             }
         }
         #endregion

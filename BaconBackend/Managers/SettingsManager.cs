@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
-using Windows.UI.Xaml;
 using System.Threading;
 using System.IO;
-using Windows.Storage.FileProperties;
 
 namespace BaconBackend.Managers
 {
     public class SettingsManager
     {
-        private const string LOCAL_SETTINGS_FILE = "LocalSettings.data";
-        object objectLock = new object();
-        BaconManager m_baconMan;
-        ManualResetEvent m_localSettingsReady = new ManualResetEvent(false);
+        private const string LocalSettingsFile = "LocalSettings.data";
+        private readonly object _objectLock = new object();
+        private readonly BaconManager _baconMan;
+        private readonly ManualResetEvent _localSettingsReady = new ManualResetEvent(false);
 
         public SettingsManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
 
             // Setup the local settings.
             InitLocalSettings();
@@ -32,7 +28,7 @@ namespace BaconBackend.Managers
             if (!baconMan.IsBackgroundTask)
             {
                 // Register for resuming callbacks.
-                m_baconMan.OnResuming += BaconMan_OnResuming;
+                _baconMan.OnResuming += BaconMan_OnResuming;
             }
         }
 
@@ -43,20 +39,19 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if(m_roamingSettings == null)
+                lock(_objectLock)
                 {
-                    lock(objectLock)
+                    if (_roamingSettings != null) return _roamingSettings;
+
+                    if(_roamingSettings == null)
                     {
-                        if(m_roamingSettings == null)
-                        {
-                            m_roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings.Values;
-                        }
+                        _roamingSettings = ApplicationData.Current.RoamingSettings.Values;
                     }
                 }
-                return m_roamingSettings;
+                return _roamingSettings;
             }
         }
-        private IPropertySet m_roamingSettings;
+        private IPropertySet _roamingSettings;
 
         /// <summary>
         /// Returns an instance of the local settings
@@ -66,11 +61,11 @@ namespace BaconBackend.Managers
             get
             {
                 // Since opening a file is async, we need to make sure it has been opened before
-                m_localSettingsReady.WaitOne();
-                return m_localSettings;
+                _localSettingsReady.WaitOne();
+                return _localSettings;
             }
         }
-        private Dictionary<string, object> m_localSettings;
+        private Dictionary<string, object> _localSettings;
 
         /// <summary>
         /// Helper that writes objects to the local storage
@@ -85,8 +80,8 @@ namespace BaconBackend.Managers
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("failed to write setting " + name, e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToWriteSetting" + name, e);
+                _baconMan.MessageMan.DebugDia("failed to write setting " + name, e);
+                TelemetryManager.ReportUnexpectedEvent(this, "failedToWriteSetting" + name, e);
             }            
         }
 
@@ -98,7 +93,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public T ReadFromLocalSettings<T>(string name)
         {
-            string content = (string)LocalSettings[name];
+            var content = (string)LocalSettings[name];
             return JsonConvert.DeserializeObject<T>(content);
         }
 
@@ -120,7 +115,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public T ReadFromRoamingSettings<T>(string name)
         {
-            string content = (string)RoamingSettings[name];
+            var content = (string)RoamingSettings[name];
             return JsonConvert.DeserializeObject<T>(content);
         }
 
@@ -129,38 +124,38 @@ namespace BaconBackend.Managers
             try
             {
                 // Get the file.
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.CreateFileAsync(LOCAL_SETTINGS_FILE, CreationCollisionOption.OpenIfExists);
+                var folder = ApplicationData.Current.LocalFolder;
+                var file = await folder.CreateFileAsync(LocalSettingsFile, CreationCollisionOption.OpenIfExists);
 
                 // Check the file size
-                BasicProperties fileProps = await file.GetBasicPropertiesAsync();
+                var fileProps = await file.GetBasicPropertiesAsync();
                 if(fileProps.Size > 0)
                 {
                     // Get the input stream and json reader.
                     // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
                     IInputStream inputStream = await file.OpenReadAsync();
-                    using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                    using (var reader = new StreamReader(inputStream.AsStreamForRead()))
                     using (JsonReader jsonReader = new JsonTextReader(reader))
                     {
                         // Parse the settings file into the dictionary.
-                        JsonSerializer serializer = new JsonSerializer();
-                        m_localSettings = await Task.Run(() => serializer.Deserialize<Dictionary<string, object>>(jsonReader));
+                        var serializer = new JsonSerializer();
+                        _localSettings = await Task.Run(() => serializer.Deserialize<Dictionary<string, object>>(jsonReader));
                     }
                 }
                 else
                 {
                     // The file is empty, just make a new dictionary.
-                    m_localSettings = new Dictionary<string, object>();
+                    _localSettings = new Dictionary<string, object>();
                 }
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Unable to load settings file! "+e.Message);
-                m_localSettings = new Dictionary<string, object>();
+                _baconMan.MessageMan.DebugDia("Unable to load settings file! "+e.Message);
+                _localSettings = new Dictionary<string, object>();
             }
 
             // Signal we are ready
-            m_localSettingsReady.Set();
+            _localSettingsReady.Set();
         }
 
         /// <summary>
@@ -178,18 +173,18 @@ namespace BaconBackend.Managers
         {
             try
             {
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.CreateFileAsync(LOCAL_SETTINGS_FILE, CreationCollisionOption.OpenIfExists);
+                var folder = ApplicationData.Current.LocalFolder;
+                var file = await folder.CreateFileAsync(LocalSettingsFile, CreationCollisionOption.OpenIfExists);
 
                 // Serialize the Json
-                string json = JsonConvert.SerializeObject(m_localSettings);
+                var json = JsonConvert.SerializeObject(_localSettings);
 
                 // Write to the file
-                await Windows.Storage.FileIO.WriteTextAsync(file, json);
+                await FileIO.WriteTextAsync(file, json);
             }
             catch (Exception ex)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to write settings", ex);
+                _baconMan.MessageMan.DebugDia("Failed to write settings", ex);
             }      
         }
     }

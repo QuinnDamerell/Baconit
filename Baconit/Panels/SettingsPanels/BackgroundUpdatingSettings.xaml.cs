@@ -3,22 +3,10 @@ using BaconBackend.Helpers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.System.UserProfile;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,16 +14,16 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class BackgroundUpdatingSettings : UserControl, IPanel
     {
-        const string c_earthPornReplace = "earthimages";
-        List<string> m_updateFrequencys = new List<string> { "30 minutes", "1 hour", "2 hours", "3 hours", "4 hours", "5 hours", "daily" };
-        List<string> m_subredditNameList = new List<string> { "earthporn" };
-        bool m_ingoreUpdates = false;
-        bool m_hasChanges = true;
-        IPanelHost m_host;
+        private const string CEarthPornReplace = "earthimages";
+        private readonly List<string> _mUpdateFrequencys = new List<string> { "30 minutes", "1 hour", "2 hours", "3 hours", "4 hours", "5 hours", "daily" };
+        private List<string> _mSubredditNameList = new List<string> { "earthporn" };
+        private bool _mIngoreUpdates;
+        private bool _mHasChanges = true;
+        private IPanelHost _mHost;
 
         public BackgroundUpdatingSettings()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
@@ -45,25 +33,25 @@ namespace Baconit.Panels.SettingsPanels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public async void OnNavigatingFrom()
         {
             // Update the settings
-            App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency = FrequencyListIndexToSettings(ui_imageFrequency.SelectedIndex);
-            App.BaconMan.BackgroundMan.ImageUpdaterMan.IsDeskopEnabled = ui_enableDesktop.IsOn;
+            App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrequency = FrequencyListIndexToSettings(ui_imageFrequency.SelectedIndex);
+            App.BaconMan.BackgroundMan.ImageUpdaterMan.IsDesktopEnabled = ui_enableDesktop.IsOn;
             App.BaconMan.BackgroundMan.ImageUpdaterMan.IsLockScreenEnabled = ui_enableLockScreen.IsOn;
             App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName = (string)ui_desktopSource.SelectedItem;
             App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName = (string)ui_lockScreenSource.SelectedItem;
 
             // See below for a full comment on this. But if the user isn't logged in we want to clean up the name
             // a little.
-            if(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName.Equals(c_earthPornReplace))
+            if(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName.Equals(CEarthPornReplace))
             {
                 App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName = "earthporn";
             }
-            if (App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName.Equals(c_earthPornReplace))
+            if (App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName.Equals(CEarthPornReplace))
             {
                 App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName = "earthporn";
             }
@@ -72,9 +60,9 @@ namespace Baconit.Panels.SettingsPanels
             App.BaconMan.SubredditMan.OnSubredditsUpdated -= SubredditMan_OnSubredditsUpdated;
 
             // When we leave run an update
-            if(m_hasChanges)
+            if(_mHasChanges)
             {
-                m_hasChanges = false;
+                _mHasChanges = false;
 
                 // Make sure the updater is enabled
                 await App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
@@ -93,20 +81,20 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
-            m_ingoreUpdates = true;
+            _mIngoreUpdates = true;
 
             // Setup the UI
             ui_enableLockScreen.IsOn = App.BaconMan.BackgroundMan.ImageUpdaterMan.IsLockScreenEnabled;
-            ui_enableDesktop.IsOn = App.BaconMan.BackgroundMan.ImageUpdaterMan.IsDeskopEnabled;
+            ui_enableDesktop.IsOn = App.BaconMan.BackgroundMan.ImageUpdaterMan.IsDesktopEnabled;
             SetupSubredditLists();
-            ui_imageFrequency.ItemsSource = m_updateFrequencys;
-            ui_imageFrequency.SelectedIndex = FrequencySettingToListIndex(App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrquency);
+            ui_imageFrequency.ItemsSource = _mUpdateFrequencys;
+            ui_imageFrequency.SelectedIndex = FrequencySettingToListIndex(App.BaconMan.BackgroundMan.ImageUpdaterMan.UpdateFrequency);
 
-            m_ingoreUpdates = false;
+            _mIngoreUpdates = false;
 
             // Set our status
             ui_lastUpdate.Text = "Last Update: " + (App.BaconMan.BackgroundMan.LastUpdateTime.Equals(new DateTime(0)) ? "Never" : App.BaconMan.BackgroundMan.LastUpdateTime.ToString("g"));
@@ -135,7 +123,7 @@ namespace Baconit.Panels.SettingsPanels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void SubredditMan_OnSubredditsUpdated(object sender, BaconBackend.Managers.OnSubredditsUpdatedArgs e)
+        private async void SubredditMan_OnSubredditsUpdated(object sender, BaconBackend.Managers.SubredditsUpdatedArgs e)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -147,29 +135,29 @@ namespace Baconit.Panels.SettingsPanels
 
         private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            if(m_ingoreUpdates)
+            if(_mIngoreUpdates)
             {
                 return;
             }
 
-            m_hasChanges = true;
+            _mHasChanges = true;
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (m_ingoreUpdates)
+            if (_mIngoreUpdates)
             {
                 return;
             }
 
-            m_hasChanges = true;
+            _mHasChanges = true;
         }
 
         #endregion
 
         private int FrequencySettingToListIndex(int mintues)
         {
-            int desiredIndex = 0;
+            var desiredIndex = 0;
             if (mintues <= 30)
             {
                 desiredIndex = 0;
@@ -198,9 +186,9 @@ namespace Baconit.Panels.SettingsPanels
             {
                 desiredIndex = 6;
             }
-            if(desiredIndex >= m_updateFrequencys.Count)
+            if(desiredIndex >= _mUpdateFrequencys.Count)
             {
-                desiredIndex = m_updateFrequencys.Count - 1;
+                desiredIndex = _mUpdateFrequencys.Count - 1;
             }
             return desiredIndex;
         }
@@ -244,17 +232,17 @@ namespace Baconit.Panels.SettingsPanels
         private void SetupSubredditLists()
         {
             // Get the current name list.
-            m_subredditNameList = SubredditListToNameList(App.BaconMan.SubredditMan.SubredditList);
+            _mSubredditNameList = SubredditListToNameList(App.BaconMan.SubredditMan.SubredditList);
 
             // See if the user is signed in.
-            bool isUserSignedIn = App.BaconMan.UserMan.IsUserSignedIn;
+            var isUserSignedIn = App.BaconMan.UserMan.IsUserSignedIn;
 
             // Try to find the indexes
-            int desktopIndex = -1;
-            int lockScreenIndex = -1;
-            int earthPornIndex = -1;
-            int count = 0;
-            foreach (string name in m_subredditNameList)
+            var desktopIndex = -1;
+            var lockScreenIndex = -1;
+            var earthPornIndex = -1;
+            var count = 0;
+            foreach (var name in _mSubredditNameList)
             {
                 if(desktopIndex == -1)
                 {
@@ -292,24 +280,24 @@ namespace Baconit.Panels.SettingsPanels
             // so play nice.
             if(earthPornIndex != -1)
             {
-                m_subredditNameList[earthPornIndex] = c_earthPornReplace;
+                _mSubredditNameList[earthPornIndex] = CEarthPornReplace;
             }
 
             // Fix up the subs if they weren't found.
             if (lockScreenIndex == -1)
             {
-                m_subredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName);
-                lockScreenIndex = m_subredditNameList.Count - 1;
+                _mSubredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.LockScreenSubredditName);
+                lockScreenIndex = _mSubredditNameList.Count - 1;
             }
             if(desktopIndex == -1)
             {
-                m_subredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName);
-                desktopIndex = m_subredditNameList.Count - 1;
+                _mSubredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName);
+                desktopIndex = _mSubredditNameList.Count - 1;
             }
 
             // Set the list
-            ui_lockScreenSource.ItemsSource = m_subredditNameList;
-            ui_desktopSource.ItemsSource = m_subredditNameList;
+            ui_lockScreenSource.ItemsSource = _mSubredditNameList;
+            ui_desktopSource.ItemsSource = _mSubredditNameList;
 
             // Set the values
             ui_lockScreenSource.SelectedIndex = lockScreenIndex;
@@ -318,8 +306,8 @@ namespace Baconit.Panels.SettingsPanels
 
         private List<string> SubredditListToNameList(List<Subreddit> subreddits)
         {
-            List<string> nameList = new List<string>();
-            foreach(Subreddit sub in subreddits)
+            var nameList = new List<string>();
+            foreach(var sub in subreddits)
             {
                 nameList.Add(sub.DisplayName.ToLower());
             }

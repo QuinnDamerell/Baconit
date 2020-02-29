@@ -1,18 +1,8 @@
 ﻿using Baconit.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -20,17 +10,17 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class DeveloperSettings : UserControl, IPanel
     {
-        IPanelHost m_host;
-        bool m_takeAction = false;
+        private IPanelHost _mHost;
+        private bool _mTakeAction;
 
         public DeveloperSettings()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public void OnNavigatingFrom()
@@ -47,16 +37,16 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
-            m_takeAction = false;
-            App.BaconMan.TelemetryMan.ReportEvent(this, "DevSettingsOpened");
-            ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.Developer_Debug;
-            ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport;
-            ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay;
-            m_takeAction = true;
+            _mTakeAction = false;
+            TelemetryManager.ReportEvent(this, "DevSettingsOpened");
+            ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.DeveloperDebug;
+            ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport;
+            ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.DeveloperShowMemoryOverlay;
+            _mTakeAction = true;
 
             // Set the clean up text
             ui_numberPagesCleanedUp.Text = $"Pages cleaned up for memory pressure: {App.BaconMan.UiSettingsMan.PagesMemoryCleanedUp}";
@@ -78,29 +68,29 @@ namespace Baconit.Panels.SettingsPanels
 
         private void DebuggingOn_Toggled(object sender, RoutedEventArgs e)
         {
-            if(!m_takeAction)
+            if(!_mTakeAction)
             {
                 return;
             }
-            App.BaconMan.UiSettingsMan.Developer_Debug = ui_debuggingOn.IsOn;
+            App.BaconMan.UiSettingsMan.DeveloperDebug = ui_debuggingOn.IsOn;
         }
 
         private void PreventAppCrashes_Toggled(object sender, RoutedEventArgs e)
         {
-            if (!m_takeAction)
+            if (!_mTakeAction)
             {
                 return;
             }
-            App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = ui_preventAppCrashes.IsOn;
+            App.BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport = ui_preventAppCrashes.IsOn;
         }
 
         private void ShowMemoryOverlay_Toggled(object sender, RoutedEventArgs e)
         {
-            if(!m_takeAction)
+            if(!_mTakeAction)
             {
                 return;
             }
-            App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay = ui_showMemoryOverlay.IsOn;
+            App.BaconMan.UiSettingsMan.DeveloperShowMemoryOverlay = ui_showMemoryOverlay.IsOn;
 
             if (!ui_showMemoryOverlay.IsOn)
             {
@@ -110,7 +100,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void RateAndReviewReset_Click(object sender, RoutedEventArgs e)
         {
-            App.BaconMan.UiSettingsMan.MainPage_NextReviewAnnoy = 0;
+            App.BaconMan.UiSettingsMan.MainPageNextReviewAnnoy = 0;
         }
     }
 }

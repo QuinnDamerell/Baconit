@@ -1,23 +1,14 @@
 ﻿using Baconit.Interfaces;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Windows.Web.Http;
+using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
 {
@@ -26,22 +17,22 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        IContentPanelBaseInternal m_base;
+        private readonly IContentPanelBaseInternal _mBase;
 
         /// <summary>
         /// Indicates if we should be playing or not.
         /// </summary>
-        bool m_shouldBePlaying = false;
+        private bool _mShouldBePlaying;
 
         /// <summary>
         /// Holds a reference to the video we are playing.
         /// </summary>
-        MediaElement m_gifVideo;
+        private MediaElement _mGifVideo;
 
         public GifImageContentPanel(IContentPanelBaseInternal panelBase)
         {
-            this.InitializeComponent();
-            m_base = panelBase;
+            InitializeComponent();
+            _mBase = panelBase;
         }
 
         /// <summary>
@@ -52,7 +43,7 @@ namespace Baconit.ContentPanels.Panels
         static public bool CanHandlePost(ContentPanelSource source)
         {
             // See if we can find a imgur, gfycat gif, or a normal gif we can send to gfycat.
-            if (String.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && String.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) && String.IsNullOrWhiteSpace(GetGifUrl(source.Url)))
+            if (string.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGifUrl(source.Url)))
             {
                 return false;
             }
@@ -64,14 +55,8 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Indicates how large the panel is in memory.
         /// </summary>
-        public PanelMemorySizes PanelMemorySize
-        {
-            get
-            {
-                // #todo can we figure this out?
-                return PanelMemorySizes.Medium;
-            }
-        }
+        // #todo can we figure this out?
+        public PanelMemorySizes PanelMemorySize => PanelMemorySizes.Medium;
 
         /// <summary>
         /// Fired when we should load the content.
@@ -83,53 +68,47 @@ namespace Baconit.ContentPanels.Panels
             Task.Run(async () =>
             {
                 // Try to get the imgur url
-                string gifUrl = GetImgurUrl(m_base.Source.Url);
+                var gifUrl = GetImgurUrl(_mBase.Source.Url);
 
                 // If that failed try to get a url from GfyCat
-                if (gifUrl.Equals(String.Empty))
+                if (gifUrl.Equals(string.Empty))
                 {
                     // We have to get it from gfycat
-                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(m_base.Source.Url));
-
-                    if(String.IsNullOrWhiteSpace(gifUrl))
-                    {
-                        // If these failed it might just be a gif. try to send it to gfycat for conversion.
-                        gifUrl = await ConvertGifUsingGfycat(m_base.Source.Url);
-                    }
+                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(_mBase.Source.Url));
                 }
 
                 // Since some of this can be costly, delay the work load until we aren't animating.
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
                     // If we didn't get anything something went wrong.
-                    if (String.IsNullOrWhiteSpace(gifUrl))
+                    if (string.IsNullOrWhiteSpace(gifUrl))
                     {
-                        m_base.FireOnFallbackToBrowser();
-                        App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToShowGifAfterConfirm");
+                        _mBase.FireOnFallbackToBrowser();
+                        TelemetryManager.ReportUnexpectedEvent(this, "FailedToShowGifAfterConfirm");
                         return;
                     }
 
                     lock(this)
                     {
                         // Make sure we aren't destroyed.
-                        if (m_base.IsDestoryed)
+                        if (_mBase.IsDestoryed)
                         {
                             return;
                         }
 
                         // Create the media element
-                        m_gifVideo = new MediaElement();
-                        m_gifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
-                        m_gifVideo.Tapped += OnVideoTapped;
-                        m_gifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
-                        m_gifVideo.IsLooping = true;
+                        _mGifVideo = new MediaElement();
+                        _mGifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        _mGifVideo.Tapped += OnVideoTapped;
+                        _mGifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
+                        _mGifVideo.IsLooping = true;
 
                         // Set the source
-                        m_gifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
-                        m_gifVideo.Play();
+                        _mGifVideo.Source = new Uri(gifUrl, UriKind.Absolute);
+                        _mGifVideo.Play();
 
                         // Add the video to the root                    
-                        ui_contentRoot.Children.Add(m_gifVideo);
+                        ui_contentRoot.Children.Add(_mGifVideo);
                     }
                 });
             });
@@ -143,16 +122,16 @@ namespace Baconit.ContentPanels.Panels
             lock(this)
             {
                 // Destroy the video
-                if (m_gifVideo != null)
+                if (_mGifVideo != null)
                 {
-                    m_gifVideo.CurrentStateChanged -= OnVideoCurrentStateChanged;
-                    m_gifVideo.Tapped -= OnVideoTapped;
-                    m_gifVideo.Stop();
-                    m_gifVideo = null;
+                    _mGifVideo.CurrentStateChanged -= OnVideoCurrentStateChanged;
+                    _mGifVideo.Tapped -= OnVideoTapped;
+                    _mGifVideo.Stop();
+                    _mGifVideo = null;
                 }
 
                 // Clear vars
-                m_shouldBePlaying = false;
+                _mShouldBePlaying = false;
 
                 // Clear the UI
                 ui_contentRoot.Children.Clear();
@@ -175,19 +154,19 @@ namespace Baconit.ContentPanels.Panels
             lock (this)
             {
                 // Set that we should be playing
-                m_shouldBePlaying = isVisible;
+                _mShouldBePlaying = isVisible;
 
-                if (m_gifVideo != null)
+                if (_mGifVideo != null)
                 {
                     // Call the action. If we are already playing or paused this
                     // will do nothing.
                     if(isVisible)
                     {
-                        m_gifVideo.Play();
+                        _mGifVideo.Play();
                     }
                     else
                     {
-                        m_gifVideo.Pause();
+                        _mGifVideo.Pause();
                     }
                 }
             }
@@ -205,15 +184,15 @@ namespace Baconit.ContentPanels.Panels
         private void OnVideoCurrentStateChanged(object sender, RoutedEventArgs e)
         {
             // If we start playing and the loading UI isn't hidden do so.
-            if (m_base.IsLoading && m_gifVideo.CurrentState == MediaElementState.Playing)
+            if (_mBase.IsLoading && _mGifVideo.CurrentState == MediaElementState.Playing)
             {
-                m_base.FireOnLoading(false);
+                _mBase.FireOnLoading(false);
             }
 
             // Make sure if we are playing that we should be (that we are actually visible)
-            if (!m_shouldBePlaying && m_gifVideo.CurrentState == MediaElementState.Playing)
+            if (!_mShouldBePlaying && _mGifVideo.CurrentState == MediaElementState.Playing)
             {
-                m_gifVideo.Pause();
+                _mGifVideo.Pause();
             }            
         }
 
@@ -224,15 +203,15 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void OnVideoTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (m_gifVideo != null)
+            if (_mGifVideo != null)
             {
-                if (m_gifVideo.CurrentState == MediaElementState.Playing)
+                if (_mGifVideo.CurrentState == MediaElementState.Playing)
                 {
-                    m_gifVideo.Pause();
+                    _mGifVideo.Pause();
                 }
                 else
                 {
-                    m_gifVideo.Play();
+                    _mGifVideo.Play();
                 }
             }
         }
@@ -250,7 +229,7 @@ namespace Baconit.ContentPanels.Panels
         {
             // Send the url to lower, but we need both because some websites
             // have case sensitive urls.
-            string postUrlLower = postUrl.ToLower();
+            var postUrlLower = postUrl.ToLower();
 
             // Check for imgur gifv
             if (postUrlLower.Contains(".gifv") && postUrlLower.Contains("imgur.com"))
@@ -265,7 +244,7 @@ namespace Baconit.ContentPanels.Panels
                 return postUrl.Replace(".gif", ".mp4");
             }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         /// <summary>
@@ -277,18 +256,18 @@ namespace Baconit.ContentPanels.Panels
         {
             // Send the url to lower, but we need both because some websites
             // have case sensitive urls.
-            string postUrlLower = postUrl.ToLower();
+            var postUrlLower = postUrl.ToLower();
 
-            int lastSlash = postUrlLower.LastIndexOf('/');
+            var lastSlash = postUrlLower.LastIndexOf('/');
             if(lastSlash != -1)
             {
-                string urlEnding = postUrlLower.Substring(lastSlash);
+                var urlEnding = postUrlLower.Substring(lastSlash);
                 if(urlEnding.Contains(".gif") || urlEnding.Contains(".gif?"))
                 {
                     return postUrl;
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         /// <summary>
@@ -298,29 +277,11 @@ namespace Baconit.ContentPanels.Panels
         /// <returns></returns>
         private static string GetGfyCatApiUrl(string postUrl)
         {
-            // Send the url to lower, but we need both because some websites
-            // have case sensitive urls.
-            string postUrlLower = postUrl.ToLower();
+            var uri = new Uri(postUrl);
+            var authority = uri.Authority.Replace("/", string.Empty).ToLowerInvariant();
+            var segment = uri.LocalPath.Substring(1);
 
-            int gifNameStart = postUrlLower.IndexOf("gfycat.com/");
-
-            if (gifNameStart != -1)
-            {
-                // Get to the end of the domain
-                gifNameStart += 11;
-
-                // Look for the end of the gif name
-                int gifNameEnd = postUrlLower.IndexOf('/', gifNameStart);
-                if (gifNameEnd == -1)
-                {
-                    gifNameEnd = postUrlLower.Length;
-                }
-
-                // Use the original url to get the gif name.
-                string gifName = postUrl.Substring(gifNameStart, gifNameEnd - gifNameStart);
-                return $"http://gfycat.com/cajax/get/{gifName}";
-            }
-            return String.Empty;
+            return authority.Contains("gfycat") ? $"https://api.gfycat.com/v1/gfycats/{segment}" : string.Empty;
         }
 
         // Disable this annoying warning.
@@ -329,7 +290,7 @@ namespace Baconit.ContentPanels.Panels
         private class GfyCatDataContainer
         {
             [JsonProperty(PropertyName = "gfyItem")]
-            public GfyItem item;
+            public GfyItem Item;
         }
 
         private class GfyItem
@@ -348,29 +309,29 @@ namespace Baconit.ContentPanels.Panels
         private async Task<string> GetGfyCatGifUrl(string apiUrl)
         {
             // Return if we have nothing.
-            if (apiUrl.Equals(String.Empty))
+            if (apiUrl.Equals(string.Empty))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             try
             {
                 // Make the call
-                IHttpContent webResult = await App.BaconMan.NetworkMan.MakeGetRequest(apiUrl);
+                var webResult = await NetworkManager.MakeGetRequest(apiUrl);
 
                 // Get the input stream and json reader.
                 // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
-                IInputStream inputStream = await webResult.ReadAsInputStreamAsync();
-                using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                var inputStream = await webResult.ReadAsInputStreamAsync();
+                using (var reader = new StreamReader(inputStream.AsStreamForRead()))
                 using (JsonReader jsonReader = new JsonTextReader(reader))
                 {           
                     // Parse the Json as an object
-                    JsonSerializer serializer = new JsonSerializer();
-                    GfyCatDataContainer gfyData = await Task.Run(() => serializer.Deserialize<GfyCatDataContainer>(jsonReader));
+                    var serializer = new JsonSerializer();
+                    var gfyData = await Task.Run(() => serializer.Deserialize<GfyCatDataContainer>(jsonReader));
 
                     // Validate the response
-                    string mp4Url = gfyData.item.Mp4Url;
-                    if (String.IsNullOrWhiteSpace(mp4Url))
+                    var mp4Url = gfyData.Item.Mp4Url;
+                    if (string.IsNullOrWhiteSpace(mp4Url))
                     {
                         throw new Exception("Gfycat response failed to parse");
                     }
@@ -382,10 +343,10 @@ namespace Baconit.ContentPanels.Panels
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("failed to get image from gfycat", e);
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FaileGfyCatApiCall", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FaileGfyCatApiCall", e);
             }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         // Disable this annoying warning.
@@ -402,34 +363,35 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Uses GfyCat to convert a normal .gif into a video
         /// </summary>
-        /// <param name="apiUrl"></param>
+        /// <param name="gifUrl"></param>
         /// <returns></returns>
         private async Task<string> ConvertGifUsingGfycat(string gifUrl)
         {
             // Return if we have nothing.
-            if (gifUrl.Equals(String.Empty))
+            if (gifUrl.Equals(string.Empty))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             try
             {
+                var url = $"https://upload.gfycat.com/transcode?fetchUrl={gifUrl}";
                 // Make the call
-                IHttpContent webResult = await App.BaconMan.NetworkMan.MakeGetRequest("https://upload.gfycat.com/transcode?fetchUrl="+gifUrl);
+                var webResult = await NetworkManager.MakeGetRequest("https://upload.gfycat.com/transcode?fetchUrl="+gifUrl);
 
                 // Get the input stream and json reader.
                 // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
-                IInputStream inputStream = await webResult.ReadAsInputStreamAsync();
-                using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+                var inputStream = await webResult.ReadAsInputStreamAsync();
+                using (var reader = new StreamReader(inputStream.AsStreamForRead()))
                 using (JsonReader jsonReader = new JsonTextReader(reader))
                 {
                     // Parse the Json as an object
-                    JsonSerializer serializer = new JsonSerializer();
-                    GfyCatConversionData gfyData = await Task.Run(() => serializer.Deserialize<GfyCatConversionData>(jsonReader));
+                    var serializer = new JsonSerializer();
+                    var gfyData = await Task.Run(() => serializer.Deserialize<GfyCatConversionData>(jsonReader));
 
                     // Validate the response
-                    string mp4Url = gfyData.Mp4Url;
-                    if (String.IsNullOrWhiteSpace(mp4Url))
+                    var mp4Url = gfyData.Mp4Url;
+                    if (string.IsNullOrWhiteSpace(mp4Url))
                     {
                         throw new Exception("Gfycat failed to convert");
                     }
@@ -441,10 +403,10 @@ namespace Baconit.ContentPanels.Panels
             catch (Exception e)
             {
                 App.BaconMan.MessageMan.DebugDia("failed to convert gif via gfycat", e);
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "GfyCatConvertFailed", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "GfyCatConvertFailed", e);
             }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         #endregion

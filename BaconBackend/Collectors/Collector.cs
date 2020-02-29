@@ -2,8 +2,6 @@
 using BaconBackend.Managers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BaconBackend.Collectors
@@ -47,20 +45,20 @@ namespace BaconBackend.Collectors
     /// <summary>
     /// The args class for the OnCollectorStateChange event.
     /// </summary>
-    public class OnCollectorStateChangeArgs : EventArgs
+    public class CollectorStateChangeArgs : EventArgs
     {
         /// <summary>
         /// The collector's new state.
         /// </summary>
         public CollectorState State;
         public CollectorErrorState ErrorState = CollectorErrorState.Unknown;
-        public int NewPostCount = 0;
+        public int NewPostCount;
     }
 
     /// <summary>
     /// The args for the OnCollectionUpdated event.
     /// </summary>
-    public class OnCollectionUpdatedArgs<T> : EventArgs
+    public class CollectionUpdatedArgs<T> : EventArgs
     {
         /// <summary>
         /// If the information in the collector was just fully updated.
@@ -111,7 +109,7 @@ namespace BaconBackend.Collectors
         Top,
         Controversial,
         Old,
-        QA
+        Qa
     }
 
     /// <summary>
@@ -132,65 +130,60 @@ namespace BaconBackend.Collectors
         /// <summary>
         /// The static dictionary that holds all known instances of the collectors
         /// </summary>
-        private static Dictionary<string, WeakReference<Collector<T>>> s_collectors = new Dictionary<string, WeakReference<Collector<T>>>();
+        private static readonly Dictionary<string, WeakReference<Collector<T>>> Collectors = new Dictionary<string, WeakReference<Collector<T>>>();
 
         /// <summary>
         /// Returns a collector for the given type. If the collector doesn't exist one will be created.
         /// </summary>
-        /// <param name="subreddit"></param>
+        /// <param name="objectType"></param>
+        /// <param name="collectorId"></param>
+        /// <param name="initObject"></param>
+        /// <param name="baconMan"></param>
         /// <returns></returns>
         protected static Collector<T> GetCollector(Type objectType, string collectorId, object initObject, BaconManager baconMan)
         {
-            lock (s_collectors)
+            lock (Collectors)
             {
                 // See if the collector exists and if it does try to get it.
-                Collector<T> collector = null;
-                if (s_collectors.ContainsKey(collectorId)
-                    && s_collectors[collectorId].TryGetTarget(out collector)
-                    && collector != null)
+                if (Collectors.ContainsKey(collectorId)
+                    && Collectors[collectorId].TryGetTarget(out var collector))
                 {
                     return collector;
                 }
-                else
-                {
-                    object[] args = { initObject, baconMan };
-                    collector = (Collector<T>)Activator.CreateInstance(objectType, args);
-                    s_collectors[collectorId] = new WeakReference<Collector<T>>(collector);
-                    return collector;
-                }
+
+                object[] args = { initObject, baconMan };
+                collector = (Collector<T>)Activator.CreateInstance(objectType, args);
+                Collectors[collectorId] = new WeakReference<Collector<T>>(collector);
+                return collector;
             }
         }
 
         /// <summary>
         /// Fired when the state of the collector is changing.
         /// </summary>
-        public event EventHandler<OnCollectorStateChangeArgs> OnCollectorStateChange
+        public event EventHandler<CollectorStateChangeArgs> OnCollectorStateChange
         {
-            add { m_onCollectorStateChange.Add(value); }
-            remove { m_onCollectorStateChange.Remove(value); }
+            add =>  _collectorStateChange.Add(value);
+            remove =>  _collectorStateChange.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnCollectorStateChangeArgs>> m_onCollectorStateChange = new SmartWeakEvent<EventHandler<OnCollectorStateChangeArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<CollectorStateChangeArgs>>  _collectorStateChange = new SmartWeakEvent<EventHandler<CollectorStateChangeArgs>>();
 
 
         /// <summary>
         /// Fired when the state of the collector is changing.
         /// </summary>
-        public event EventHandler<OnCollectionUpdatedArgs<T>> OnCollectionUpdated
+        public event EventHandler<CollectionUpdatedArgs<T>> OnCollectionUpdated
         {
-            add { m_onCollectionUpdated.Add(value); }
-            remove { m_onCollectionUpdated.Remove(value); }
-        }
-        SmartWeakEvent<EventHandler<OnCollectionUpdatedArgs<T>>> m_onCollectionUpdated = new SmartWeakEvent<EventHandler<OnCollectionUpdatedArgs<T>>>();
-
-        public CollectorState State
-        {
-            get { return m_state; }
+            add =>  _collectionUpdated.Add(value);
+            remove =>  _collectionUpdated.Remove(value);
         }
 
-        public CollectorErrorState ErrorState
-        {
-            get { return m_errorState; }
-        }
+        private readonly SmartWeakEvent<EventHandler<CollectionUpdatedArgs<T>>>  _collectionUpdated = new SmartWeakEvent<EventHandler<CollectionUpdatedArgs<T>>>();
+
+        public CollectorState State { get; private set; } = CollectorState.Idle;
+
+        public CollectorErrorState ErrorState { get; private set; } = CollectorErrorState.Unknown;
 
         //
         // Abstract Functions
@@ -205,23 +198,21 @@ namespace BaconBackend.Collectors
         /// <summary>
         /// The derived collector must implement this function.
         /// </summary>
-        /// <param name="posts"></param>
+        /// <param name="elements"></param>
         protected abstract List<T> ParseElementList(List<Element<T>> elements);
 
         //
         // Private vars
         //
 
-        CollectorState m_state = CollectorState.Idle;
-        CollectorErrorState m_errorState = CollectorErrorState.Unknown;
-        RedditListHelper<T> m_listHelper;
-        BaconManager m_baconMan;
-        string m_uniqueId;
+        private RedditListHelper<T> _listHelper;
+        private readonly BaconManager _baconMan;
+        private string _uniqueId;
 
         protected Collector(BaconManager manager, string uniqueId)
         {
-            m_baconMan = manager;
-            m_uniqueId = uniqueId;
+            _baconMan = manager;
+            _uniqueId = uniqueId;
         }
 
         /// <summary>
@@ -231,46 +222,49 @@ namespace BaconBackend.Collectors
         /// <param name="newId"></param>
         protected void SetUniqueId(string newId)
         {
-            m_uniqueId = newId;
+            _uniqueId = newId;
         }
 
         /// <summary>
         /// Sets up the list helper
         /// </summary>
         /// <param name="baseUrl"></param>
-        /// <param name="hasEmptyArrrayRoot"></param>
-        protected void InitListHelper(string baseUrl, bool hasEmptyArrrayRoot = false, bool takeFirstArrayRoot = false, string optionalGetArgs = "")
+        /// <param name="hasEmptyArrayRoot"></param>
+        /// <param name="takeFirstArrayRoot"></param>
+        /// <param name="optionalGetArgs"></param>
+        protected void InitListHelper(string baseUrl, bool hasEmptyArrayRoot = false, bool takeFirstArrayRoot = false, string optionalGetArgs = "")
         {
-            m_listHelper = new RedditListHelper<T>(baseUrl, m_baconMan.NetworkMan, hasEmptyArrrayRoot, takeFirstArrayRoot, optionalGetArgs);
+            _listHelper = new RedditListHelper<T>(baseUrl, _baconMan.NetworkMan, hasEmptyArrayRoot, takeFirstArrayRoot, optionalGetArgs);
         }
 
         /// <summary>
         /// Called by consumers when the collection should be updated. If the force flag is set we should always do it.
         /// </summary>
         /// <param name="force"></param>
+        /// <param name="updateCount"></param>
         /// <returns>If an update was kicked off or not</returns>
         public virtual bool Update(bool force = false, int updateCount = 50)
         {
             // #todo add caching
             // #todo #bug If we are refreshing we will grab 50 new post but listeners might already have 100
             // we need to indicate to them they should remove the rest of the posts that are old.
-            lock (m_listHelper)
+            lock ( _listHelper)
             {
-                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending)
+                if (State == CollectorState.Updating || State == CollectorState.Extending)
                 {
                     return false;
                 }
 
-                TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdateTime;
+                var timeSinceLastUpdate = DateTime.Now - LastUpdateTime;
                 if (timeSinceLastUpdate.TotalHours < 2                // Check the time has been longer than 2 hours
-                    && m_listHelper.GetCurrentElements().Count != 0   // Check that we have elements
+                    && _listHelper.GetCurrentElements().Count != 0   // Check that we have elements
                     && !force)                                        // Check that it isn't a force
                 {
                     return false;
                 }
 
                 // Otherwise do the update
-                m_state = CollectorState.Updating;
+                State = CollectorState.Updating;
             }
 
             // Fire this not under lock
@@ -282,11 +276,11 @@ namespace BaconBackend.Collectors
                 try
                 {
                     // First clear out the helper to remove any current posts.
-                    m_listHelper.Clear();
+                    _listHelper.Clear();
 
                     // Get the next elements
                     // #todo make this lower when we have endless scrolling.
-                    List<T> posts = ParseElementList(await m_listHelper.FetchElements(0, updateCount));
+                    var posts = ParseElementList(await _listHelper.FetchElements(0, updateCount));
 
                     // Fire the notification that the list has updated.
                     FireCollectionUpdated(0, posts, true, false);
@@ -295,22 +289,22 @@ namespace BaconBackend.Collectors
                     LastUpdateTime = DateTime.Now;
 
                     // Update the state
-                    lock (m_listHelper)
+                    lock ( _listHelper)
                     {
-                        m_state = CollectorState.Idle;
+                        State = CollectorState.Idle;
                     }
 
                     FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Collector failed to update id:"+ m_uniqueId, e);
+                    _baconMan.MessageMan.DebugDia("Collector failed to update id:"+ _uniqueId, e);
 
                     // Update the state
-                    lock (m_listHelper)
+                    lock ( _listHelper)
                     {
-                        m_state = CollectorState.Error;
-                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
+                        State = CollectorState.Error;
+                        ErrorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -327,15 +321,15 @@ namespace BaconBackend.Collectors
         {
             // #todo #bug If we are refreshing we will grab 50 new post but listeners might already have 100
             // we need to indicate to them they should remove the rest of the posts that are old.
-            lock (m_listHelper)
+            lock ( _listHelper)
             {
-                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending || m_state == CollectorState.FullyExtended)
+                if (State == CollectorState.Updating || State == CollectorState.Extending || State == CollectorState.FullyExtended)
                 {
                     return;
                 }
 
                 // Otherwise do the extension
-                m_state = CollectorState.Extending;
+                State = CollectorState.Extending;
             }
 
             // Fire this not under lock
@@ -346,39 +340,39 @@ namespace BaconBackend.Collectors
             {
                 try
                 {
-                    int previousCollectionSize = GetCurrentPostsInternal().Count;
+                    var previousCollectionSize = GetCurrentPostsInternal().Count;
 
                     // Get the next elements
                     // #todo make this lower when we have endless scrolling.
-                    List<T> posts = ParseElementList(await m_listHelper.FetchNext(extendCount));
+                    var posts = ParseElementList(await _listHelper.FetchNext(extendCount));
 
                     // Fire the notification that the list has updated.
                     FireCollectionUpdated(previousCollectionSize, posts, false, false);
 
                     // Update the state
-                    lock (m_listHelper)
+                    lock ( _listHelper)
                     {
                         if (posts.Count == 0)
                         {
                             // If we don't get anything back we are fully extended.
-                            m_state = CollectorState.FullyExtended;
+                            State = CollectorState.FullyExtended;
                         }
                         else
                         {
-                            m_state = CollectorState.Idle;
+                            State = CollectorState.Idle;
                         }
                     }
                     FireStateChanged(posts.Count);
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Subreddit extension failed", e);
+                    _baconMan.MessageMan.DebugDia("Subreddit extension failed", e);
 
                     // Update the state
-                    lock (m_listHelper)
+                    lock ( _listHelper)
                     {
-                        m_state = CollectorState.Error;
-                        m_errorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
+                        State = CollectorState.Error;
+                        ErrorState = e is ServiceDownException ? CollectorErrorState.ServiceDown : CollectorErrorState.Unknown;
                     }
                     FireStateChanged();
                 }
@@ -392,19 +386,17 @@ namespace BaconBackend.Collectors
         public List<T> GetCurrentPosts()
         {
             // Grab the lock
-            lock (m_listHelper)
+            lock ( _listHelper)
             {
-                if (m_state == CollectorState.Updating || m_state == CollectorState.Extending)
+                if (State == CollectorState.Updating || State == CollectorState.Extending)
                 {
                     // If we are updating we don't want to mess with the list, so return any local list we have
                     // (a cache). We don't have a cache so just return empty.
                     return new List<T>();
                 }
-                else
-                {
-                    // Get the list and return it.
-                    return ParseElementList(m_listHelper.GetCurrentElements());
-                }
+
+                // Get the list and return it.
+                return ParseElementList( _listHelper.GetCurrentElements());
             }
         }
 
@@ -413,7 +405,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         protected List<Element<T>> GetListHelperElements()
         {
-            return m_listHelper.GetCurrentElements();
+            return _listHelper.GetCurrentElements();
         }
 
         /// <summary>
@@ -423,7 +415,7 @@ namespace BaconBackend.Collectors
         protected List<T> GetCurrentPostsInternal()
         {
             // Grab the lock
-            return ParseElementList(m_listHelper.GetCurrentElements());
+            return ParseElementList( _listHelper.GetCurrentElements());
         }
 
         /// <summary>
@@ -433,11 +425,11 @@ namespace BaconBackend.Collectors
         {
             try
             {
-                m_onCollectorStateChange.Raise(this, new OnCollectorStateChangeArgs() { State = m_state, ErrorState = m_errorState, NewPostCount = newPostCount });
+                 _collectorStateChange.Raise(this, new CollectorStateChangeArgs { State = State, ErrorState = ErrorState, NewPostCount = newPostCount });
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Exception during OnCollectorStateChange", e);
+                _baconMan.MessageMan.DebugDia("Exception during OnCollectorStateChange", e);
             }
         }
 
@@ -451,11 +443,11 @@ namespace BaconBackend.Collectors
 
             try
             {
-                m_onCollectionUpdated.Raise(this, new OnCollectionUpdatedArgs<T>() { StartingPosition = startingIndex, ChangedItems = updatedPosts, IsFreshUpdate = isFreshUpdate, IsInsert = isInsert });
+                 _collectionUpdated.Raise(this, new CollectionUpdatedArgs<T> { StartingPosition = startingIndex, ChangedItems = updatedPosts, IsFreshUpdate = isFreshUpdate, IsInsert = isInsert });
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Exception during OnCollectionUpdated", e);
+                _baconMan.MessageMan.DebugDia("Exception during OnCollectionUpdated", e);
             }
         }
 
@@ -466,21 +458,19 @@ namespace BaconBackend.Collectors
         {
             get
             {
-                if (m_lastUpdateTime.Equals(new DateTime(0)))
+                if (!_lastUpdateTime.Equals(new DateTime(0))) return _lastUpdateTime;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("Collector.LastUpdateTime_" + _uniqueId))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("Collector.LastUpdateTime_" + m_uniqueId))
-                    {
-                        m_lastUpdateTime = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("Collector.LastUpdateTime_" + m_uniqueId);
-                    }
+                    _lastUpdateTime = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("Collector.LastUpdateTime_" + _uniqueId);
                 }
-                return m_lastUpdateTime;
+                return _lastUpdateTime;
             }
             set
             {
-                m_lastUpdateTime = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>(("Collector.LastUpdateTime_" + m_uniqueId), m_lastUpdateTime);
+                _lastUpdateTime = value;
+                _baconMan.SettingsMan.WriteToLocalSettings(("Collector.LastUpdateTime_" + _uniqueId), _lastUpdateTime);
             }
         }
-        private DateTime m_lastUpdateTime = new DateTime(0);
+        private DateTime _lastUpdateTime = new DateTime(0);
     }
 }

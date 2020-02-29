@@ -6,19 +6,10 @@ using Baconit.Panels.FlipView;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,76 +17,77 @@ namespace Baconit.Panels
 {
     public sealed partial class Search : UserControl, IPanel
     {
-        const string c_subredditShowMoreHeader = "subreddit";
-        const string c_postShowMoreHeader = "post";
+        private const string CSubredditShowMoreHeader = "subreddit";
+        private const string CPostShowMoreHeader = "post";
 
         /// <summary>
         /// Holds a reference to the panel manager
         /// </summary>
-        IPanelHost m_panelManager = null;
+        private IPanelHost _mPanelManager;
 
         /// <summary>
         /// Holds a reference to the current subreddit collector
         /// </summary>
-        SearchSubredditCollector m_currentSubCollector = null;
+        private SearchSubredditCollector _mCurrentSubCollector;
 
         /// <summary>
         /// Holds a reference to the current post collector
         /// </summary>
-        SearchPostCollector m_currentPostCollector = null;
+        private SearchPostCollector _mCurrentPostCollector;
 
         /// <summary>
         /// Holds a reference to the current search list.
         /// </summary>
-        ObservableCollection<SearchResult> m_searchResultsList = new ObservableCollection<SearchResult>();
+        private readonly ObservableCollection<SearchResult> _mSearchResultsList = new ObservableCollection<SearchResult>();
 
         /// <summary>
         /// Used to control the progress bars.
         /// </summary>
-        bool m_areSubredditsSearching = false;
-        bool m_areUsersSearching = false;
-        bool m_arePostsSearching = false;
+        private bool _mAreSubredditsSearching;
+
+        private bool _mAreUsersSearching;
+        private bool _mArePostsSearching;
 
         /// <summary>
         /// Indicates what we are searching for, if null it is everything.
         /// </summary>
-        SearchResultTypes? m_currentSearchType = null;
+        private SearchResultTypes? _mCurrentSearchType;
 
 
         public Search()
         {
-            this.InitializeComponent();
-            ui_searchResults.ItemsSource = m_searchResultsList;
+            InitializeComponent();
+            ui_searchResults.ItemsSource = _mSearchResultsList;
             VisualStateManager.GoToState(this, "HideFilters", false);
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_panelManager = host;
+            _mPanelManager = host;
 
             // If we get passed a search term search it right away.
-            if(arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_QUERY))
+            if(arguments.ContainsKey(PanelManager.NavArgsSearchQuery))
             {
-                ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
+                ui_searchBox.Text = (string)arguments[PanelManager.NavArgsSearchQuery];
                 Search_Tapped(null, null);
             }
-            else if (arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME))
+            else if (arguments.ContainsKey(PanelManager.NavArgsSearchSubredditName))
             {
                 // We are opened from the side bar, set the subreddit name and go to post mode.
                 // Set to post mode
                 ui_searchForCombo.SelectedIndex = 3;
 
                 // Fill out the subreddit name
-                ui_postSubreddit.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME];
+                ui_postSubreddit.Text = (string)arguments[PanelManager.NavArgsSearchSubredditName];
             }
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
         {
             // If we get passed a search term search it right away.
-            if (arguments.ContainsKey(PanelManager.NAV_ARGS_SEARCH_QUERY))
+            if (arguments.ContainsKey(PanelManager.NavArgsSearchQuery))
             {
-                ui_searchBox.Text = (string)arguments[PanelManager.NAV_ARGS_SEARCH_QUERY];
+                ui_searchBox.Text = (string)arguments[PanelManager.NavArgsSearchQuery];
                 Search_Tapped(null, null);
             }
 
@@ -105,7 +97,7 @@ namespace Baconit.Panels
         public void OnNavigatingTo()
         {
             // Focus the search box when we open if the query is empty.
-            if (String.IsNullOrWhiteSpace(ui_searchBox.Text))
+            if (string.IsNullOrWhiteSpace(ui_searchBox.Text))
             {
                 ui_searchBox.Focus(FocusState.Programmatic);
             }
@@ -117,7 +109,7 @@ namespace Baconit.Panels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_panelManager.SetStatusBar(null, 0);
+            var statusBarHeight = await _mPanelManager.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
@@ -156,8 +148,8 @@ namespace Baconit.Panels
         private void Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Make sure we have something to search.
-            string searchTerm = ui_searchBox.Text;
-            if (String.IsNullOrWhiteSpace(searchTerm))
+            var searchTerm = ui_searchBox.Text;
+            if (string.IsNullOrWhiteSpace(searchTerm))
             {
                 return;
             }
@@ -170,16 +162,16 @@ namespace Baconit.Panels
             {
                 // Everything
                 case 0:
-                    m_currentSearchType = null;
+                    _mCurrentSearchType = null;
                     break;
                 case 1:
-                    m_currentSearchType = SearchResultTypes.Subreddit;
+                    _mCurrentSearchType = SearchResultTypes.Subreddit;
                     break;
                 case 2:
-                    m_currentSearchType = SearchResultTypes.User;
+                    _mCurrentSearchType = SearchResultTypes.User;
                     break;
                 case 3:
-                    m_currentSearchType = SearchResultTypes.Post;
+                    _mCurrentSearchType = SearchResultTypes.Post;
                     break;
             }
 
@@ -187,19 +179,19 @@ namespace Baconit.Panels
             ui_searchBox.IsEnabled = false;
             ui_searchBox.IsEnabled = true;
 
-            if (!m_currentSearchType.HasValue || m_currentSearchType.Value == SearchResultTypes.Subreddit)
+            if (!_mCurrentSearchType.HasValue || _mCurrentSearchType.Value == SearchResultTypes.Subreddit)
             {
                 // Kick off a subreddit search
                 DoSubredditSearch(searchTerm);
             }
 
-            if (!m_currentSearchType.HasValue || m_currentSearchType.Value == SearchResultTypes.User)
+            if (!_mCurrentSearchType.HasValue || _mCurrentSearchType.Value == SearchResultTypes.User)
             {
                 // Kick off a user search
                 DoUserSearch(searchTerm);
             }
 
-            if (!m_currentSearchType.HasValue || m_currentSearchType.Value == SearchResultTypes.Post)
+            if (!_mCurrentSearchType.HasValue || _mCurrentSearchType.Value == SearchResultTypes.Post)
             {
                 // Kick off a post search
                 DoPostSearch(searchTerm);
@@ -268,10 +260,10 @@ namespace Baconit.Panels
         {
             lock (this)
             {
-                m_currentSubCollector = new SearchSubredditCollector(App.BaconMan, searchTerm);
-                m_currentSubCollector.OnCollectionUpdated += CurrentSubCollector_OnCollectionUpdated;
-                m_currentSubCollector.OnCollectorStateChange += CurrentSubCollector_OnCollectorStateChange;
-                m_currentSubCollector.Update(true);
+                _mCurrentSubCollector = new SearchSubredditCollector(App.BaconMan, searchTerm);
+                _mCurrentSubCollector.OnCollectionUpdated += CurrentSubCollector_OnCollectionUpdated;
+                _mCurrentSubCollector.OnCollectorStateChange += CurrentSubCollector_OnCollectorStateChange;
+                _mCurrentSubCollector.Update(true);
             }
         }
 
@@ -280,7 +272,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void CurrentSubCollector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
+        private async void CurrentSubCollector_OnCollectorStateChange(object sender, CollectorStateChangeArgs e)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -300,27 +292,27 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void CurrentSubCollector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Subreddit> e)
+        private async void CurrentSubCollector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<Subreddit> e)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Subreddits are always at the top of the list
-                int insertIndex = 1;
-                bool showAll = m_currentSearchType.HasValue && m_currentSearchType.Value == SearchResultTypes.Subreddit;
+                var insertIndex = 1;
+                var showAll = _mCurrentSearchType.HasValue && _mCurrentSearchType.Value == SearchResultTypes.Subreddit;
 
                 // Lock the list
-                lock(m_searchResultsList)
+                lock(_mSearchResultsList)
                 {
                     // Insert the header
-                    SearchResult header = new SearchResult()
+                    var header = new SearchResult
                     {
                         ResultType = SearchResultTypes.Header,
                         HeaderText = "Subreddit Results"
                     };
-                    m_searchResultsList.Insert(0, header);
+                    _mSearchResultsList.Insert(0, header);
 
-                    int count = 0;
-                    foreach(Subreddit subreddit in e.ChangedItems)
+                    var count = 0;
+                    foreach(var subreddit in e.ChangedItems)
                     {
                         // Make sure it isn't private. Since we can't show these we will skip them for now
                         // #todo fix this
@@ -330,7 +322,7 @@ namespace Baconit.Panels
                         }
 
                         // Make the result
-                        SearchResult subredditResult = new SearchResult()
+                        var subredditResult = new SearchResult
                         {
                             ResultType = SearchResultTypes.Subreddit,
                             MajorText = subreddit.Title,
@@ -340,7 +332,7 @@ namespace Baconit.Panels
                         };
 
                         // Add it to the list
-                        m_searchResultsList.Insert(insertIndex, subredditResult);
+                        _mSearchResultsList.Insert(insertIndex, subredditResult);
 
                         // Itter
                         count++;
@@ -358,11 +350,11 @@ namespace Baconit.Panels
                     if(e.ChangedItems.Count == 0)
                     {
                         // Insert the header
-                        SearchResult noResults = new SearchResult()
+                        var noResults = new SearchResult
                         {
                             ResultType = SearchResultTypes.NoResults
                         };
-                        m_searchResultsList.Insert(insertIndex, noResults);
+                        _mSearchResultsList.Insert(insertIndex, noResults);
                         insertIndex++;
                     }
 
@@ -370,12 +362,12 @@ namespace Baconit.Panels
                     if(e.ChangedItems.Count != 0 && !showAll)
                     {
                         // Insert the header
-                        SearchResult showMore = new SearchResult()
+                        var showMore = new SearchResult
                         {
                             ResultType = SearchResultTypes.ShowMore,
-                            DataContext = c_subredditShowMoreHeader
+                            DataContext = CSubredditShowMoreHeader
                         };
-                        m_searchResultsList.Insert(insertIndex, showMore);
+                        _mSearchResultsList.Insert(insertIndex, showMore);
                     }
                 }
             });
@@ -392,21 +384,21 @@ namespace Baconit.Panels
         private void DoPostSearch(string searchTerm)
         {
             // Get all of the filters.
-            PostSearchSorts sort = GetCurrentPostSort();
-            PostSearchTimes times = GetCurrentPostTime();
-            string subredditFilter = ui_postSubreddit.Text;
-            string authorFilter = ui_postUserName.Text;
-            string websiteFilter = ui_postWebsite.Text;
-            string selftextFilter = ui_postSelfText.Text;
-            string isSelfPost = ui_postIsSelf.SelectedIndex == 0 ? String.Empty : (ui_postIsSelf.SelectedIndex == 1 ? "yes" : "no");
-            string isNsfw = ui_postIsNsfw.SelectedIndex == 0 ? String.Empty : (ui_postIsNsfw.SelectedIndex == 1 ? "yes" : "no");
+            var sort = GetCurrentPostSort();
+            var times = GetCurrentPostTime();
+            var subredditFilter = ui_postSubreddit.Text;
+            var authorFilter = ui_postUserName.Text;
+            var websiteFilter = ui_postWebsite.Text;
+            var selftextFilter = ui_postSelfText.Text;
+            var isSelfPost = ui_postIsSelf.SelectedIndex == 0 ? string.Empty : (ui_postIsSelf.SelectedIndex == 1 ? "yes" : "no");
+            var isNsfw = ui_postIsNsfw.SelectedIndex == 0 ? string.Empty : (ui_postIsNsfw.SelectedIndex == 1 ? "yes" : "no");
 
             lock (this)
             {
-                m_currentPostCollector = new SearchPostCollector(App.BaconMan, searchTerm, sort, times, subredditFilter, authorFilter, websiteFilter, selftextFilter, isSelfPost, isNsfw);
-                m_currentPostCollector.OnCollectionUpdated += CurrentPostCollector_OnCollectionUpdated;
-                m_currentPostCollector.OnCollectorStateChange += CurrentPostCollector_OnCollectorStateChange;
-                m_currentPostCollector.Update(true);
+                _mCurrentPostCollector = new SearchPostCollector(App.BaconMan, searchTerm, sort, times, subredditFilter, authorFilter, websiteFilter, selftextFilter, isSelfPost, isNsfw);
+                _mCurrentPostCollector.OnCollectionUpdated += CurrentPostCollector_OnCollectionUpdated;
+                _mCurrentPostCollector.OnCollectorStateChange += CurrentPostCollector_OnCollectorStateChange;
+                _mCurrentPostCollector.Update(true);
             }
         }
 
@@ -415,7 +407,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void CurrentPostCollector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
+        private async void CurrentPostCollector_OnCollectorStateChange(object sender, CollectorStateChangeArgs e)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -435,30 +427,30 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void CurrentPostCollector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Post> e)
+        private async void CurrentPostCollector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<Post> e)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 // Posts insert at the bottom of the list.
-                bool showAll = m_currentSearchType.HasValue && m_currentSearchType.Value == SearchResultTypes.Post;
+                var showAll = _mCurrentSearchType.HasValue && _mCurrentSearchType.Value == SearchResultTypes.Post;
 
                 // Lock the list
-                lock (m_searchResultsList)
+                lock (_mSearchResultsList)
                 {
                     // Insert the header
-                    SearchResult header = new SearchResult()
+                    var header = new SearchResult
                     {
                         ResultType = SearchResultTypes.Header,
                         HeaderText = "Post Results"
                     };
-                    m_searchResultsList.Add(header);
+                    _mSearchResultsList.Add(header);
 
                     // Insert the items
-                    int count = 0;
-                    foreach (Post post in e.ChangedItems)
+                    var count = 0;
+                    foreach (var post in e.ChangedItems)
                     {
                         // Make the result
-                        SearchResult postResult = new SearchResult()
+                        var postResult = new SearchResult
                         {
                             ResultType = SearchResultTypes.Post,
                             MajorText = post.Title,
@@ -468,7 +460,7 @@ namespace Baconit.Panels
                         };
 
                         // Add it to the list
-                        m_searchResultsList.Add(postResult);
+                        _mSearchResultsList.Add(postResult);
 
                         // Itter
                         count++;
@@ -485,23 +477,23 @@ namespace Baconit.Panels
                     if (e.ChangedItems.Count == 0)
                     {
                         // Insert the header
-                        SearchResult noResults = new SearchResult()
+                        var noResults = new SearchResult
                         {
                             ResultType = SearchResultTypes.NoResults
                         };
-                        m_searchResultsList.Add(noResults);
+                        _mSearchResultsList.Add(noResults);
                     }
 
                     // Insert show more if we didn't show all
                     if (e.ChangedItems.Count != 0 && !showAll)
                     {
                         // Insert the header
-                        SearchResult showMore = new SearchResult()
+                        var showMore = new SearchResult
                         {
                             ResultType = SearchResultTypes.ShowMore,
-                            DataContext = c_postShowMoreHeader
+                            DataContext = CPostShowMoreHeader
                         };
-                        m_searchResultsList.Add(showMore);
+                        _mSearchResultsList.Add(showMore);
                     }
                 }
             });
@@ -554,10 +546,10 @@ namespace Baconit.Panels
         private async void DoUserSearch(string searchTerm)
         {
             // Make a request for the user
-            User userResult = await MiscellaneousHelper.GetRedditUser(App.BaconMan, searchTerm);
+            var userResult = await MiscellaneousHelper.GetRedditUser(App.BaconMan, searchTerm);
 
             // Else put it in the list
-            lock(m_searchResultsList)
+            lock(_mSearchResultsList)
             {
                 // First check that we are still searching for the same thing
                 if(!ui_searchBox.Text.Equals(searchTerm))
@@ -566,11 +558,11 @@ namespace Baconit.Panels
                 }
 
                 // Search for the footer of the subreddits if it is there
-                int count = 0;
-                int insertIndex = -1;
-                foreach(SearchResult result in m_searchResultsList)
+                var count = 0;
+                var insertIndex = -1;
+                foreach(var result in _mSearchResultsList)
                 {
-                    if(result.ResultType == SearchResultTypes.ShowMore && ((string)result.DataContext).Equals(c_subredditShowMoreHeader))
+                    if(result.ResultType == SearchResultTypes.ShowMore && ((string)result.DataContext).Equals(CSubredditShowMoreHeader))
                     {
                         insertIndex = count;
                         break;
@@ -585,18 +577,18 @@ namespace Baconit.Panels
                 }
 
                 // Insert the header
-                SearchResult header = new SearchResult()
+                var header = new SearchResult
                 {
                     ResultType = SearchResultTypes.Header,
                     HeaderText = "User Result"
                 };
-                m_searchResultsList.Insert(insertIndex, header);
+                _mSearchResultsList.Insert(insertIndex, header);
                 insertIndex++;
 
                 if (userResult != null)
                 {
                     // Insert the User
-                    SearchResult userItem = new SearchResult()
+                    var userItem = new SearchResult
                     {
                         ResultType = SearchResultTypes.User,
                         MajorText = userResult.Name,
@@ -607,17 +599,17 @@ namespace Baconit.Panels
                     {
                         userItem.MinorAccentText = "Has Gold";
                     }
-                    m_searchResultsList.Insert(insertIndex, userItem);
+                    _mSearchResultsList.Insert(insertIndex, userItem);
                     insertIndex++;
                 }
                 else
                 {
                     // Insert no results
-                    SearchResult noResults = new SearchResult()
+                    var noResults = new SearchResult
                     {
                         ResultType = SearchResultTypes.NoResults
                     };
-                    m_searchResultsList.Insert(insertIndex, noResults);
+                    _mSearchResultsList.Insert(insertIndex, noResults);
                     insertIndex++;
                 }
             }
@@ -631,27 +623,27 @@ namespace Baconit.Panels
             // Kill any collectors
             lock(this)
             {
-                if(m_currentSubCollector != null)
+                if(_mCurrentSubCollector != null)
                 {
-                    m_currentSubCollector.OnCollectionUpdated -= CurrentSubCollector_OnCollectionUpdated;
-                    m_currentSubCollector.OnCollectorStateChange -= CurrentSubCollector_OnCollectorStateChange;
-                    m_currentSubCollector = null;
+                    _mCurrentSubCollector.OnCollectionUpdated -= CurrentSubCollector_OnCollectionUpdated;
+                    _mCurrentSubCollector.OnCollectorStateChange -= CurrentSubCollector_OnCollectorStateChange;
+                    _mCurrentSubCollector = null;
                 }
-                if(m_currentPostCollector != null)
+                if(_mCurrentPostCollector != null)
                 {
-                    m_currentPostCollector.OnCollectionUpdated -= CurrentPostCollector_OnCollectionUpdated;
-                    m_currentPostCollector.OnCollectorStateChange -= CurrentPostCollector_OnCollectorStateChange;
-                    m_currentPostCollector = null;
+                    _mCurrentPostCollector.OnCollectionUpdated -= CurrentPostCollector_OnCollectionUpdated;
+                    _mCurrentPostCollector.OnCollectorStateChange -= CurrentPostCollector_OnCollectorStateChange;
+                    _mCurrentPostCollector = null;
                 }
             }
 
             // Clear the results
-            lock(m_searchResultsList)
+            lock(_mSearchResultsList)
             {
                 // Clear them each one by one, this will make them animate out
-                while(m_searchResultsList.Count > 0)
+                while(_mSearchResultsList.Count > 0)
                 {
-                    m_searchResultsList.RemoveAt(m_searchResultsList.Count - 1);
+                    _mSearchResultsList.RemoveAt(_mSearchResultsList.Count - 1);
                 }
             }
 
@@ -671,51 +663,51 @@ namespace Baconit.Panels
         private void SearchResults_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Grab the result
-            SearchResult tappedResult = (SearchResult)ui_searchResults.SelectedItem;
+            var tappedResult = (SearchResult)ui_searchResults.SelectedItem;
             if(tappedResult != null)
             {
                 if(tappedResult.ResultType == SearchResultTypes.ShowMore)
                 {
-                    string context = ((string)tappedResult.DataContext);
-                    if(context.Equals(c_subredditShowMoreHeader))
+                    var context = ((string)tappedResult.DataContext);
+                    if(context.Equals(CSubredditShowMoreHeader))
                     {
                         DoFilteredSearch(SearchResultTypes.Subreddit);
                     }
-                    else if(context.Equals(c_postShowMoreHeader))
+                    else if(context.Equals(CPostShowMoreHeader))
                     {
                         DoFilteredSearch(SearchResultTypes.Post);
                     }
                 }
                 else if(tappedResult.ResultType == SearchResultTypes.Subreddit)
                 {
-                    Subreddit subreddit = (Subreddit)tappedResult.DataContext;
+                    var subreddit = (Subreddit)tappedResult.DataContext;
                     // If is very important to not send in a upper case display name
                     subreddit.DisplayName = subreddit.DisplayName.ToLower();
                     // Navigate to the subreddit
-                    Dictionary<string, object> args = new Dictionary<string, object>();
+                    var args = new Dictionary<string, object>();
                     // Send the display name.
-                    args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, subreddit.DisplayName);
-                    m_panelManager.Navigate(typeof(SubredditPanel), subreddit.DisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
+                    args.Add(PanelManager.NavArgsSubredditName, subreddit.DisplayName);
+                    _mPanelManager.Navigate(typeof(SubredditPanel), subreddit.DisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
                 }
                 else if(tappedResult.ResultType == SearchResultTypes.Post)
                 {
-                    Post post = (Post)tappedResult.DataContext;
+                    var post = (Post)tappedResult.DataContext;
 
                     // Navigate to the post
-                    Dictionary<string, object> args = new Dictionary<string, object>();
-                    args.Add(PanelManager.NAV_ARGS_SUBREDDIT_NAME, post.Subreddit);
-                    args.Add(PanelManager.NAV_ARGS_FORCE_POST_ID, post.Id);
+                    var args = new Dictionary<string, object>();
+                    args.Add(PanelManager.NavArgsSubredditName, post.Subreddit);
+                    args.Add(PanelManager.NavArgsForcePostId, post.Id);
                     // Make sure the page id is unique
-                    m_panelManager.Navigate(typeof(FlipViewPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week + post.Id, args);
+                    _mPanelManager.Navigate(typeof(FlipViewPanel), post.Subreddit + SortTypes.Hot + SortTimeTypes.Week + post.Id, args);
                 }
                 else if(tappedResult.ResultType == SearchResultTypes.User)
                 {
-                    User user = (User)tappedResult.DataContext;
+                    var user = (User)tappedResult.DataContext;
 
                     // Navigate to the user
-                    Dictionary<string, object> args = new Dictionary<string, object>();
-                    args.Add(PanelManager.NAV_ARGS_USER_NAME, user.Name);
-                    m_panelManager.Navigate(typeof(UserProfile), user.Name, args);
+                    var args = new Dictionary<string, object>();
+                    args.Add(PanelManager.NavArgsUserName, user.Name);
+                    _mPanelManager.Navigate(typeof(UserProfile), user.Name, args);
                 }
             }
 
@@ -736,18 +728,18 @@ namespace Baconit.Panels
             lock(ui_progressBar)
             {
                 // Figure out if one is already true, thus the bar would be shown.
-                bool showBar = !m_arePostsSearching && !m_areSubredditsSearching && !m_areUsersSearching;
+                var showBar = !_mArePostsSearching && !_mAreSubredditsSearching && !_mAreUsersSearching;
 
                 switch (type)
                 {
                     case SearchResultTypes.Post:
-                        m_arePostsSearching = true;
+                        _mArePostsSearching = true;
                         break;
                     case SearchResultTypes.Subreddit:
-                        m_areSubredditsSearching = true;
+                        _mAreSubredditsSearching = true;
                         break;
                     case SearchResultTypes.User:
-                        m_areUsersSearching = true;
+                        _mAreUsersSearching = true;
                         break;
                 }
 
@@ -771,17 +763,17 @@ namespace Baconit.Panels
                 switch (type)
                 {
                     case SearchResultTypes.Post:
-                        m_arePostsSearching = false;
+                        _mArePostsSearching = false;
                         break;
                     case SearchResultTypes.Subreddit:
-                        m_areSubredditsSearching = false;
+                        _mAreSubredditsSearching = false;
                         break;
                     case SearchResultTypes.User:
-                        m_areUsersSearching = false;
+                        _mAreUsersSearching = false;
                         break;
                 }
 
-                if (!m_arePostsSearching && !m_areSubredditsSearching && !m_areUsersSearching)
+                if (!_mArePostsSearching && !_mAreSubredditsSearching && !_mAreUsersSearching)
                 {
                     ui_progressBar.Visibility = Visibility.Collapsed;
                     ui_progressBar.IsIndeterminate = false;
@@ -796,7 +788,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        private void MarkdownTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.MarkdownLinkTappedArgs e)
         {
             // Show the link
             App.BaconMan.ShowGlobalContent(e.Link);

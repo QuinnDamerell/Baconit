@@ -127,6 +127,9 @@
     <Compile Include="ContentPanels\Panels\RedditContentPanel.xaml.cs">
       <DependentUpon>RedditContentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ContentPanels\Panels\RedditVideoContentPanel.xaml.cs">
+      <DependentUpon>RedditVideoContentPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ContentPanels\Panels\WebPageContentPanel.xaml.cs">
       <DependentUpon>WebPageContentPanel.xaml</DependentUpon>
     </Compile>
@@ -352,6 +355,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ContentPanels\Panels\RedditContentPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentPanels\Panels\RedditVideoContentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

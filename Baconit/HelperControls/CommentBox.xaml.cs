@@ -1,21 +1,9 @@
-﻿using BaconBackend.Collectors;
-using BaconBackend.DataObjects;
-using BaconBackend.Helpers;
+﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -42,7 +30,7 @@ namespace Baconit.HelperControls
     /// <summary>
     /// Args for the comment submitted event.
     /// </summary>
-    public class OnCommentSubmittedArgs : EventArgs
+    public class CommentSubmittedArgs : EventArgs
     {
         public string Response;
         public string RedditId;
@@ -56,37 +44,39 @@ namespace Baconit.HelperControls
         /// Fired when a comment is submitted and posted. Fired
         /// if the post fails or succeeds.
         /// </summary>
-        public event EventHandler<OnCommentSubmittedArgs> OnCommentSubmitted
+        public event EventHandler<CommentSubmittedArgs> OnCommentSubmitted
         {
-            add { m_onCommentSubmitted.Add(value); }
-            remove { m_onCommentSubmitted.Remove(value); }
+            add => _mOnCommentSubmitted.Add(value);
+            remove => _mOnCommentSubmitted.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnCommentSubmittedArgs>> m_onCommentSubmitted = new SmartWeakEvent<EventHandler<OnCommentSubmittedArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<CommentSubmittedArgs>> _mOnCommentSubmitted = new SmartWeakEvent<EventHandler<CommentSubmittedArgs>>();
 
         /// <summary>
         /// Fired after the box has been opened.
         /// </summary>
         public event EventHandler<CommentBoxOnOpenedArgs> OnBoxOpened
         {
-            add { m_onBoxOpened.Add(value); }
-            remove { m_onBoxOpened.Remove(value); }
+            add => _mOnBoxOpened.Add(value);
+            remove => _mOnBoxOpened.Remove(value);
         }
-        SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>> m_onBoxOpened = new SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>> _mOnBoxOpened = new SmartWeakEvent<EventHandler<CommentBoxOnOpenedArgs>>();
 
         /// <summary>
         /// Hold the current commenting id
         /// </summary>
-        string m_itemRedditId = "";
+        private string _mItemRedditId = "";
 
         /// <summary>
         /// Context for the current comment.
         /// </summary>
-        object m_context = null;
+        private object _mContext;
 
         /// <summary>
         /// Indicates if this is an edit or not.
         /// </summary>
-        bool m_isEdit = false;
+        private bool _mIsEdit;
 
         /// <summary>
         /// Indicate if we are open or not.
@@ -96,45 +86,45 @@ namespace Baconit.HelperControls
         /// <summary>
         /// A timer used to update the preview
         /// </summary>
-        DispatcherTimer m_previewTimer;
+        private readonly DispatcherTimer _mPreviewTimer;
 
         /// <summary>
         /// Indicates the last time the text was edited.
         /// </summary>
-        DateTime m_lastTextEditTime = DateTime.MinValue;
+        private DateTime _mLastTextEditTime = DateTime.MinValue;
 
         /// <summary>
         /// The amount of time from the last edit when we should update the preview again.
         /// </summary>
-        int m_previewUpdateEditTimeout = 1000;
+        private readonly int _mPreviewUpdateEditTimeout = 1000;
 
         public CommentBox()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            m_previewTimer = new DispatcherTimer();
-            m_previewTimer.Tick += PreviewTimer_Tick;
+            _mPreviewTimer = new DispatcherTimer();
+            _mPreviewTimer.Tick += PreviewTimer_Tick;
 
             // Set the interval and edit timeout. We will use the memory limit as a guess of what the
             // the device can handle.
-            ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit / 1024 / 1024;
+            var memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit / 1024 / 1024;
             if (memoryLimit < 250)
             {
-                m_previewUpdateEditTimeout = 500;
+                _mPreviewUpdateEditTimeout = 500;
             }
             else if (memoryLimit < 450)
             {
-                m_previewUpdateEditTimeout = 200;
+                _mPreviewUpdateEditTimeout = 200;
             }
             else if (memoryLimit < 1500)
             {
-                m_previewUpdateEditTimeout = 100;
+                _mPreviewUpdateEditTimeout = 100;
             }
             else
             {
-                m_previewUpdateEditTimeout = 50;
+                _mPreviewUpdateEditTimeout = 50;
             }
-            m_previewTimer.Interval = new TimeSpan(0, 0, 0, 0, m_previewUpdateEditTimeout);
+            _mPreviewTimer.Interval = new TimeSpan(0, 0, 0, 0, _mPreviewUpdateEditTimeout);
 
             // Hide the box
             VisualStateManager.GoToState(this, "HideCommentBox", false);
@@ -157,7 +147,7 @@ namespace Baconit.HelperControls
                 return;
             }
 
-            if (String.IsNullOrWhiteSpace(redditId))
+            if (string.IsNullOrWhiteSpace(redditId))
             {
                 return;
             }
@@ -169,7 +159,7 @@ namespace Baconit.HelperControls
             }
 
             // Set the new reddit Id
-            m_itemRedditId = redditId;
+            _mItemRedditId = redditId;
 
             // Do common code
             ShowBoxInternal();
@@ -181,7 +171,7 @@ namespace Baconit.HelperControls
         private void ShowBoxInternal()
         {
             // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "CommentBoxOpened");
+            TelemetryManager.ReportEvent(this, "CommentBoxOpened");
 
             // Show the box
             VisualStateManager.GoToState(this, "ShowCommentBox", true);
@@ -206,25 +196,25 @@ namespace Baconit.HelperControls
             }
 
             // Start the preview timer
-            m_previewTimer.Start();
+            _mPreviewTimer.Start();
 
             // Mark if this is an edit. Note if the string is empty we will
             // consider an edit for things like self posts with no text yet.
-            bool wasPastOpenEdit = m_isEdit;
-            m_isEdit = editText != null;
+            var wasPastOpenEdit = _mIsEdit;
+            _mIsEdit = editText != null;
 
             // Set the current context
-            m_context = context;
+            _mContext = context;
 
             // Update the button text
-            ui_sendButton.Content = m_isEdit ? "Update" : "Send";
+            ui_sendButton.Content = _mIsEdit ? "Update" : "Send";
 
             // If we are opening to a new item clear the text
-            if (!m_itemRedditId.Equals(newRedditId) || wasPastOpenEdit != m_isEdit)
+            if (!_mItemRedditId.Equals(newRedditId) || wasPastOpenEdit != _mIsEdit)
             {
                 // Set the text or empty if the id is new.
-                ui_textBox.Text = String.IsNullOrWhiteSpace(editText) ? String.Empty : editText;
-                m_lastTextEditTime = new DateTime(1989,4,19);
+                ui_textBox.Text = string.IsNullOrWhiteSpace(editText) ? string.Empty : editText;
+                _mLastTextEditTime = new DateTime(1989,4,19);
                 PreviewTimer_Tick(null, null);
             }
 
@@ -243,12 +233,12 @@ namespace Baconit.HelperControls
             }
 
             // Stop the preview timer
-            m_previewTimer.Stop();
+            _mPreviewTimer.Stop();
 
             // If we are done clear the reddit comment.
             if (isDoneWithComment)
             {
-                m_itemRedditId = String.Empty;
+                _mItemRedditId = string.Empty;
             }
 
             // Hide the box
@@ -298,12 +288,12 @@ namespace Baconit.HelperControls
         private void ShowCommentBox_Completed(object sender, object e)
         {
             // Fire the event.
-            CommentBoxOnOpenedArgs args = new CommentBoxOnOpenedArgs()
+            var args = new CommentBoxOnOpenedArgs
             {
-                Context = m_context,
-                RedditId = m_itemRedditId
+                Context = _mContext,
+                RedditId = _mItemRedditId
             };
-            m_onBoxOpened.Raise(this, args);
+            _mOnBoxOpened.Raise(this, args);
         }
 
         /// <summary>
@@ -316,7 +306,7 @@ namespace Baconit.HelperControls
             // Since we want these to be *, but also float to the center, but also stretch the button we have to do
             // this manually. Figure out how large the button should be, and then set it.
 
-            double computedSize = ui_cancelButtonCol.ActualWidth - (ui_cancelButton.Margin.Left + ui_cancelButton.Margin.Right);
+            var computedSize = ui_cancelButtonCol.ActualWidth - (ui_cancelButton.Margin.Left + ui_cancelButton.Margin.Right);
             ui_cancelButton.Width = computedSize < 200 ? computedSize : 200;
             computedSize = ui_sendButtonCol.ActualWidth - (ui_sendButton.Margin.Left + ui_sendButton.Margin.Right);
             ui_sendButton.Width = computedSize < 200 ? computedSize : 200;
@@ -344,8 +334,8 @@ namespace Baconit.HelperControls
         private async void Send_Click(object sender, RoutedEventArgs e)
         {
             // Make sure we have a string unless we are editing a post selftext, then we can have an empty comment.
-            string comment = ui_textBox.Text;
-            if(String.IsNullOrWhiteSpace(comment) && !m_itemRedditId.StartsWith("t3_") && !m_isEdit)
+            var comment = ui_textBox.Text;
+            if(string.IsNullOrWhiteSpace(comment) && !_mItemRedditId.StartsWith("t3_") && !_mIsEdit)
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("\"Silence is a source of great strength.\" - Lao Tzu", "Except on reddit. Go on, say something.");
                 return;
@@ -356,26 +346,26 @@ namespace Baconit.HelperControls
             VisualStateManager.GoToState(this, "ShowOverlay", true);
 
             // Try to send the comment
-            string response = await Task.Run(() => MiscellaneousHelper.SendRedditComment(App.BaconMan, m_itemRedditId, comment, m_isEdit));
+            var response = await Task.Run(() => MiscellaneousHelper.SendRedditComment(App.BaconMan, _mItemRedditId, comment, _mIsEdit));
 
             if (response != null)
             {
                 // Now fire the event that a comment was submitted.
                 try
                 {
-                    OnCommentSubmittedArgs args = new OnCommentSubmittedArgs()
+                    var args = new CommentSubmittedArgs
                     {
                         Response = response,
-                        IsEdit = m_isEdit,
-                        RedditId = m_itemRedditId,
-                        Context = m_context,
+                        IsEdit = _mIsEdit,
+                        RedditId = _mItemRedditId,
+                        Context = _mContext,
                     };
-                    m_onCommentSubmitted.Raise(this, args);
+                    _mOnCommentSubmitted.Raise(this, args);
                 }
                 catch (Exception ex)
                 {
                     App.BaconMan.MessageMan.DebugDia("failed to fire OnCommentSubmitted", ex);
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
+                    TelemetryManager.ReportUnexpectedEvent(this, "OnCommentSubmittedFireFailed", ex);
                 }
             }
             else
@@ -395,7 +385,7 @@ namespace Baconit.HelperControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void LivePreviewBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        private void LivePreviewBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.MarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
         }
@@ -408,22 +398,22 @@ namespace Baconit.HelperControls
         private void PreviewTimer_Tick(object sender, object e)
         {
             // Make sure we have a new edit.
-            if(!m_lastTextEditTime.Equals(DateTime.MinValue))
+            if(!_mLastTextEditTime.Equals(DateTime.MinValue))
             {
-                TimeSpan timeSinceEdit = DateTime.Now - m_lastTextEditTime;
-                if (timeSinceEdit.TotalMilliseconds > m_previewUpdateEditTimeout)
+                var timeSinceEdit = DateTime.Now - _mLastTextEditTime;
+                if (timeSinceEdit.TotalMilliseconds > _mPreviewUpdateEditTimeout)
                 {
                     // Set the edit time so we won't come in again until an update.
                     // This is safe without locks bc this has to run on the UI thread and
                     // there is only one UI thread.
-                    m_lastTextEditTime = DateTime.MinValue;
+                    _mLastTextEditTime = DateTime.MinValue;
 
                     // Update the markdown text.
                     ui_livePreviewBox.Markdown = ui_textBox.Text;
 
                     // For some reason the SelectionStart count /r/n as 1 instead of two. So add one for each /r/n we find.
-                    int selectionStart = ui_textBox.SelectionStart;
-                    for (int count = 0; count < selectionStart; count++)
+                    var selectionStart = ui_textBox.SelectionStart;
+                    for (var count = 0; count < selectionStart; count++)
                     {
                         if (ui_textBox.Text[count] == '\r' && count + 1 < ui_textBox.Text.Length && ui_textBox.Text[count + 1] == '\n')
                         {
@@ -448,7 +438,7 @@ namespace Baconit.HelperControls
         private void TextBox_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
             // Update the last edit time.
-            m_lastTextEditTime = DateTime.Now;
+            _mLastTextEditTime = DateTime.Now;
         }
 
         #endregion
@@ -460,7 +450,7 @@ namespace Baconit.HelperControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, OnHelperTappedArgs e)
+        private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, HelperTappedArgs e)
         {
             if(e.Type == VisualHelperTypes.Fullscreen)
             {
@@ -482,7 +472,7 @@ namespace Baconit.HelperControls
             {
                 ui_visualHelper.FullscreenStatus = VisualHelperFullscreenStatus.RestoreFromFullscreen;
                 // Figure out about how high the box should be. We should shoot over, it might make the animation look a little odd but it will be ok.
-                ui_animFullscreenTextBoxGoTo.To = this.MaxHeight - (this.ActualHeight - ui_textBox.ActualHeight + (208 - ui_livePreviewGrid.ActualHeight));
+                ui_animFullscreenTextBoxGoTo.To = MaxHeight - (ActualHeight - ui_textBox.ActualHeight + (208 - ui_livePreviewGrid.ActualHeight));
                 VisualStateManager.GoToState(this, "GoFullscreen", true);
             }
             else

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BaconBackend.DataObjects
+﻿namespace BaconBackend.DataObjects
 {
     /// <summary>
     /// A helper class to represent the app version.

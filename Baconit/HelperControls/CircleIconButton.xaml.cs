@@ -1,19 +1,9 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -32,10 +22,11 @@ namespace Baconit.HelperControls
         /// </summary>
         public event EventHandler<EventArgs> OnIconTapped
         {
-            add { m_onTapped.Add(value); }
-            remove { m_onTapped.Remove(value); }
+            add => _mOnTapped.Add(value);
+            remove => _mOnTapped.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onTapped = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnTapped = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         #region Icon Symbol Icon
 
@@ -44,8 +35,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public Symbol SymbolIcon
         {
-            get { return (Symbol)GetValue(SymbolIconProperty); }
-            set { SetValue(SymbolIconProperty, value); }
+            get => (Symbol)GetValue(SymbolIconProperty);
+            set => SetValue(SymbolIconProperty, value);
         }
 
         public static readonly DependencyProperty SymbolIconProperty =
@@ -55,16 +46,13 @@ namespace Baconit.HelperControls
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     Symbol.Emoji2,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnSymbolIconChangedStatic)
+                    OnSymbolIconChangedStatic
                 ));
 
         private static void OnSymbolIconChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CircleIconButton;
-            if (instance != null)
-            {
-                instance.OnSymbolIconChanged((Symbol)e.NewValue);
-            }
+            instance?.OnSymbolIconChanged((Symbol)e.NewValue);
         }
 
         #endregion
@@ -76,8 +64,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public string FontIconGlyph
         {
-            get { return (string)GetValue(FontIconGlyphProperty); }
-            set { SetValue(FontIconGlyphProperty, value); }
+            get => (string)GetValue(FontIconGlyphProperty);
+            set => SetValue(FontIconGlyphProperty, value);
         }
 
         public static readonly DependencyProperty FontIconGlyphProperty =
@@ -87,16 +75,13 @@ namespace Baconit.HelperControls
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     "",                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnFontIconGlyphChangedStatic)
+                    OnFontIconGlyphChangedStatic
                 ));
 
         private static void OnFontIconGlyphChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CircleIconButton;
-            if (instance != null)
-            {
-                instance.OnFontIconGlyphChanged((string)e.NewValue);
-            }
+            instance?.OnFontIconGlyphChanged((string)e.NewValue);
         }
 
         #endregion
@@ -108,8 +93,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public VoteIconStatus VoteStatus
         {
-            get { return (VoteIconStatus)GetValue(VoteStatusProperty); }
-            set { SetValue(VoteStatusProperty, value); }
+            get => (VoteIconStatus)GetValue(VoteStatusProperty);
+            set => SetValue(VoteStatusProperty, value);
         }
 
         public static readonly DependencyProperty VoteStatusProperty =
@@ -119,16 +104,13 @@ namespace Baconit.HelperControls
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     null,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnVoteStatusChangedStatic)
+                    OnVoteStatusChangedStatic
                 ));
 
         private static void OnVoteStatusChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CircleIconButton;
-            if (instance != null)
-            {
-                instance.OnVoteStatusChanged((VoteIconStatus)e.NewValue);
-            }
+            instance?.OnVoteStatusChanged((VoteIconStatus)e.NewValue);
         }
 
         #endregion
@@ -140,8 +122,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public SolidColorBrush VoteBrush
         {
-            get { return (SolidColorBrush)GetValue(VoteBrushProperty); }
-            set { SetValue(VoteBrushProperty, value); }
+            get => (SolidColorBrush)GetValue(VoteBrushProperty);
+            set => SetValue(VoteBrushProperty, value);
         }
 
         public static readonly DependencyProperty VoteBrushProperty =
@@ -151,16 +133,13 @@ namespace Baconit.HelperControls
                 typeof(CircleIconButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     null,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnVoteBrushChangedStatic)
+                    OnVoteBrushChangedStatic
                 ));
 
         private static void OnVoteBrushChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as CircleIconButton;
-            if (instance != null)
-            {
-                instance.OnVoteBrushChanged((SolidColorBrush)e.NewValue);
-            }
+            instance?.OnVoteBrushChanged((SolidColorBrush)e.NewValue);
         }
 
         #endregion
@@ -169,7 +148,7 @@ namespace Baconit.HelperControls
 
         public CircleIconButton()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             VisualStateManager.GoToState(this, "ButtonReleased", false);
         }
 
@@ -208,7 +187,7 @@ namespace Baconit.HelperControls
         {
             ClearIcon();
 
-            bool isShowing = !String.IsNullOrWhiteSpace(newGlyph);
+            var isShowing = !string.IsNullOrWhiteSpace(newGlyph);
             if (isShowing)
             {
                 ui_fontIcon.Visibility = Visibility.Visible;
@@ -226,7 +205,7 @@ namespace Baconit.HelperControls
 
         private void Icon_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            m_onTapped.Raise(this, new EventArgs());
+            _mOnTapped.Raise(this, new EventArgs());
         }
 
         #endregion

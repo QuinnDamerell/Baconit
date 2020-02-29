@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 
@@ -12,7 +10,7 @@ namespace Baconit.Interfaces
         /// <summary>
         /// Fired when the screen mode changes
         /// </summary>
-        event EventHandler<OnScreenModeChangedArgs> OnScreenModeChanged;
+        event EventHandler<ScreenModeChangedArgs> OnScreenModeChanged;
 
         /// <summary>
         /// Fire when navigation is complete

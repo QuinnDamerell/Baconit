@@ -1,21 +1,8 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Store;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -23,8 +10,8 @@ namespace Baconit.HelperControls
 {
     public class RateAndFeedbackClosed : EventArgs
     {
-        public bool WasFeedbackGiven = false;
-        public bool WasReviewGiven = false;
+        public bool WasFeedbackGiven;
+        public bool WasReviewGiven;
     }
 
     public sealed partial class RateAndFeedbackPopUp : UserControl
@@ -34,18 +21,19 @@ namespace Baconit.HelperControls
         /// </summary>
         public event EventHandler<RateAndFeedbackClosed> OnHideComplete
         {
-            add { m_onHideComplete.Add(value); }
-            remove { m_onHideComplete.Remove(value); }
+            add => _mOnHideComplete.Add(value);
+            remove => _mOnHideComplete.Remove(value);
         }
-        SmartWeakEvent<EventHandler<RateAndFeedbackClosed>> m_onHideComplete = new SmartWeakEvent<EventHandler<RateAndFeedbackClosed>>();
+
+        private readonly SmartWeakEvent<EventHandler<RateAndFeedbackClosed>> _mOnHideComplete = new SmartWeakEvent<EventHandler<RateAndFeedbackClosed>>();
 
         // Used to indicate what happened
-        bool m_wasReviewGiven = false;
-        bool m_wasFeedbackGiven = false;
+        private bool _mWasReviewGiven;
+        private readonly bool _mWasFeedbackGiven = false;
 
         public RateAndFeedbackPopUp()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
              // Hide the box
             VisualStateManager.GoToState(this, "HideDialog", false);
@@ -60,7 +48,7 @@ namespace Baconit.HelperControls
             VisualStateManager.GoToState(this, "ShowCloseButton", true);
 
             // Review and feedback shown
-            App.BaconMan.TelemetryMan.ReportEvent(this, "ReviewAndFeedbackShown");
+            TelemetryManager.ReportEvent(this, "ReviewAndFeedbackShown");
         }
 
         private void Close_OnIconTapped(object sender, EventArgs e)
@@ -71,7 +59,7 @@ namespace Baconit.HelperControls
             // Fire this if we have a sender.
             if(sender != null)
             {
-                App.BaconMan.TelemetryMan.ReportEvent(this, "ClosedWithCloseButton");
+                TelemetryManager.ReportEvent(this, "ClosedWithCloseButton");
             }
         }
 
@@ -82,12 +70,12 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void HideDialog_Completed(object sender, object e)
         {
-            RateAndFeedbackClosed args = new RateAndFeedbackClosed()
+            var args = new RateAndFeedbackClosed
             {
-                WasFeedbackGiven = m_wasFeedbackGiven,
-                WasReviewGiven = m_wasReviewGiven
+                WasFeedbackGiven = _mWasFeedbackGiven,
+                WasReviewGiven = _mWasReviewGiven
             };
-            m_onHideComplete.Raise(this, args);
+            _mOnHideComplete.Raise(this, args);
         }
 
         /// <summary>
@@ -102,8 +90,8 @@ namespace Baconit.HelperControls
             await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-windows-store://review/?ProductId=9wzdncrfj0bc"));
 
             // Send telemetry
-            App.BaconMan.TelemetryMan.ReportEvent(this, "StoreReviewOpened");
-            m_wasReviewGiven = true;
+            TelemetryManager.ReportEvent(this, "StoreReviewOpened");
+            _mWasReviewGiven = true;
 
             // Close the box
             Close_OnIconTapped(null, null);

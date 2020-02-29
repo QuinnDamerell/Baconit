@@ -1,13 +1,7 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
 using Baconit.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace Baconit.Panels.FlipView
 {
@@ -26,11 +20,11 @@ namespace Baconit.Panels.FlipView
 
         public Post Post { get; set; }
 
-        public PostCollector Collector { get; set; }
+        public PostCollector Collector { get; }
 
-        public IPanelHost Host { get; set; }
+        public IPanelHost Host { get; }
 
-        public string TargetComment { get; set; }
+        public string TargetComment { get; }
 
 
         #region UI Vars
@@ -40,32 +34,22 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         public int HeaderSize
         {
-            get
-            {
-                return m_headerSize;
-            }
-            set
-            {
-                SetProperty(ref m_headerSize, value);
-            }
+            get => _mHeaderSize;
+            set => SetProperty(ref _mHeaderSize, value);
         }
-        int m_headerSize = 500;
+
+        private int _mHeaderSize = 500;
 
         /// <summary>
         /// Controls if the post menu icon is visible.
         /// </summary>
         public Visibility PostMenuIconVisibility
         {
-            get
-            {
-                return m_postMenuIcon;
-            }
-            set
-            {
-                SetProperty(ref m_postMenuIcon, value);
-            }
+            get => _mPostMenuIcon;
+            set => SetProperty(ref _mPostMenuIcon, value);
         }
-        Visibility m_postMenuIcon = Visibility.Collapsed;
+
+        private Visibility _mPostMenuIcon = Visibility.Collapsed;
 
         #endregion
     }

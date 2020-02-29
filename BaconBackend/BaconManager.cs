@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using BaconBackend.Managers;
-using Windows.UI.Xaml;
 using Windows.ApplicationModel;
 using BaconBackend.Interfaces;
 using BaconBackend.Helpers;
-using Windows.UI.Core;
-using Windows.ApplicationModel.Background;
 using System.Threading;
 
 namespace BaconBackend
@@ -17,7 +11,7 @@ namespace BaconBackend
     /// <summary>
     /// Provides data for BaconManager's OnBackButton event.
     /// </summary>
-    public class OnBackButtonArgs : EventArgs
+    public class BackButtonArgs : EventArgs
     {
         /// <summary>
         /// If the back button press has been handled already.
@@ -28,7 +22,7 @@ namespace BaconBackend
     /// <summary>
     /// Provides data for when the application is suspending.
     /// </summary>
-    public class OnSuspendingArgs : EventArgs
+    public class SuspendingArgs : EventArgs
     {
         public RefCountedDeferral RefDeferral;
     }
@@ -49,32 +43,35 @@ namespace BaconBackend
         /// <summary>
         /// Fired when the app is suspending
         /// </summary>
-        public event EventHandler<OnSuspendingArgs> OnSuspending
+        public event EventHandler<SuspendingArgs> OnSuspending
         {
-            add { m_onSuspending.Add(value); }
-            remove { m_onSuspending.Remove(value); }
+            add => _suspending.Add(value);
+            remove => _suspending.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnSuspendingArgs>> m_onSuspending = new SmartWeakEvent<EventHandler<OnSuspendingArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<SuspendingArgs>> _suspending = new SmartWeakEvent<EventHandler<SuspendingArgs>>();
 
         /// <summary>
         /// Fired when the app is resuming
         /// </summary>
         public event EventHandler<EventArgs> OnResuming
         {
-            add { m_onResuming.Add(value); }
-            remove { m_onResuming.Remove(value); }
+            add => _resuming.Add(value);
+            remove => _resuming.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onResuming = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _resuming = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         /// <summary>
         /// Fired when the back button is pressed
         /// </summary>
-        public event EventHandler<OnBackButtonArgs> OnBackButton
+        public event EventHandler<BackButtonArgs> OnBackButton
         {
-            add { m_onBackButton.Add(value); }
-            remove { m_onBackButton.Remove(value); }
+            add => _backButton.Add(value);
+            remove => _backButton.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnBackButtonArgs>> m_onBackButton = new SmartWeakEvent<EventHandler<OnBackButtonArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<BackButtonArgs>> _backButton = new SmartWeakEvent<EventHandler<BackButtonArgs>>();
 
         /// <summary>
         /// Responsible for managing the current subreddits.
@@ -150,7 +147,7 @@ namespace BaconBackend
         /// Holds a connection to the front end, a way for things back here to
         /// interact with the front end.
         /// </summary>
-        private IBackendActionListener m_backendActionListener;
+        private IBackendActionListener _backendActionListener;
 
         /// <summary>
         /// Create a new BaconManager.
@@ -186,7 +183,7 @@ namespace BaconBackend
 
             // Setup the in between invoke handler for the onBackButton event. This will allow us to stop
             // calling the handlers when one returns true.
-            m_onBackButton.SetInBetweenInvokesAction(new Func<EventArgs, bool>(InBetweenInvokeHandlerForOnBackButton));
+            _backButton.SetInBetweenInvokesAction(InBetweenInvokeHandlerForOnBackButton);
         }
 
         /// <summary>
@@ -198,11 +195,11 @@ namespace BaconBackend
         {
             // Setup a ref deferral for everyone to hold. We also need to setup a clean up action to save the setting
             // when the deferral is done.
-            RefCountedDeferral refDeferral = new RefCountedDeferral(e.SuspendingOperation.GetDeferral(), () =>
+            var refDeferral = new RefCountedDeferral(e.SuspendingOperation.GetDeferral(), () =>
             {
-                // We need to flush the settings here just before we complete the deferal. We need to block this function
+                // We need to flush the settings here just before we complete the deferral. We need to block this function
                 // until the settings are flushed.
-                using (AutoResetEvent are = new AutoResetEvent(false))
+                using (var are = new AutoResetEvent(false))
                 {
                     Task.Run(async () =>
                     {
@@ -218,13 +215,13 @@ namespace BaconBackend
             refDeferral.AddRef();
 
             // Make the
-            OnSuspendingArgs args = new OnSuspendingArgs()
+            var args = new SuspendingArgs
             {
                 RefDeferral = refDeferral
             };
 
             // Fire the event
-            m_onSuspending.Raise(this, args);
+            _suspending.Raise(this, args);
 
             // Release our ref to the deferral
             refDeferral.ReleaseRef();
@@ -238,7 +235,7 @@ namespace BaconBackend
         public void OnResuming_Fired(object sender, object e)
         {
             // Fire the event.
-            m_onResuming.Raise(this, new EventArgs());
+            _resuming.Raise(this, new EventArgs());
 
             // Fire off an update
             FireOffUpdate();
@@ -251,8 +248,8 @@ namespace BaconBackend
         public void OnBackButton_Fired(ref bool isHandled)
         {
             // Fire the event.
-            OnBackButtonArgs args = new OnBackButtonArgs();
-            m_onBackButton.Raise(this, args);
+            var args = new BackButtonArgs();
+            _backButton.Raise(this, args);
 
             // If someone handled it don't navigate back
             if(args.IsHandled)
@@ -263,18 +260,18 @@ namespace BaconBackend
 
             // Tell the UI to go back. Technically it could just listen to the event
             // and check the handled var, but this ensures it is always last.
-            isHandled = m_backendActionListener.NavigateBack();
+            isHandled = _backendActionListener.NavigateBack();
         }
 
         /// <summary>
-        /// This is called between invokes of m_onBackButton while it is being raised to each
+        /// This is called between invokes of _backButton while it is being raised to each
         /// listener. If a listener sets e.IsHandled to true we should stop asking more people.
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        private bool InBetweenInvokeHandlerForOnBackButton(EventArgs e)
+        private static bool InBetweenInvokeHandlerForOnBackButton(EventArgs e)
         {
-            return !((OnBackButtonArgs)e).IsHandled;
+            return !((BackButtonArgs)e).IsHandled;
         }
 
         /// <summary>
@@ -300,7 +297,7 @@ namespace BaconBackend
         /// <param name="actionListener">Backend action listener</param>
         public void SetBackendActionListener(IBackendActionListener actionListener)
         {
-            m_backendActionListener = actionListener;
+            _backendActionListener = actionListener;
         }
 
         /// <summary>
@@ -311,12 +308,12 @@ namespace BaconBackend
         /// <returns>If the link was successfully shown.</returns>
         public bool ShowGlobalContent(string link)
         {
-            if(m_backendActionListener == null)
+            if( _backendActionListener == null)
             {
                 return false;
             }
 
-            m_backendActionListener.ShowGlobalContent(link);
+            _backendActionListener.ShowGlobalContent(link);
             return true;
         }
 
@@ -328,12 +325,12 @@ namespace BaconBackend
         /// <returns>If the content was successfully shown.</returns>
         public bool ShowGlobalContent(RedditContentContainer container)
         {
-            if (m_backendActionListener == null)
+            if ( _backendActionListener == null)
             {
                 return false;
             }
 
-            m_backendActionListener.ShowGlobalContent(container);
+            _backendActionListener.ShowGlobalContent(container);
             return true;
         }
 
@@ -345,12 +342,12 @@ namespace BaconBackend
         /// <returns>If the Message of the day was successfully shown.</returns>
         public bool ShowMessageOfTheDay(string title, string contentMarkdown)
         {
-            if (m_backendActionListener == null)
+            if ( _backendActionListener == null)
             {
                 return false;
             }
 
-            m_backendActionListener.ShowMessageOfTheDay(title, contentMarkdown);
+            _backendActionListener.ShowMessageOfTheDay(title, contentMarkdown);
             return true;
         }
 
@@ -360,12 +357,12 @@ namespace BaconBackend
         /// <returns>If the login form was successfully shown.</returns>
         public bool NavigateToLogin()
         {
-            if (m_backendActionListener == null)
+            if ( _backendActionListener == null)
             {
                 return false;
             }
 
-            m_backendActionListener.NavigateToLogin();
+            _backendActionListener.NavigateToLogin();
             return true;
         }
 

@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaconBackend.DataObjects
 {
@@ -29,13 +24,13 @@ namespace BaconBackend.DataObjects
         /// If the message is critically important.
         /// </summary>
         [JsonProperty(PropertyName = "critical")]
-        public bool isCritical { get; set; }
+        public bool IsCritical { get; set; }
 
         /// <summary>
         /// If the app shouldn't display the message.
         /// </summary>
         [JsonProperty(PropertyName = "ignore")]
-        public bool isIgnore { get; set; }
+        public bool IsIgnore { get; set; }
 
         /// <summary>
         /// The minimum number of times the user should have opened the app before seeing this message.

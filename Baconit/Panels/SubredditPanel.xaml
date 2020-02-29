@@ -56,9 +56,11 @@
                                        Fill="{x:Bind UpVoteColor, Mode=OneWay}" />
                         </StackPanel>
                     </StackPanel>
-                    <TextBlock Margin="0,-9,0,0"
-                               HorizontalAlignment="Center"
-                               Text="{x:Bind Score, Mode=OneWay}" />
+                    <Viewbox Margin="0,-9,0,0" StretchDirection="DownOnly" Stretch="Uniform">
+                        <TextBlock HorizontalAlignment="Center"
+                                   Padding="5,0,5,0"
+                                   Text="{x:Bind Score, Mode=OneWay}" />
+                    </Viewbox>
                     <StackPanel Margin="0,-9,0,0"
                                 Background="Transparent"
                                 Tapped="DownVote_Tapped">

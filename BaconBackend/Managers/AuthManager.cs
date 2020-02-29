@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Authentication.Web;
-using Windows.Web.Http;
 
 namespace BaconBackend.Managers
 {
@@ -15,8 +13,8 @@ namespace BaconBackend.Managers
 
     public class AuthManager
     {
-        private const string BACONIT_APP_ID = "EU5cWoJCJ5HcPQ";
-        private const string BACONIT_REDIRECT_URL = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
+        private const string BaconitAppId = "EU5cWoJCJ5HcPQ";
+        private const string BaconitRedirectUrl = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
 
         private class AccessTokenResult
         {
@@ -36,14 +34,14 @@ namespace BaconBackend.Managers
             public DateTime ExpiresAt;
         }
 
-        private BaconManager m_baconMan;
-        ManualResetEvent m_refreshEvent = new ManualResetEvent(false);
-        bool m_isTokenRefreshing = false;
-        bool m_tokenRefreshFailed = false;
+        private readonly BaconManager _mBaconMan;
+        private readonly ManualResetEvent _mRefreshEvent = new ManualResetEvent(false);
+        private bool _mIsTokenRefreshing;
+        private bool _mTokenRefreshFailed;
 
         public AuthManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _mBaconMan = baconMan;
         }
 
         /// <summary>
@@ -53,23 +51,23 @@ namespace BaconBackend.Managers
         public async Task<UserManager.SignInResult> AuthNewUser()
         {
             // Try to get the request token
-            UserManager.SignInResult result = await GetRedditRequestToken();
+            var result = await GetRedditRequestToken();
             if(!result.WasSuccess)
             {
                 return result;
             }
 
             // Try to get the access token
-            AccessTokenResult accessToken = await RefreshAccessToken(result.Message, false);
+            var accessToken = await RefreshAccessToken(result.Message, false);
             if(accessToken == null)
             {
-                return new UserManager.SignInResult()
+                return new UserManager.SignInResult
                 {
                     Message = "Failed to get access token"
                 };
             }
 
-            return new UserManager.SignInResult()
+            return new UserManager.SignInResult
             {
                 WasSuccess = true
             };
@@ -88,19 +86,19 @@ namespace BaconBackend.Managers
                 return null;
             }
 
-            bool shouldRefresh = false;
-            bool shouldBlock = false;
-            lock (m_refreshEvent)
+            var shouldRefresh = false;
+            var shouldBlock = false;
+            lock (_mRefreshEvent)
             {
-                TimeSpan timeRemaining = AccessTokenData.ExpiresAt - DateTime.Now;
+                var timeRemaining = AccessTokenData.ExpiresAt - DateTime.Now;
 
                 // If it is already expired or will do so soon wait on the refresh before using it.
-                if (timeRemaining.TotalSeconds < 30 || m_tokenRefreshFailed)
+                if (timeRemaining.TotalSeconds < 30 || _mTokenRefreshFailed)
                 {
                     // Check if someone else it refreshing
-                    if (!m_isTokenRefreshing)
+                    if (!_mIsTokenRefreshing)
                     {
-                        m_isTokenRefreshing = true;
+                        _mIsTokenRefreshing = true;
                         shouldRefresh = true;
                     }
                     shouldBlock = true;
@@ -109,9 +107,9 @@ namespace BaconBackend.Managers
                 else if (timeRemaining.TotalMinutes < 5)
                 {
                     // Check if someone else it refreshing
-                    if (!m_isTokenRefreshing)
+                    if (!_mIsTokenRefreshing)
                     {
-                        m_isTokenRefreshing = true;
+                        _mIsTokenRefreshing = true;
                         shouldRefresh = true;
                     }
                 }
@@ -125,20 +123,20 @@ namespace BaconBackend.Managers
                     // Try to refresh
                     try
                     {
-                        AccessTokenResult result = await RefreshAccessToken(AccessTokenData.RefreshToken, true);
-                        m_tokenRefreshFailed = result == null;
+                        var result = await RefreshAccessToken(AccessTokenData.RefreshToken, true);
+                        _mTokenRefreshFailed = result == null;
                     }
                     catch (Exception e)
                     {
-                        m_baconMan.MessageMan.DebugDia("Failed to auto refresh token", e);
-                        m_tokenRefreshFailed = true;
+                        _mBaconMan.MessageMan.DebugDia("Failed to auto refresh token", e);
+                        _mTokenRefreshFailed = true;
                     }
 
                     // Lock the
-                    lock (m_refreshEvent)
+                    lock (_mRefreshEvent)
                     {
-                        m_isTokenRefreshing = false;
-                        m_refreshEvent.Set();
+                        _mIsTokenRefreshing = false;
+                        _mRefreshEvent.Set();
                     }
 
                 }).Start();
@@ -150,12 +148,12 @@ namespace BaconBackend.Managers
                 // Wait on a task that will wait on the event.
                 await Task.Run(() =>
                 {
-                    m_refreshEvent.WaitOne();
+                    _mRefreshEvent.WaitOne();
                 });
             }
 
             // Now return the key.
-            return m_tokenRefreshFailed ? null : AccessTokenData.AccessToken;
+            return _mTokenRefreshFailed ? null : AccessTokenData.AccessToken;
         }
 
         /// <summary>
@@ -173,93 +171,97 @@ namespace BaconBackend.Managers
         private async Task<UserManager.SignInResult> GetRedditRequestToken()
         {
             // Create a random number
-            string nonce = GetNonce();
+            var nonce = GetNonce();
 
             // Create the nav string
-            string tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
-                + "client_id=" + BACONIT_APP_ID
-                + "&response_type=code"
-                + "&state=" + nonce
-                + "&redirect_uri=" + BACONIT_REDIRECT_URL
-                + "&duration=permanent"
-                + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
-                + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
-                + "account,modtraffic,edit,modwiki,modself,history,flair";
+            var tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
+                                     + "client_id=" + BaconitAppId
+                                     + "&response_type=code"
+                                     + "&state=" + nonce
+                                     + "&redirect_uri=" + BaconitRedirectUrl
+                                     + "&duration=permanent"
+                                     + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
+                                     + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
+                                     + "account,modtraffic,edit,modwiki,modself,history,flair";
 
             try
             {
-                Uri start = new Uri(tokenRequestString, UriKind.Absolute);
-                Uri end = new Uri(BACONIT_REDIRECT_URL, UriKind.Absolute);
-                WebAuthenticationResult result = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, start, end);
+                var start = new Uri(tokenRequestString, UriKind.Absolute);
+                var end = new Uri(BaconitRedirectUrl, UriKind.Absolute);
+                var result = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, start, end);
 
-                if(result.ResponseStatus == WebAuthenticationStatus.Success)
+                switch (result.ResponseStatus)
                 {
-                    // Woot we got it! Parse out the token
-                    int startOfState = result.ResponseData.IndexOf("state=") + 6;
-                    int endOfState = result.ResponseData.IndexOf("&", startOfState);
-                    int startOfCode = result.ResponseData.IndexOf("code=") + 5;
-                    int endOfCode = result.ResponseData.IndexOf("&", startOfCode);
-
-                    // Make sure we found a code (result is -1 + 5 = 4)
-                    if(startOfCode == 4)
+                    case WebAuthenticationStatus.Success:
                     {
-                        return new UserManager.SignInResult()
+                        // Woot we got it! Parse out the token
+                        var startOfState = result.ResponseData.IndexOf("state=", StringComparison.Ordinal) + 6;
+                        var endOfState = result.ResponseData.IndexOf("&", startOfState, StringComparison.Ordinal);
+                        var startOfCode = result.ResponseData.IndexOf("code=", StringComparison.Ordinal) + 5;
+                        var endOfCode = result.ResponseData.IndexOf("&", startOfCode, StringComparison.Ordinal);
+
+                        // Make sure we found a code (result is -1 + 5 = 4)
+                        if(startOfCode == 4)
                         {
-                            Message = "Reddit returned an error!"
+                            return new UserManager.SignInResult
+                            {
+                                Message = "Reddit returned an error!"
+                            };
+                        }
+
+                        // Check for the ends
+                        endOfCode = endOfCode == -1 ? result.ResponseData.Length : endOfCode;
+                        endOfState = endOfState == -1 ? result.ResponseData.Length : endOfState;
+
+                        var state = result.ResponseData.Substring(startOfState, endOfState - startOfState);
+                        var code = result.ResponseData.Substring(startOfCode, endOfCode - startOfCode);
+
+                        // Check the state
+                        if(nonce != state)
+                        {
+                            return new UserManager.SignInResult
+                            {
+                                Message = "The state is not the same!"
+                            };
+                        }
+
+                        // Check the code
+                        if(string.IsNullOrWhiteSpace(code))
+                        {
+                            return new UserManager.SignInResult
+                            {
+                                Message = "The code is empty!"
+                            };
+                        }
+
+                        // Return the code!
+                        return new UserManager.SignInResult
+                        {
+                            WasSuccess = true,
+                            Message = code
                         };
                     }
-
-                    // Check for the ends
-                    endOfCode = endOfCode == -1 ? result.ResponseData.Length : endOfCode;
-                    endOfState = endOfState == -1 ? result.ResponseData.Length : endOfState;
-
-                    string state = result.ResponseData.Substring(startOfState, endOfState - startOfState);
-                    string code = result.ResponseData.Substring(startOfCode, endOfCode - startOfCode);
-
-                    // Check the state
-                    if(nonce != state)
-                    {
-                        return new UserManager.SignInResult()
+                    case WebAuthenticationStatus.ErrorHttp:
+                        return new UserManager.SignInResult
                         {
-                            Message = "The state is not the same!"
+                            WasErrorNetwork = true
                         };
-                    }
-
-                    // Check the code
-                    if(String.IsNullOrWhiteSpace(code))
-                    {
-                        return new UserManager.SignInResult()
+                    case WebAuthenticationStatus.UserCancel:
+                        return new UserManager.SignInResult
                         {
-                            Message = "The code is empty!"
+                            WasUserCanceled = true
                         };
-                    }
-
-                    // Return the code!
-                    return new UserManager.SignInResult()
-                    {
-                        WasSuccess = true,
-                        Message = code
-                    };
-                }
-                else if(result.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
-                {
-                    return new UserManager.SignInResult()
-                    {
-                        WasErrorNetwork = true
-                    };
-                }
-                else
-                {
-                    return new UserManager.SignInResult()
-                    {
-                        WasUserCanceled = true
-                    };
+                    default:
+                        return new UserManager.SignInResult
+                        {
+                            WasUserCanceled = true
+                        };
                 }
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to get request token", e);
-                return new UserManager.SignInResult()
+                _mBaconMan.MessageMan.DebugDia("Failed to get request token", e);
+                return new UserManager.SignInResult
                 {
                     WasErrorNetwork = true
                 };
@@ -273,42 +275,42 @@ namespace BaconBackend.Managers
         private async Task<AccessTokenResult> GetAccessToken(string code, bool isRefresh)
         {
             // Create the nav string
-            string accessTokenRequest = "https://www.reddit.com/api/v1/access_token";
+            const string accessTokenRequest = "https://www.reddit.com/api/v1/access_token";
             try
             {
                 // Create the post data
-                List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+                var postData = new List<KeyValuePair<string, string>>();
                 postData.Add(new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"));
                 postData.Add(new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", code));
-                postData.Add(new KeyValuePair<string, string>("redirect_uri", BACONIT_REDIRECT_URL));
+                postData.Add(new KeyValuePair<string, string>("redirect_uri", BaconitRedirectUrl));
 
                 // Create the auth header
-                var byteArray = Encoding.UTF8.GetBytes(BACONIT_APP_ID+":");
+                var byteArray = Encoding.UTF8.GetBytes(BaconitAppId+":");
                 var base64String = "Basic " + Convert.ToBase64String(byteArray);
-                IHttpContent response = await m_baconMan.NetworkMan.MakePostRequest(accessTokenRequest, postData, base64String);
-                string responseString = await response.ReadAsStringAsync();
+                var response = await NetworkManager.MakePostRequest(accessTokenRequest, postData, base64String);
+                var responseString = await response.ReadAsStringAsync();
 
                 // Parse the response.
                 return JsonConvert.DeserializeObject<AccessTokenResult>(responseString);
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to get access token", e);
+                _mBaconMan.MessageMan.DebugDia("Failed to get access token", e);
                 return null;
             }
         }
 
-        private string GetNonce()
+        private static string GetNonce()
         {
-            Random rand = new Random((int)DateTime.Now.Ticks);
-            int nonce = rand.Next(1000000000);
+            var rand = new Random((int)DateTime.Now.Ticks);
+            var nonce = rand.Next(1000000000);
             return nonce.ToString();
         }
 
         private async Task<AccessTokenResult> RefreshAccessToken(string code, bool isRefresh)
         {
             // Try to get the new token
-            AccessTokenResult data = await GetAccessToken(code, isRefresh);
+            var data = await GetAccessToken(code, isRefresh);
             if(data == null)
             {
                 return null;
@@ -319,7 +321,7 @@ namespace BaconBackend.Managers
 
             // If this was a refresh the refresh token won't be given again.
             // So set it to the current token.
-            if(String.IsNullOrWhiteSpace(data.RefreshToken) && AccessTokenData != null)
+            if(string.IsNullOrWhiteSpace(data.RefreshToken) && AccessTokenData != null)
             {
                 data.RefreshToken = AccessTokenData.RefreshToken;
             }
@@ -335,15 +337,10 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Returns if the user is signed in.
         /// </summary>
-        public bool IsUserSignedIn
-        {
-            get
-            {
-                return AccessTokenData != null
-                    && !String.IsNullOrWhiteSpace(AccessTokenData.AccessToken)
-                    && !String.IsNullOrWhiteSpace(AccessTokenData.RefreshToken);
-            }
-        }
+        public bool IsUserSignedIn =>
+            AccessTokenData != null
+            && !string.IsNullOrWhiteSpace(AccessTokenData.AccessToken)
+            && !string.IsNullOrWhiteSpace(AccessTokenData.RefreshToken);
 
         /// <summary>
         /// Holds the current access token data
@@ -352,32 +349,23 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_accessTokenData == null)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("AuthManager.AccessToken"))
-                    {
-                        m_accessTokenData = m_baconMan.SettingsMan.ReadFromRoamingSettings<AccessTokenResult>("AuthManager.AccessToken");
-                    }
-                    else
-                    {
-                        m_accessTokenData = null;
-                    }
-                }
-                return m_accessTokenData;
+                if (_accessTokenData != null) return _accessTokenData;
+                _accessTokenData = _mBaconMan.SettingsMan.RoamingSettings.ContainsKey("AuthManager.AccessToken") ? _mBaconMan.SettingsMan.ReadFromRoamingSettings<AccessTokenResult>("AuthManager.AccessToken") : null;
+                return _accessTokenData;
             }
             set
             {
-                m_accessTokenData = value;
+                _accessTokenData = value;
 
                 // #todo remove
-                if (m_accessTokenData != null && String.IsNullOrWhiteSpace(m_accessTokenData.RefreshToken))
+                if (_accessTokenData != null && string.IsNullOrWhiteSpace(_accessTokenData.RefreshToken))
                 {
                     Debugger.Break();
                 }
 
-                m_baconMan.SettingsMan.WriteToRoamingSettings<AccessTokenResult>("AuthManager.AccessToken", m_accessTokenData);
+                _mBaconMan.SettingsMan.WriteToRoamingSettings("AuthManager.AccessToken", _accessTokenData);
             }
         }
-        private AccessTokenResult m_accessTokenData = null;
+        private AccessTokenResult _accessTokenData;
     }
 }

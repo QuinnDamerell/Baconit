@@ -2,18 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using BaconBackend.Helpers;
-using System.Net;
 
 namespace BaconBackend.Managers
 {
     /// <summary>
     /// Event args for the OnSubredditsUpdated event.
     /// </summary>
-    public class OnSubredditsUpdatedArgs : EventArgs
+    public class SubredditsUpdatedArgs : EventArgs
     {
         public List<Subreddit> NewSubreddits;
     }
@@ -23,31 +20,32 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Fired when the subreddit list updates.
         /// </summary>
-        public event EventHandler<OnSubredditsUpdatedArgs> OnSubredditsUpdated
+        public event EventHandler<SubredditsUpdatedArgs> OnSubredditsUpdated
         {
-            add { m_onSubredditsUpdated.Add(value); }
-            remove { m_onSubredditsUpdated.Remove(value); }
+            add => _subredditsUpdated.Add(value);
+            remove => _subredditsUpdated.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnSubredditsUpdatedArgs>> m_onSubredditsUpdated = new SmartWeakEvent<EventHandler<OnSubredditsUpdatedArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<SubredditsUpdatedArgs>> _subredditsUpdated = new SmartWeakEvent<EventHandler<SubredditsUpdatedArgs>>();
 
         //
         // Private Vars
         //
-        BaconManager m_baconMan;
-        object objectLock = new object();
-        bool m_isUpdateRunning = false;
+        private readonly BaconManager _baconMan;
+        private readonly object _objectLock = new object();
+        private bool _isUpdateRunning;
 
         /// <summary>
         /// This is used as a temp cache while the app is open to look up any subreddits
         /// the user wanted to look at temporally.
         /// </summary>
-        List<Subreddit> m_tempSubredditCache = new List<Subreddit>();
+        private readonly List<Subreddit> _mTempSubredditCache = new List<Subreddit>();
 
         public SubredditManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
 
-            m_baconMan.UserMan.OnUserUpdated += UserMan_OnUserUpdated;
+            _baconMan.UserMan.OnUserUpdated += UserMan_OnUserUpdated;
         }
 
         /// <summary>
@@ -56,19 +54,19 @@ namespace BaconBackend.Managers
         /// <param name="force">Forces the update</param>
         public bool Update(bool force = false)
         {
-            TimeSpan timeSinceLastUpdate = DateTime.Now - LastUpdate;
+            var timeSinceLastUpdate = DateTime.Now - LastUpdate;
             if (!force && timeSinceLastUpdate.TotalMinutes < 300 && SubredditList.Count > 0)
             {
                return false;
             }
 
-            lock(objectLock)
+            lock(_objectLock)
             {
-                if(m_isUpdateRunning)
+                if(_isUpdateRunning)
                 {
                     return false;
                 }
-                m_isUpdateRunning = true;
+                _isUpdateRunning = true;
             }
 
             // Kick off an new task
@@ -78,19 +76,15 @@ namespace BaconBackend.Managers
                 {
                     // Get the entire list of subreddits. We will give the helper a super high limit so it
                     // will return all it can find.
-                    string baseUrl = m_baconMan.UserMan.IsUserSignedIn ? "/subreddits/mine.json" : "/subreddits/default.json";
-                    int maxLimit = m_baconMan.UserMan.IsUserSignedIn ? 99999 : 100;
-                    RedditListHelper <Subreddit> listHelper = new RedditListHelper<Subreddit>(baseUrl, m_baconMan.NetworkMan);
+                    var baseUrl = _baconMan.UserMan.IsUserSignedIn ? "/subreddits/mine.json" : "/subreddits/default.json";
+                    var maxLimit = _baconMan.UserMan.IsUserSignedIn ? 99999 : 100;
+                    var listHelper = new RedditListHelper<Subreddit>(baseUrl, _baconMan.NetworkMan);
 
                     // Get the list
-                    List<Element<Subreddit>> elements = await listHelper.FetchElements(0, maxLimit);
+                    var elements = await listHelper.FetchElements(0, maxLimit);
 
                     // Create a json list from the wrappers.
-                    List<Subreddit> subredditList = new List<Subreddit>();
-                    foreach(Element<Subreddit> element in elements)
-                    {
-                        subredditList.Add(element.Data);
-                    }
+                    var subredditList = elements.Select(element => element.Data).ToList();
 
                     // Update the subreddit list
                     HandleSubredditsFromWeb(subredditList);
@@ -98,11 +92,11 @@ namespace BaconBackend.Managers
                 }
                 catch(Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Failed to get subreddit list", e);
+                    _baconMan.MessageMan.DebugDia("Failed to get subreddit list", e);
                 }
 
                 // Indicate we aren't running anymore
-                m_isUpdateRunning = false;
+                _isUpdateRunning = false;
             }).Start();
             return true;
         }
@@ -145,26 +139,20 @@ namespace BaconBackend.Managers
         public Subreddit GetSubredditByDisplayName(string subredditDisplayName)
         {
             // Grab a local copy
-            List<Subreddit> subreddits = SubredditList;
+            var subreddits = SubredditList;
 
             // Look for the subreddit
-            foreach (Subreddit subreddit in subreddits)
+            foreach (var subreddit in subreddits.Where(subreddit => subreddit.DisplayName.Equals(subredditDisplayName)))
             {
-                if (subreddit.DisplayName.Equals(subredditDisplayName))
-                {
-                    return subreddit;
-                }
+                return subreddit;
             }
 
             // Check the temp cache
-            lock (m_tempSubredditCache)
+            lock (_mTempSubredditCache)
             {
-                foreach (Subreddit subreddit in m_tempSubredditCache)
+                foreach (var subreddit in _mTempSubredditCache.Where(subreddit => subreddit.DisplayName.Equals(subredditDisplayName)))
                 {
-                    if (subreddit.DisplayName.Equals(subredditDisplayName))
-                    {
-                        return subreddit;
-                    }
+                    return subreddit;
                 }
             }
 
@@ -182,24 +170,22 @@ namespace BaconBackend.Managers
             try
             {
                 // Make the call
-                string jsonResponse = await m_baconMan.NetworkMan.MakeRedditGetRequestAsString($"/r/{displayName}/about/.json");
+                var jsonResponse = await _baconMan.NetworkMan.MakeRedditGetRequestAsString($"/r/{displayName}/about/.json");
 
                 // Parse the new subreddit
-                foundSubreddit = await MiscellaneousHelper.ParseOutRedditDataElement<Subreddit>(m_baconMan, jsonResponse);
+                foundSubreddit = await MiscellaneousHelper.ParseOutRedditDataElement<Subreddit>(_baconMan, jsonResponse);
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to get subreddit", e);
-                m_baconMan.MessageMan.DebugDia("failed to get subreddit", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "failed to get subreddit", e);
+                _baconMan.MessageMan.DebugDia("failed to get subreddit", e);
             }
 
             // If we found it add it to the cache.
-            if(foundSubreddit != null)
+            if (foundSubreddit == null) return foundSubreddit;
+            lock(_mTempSubredditCache)
             {
-                lock(m_tempSubredditCache)
-                {
-                    m_tempSubredditCache.Add(foundSubreddit);
-                }
+                _mTempSubredditCache.Add(foundSubreddit);
             }
 
             return foundSubreddit;
@@ -213,18 +199,10 @@ namespace BaconBackend.Managers
         public bool IsSubredditSubscribedTo(string displayName)
         {
             // Grab a local copy
-            List<Subreddit> subreddits = SubredditList;
+            var subreddits = SubredditList;
 
             // If it exists in the local subreddit list it is subscribed to.
-            foreach (Subreddit subreddit in subreddits)
-            {
-                if (subreddit.DisplayName.Equals(displayName))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return subreddits.Any(subreddit => subreddit.DisplayName.Equals(displayName));
         }
 
         /// <summary>
@@ -237,12 +215,14 @@ namespace BaconBackend.Managers
             try
             {
                 // Build the data to send
-                List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
-                postData.Add(new KeyValuePair<string, string>("action", subscribe ? "sub" : "unsub"));
-                postData.Add(new KeyValuePair<string, string>("sr", "t5_"+subredditId));
+                var postData = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("action", subscribe ? "sub" : "unsub"),
+                    new KeyValuePair<string, string>("sr", "t5_" + subredditId)
+                };
 
                 // Make the call
-                string jsonResponse = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString($"/api/subscribe", postData);
+                var jsonResponse = await _baconMan.NetworkMan.MakeRedditPostRequestAsString($"/api/subscribe", postData);
 
                 // Validate the response
                 if (jsonResponse.Contains("{}"))
@@ -252,14 +232,14 @@ namespace BaconBackend.Managers
                 }
 
                 // Report the error
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSubscribeToSubredditWebRequestFailed");
-                m_baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit, reddit returned an expected value");
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToSubscribeToSubredditWebRequestFailed");
+                _baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit, reddit returned an expected value");
                 return false;
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSubscribeToSubreddit", e);
-                m_baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToSubscribeToSubreddit", e);
+                _baconMan.MessageMan.DebugDia("failed to subscribe / unsub subreddit", e);
             }
             return false;
         }
@@ -269,16 +249,14 @@ namespace BaconBackend.Managers
             if (!subscribe)
             {
                 // Try to find it in the list
-                bool removeSuccess = false;
-                List<Subreddit> currentSubs = SubredditList;
-                for (int i = 0; i < currentSubs.Count; i++)
+                var removeSuccess = false;
+                var currentSubs = SubredditList;
+                for (var i = 0; i < currentSubs.Count; i++)
                 {
-                    if (currentSubs[i].Id.Equals(subredditId))
-                    {
-                        currentSubs.RemoveAt(i);
-                        removeSuccess = true;
-                        break;
-                    }
+                    if (!currentSubs[i].Id.Equals(subredditId)) continue;
+                    currentSubs.RemoveAt(i);
+                    removeSuccess = true;
+                    break;
                 }
 
                 // If successful reset the new list
@@ -292,14 +270,11 @@ namespace BaconBackend.Managers
                 // If we just subscribed to a new subreddit...
                 // Try to find the subreddit in our temp subreddits.
                 Subreddit subreddit = null;
-                lock (m_tempSubredditCache)
+                lock (_mTempSubredditCache)
                 {
-                    foreach (Subreddit serachSub in m_tempSubredditCache)
+                    foreach (var searchSub in _mTempSubredditCache.Where(searchSub => searchSub.Id.Equals(subredditId)))
                     {
-                        if (serachSub.Id.Equals(subredditId))
-                        {
-                            subreddit = serachSub;
-                        }
+                        subreddit = searchSub;
                     }
                 }
 
@@ -311,7 +286,7 @@ namespace BaconBackend.Managers
                 else
                 {
                     // Otherwise add it locally
-                    List<Subreddit> currentSubs = SubredditList;
+                    var currentSubs = SubredditList;
                     currentSubs.Add(subreddit);
                     SetSubreddits(currentSubs);
                 }
@@ -326,41 +301,41 @@ namespace BaconBackend.Managers
         {
             // Add the defaults
             // #todo figure out what to add here
-            Subreddit subreddit = new Subreddit()
+            var subreddit = new Subreddit
             {
                 DisplayName = "all",
                 Title = "The top of reddit",
                 Id = "all",
-                IsArtifical = true
+                IsArtificial = true
             };
             subreddits.Add(subreddit);
-            subreddit = new Subreddit()
+            subreddit = new Subreddit
             {
                 DisplayName = "frontpage",
                 Title = "Your front page",
                 Id = "frontpage",
-                IsArtifical = true
+                IsArtificial = true
             };
             subreddits.Add(subreddit);
 
-            if(!m_baconMan.UserMan.IsUserSignedIn)
+            if(!_baconMan.UserMan.IsUserSignedIn)
             {
                 // If the user isn't signed in add baconit, windowsphone, and windows for free!
-                subreddit = new Subreddit()
+                subreddit = new Subreddit
                 {
                     DisplayName = "baconit",
                     Title = "The best reddit app ever!",
                     Id = "2rfk9"
                 };
                 subreddits.Add(subreddit);
-                subreddit = new Subreddit()
+                subreddit = new Subreddit
                 {
                     DisplayName = "windowsphone",
                     Title = "Everything Windows Phone!",
                     Id = "2r71o"
                 };
                 subreddits.Add(subreddit);
-                subreddit = new Subreddit()
+                subreddit = new Subreddit
                 {
                     DisplayName = "windows",
                     Title = "Windows",
@@ -371,12 +346,12 @@ namespace BaconBackend.Managers
             else
             {
                 // If the user is signed in, add the saved subreddit.
-                subreddit = new Subreddit()
+                subreddit = new Subreddit
                 {
                     DisplayName = "saved",
                     Title = "Your saved posts",
                     Id = "saved",
-                    IsArtifical = true
+                    IsArtificial = true
                 };
                 subreddits.Add(subreddit);
             }
@@ -389,19 +364,19 @@ namespace BaconBackend.Managers
         /// Used to sort and add fix up the subreddits before they are saved.
         /// </summary>
         /// <param name="subreddits"></param>
-        private void SetSubreddits(List<Subreddit> subreddits)
+        private void SetSubreddits(IEnumerable<Subreddit> subreddits)
         {
-            List<Subreddit> newSubredditList = new List<Subreddit>();
-            foreach(Subreddit subreddit in subreddits)
+            var newSubredditList = new List<Subreddit>();
+            foreach(var subreddit in subreddits)
             {
                 // Mark if it is a favorite
                 subreddit.IsFavorite = FavoriteSubreddits.ContainsKey(subreddit.Id);
 
                 // Do a simple inert sort, account for favorites
-                bool wasAdded = false;
-                for (int i = 0; i < newSubredditList.Count; i++)
+                var wasAdded = false;
+                for (var i = 0; i < newSubredditList.Count; i++)
                 {
-                    bool addHere = false;
+                    var addHere = false;
                     // Is this list item a favorite
                     if (newSubredditList[i].IsFavorite)
                     {
@@ -412,7 +387,7 @@ namespace BaconBackend.Managers
                         }
 
                         // If they are both favorites compare them.
-                        if(newSubredditList[i].DisplayName.CompareTo(subreddit.DisplayName) > 0)
+                        if(string.Compare(newSubredditList[i].DisplayName, subreddit.DisplayName, StringComparison.Ordinal) > 0)
                         {
                             addHere = true;
                         }
@@ -425,19 +400,16 @@ namespace BaconBackend.Managers
                     // If neither of them are favorites.
                     else
                     {
-                        if (newSubredditList[i].DisplayName.CompareTo(subreddit.DisplayName) > 0)
+                        if (string.Compare(newSubredditList[i].DisplayName, subreddit.DisplayName, StringComparison.Ordinal) > 0)
                         {
                             addHere = true;
                         }
                     }
 
-                    if(addHere)
-                    {
-                        newSubredditList.Insert(i, subreddit);
-                        wasAdded = true;
-                        break;
-
-                    }
+                    if (!addHere) continue;
+                    newSubredditList.Insert(i, subreddit);
+                    wasAdded = true;
+                    break;
                 }
 
                 // If we didn't add it add it to the end.
@@ -454,13 +426,13 @@ namespace BaconBackend.Managers
             SaveSettings();
 
             // Fire the callback for listeners
-            m_onSubredditsUpdated.Raise(this, new OnSubredditsUpdatedArgs() { NewSubreddits = SubredditList });
+            _subredditsUpdated.Raise(this, new SubredditsUpdatedArgs { NewSubreddits = SubredditList });
         }
 
         /// <summary>
         /// Fired when the user is updated, we should update the subreddit list.
         /// </summary>
-        private void UserMan_OnUserUpdated(object sender, OnUserUpdatedArgs args)
+        private void UserMan_OnUserUpdated(object sender, UserUpdatedArgs args)
         {
             // Take action on everything but user updated
             if (args.Action != UserCallbackAction.Updated)
@@ -476,37 +448,35 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if(m_subredditList == null)
+                if (_subredditList != null) return _subredditList;
+                if(_baconMan.SettingsMan.LocalSettings.ContainsKey("SubredditManager.SubredditList"))
                 {
-                    if(m_baconMan.SettingsMan.LocalSettings.ContainsKey("SubredditManager.SubredditList"))
-                    {
-                        m_subredditList = m_baconMan.SettingsMan.ReadFromLocalSettings<List<Subreddit>>("SubredditManager.SubredditList");
-                    }
-                    else
-                    {
-                        m_subredditList = new List<Subreddit>();
-
-                        // We don't need this 100%, but when the app first
-                        // opens we won't have the subreddit yet so this prevents
-                        // us from grabbing the sub from the internet.
-                        Subreddit subreddit = new Subreddit()
-                        {
-                            DisplayName = "frontpage",
-                            Title = "Your front page",
-                            Id = "frontpage"
-                        };
-                        m_subredditList.Add(subreddit);
-                    }
+                    _subredditList = _baconMan.SettingsMan.ReadFromLocalSettings<List<Subreddit>>("SubredditManager.SubredditList");
                 }
-                return m_subredditList;
+                else
+                {
+                    _subredditList = new List<Subreddit>();
+
+                    // We don't need this 100%, but when the app first
+                    // opens we won't have the subreddit yet so this prevents
+                    // us from grabbing the sub from the internet.
+                    var subreddit = new Subreddit
+                    {
+                        DisplayName = "frontpage",
+                        Title = "Your front page",
+                        Id = "frontpage"
+                    };
+                    _subredditList.Add(subreddit);
+                }
+                return _subredditList;
             }
             private set
             {
-                m_subredditList = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<List<Subreddit>>("SubredditManager.SubredditList", m_subredditList);
+                _subredditList = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("SubredditManager.SubredditList", _subredditList);
             }
         }
-        private List<Subreddit> m_subredditList = null;
+        private List<Subreddit> _subredditList;
 
         /// <summary>
         /// The last time the subreddit was updated
@@ -515,28 +485,26 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_lastUpdated.Equals(new DateTime(0)))
+                if (!_lastUpdated.Equals(new DateTime(0))) return _lastUpdated;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("SubredditManager.LastUpdate"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("SubredditManager.LastUpdate"))
-                    {
-                        m_lastUpdated = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("SubredditManager.LastUpdate");
-                    }
+                    _lastUpdated = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("SubredditManager.LastUpdate");
                 }
-                return m_lastUpdated;
+                return _lastUpdated;
             }
             private set
             {
-                m_lastUpdated = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("SubredditManager.LastUpdate", m_lastUpdated);
+                _lastUpdated = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("SubredditManager.LastUpdate", _lastUpdated);
             }
         }
-        private DateTime m_lastUpdated = new DateTime(0);
+        private DateTime _lastUpdated = new DateTime(0);
 
         private void SaveSettings()
         {
             // For lists we need to set the list again so the setter is called.
-            SubredditList = m_subredditList;
-            FavoriteSubreddits = m_favoriteSubreddits;
+            SubredditList = _subredditList;
+            FavoriteSubreddits = _favoriteSubreddits;
         }
 
         /// <summary>
@@ -546,31 +514,30 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_favoriteSubreddits == null)
+                if (_favoriteSubreddits != null) return _favoriteSubreddits;
+                if (_baconMan.SettingsMan.RoamingSettings.ContainsKey("SubredditManager.FavoriteSubreddits"))
                 {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("SubredditManager.FavoriteSubreddits"))
-                    {
-                        m_favoriteSubreddits = m_baconMan.SettingsMan.ReadFromRoamingSettings<Dictionary<string, bool>>("SubredditManager.FavoriteSubreddits");
-                    }
-                    else
-                    {
-                        m_favoriteSubreddits = new Dictionary<string, bool>();
-                        // Add the presets
-                        m_favoriteSubreddits.Add("frontpage", true);
-                        m_favoriteSubreddits.Add("all", true);
-                        m_favoriteSubreddits.Add("2rfk9", true); // Baconit
-                        m_favoriteSubreddits.Add("2r71o", true); // Windows phone
-                    }
+                    _favoriteSubreddits = _baconMan.SettingsMan.ReadFromRoamingSettings<Dictionary<string, bool>>("SubredditManager.FavoriteSubreddits");
                 }
-                return m_favoriteSubreddits;
+                else
+                {
+                    _favoriteSubreddits = new Dictionary<string, bool>
+                    {
+                        {"frontpage", true}, {"all", true}, {"2rfk9", true}, {"2r71o", true}
+                    };
+                    // Add the presets
+                    // Baconit
+                    // Windows phone
+                }
+                return _favoriteSubreddits;
             }
             set
             {
-                m_favoriteSubreddits = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<Dictionary<string, bool>>("SubredditManager.FavoriteSubreddits", m_favoriteSubreddits);
+                _favoriteSubreddits = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("SubredditManager.FavoriteSubreddits", _favoriteSubreddits);
             }
         }
-        private Dictionary<string, bool> m_favoriteSubreddits = null;
+        private Dictionary<string, bool> _favoriteSubreddits;
     }
 }
 

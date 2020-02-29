@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using Windows.UI.Xaml;
 
 namespace BaconBackend.DataObjects
@@ -95,73 +90,37 @@ namespace BaconBackend.DataObjects
         /// Whether the search result view should show the minor text.
         /// This is only true on subreddit search results without minor text.
         /// </summary>
-        public Visibility ShowMinorText
-        {
-            get
-            {
-                return String.IsNullOrWhiteSpace(MinorText) ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
+        public Visibility ShowMinorText => string.IsNullOrWhiteSpace(MinorText) ? Visibility.Collapsed : Visibility.Visible;
 
         /// <summary>
         /// Whether the search result view should show this result's header.
         /// True only if this search result list item is a header.
         /// </summary>
-        public Visibility ShowHeader
-        {
-            get
-            {
-                return ResultType == SearchResultTypes.Header ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility ShowHeader => ResultType == SearchResultTypes.Header ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// Whether the search result view should show this result's major and minor text.
         /// True only if the search result item has major or minor text.
         /// </summary>
-        public Visibility ShowText
-        {
-            get
-            {
-                return (ResultType == SearchResultTypes.Subreddit || ResultType == SearchResultTypes.User || ResultType == SearchResultTypes.Post) ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility ShowText => (ResultType == SearchResultTypes.Subreddit || ResultType == SearchResultTypes.User || ResultType == SearchResultTypes.Post) ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// Whether the search result view should show the "show more" text.
         /// True only if this search result list item's type is ShowMore.
         /// </summary>
-        public Visibility ShowShowMore
-        {
-            get
-            {
-                return ResultType == SearchResultTypes.ShowMore ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility ShowShowMore => ResultType == SearchResultTypes.ShowMore ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// Whether the search result view should show the "no results" text.
         /// True only if this search result list item's type is NoResults.
         /// </summary>
-        public Visibility ShowNoResults
-        {
-            get
-            {
-                return ResultType == SearchResultTypes.NoResults ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility ShowNoResults => ResultType == SearchResultTypes.NoResults ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// Whether the search result view should show the "no results" text.
         /// True only if this search result list item's type is NoResults.
         /// </summary>
-        public Visibility ShowMarkdownText
-        {
-            get
-            {
-                return string.IsNullOrWhiteSpace(MarkdownText) ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
+        public Visibility ShowMarkdownText => string.IsNullOrWhiteSpace(MarkdownText) ? Visibility.Collapsed : Visibility.Visible;
 
         /// <summary>
         /// UI property changed handler that's called when a property of this comment is changed.
@@ -172,13 +131,10 @@ namespace BaconBackend.DataObjects
         /// Called to indicate a property of this object has changed.
         /// </summary>
         /// <param name="propertyName">Name of the changed property.</param>
-        protected void NotifyPropertyChanged(String propertyName)
+        protected void NotifyPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (null != handler)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            var handler = PropertyChanged;
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

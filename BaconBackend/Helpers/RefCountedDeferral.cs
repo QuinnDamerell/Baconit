@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Background;
 
@@ -10,10 +6,10 @@ namespace BaconBackend.Helpers
 {
     public class RefCountedDeferral
     {
-        SuspendingDeferral m_suspendingDeferral;
-        BackgroundTaskDeferral m_deferral;
-        Action m_cleanUpAction;
-        int m_refCount;
+        private readonly SuspendingDeferral _suspendingDeferral;
+        private readonly BackgroundTaskDeferral _deferral;
+        private readonly Action _cleanUpAction;
+        private int _refCount;
 
         /// <summary>
         /// Note the deferral can be null.
@@ -21,7 +17,7 @@ namespace BaconBackend.Helpers
         /// <param name="deferral"></param>
         public RefCountedDeferral(BackgroundTaskDeferral deferral)
         {
-            m_deferral = deferral;
+            _deferral = deferral;
         }
 
         /// <summary>
@@ -30,8 +26,8 @@ namespace BaconBackend.Helpers
         /// <param name="deferral"></param>
         public RefCountedDeferral(BackgroundTaskDeferral deferral, Action cleanUpAction)
         {
-            m_deferral = deferral;
-            m_cleanUpAction = cleanUpAction;
+            _deferral = deferral;
+            _cleanUpAction = cleanUpAction;
         }
 
         /// <summary>
@@ -40,8 +36,8 @@ namespace BaconBackend.Helpers
         /// <param name="deferral"></param>
         public RefCountedDeferral(SuspendingDeferral deferral, Action cleanUpAction)
         {
-            m_suspendingDeferral = deferral;
-            m_cleanUpAction = cleanUpAction;
+            _suspendingDeferral = deferral;
+            _cleanUpAction = cleanUpAction;
         }
 
         /// <summary>
@@ -51,7 +47,7 @@ namespace BaconBackend.Helpers
         {
             lock(this)
             {
-                m_refCount++;
+                _refCount++;
             }
         }
 
@@ -62,28 +58,17 @@ namespace BaconBackend.Helpers
         {
             lock (this)
             {
-                m_refCount--;
+                _refCount--;
 
-                if(m_refCount == 0)
-                {
-                    // If we have a cleanup action fire it now.
-                    if (m_cleanUpAction != null)
-                    {
-                        m_cleanUpAction.Invoke();
-                    }
+                if (_refCount != 0) return;
+                // If we have a cleanup action fire it now.
+                _cleanUpAction?.Invoke();
 
-                    // Note the deferral can be null, this will happen when we update while
-                    // the app is updating.
-                    if (m_deferral != null)
-                    {
-                        m_deferral.Complete();
-                    }
+                // Note the deferral can be null, this will happen when we update while
+                // the app is updating.
+                _deferral?.Complete();
 
-                    if (m_suspendingDeferral != null)
-                    {
-                        m_suspendingDeferral.Complete();
-                    }
-                }
+                _suspendingDeferral?.Complete();
             }
         }
     }

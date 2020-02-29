@@ -1,7 +1,6 @@
 ﻿using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -16,12 +15,12 @@ namespace Baconit.ContentPanels.Panels
 {
     public sealed partial class BasicImageContentPanel : UserControl, IContentPanel
     {
-        const float MAX_ZOOM_FACTOR = 5.0f;
+        private const float MaxZoomFactor = 5.0f;
 
         /// <summary>
         /// Possible states of the image
         /// </summary>
-        enum ImageState
+        private enum ImageState
         {
             Unloaded,
             Normal,
@@ -32,76 +31,74 @@ namespace Baconit.ContentPanels.Panels
             ExitingFullscreen,
         }
 
+        private readonly object _lockObject = new object();
+
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        IContentPanelBaseInternal m_base;
+        private readonly IContentPanelBaseInternal _baseContentPanel;
 
         /// <summary>
         /// The image we have.
         /// </summary>
-        Image m_image;
+        private Image _image;
 
         /// <summary>
         /// The calculated min zoom factor for this image.
         /// </summary>
-        float m_minZoomFactor = 1.0f;
+        private float _minZoomFactor = 1.0f;
 
         /// <summary>
         /// Holds the current size of the control.
         /// </summary>
-        Size m_currentControlSize;
+        private Size _currentControlSize;
 
         /// <summary>
         /// Hold the size the image was last set at.
         /// </summary>
-        Size m_lastImageSetSize = new Size(0, 0);
+        private Size _lastImageSetSize = new Size(0, 0);
 
         /// <summary>
         /// Holds a reference to the image's memory source.
         /// </summary>
-        InMemoryRandomAccessStream m_imageSourceStream = null;
+        private InMemoryRandomAccessStream _imageSourceStream;
 
         /// <summary>
         /// Indicates the current state of the image
         /// </summary>
-        ImageState m_state = ImageState.Unloaded;
+        private ImageState _state = ImageState.Unloaded;
 
         /// <summary>
         /// The scale factor of the current device.
         /// </summary>
-        double m_deviceScaleFactor;
+        private double _deviceScaleFactor;
 
-        public BasicImageContentPanel(IContentPanelBaseInternal panelBase)
+        public BasicImageContentPanel(IContentPanelBaseInternal panelBaseContentPanel)
         {
-            this.InitializeComponent();
-            m_base = panelBase;
+            InitializeComponent();
+            _baseContentPanel = panelBaseContentPanel;
 
             // Register for back button presses
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
-            // Set the max zoom for the scroller
-            ui_scrollViewer.MaxZoomFactor = MAX_ZOOM_FACTOR;
+            // Set the max zoom for the scroll
+            ui_scrollViewer.MaxZoomFactor = MaxZoomFactor;
 
             // Get the current scale factor. Why 0.001? If we don't add that we kill the app
             // with a layout loop. I think this is a platform bug so we need it for now. If you don't
             // believe me remove it and see what happens.
-            m_deviceScaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel + 0.001;
+            _deviceScaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel + 0.001;
         }
 
         /// <summary>
         /// Called by the host when it queries if we can handle a source.
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+        public static bool CanHandlePost(ContentPanelSource source)
         {
             // See if we can get an image from the url
-            if (String.IsNullOrWhiteSpace(ImageManager.GetImageUrl(source.Url)))
-            {
-                return false;
-            }
-            return true;
+            return !string.IsNullOrWhiteSpace(ImageManager.GetImageUrl(source.Url));
         }
 
         #region IContentPanel
@@ -113,63 +110,59 @@ namespace Baconit.ContentPanels.Panels
         {
             get
             {
-                if(m_imageSourceStream != null)
+                ulong size;
+
+                lock (_lockObject)
                 {
+                    if (_imageSourceStream == null) return PanelMemorySizes.Small;
+
                     // #todo revisit these sizes.
-                    ulong size = m_imageSourceStream.Size;
-                    if(size < 3145728)
-                    {
-                        // < 3mb small
-                        return PanelMemorySizes.Small;
-                    }
-                    else if(size < 8388608)
-                    {
-                        // < 8mb medium
-                        return PanelMemorySizes.Medium;
-                    }
-                    else
-                    {
-                        // > 8mb large
-                        return PanelMemorySizes.Large;
-                    }
+                    size = _imageSourceStream.Size;
                 }
-                return PanelMemorySizes.Small;
+
+                if(size < 3145728)
+                {
+                    // < 3mb small
+                    return PanelMemorySizes.Small;
+                }
+
+                return size < 8388608 ? PanelMemorySizes.Medium : PanelMemorySizes.Large;
+                // > 8mb large
             }
         }
 
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
-        /// <param name="source"></param>
         public void OnPrepareContent()
         {
             // Run our work on a background thread.
             Task.Run(() =>
             {
                 // Get the image Url
-                string imageUrl = ImageManager.GetImageUrl(m_base.Source.Url);
+                var imageUrl = ImageManager.GetImageUrl(_baseContentPanel.Source.Url);
 
                 // Make sure we got it.
-                if (String.IsNullOrWhiteSpace(imageUrl))
+                if (string.IsNullOrWhiteSpace(imageUrl))
                 {
                     // This is bad, we should be able to get the url.
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
+                    TelemetryManager.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
 
                     // Jump back to the UI thread
-                    m_base.FireOnFallbackToBrowser();
+                    _baseContentPanel.FireOnFallbackToBrowser();
                     return;
                 }
 
                 // Make sure we aren't destroyed.
-                if (m_base.IsDestoryed)
+                if (_baseContentPanel.IsDestoryed)
                 {
                     return;
                 }
 
                 // Fire off a request for the image.
-                ImageManager.ImageManagerRequest request = new ImageManager.ImageManagerRequest()
+                var request = new ImageManager.ImageManagerRequest
                 {
-                    ImageId = m_base.Source.Id,
+                    ImageId = _baseContentPanel.Source.Id,
                     Url = imageUrl
                 };
                 request.OnRequestComplete += OnRequestComplete;
@@ -190,7 +183,7 @@ namespace Baconit.ContentPanels.Panels
                 ui_contentRoot.Children.Clear();
 
                 // Kill the source.
-                m_imageSourceStream = null;
+                _imageSourceStream = null;
 
                 // Kill some listeners
                 App.BaconMan.OnBackButton -= BaconMan_OnBackButton;
@@ -198,23 +191,20 @@ namespace Baconit.ContentPanels.Panels
 
                 // Make sure the image was created, if it never loaded
                 // then it won't be created.
-                if (m_image != null)
+                if (_image != null)
                 {
-                    if(m_image.Source != null)
+                    var bmpImage = (BitmapImage) _image.Source;
+                    if(bmpImage != null)
                     {
-                        BitmapImage bmpImage = (BitmapImage)m_image.Source;
-                        if(bmpImage != null)
-                        {
-                            bmpImage.ImageOpened -= BitmapImage_ImageOpened;
-                            bmpImage.ImageFailed -= BitmapImage_ImageFailed;
-                        }
+                        bmpImage.ImageOpened -= BitmapImage_ImageOpened;
+                        bmpImage.ImageFailed -= BitmapImage_ImageFailed;
                     }
 
                     // Kill the image
-                    m_image.Source = null;
-                    m_image.RightTapped -= ContentRoot_RightTapped;
-                    m_image.Holding -= ContentRoot_Holding;
-                    m_image = null;
+                    _image.Source = null;
+                    _image.RightTapped -= ContentRoot_RightTapped;
+                    _image.Holding -= ContentRoot_Holding;
+                    _image = null;
                 }
             }
         }
@@ -242,11 +232,12 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Callback when we get the image.
         /// </summary>
+        /// <param name="sender"></param>
         /// <param name="response"></param>
-        public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
+        private async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
             // Remove the event
-            ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
+            var request = (ImageManager.ImageManagerRequest)sender;
             request.OnRequestComplete -= OnRequestComplete;
 
             // Jump back to the UI thread
@@ -254,24 +245,24 @@ namespace Baconit.ContentPanels.Panels
             {
                 if (!response.Success)
                 {
-                    App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
-                    m_base.FireOnFallbackToBrowser();
+                    TelemetryManager.ReportUnexpectedEvent(this, "BasicImageControlNoImageUrl");
+                    _baseContentPanel.FireOnFallbackToBrowser();
                     return;
                 }
 
                 lock (this)
                 {
-                    if (m_base.IsDestoryed)
+                    if (_baseContentPanel.IsDestoryed)
                     {
                         // Get out of here if we should be destroyed.
                         return;
                     }
 
                     // Grab the source, we need this to make the image
-                    m_imageSourceStream = response.ImageStream;
+                    _imageSourceStream = response.ImageStream;
 
                     // Add the image to the UI
-                    m_image = new Image();
+                    _image = new Image();
 
                     // We don't want to wait on this.
 #pragma warning disable CS4014
@@ -280,11 +271,11 @@ namespace Baconit.ContentPanels.Panels
 #pragma warning restore CS4014
 
                     // Set the image into the UI.
-                    ui_scrollViewer.Content = m_image;
+                    ui_scrollViewer.Content = _image;
 
                     // Setup the save image tap
-                    m_image.RightTapped += ContentRoot_RightTapped;
-                    m_image.Holding += ContentRoot_Holding;
+                    _image.RightTapped += ContentRoot_RightTapped;
+                    _image.Holding += ContentRoot_Holding;
                 }
             });
         }
@@ -294,73 +285,82 @@ namespace Baconit.ContentPanels.Panels
         /// screen. Unless useFulsize is set.
         /// </summary>
         /// <param name="useFullSize"></param>
-        public bool ReloadImage(bool useFullsize)
+        private bool ReloadImage(bool useFullSize)
         {
             // Don't worry about this if we are destroyed.
-            if (m_base.IsDestoryed)
+            if (_baseContentPanel.IsDestoryed)
             {
                 return false;
             }
 
-            // If we are already this size don't do anything.
-            if (m_lastImageSetSize.Equals(m_currentControlSize) && !useFullsize)
-            {
-                return false;
-            }
+            double currentControlSizeWidth;
+            double currentControlSizeHeight;
+            InMemoryRandomAccessStream stream;
 
-            // If we don't have a control size yet don't do anything.
-            if(m_currentControlSize.IsEmpty)
+            lock (_lockObject)
             {
-                return false;
-            }
+                stream = _imageSourceStream;
 
-            // Don't do anything if we are already full size.
-            if (useFullsize && m_lastImageSetSize.Width == 0 && m_lastImageSetSize.Height == 0)
-            {
-                return false;
-            }
+                if(stream == null)
+                {
+                    return false;
+                }
 
-            // Get the stream.
-            InMemoryRandomAccessStream stream = m_imageSourceStream;
-            if(stream == null)
-            {
-                return false;
-            }
+                currentControlSizeWidth = _currentControlSize.Width;
+                currentControlSizeHeight = _currentControlSize.Height;
 
-            // Set our last size.
-            if(useFullsize)
-            {
-                // Set our current size.
-                m_lastImageSetSize.Width = 0;
-                m_lastImageSetSize.Height = 0;
-            }
-            else
-            {
-                // Set our current size.
-                m_lastImageSetSize.Width = m_currentControlSize.Width;
-                m_lastImageSetSize.Height = m_currentControlSize.Height;
+                // If we are already this size don't do anything.
+                if (_lastImageSetSize.Equals(_currentControlSize) && !useFullSize)
+                {
+                    return false;
+                }
+
+                // If we don't have a control size yet don't do anything.
+                if(_currentControlSize.IsEmpty)
+                {
+                    return false;
+                }
+
+                // Don't do anything if we are already full size.
+                if (useFullSize && Math.Abs(_lastImageSetSize.Width) < 1 && Math.Abs(_lastImageSetSize.Height) < 1)
+                {
+                    return false;
+                }
+
+                // Set our last size.
+                if(useFullSize)
+                {
+                    // Set our current size.
+                    _lastImageSetSize.Width = 0;
+                    _lastImageSetSize.Height = 0;
+                }
+                else
+                {
+                    // Set our current size.
+                    _lastImageSetSize.Width = _currentControlSize.Width;
+                    _lastImageSetSize.Height = _currentControlSize.Height;
+                }
             }
 
             // Create a bitmap and
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.CreateOptions = BitmapCreateOptions.None;
+            var bitmapImage = new BitmapImage {CreateOptions = BitmapCreateOptions.None};
             bitmapImage.ImageOpened += BitmapImage_ImageOpened;
             bitmapImage.ImageFailed += BitmapImage_ImageFailed;
 
             // Get the decode height and width.
-            int decodeWidth = 0;
-            int decodeHeight = 0;
-            if (!useFullsize)
+            var decodeWidth = 0;
+            var decodeHeight = 0;
+            if (!useFullSize)
             {
-                double widthRatio = bitmapImage.PixelWidth / m_currentControlSize.Width;
-                double heightRatio = bitmapImage.PixelHeight / m_currentControlSize.Height;
+                var widthRatio = bitmapImage.PixelWidth / currentControlSizeWidth;
+                var heightRatio = bitmapImage.PixelHeight / currentControlSizeHeight;
                 if (widthRatio > heightRatio)
                 {
-                    decodeWidth = (int)m_currentControlSize.Width;
+                    decodeWidth = (int)currentControlSizeWidth;
                 }
                 else
                 {
-                    decodeHeight = (int)m_currentControlSize.Height;
+                    decodeHeight = (int)currentControlSizeHeight;
                 }
             }
 
@@ -380,19 +380,19 @@ namespace Baconit.ContentPanels.Panels
             bitmapImage.SetSource(stream);
 
             // Destroy the old image.
-            if (m_image.Source != null)
+            lock(_lockObject)
             {
-                BitmapImage currentImage = (BitmapImage)m_image.Source;
+                var currentImage = (BitmapImage) _image.Source;
                 if (currentImage != null)
                 {
                     // Remove the handlers
                     currentImage.ImageOpened -= BitmapImage_ImageOpened;
                     currentImage.ImageFailed -= BitmapImage_ImageFailed;
                 }
-            }
 
-            // Set the image.
-            m_image.Source = bitmapImage;
+                // Set the image.
+                _image.Source = bitmapImage;
+            }
             return true;
         }
 
@@ -403,16 +403,16 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private async void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
         {
-            if(m_base.IsDestoryed)
+            if(_baseContentPanel.IsDestoryed)
             {
                 return;
             }
 
             // Update the zoom if needed
-            await SetScrollerZoomFactors();
+            await SetScrollZoomFactors();
 
             // Hide the loading screen
-            m_base.FireOnLoading(false);
+            _baseContentPanel.FireOnLoading(false);
 
             // This can throw if we are being destroyed.
             try
@@ -430,16 +430,16 @@ namespace Baconit.ContentPanels.Panels
             await Task.Delay(50);
 
             // Update the state
-            switch (m_state)
+            switch (_state)
             {
                 case ImageState.Unloaded:
-                    m_state = ImageState.Normal;
+                    _state = ImageState.Normal;
                     break;
                 case ImageState.EnteringFullscreen:
-                    m_state = ImageState.EnteringFullscreenComplete;
+                    _state = ImageState.EnteringFullscreenComplete;
                     break;
                 case ImageState.ExitingFullscreen:
-                    m_state = ImageState.Normal;
+                    _state = ImageState.Normal;
                     break;
             }
         }
@@ -451,7 +451,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void BitmapImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            m_base.FireOnError(true, "This image failed to load");
+            _baseContentPanel.FireOnError(true, "This image failed to load");
         }
 
         #endregion
@@ -465,9 +465,9 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
-            if (!String.IsNullOrWhiteSpace(m_base.Source.Url))
+            if (!string.IsNullOrWhiteSpace(_baseContentPanel.Source.Url))
             {
-                App.BaconMan.ImageMan.SaveImageLocally(m_base.Source.Url);
+                App.BaconMan.ImageMan.SaveImageLocally(_baseContentPanel.Source.Url);
             }
         }
 
@@ -478,10 +478,10 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void ContentRoot_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            FrameworkElement element = sender as FrameworkElement;
+            var element = sender as FrameworkElement;
             if (element != null)
             {
-                Point p = e.GetPosition(element);
+                var p = e.GetPosition(element);
                 flyoutMenu.ShowAt(element, p);
             }
         }
@@ -493,10 +493,10 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void ContentRoot_Holding(object sender, HoldingRoutedEventArgs e)
         {
-            FrameworkElement element = sender as FrameworkElement;
+            var element = sender as FrameworkElement;
             if (element != null)
             {
-                Point p = e.GetPosition(element);
+                var p = e.GetPosition(element);
                 flyoutMenu.ShowAt(element, p);
             }
         }
@@ -512,16 +512,16 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private async void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            if (m_state != ImageState.Normal)
+            if (_state != ImageState.Normal)
             {
                 return;
             }
 
             // If the zooms don't match go full screen
-            if (!AreCloseEnoughToEqual(m_minZoomFactor, ui_scrollViewer.ZoomFactor))
+            if (!AreCloseEnoughToEqual(_minZoomFactor, ui_scrollViewer.ZoomFactor))
             {
                 // Set the state and hide the image, we do this make the transition smoother.
-                m_state = ImageState.EnteringFullscreen;
+                _state = ImageState.EnteringFullscreen;
                 VisualStateManager.GoToState(this, "HideImage", true);
                 ui_scrollViewer.Visibility = Visibility.Collapsed;
 
@@ -529,7 +529,7 @@ namespace Baconit.ContentPanels.Panels
                 await Task.Delay(10);
 
                 // Try to go full screen
-                m_base.FireOnFullscreenChanged(true);
+                _baseContentPanel.FireOnFullscreenChanged(true);
 
                 // Delay for a bit to let full screen settle.
                 await Task.Delay(10);
@@ -547,33 +547,33 @@ namespace Baconit.ContentPanels.Panels
         private async void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             // If we are done entering full screen set the var and return.
-            if (m_state == ImageState.EnteringFullscreenComplete)
+            if (_state == ImageState.EnteringFullscreenComplete)
             {
-                m_state = ImageState.Fullscreen;
-                return; ;
+                _state = ImageState.Fullscreen;
+                return;
             }
-            else if (m_state != ImageState.Fullscreen)
+
+            if (_state != ImageState.Fullscreen)
             {
                 return;
             }
 
             // If the two zoom factors are close enough, leave full screen.
-            if (AreCloseEnoughToEqual(m_minZoomFactor, ui_scrollViewer.ZoomFactor))
-            {
-                // Set the state and hide the image, we do this make the transition smoother.
-                m_state = ImageState.ExitingFullscreen;
-                ui_scrollViewer.Visibility = Visibility.Collapsed;
-                VisualStateManager.GoToState(this, "HideImage", true);
+            if (!AreCloseEnoughToEqual(_minZoomFactor, ui_scrollViewer.ZoomFactor)) return;
 
-                // Try to leave full screen.
-                m_base.FireOnFullscreenChanged(false);
+            // Set the state and hide the image, we do this make the transition smoother.
+            _state = ImageState.ExitingFullscreen;
+            ui_scrollViewer.Visibility = Visibility.Collapsed;
+            VisualStateManager.GoToState(this, "HideImage", true);
 
-                // Delay for a bit to let full screen settle.
-                await Task.Delay(10);
+            // Try to leave full screen.
+            _baseContentPanel.FireOnFullscreenChanged(false);
 
-                // Resize the image
-                ReloadImage(false);
-            }
+            // Delay for a bit to let full screen settle.
+            await Task.Delay(10);
+
+            // Resize the image
+            ReloadImage(false);
         }
 
         /// <summary>
@@ -581,7 +581,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.BackButtonArgs e)
         {
             if (e.IsHandled)
             {
@@ -589,10 +589,10 @@ namespace Baconit.ContentPanels.Panels
             }
 
             // If we are full screen reset the scroller which will take us out.
-            if (m_base.IsFullscreen)
+            if (_baseContentPanel.IsFullscreen)
             {
                 e.IsHandled = true;
-                ui_scrollViewer.ChangeView(null, null, m_minZoomFactor);
+                ui_scrollViewer.ChangeView(null, null, _minZoomFactor);
             }
         }
 
@@ -608,18 +608,18 @@ namespace Baconit.ContentPanels.Panels
         private async void ContentRoot_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Grab the new size.
-            m_currentControlSize = e.NewSize;
+            _currentControlSize = e.NewSize;
 
-            if(m_state == ImageState.Unloaded)
+            if(_state == ImageState.Unloaded)
             {
                 // If we are unloaded call this to ensure the image it loading.
                 ReloadImage(false);
             }
-            else if(m_state == ImageState.Normal)
+            else if(_state == ImageState.Normal)
             {
                 // Only reload the image if the size is larger than the current image.
-                bool didImageResize = false;
-                if (m_lastImageSetSize.Height < m_currentControlSize.Height && m_lastImageSetSize.Width < m_currentControlSize.Width)
+                var didImageResize = false;
+                if (_lastImageSetSize.Height < _currentControlSize.Height && _lastImageSetSize.Width < _currentControlSize.Width)
                 {
                     // Resize the image.
                     didImageResize = ReloadImage(false);
@@ -628,104 +628,110 @@ namespace Baconit.ContentPanels.Panels
                 // if we didn't resize the image just set the new zoom.
                 if (!didImageResize)
                 {
-                    m_state = ImageState.NormalSizeUpdating;
+                    _state = ImageState.NormalSizeUpdating;
 
-                    await SetScrollerZoomFactors();
+                    await SetScrollZoomFactors();
 
-                    m_state = ImageState.Normal;
+                    _state = ImageState.Normal;
                 }
             }
         }
 
         /// <summary>
-        /// Called when we should update the scroller zoom factor.
+        /// Called when we should update the scroll zoom factor.
         /// </summary>
-        private async Task SetScrollerZoomFactors()
+        private async Task SetScrollZoomFactors()
         {
-            // If we don't have a size yet ignore.
-            if (m_image == null || m_image.Source == null || m_image.ActualHeight == 0 || m_image.ActualWidth == 0)
+            BitmapImage bitmapImage;
+
+            lock (_lockObject)
             {
-                return;
+                // If we don't have a size yet ignore.
+                if (_image?.Source == null || Math.Abs(_image.ActualHeight) < 1 || Math.Abs(_image.ActualWidth) < 1)
+                {
+                    return;
+                }
+
+                // Get the image and the size.
+                bitmapImage = (BitmapImage)_image.Source;
             }
 
-            // Get the image and the size.
-            BitmapImage bitmapImage = (BitmapImage)m_image.Source;
-            Size imageSize = new Size(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
+            var imageSize = new Size(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
 
-            // No matter what they pixel type, the scroller always seems to look at decoded pixel values
+            // No matter what they pixel type, the scroll always seems to look at decoded pixel values
             // and not the real sizes. So we need to make this size match the decoded size.
             if (bitmapImage.DecodePixelWidth != 0)
             {
-                double ratio = ((double)bitmapImage.PixelWidth) / ((double)bitmapImage.DecodePixelWidth);
+                var ratio = bitmapImage.PixelWidth / (double)bitmapImage.DecodePixelWidth;
                 imageSize.Width /= ratio;
                 imageSize.Height /= ratio;
             }
             else if (bitmapImage.DecodePixelHeight != 0)
             {
-                double ratio = ((double)bitmapImage.PixelHeight) / ((double)bitmapImage.DecodePixelHeight);
+                var ratio = bitmapImage.PixelHeight / (double)bitmapImage.DecodePixelHeight;
 
                 imageSize.Width /= ratio;
                 imageSize.Height /= ratio;
             }
 
             // If we are using logical pixels and have a decode width or height we want to
-            // scale the actual height and width down. We must do this because the scroller
+            // scale the actual height and width down. We must do this because the scroll
             // expects logical pixels.
             if (bitmapImage.DecodePixelType == DecodePixelType.Logical)// && (bitmapImage.DecodePixelHeight != 0 || bitmapImage.DecodePixelWidth != 0))
             {
 
             }
 
-            await SetScrollerZoomFactors(imageSize);
+            await SetScrollZoomFactors(imageSize);
         }
 
         /// <summary>
         /// Called when we should update the scroller zoom factor.
         /// NOTE!! The input sizes should be in logical pixels not physical
         /// </summary>
-        private async Task SetScrollerZoomFactors(Size imageSize)
+        private async Task SetScrollZoomFactors(Size imageSize)
         {
-            if (imageSize == null || imageSize.Height == 0 || imageSize.Width == 0 || ui_scrollViewer.ActualHeight == 0 || ui_scrollViewer.ActualWidth == 0)
+            if (Math.Abs(imageSize.Height) < 1 || Math.Abs(imageSize.Width) < 1 || Math.Abs(ui_scrollViewer.ActualHeight) < 1 || Math.Abs(ui_scrollViewer.ActualWidth) < 1)
             {
                 return;
             }
 
             // If we are full screen don't update this.
-            if (m_state == ImageState.Fullscreen)
+            if (_state == ImageState.Fullscreen)
             {
                 return;
             }
 
             // Figure out what the min zoom should be.
-            float vertZoomFactor = (float)(ui_scrollViewer.ActualHeight / imageSize.Height);
-            float horzZoomFactor = (float)(ui_scrollViewer.ActualWidth / imageSize.Width);
-            m_minZoomFactor = Math.Min(vertZoomFactor, horzZoomFactor);
+            var verticalZoomFactor = (float)(ui_scrollViewer.ActualHeight / imageSize.Height);
+            var horizontalZoomFactor = (float)(ui_scrollViewer.ActualWidth / imageSize.Width);
+            _minZoomFactor = Math.Min(verticalZoomFactor, horizontalZoomFactor);
 
             // For some reason, if the zoom factor is larger than 1 we set
             //it to 1 and everything is correct.
-            if(m_minZoomFactor > 1)
+            if(_minZoomFactor > 1)
             {
-                m_minZoomFactor = 1;
+                _minZoomFactor = 1;
             }
 
             // Do a check to make sure the zoom level is ok.
-            if (m_minZoomFactor < 0.1)
+            if (_minZoomFactor < 0.1)
             {
-                m_minZoomFactor = 0.1f;
+                _minZoomFactor = 0.1f;
             }
 
-            // Set the zoomer to the min size for the zoom
-            ui_scrollViewer.MinZoomFactor = m_minZoomFactor;
+            // Set the zoom to the min size for the zoom
+            ui_scrollViewer.MinZoomFactor = _minZoomFactor;
 
-            float newZoomFactor = 0;
+            float newZoomFactor;
             double? offset = null;
-            if(m_state == ImageState.EnteringFullscreen)
+            if(_state == ImageState.EnteringFullscreen)
             {
                 // When entering full screen always go to the min zoom.
-                newZoomFactor = m_minZoomFactor;
+                newZoomFactor = _minZoomFactor;
 
                 // Make sure we aren't too close to our min zoom.
-                if (AreCloseEnoughToEqual(newZoomFactor, m_minZoomFactor))
+                if (AreCloseEnoughToEqual(newZoomFactor, _minZoomFactor))
                 {
                     // If so make it a little more so we don't instantly jump out of full screen.
                     newZoomFactor += 0.002f;
@@ -734,7 +740,7 @@ namespace Baconit.ContentPanels.Panels
             else
             {
                 // If we don't have an image already set the zoom to the min zoom.
-                newZoomFactor = m_minZoomFactor;
+                newZoomFactor = _minZoomFactor;
                 offset = 0;
             }
 
@@ -757,7 +763,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="num1"></param>
         /// <param name="num2"></param>
         /// <returns></returns>
-        private bool AreCloseEnoughToEqual(float num1, float num2)
+        private static bool AreCloseEnoughToEqual(float num1, float num2)
         {
             return Math.Abs(num1 - num2) < .001;
         }

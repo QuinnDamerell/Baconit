@@ -1,22 +1,17 @@
 ﻿using BaconBackend.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
 
 namespace Baconit.HelperControls
 {
-    enum SimpleTextState
+    internal enum SimpleTextState
     {
         Pressed,
         Idle
@@ -30,25 +25,25 @@ namespace Baconit.HelperControls
         //
         // UI Elements
         //
-        TextBlock ui_buttonText = null;
-        Grid ui_contentRoot = null;
-        Storyboard m_colorStoryboard;
-        ColorAnimation m_colorAnimation;
+        private TextBlock _uiButtonText;
+        private Grid _uiContentRoot;
+        private Storyboard _mColorStoryboard;
+        private ColorAnimation _mColorAnimation;
 
         //
         // Control Vars
         //
-        SimpleTextState m_state = SimpleTextState.Idle;
-        string m_currentButtonText = null;
-        Color m_accentColor;
-        Color m_defaultTextColor = Color.FromArgb(255, 153, 153, 153);
-        Color m_normalTextColor = Color.FromArgb(255, 153, 153, 153);
-        Duration m_animateInDuration;
-        Duration m_animateOutDuration;
+        private SimpleTextState _mState = SimpleTextState.Idle;
+        private string _mCurrentButtonText;
+        private Color _mAccentColor;
+        private readonly Color _mDefaultTextColor = Color.FromArgb(255, 153, 153, 153);
+        private Color _mNormalTextColor = Color.FromArgb(255, 153, 153, 153);
+        private Duration _mAnimateInDuration;
+        private Duration _mAnimateOutDuration;
 
         public SimpleTextButton()
         {
-            this.DefaultStyleKey = typeof(SimpleTextButton);
+            DefaultStyleKey = typeof(SimpleTextButton);
 
             // Register for the loaded and unlaoded events
             Loaded += SimpleTextButton_Loaded;
@@ -62,7 +57,7 @@ namespace Baconit.HelperControls
             Loaded -= SimpleTextButton_Loaded;
 
             // First, try to get the main root grid.
-            List<DependencyObject> uiElements = new List<DependencyObject>();
+            var uiElements = new List<DependencyObject>();
             UiControlHelpers<Grid>.RecursivelyFindElement(this, ref uiElements);
 
             if(uiElements.Count != 1)
@@ -71,7 +66,7 @@ namespace Baconit.HelperControls
             }
 
             // Grab it
-            ui_contentRoot = (Grid)uiElements[0];
+            _uiContentRoot = (Grid)uiElements[0];
 
             // Next try to find the text block
             uiElements.Clear();
@@ -83,37 +78,37 @@ namespace Baconit.HelperControls
             }
 
             // Grab it
-            ui_buttonText = (TextBlock)uiElements[0];
+            _uiButtonText = (TextBlock)uiElements[0];
 
             // If the desired text already exists set it
-            if(m_currentButtonText != null)
+            if(_mCurrentButtonText != null)
             {
-                ui_buttonText.Text = m_currentButtonText;                
+                _uiButtonText.Text = _mCurrentButtonText;                
             }
 
             // Set the normal text color
-            ui_buttonText.Foreground = new SolidColorBrush(m_normalTextColor);
+            _uiButtonText.Foreground = new SolidColorBrush(_mNormalTextColor);
 
             // Grab the current accent color
-            m_accentColor = ((SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
+            _mAccentColor = ((SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
 
             // Next create our storyboards and animations
-            m_colorStoryboard = new Storyboard();
-            m_colorAnimation = new ColorAnimation();
-            m_colorStoryboard.Children.Add(m_colorAnimation);
+            _mColorStoryboard = new Storyboard();
+            _mColorAnimation = new ColorAnimation();
+            _mColorStoryboard.Children.Add(_mColorAnimation);
 
             // Set them up.
-            Storyboard.SetTarget(m_colorStoryboard, ui_buttonText);
-            Storyboard.SetTargetProperty(m_colorStoryboard, "(TextBlock.Foreground).(SolidColorBrush.Color)");
-            m_animateInDuration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-            m_animateOutDuration = new Duration(new TimeSpan(0, 0, 0, 0, 400));
+            Storyboard.SetTarget(_mColorStoryboard, _uiButtonText);
+            Storyboard.SetTargetProperty(_mColorStoryboard, "(TextBlock.Foreground).(SolidColorBrush.Color)");
+            _mAnimateInDuration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
+            _mAnimateOutDuration = new Duration(new TimeSpan(0, 0, 0, 0, 400));
 
             // Last add our events to the grid
-            ui_contentRoot.PointerPressed += ContentRoot_PointerPressed;
-            ui_contentRoot.Tapped += ContentRoot_Tapped;
-            ui_contentRoot.PointerCanceled += ContentRoot_PointerCanceled;
-            ui_contentRoot.PointerExited += ContentRoot_PointerExited;
-            ui_contentRoot.PointerReleased += ContentRoot_PointerReleased;
+            _uiContentRoot.PointerPressed += ContentRoot_PointerPressed;
+            _uiContentRoot.Tapped += ContentRoot_Tapped;
+            _uiContentRoot.PointerCanceled += ContentRoot_PointerCanceled;
+            _uiContentRoot.PointerExited += ContentRoot_PointerExited;
+            _uiContentRoot.PointerReleased += ContentRoot_PointerReleased;
         }
 
         #endregion
@@ -128,7 +123,7 @@ namespace Baconit.HelperControls
         private void ContentRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Raise the event
-            m_onButtonTapped.Raise(this, new EventArgs());
+            _mOnButtonTapped.Raise(this, new EventArgs());
 
             // Show the animation
             DoAnimation(false);
@@ -160,24 +155,24 @@ namespace Baconit.HelperControls
         public void DoAnimation(bool isPress)
         {
             // Check the state
-            if(isPress && m_state == SimpleTextState.Pressed)
+            if(isPress && _mState == SimpleTextState.Pressed)
             {
                 return;
             }
-            if(!isPress && m_state == SimpleTextState.Idle)
+            if(!isPress && _mState == SimpleTextState.Idle)
             {
                 return;
             }
 
             // Set the state
-            m_state = isPress ? SimpleTextState.Pressed : SimpleTextState.Idle;
+            _mState = isPress ? SimpleTextState.Pressed : SimpleTextState.Idle;
 
             // Animate, the animate out duration is a bit longer to give the user more time to see it
-            m_colorAnimation.To = isPress ? m_accentColor : m_normalTextColor;
-            m_colorAnimation.From = isPress ? m_normalTextColor : m_accentColor;
-            m_colorStoryboard.Duration = isPress ? m_animateInDuration : m_animateOutDuration;
-            m_colorAnimation.Duration = isPress ? m_animateInDuration : m_animateOutDuration;
-            m_colorStoryboard.Begin();
+            _mColorAnimation.To = isPress ? _mAccentColor : _mNormalTextColor;
+            _mColorAnimation.From = isPress ? _mNormalTextColor : _mAccentColor;
+            _mColorStoryboard.Duration = isPress ? _mAnimateInDuration : _mAnimateOutDuration;
+            _mColorAnimation.Duration = isPress ? _mAnimateInDuration : _mAnimateOutDuration;
+            _mColorStoryboard.Begin();
         }
 
         #endregion
@@ -189,8 +184,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public string ButtonText
         {
-            get { return (string)GetValue(ButtonTextProperty); }
-            set { SetValue(ButtonTextProperty, value); }
+            get => (string)GetValue(ButtonTextProperty);
+            set => SetValue(ButtonTextProperty, value);
         }
 
         public static readonly DependencyProperty ButtonTextProperty =
@@ -200,16 +195,13 @@ namespace Baconit.HelperControls
                 typeof(SimpleTextButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     "",                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnButtonTextChangedStatic)
+                    OnButtonTextChangedStatic
                 ));
 
         private static void OnButtonTextChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = (SimpleTextButton)d;
-            if (instance != null)
-            {
-                instance.OnTextButtonChanged((string)e.NewValue);
-            }
+            instance?.OnTextButtonChanged((string)e.NewValue);
         }
 
         /// <summary>
@@ -219,12 +211,12 @@ namespace Baconit.HelperControls
         private void OnTextButtonChanged(string newText)
         {
             // Save the text
-            m_currentButtonText = newText;
+            _mCurrentButtonText = newText;
 
             // If the button already exists set the text
-            if (ui_buttonText != null)
+            if (_uiButtonText != null)
             {
-                ui_buttonText.Text = m_currentButtonText;
+                _uiButtonText.Text = _mCurrentButtonText;
             }
         }
 
@@ -237,8 +229,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public SolidColorBrush ForgroundColor
         {
-            get { return (SolidColorBrush)GetValue(ForgroundColorProperty); }
-            set { SetValue(ForgroundColorProperty, value); }
+            get => (SolidColorBrush)GetValue(ForgroundColorProperty);
+            set => SetValue(ForgroundColorProperty, value);
         }
 
         public static readonly DependencyProperty ForgroundColorProperty =
@@ -248,16 +240,13 @@ namespace Baconit.HelperControls
                 typeof(SimpleTextButton), // The type of the owner of the DependencyProperty
                 new PropertyMetadata(           // OnBlinkChanged will be called when Blink changes
                     null,                      // The default value of the DependencyProperty
-                    new PropertyChangedCallback(OnForgroundColorChangedStatic)
+                    OnForgroundColorChangedStatic
                 ));
 
         private static void OnForgroundColorChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = (SimpleTextButton)d;
-            if (instance != null)
-            {
-                instance.OnForgroundColorChanged((SolidColorBrush)e.NewValue);
-            }
+            instance?.OnForgroundColorChanged((SolidColorBrush)e.NewValue);
         }
 
         /// <summary>
@@ -269,20 +258,20 @@ namespace Baconit.HelperControls
             // If the brush is being cleared go with the default.
             if(newBrush == null)
             {
-                newBrush = new SolidColorBrush(m_defaultTextColor);
+                newBrush = new SolidColorBrush(_mDefaultTextColor);
             }
 
             // Save the color
-            m_normalTextColor = newBrush.Color;
+            _mNormalTextColor = newBrush.Color;
 
             // If the text already exists set the color
-            if (ui_buttonText != null)
+            if (_uiButtonText != null)
             {
                 // Stop the animation if playing
-                m_colorStoryboard.Stop();
+                _mColorStoryboard.Stop();
 
                 // Set the color
-                ui_buttonText.Foreground = newBrush;
+                _uiButtonText.Foreground = newBrush;
             }
         }
 
@@ -295,10 +284,11 @@ namespace Baconit.HelperControls
         /// </summary>
         public event EventHandler<EventArgs> OnButtonTapped
         {
-            add { m_onButtonTapped.Add(value); }
-            remove { m_onButtonTapped.Remove(value); }
+            add => _mOnButtonTapped.Add(value);
+            remove => _mOnButtonTapped.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onButtonTapped = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnButtonTapped = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         #endregion
     }

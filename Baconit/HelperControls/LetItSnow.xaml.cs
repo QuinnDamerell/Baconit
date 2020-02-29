@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Phone.Devices.Notification;
 using Windows.System.Profile;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 namespace Baconit.HelperControls
@@ -33,19 +23,19 @@ namespace Baconit.HelperControls
     /// </summary>
     public sealed partial class LetItSnow : UserControl
     {
-        const int c_maxQuantum = 6;
-        const int c_minQuantum = 3;
-        const int c_minCompletedStories = 20;
+        private const int CMaxQuantum = 6;
+        private const int CMinQuantum = 3;
+        private const int CMinCompletedStories = 20;
 
         /// <summary>
         /// Our main random instance
         /// </summary>
-        Random m_random;
+        private readonly Random _mRandom;
 
         /// <summary>
         /// The timer we will use to spawn the snow.
         /// </summary>
-        DispatcherTimer m_flaker = new DispatcherTimer();
+        private readonly DispatcherTimer _mFlaker = new DispatcherTimer();
 
         /// <summary>
         /// The current state of the snow land
@@ -55,44 +45,44 @@ namespace Baconit.HelperControls
         /// <summary>
         /// The current land size
         /// </summary>
-        Size m_landSize;
+        private Size _mLandSize;
 
         /// <summary>
         /// How many stories have been completed
         /// </summary>
-        int m_completedStories = 0;
+        private int _mCompletedStories;
 
         /// <summary>
         /// Used to map storyboards to the flakes
         /// </summary>
-        Dictionary<Storyboard, Ellipse> m_storyToFlakeMap = new Dictionary<Storyboard, Ellipse>();
+        private readonly Dictionary<Storyboard, Ellipse> _mStoryToFlakeMap = new Dictionary<Storyboard, Ellipse>();
 
         /// <summary>
         /// We use this on phone so our snowflakes overlap the status bar.
         /// </summary>
-        int m_statusBarOffset = 0;
+        private readonly int _mStatusBarOffset;
 
         public LetItSnow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Setup Random
-            m_random = new Random((int)DateTime.Now.Ticks);
+            _mRandom = new Random((int)DateTime.Now.Ticks);
 
             // Setup the timer that will spawn our snow
-            m_flaker.Tick += SnowStarter_Tick;
-            m_flaker.Interval = new TimeSpan(0, 0, 0, 0, 0);
+            _mFlaker.Tick += SnowStarter_Tick;
+            _mFlaker.Interval = new TimeSpan(0, 0, 0, 0, 0);
 
             // Set our state
             State = SnowyStates.ClearSkys;
 
             // Set the initial size
-            m_landSize = new Size(this.ActualWidth, this.ActualHeight);
+            _mLandSize = new Size(ActualWidth, ActualHeight);
 
             // If we are a phone offset by 40 so we also overlap the status bar, it looks a lot better.
             if(AnalyticsInfo.VersionInfo.DeviceFamily.Equals("Windows.Mobile"))
             {
-                m_statusBarOffset = 40;
+                _mStatusBarOffset = 40;
             }
         }
 
@@ -100,48 +90,48 @@ namespace Baconit.HelperControls
         {
             // Pick a quantum for this flake. If the quantum is higher it might be
             // bigger and brighter.
-            int flakeQuantum = m_random.Next(c_minQuantum, c_maxQuantum);
+            var flakeQuantum = _mRandom.Next(CMinQuantum, CMaxQuantum);
 
             // Spawn a new snow flake
-            Ellipse flake = new Ellipse();
+            var flake = new Ellipse();
             flake.Width = flakeQuantum * 2;
             flake.Height = flakeQuantum * 2;
-            flake.Fill = new SolidColorBrush(Color.FromArgb((byte)m_random.Next(20, flakeQuantum * 12), 255, 255, 255));
-            Canvas.SetLeft(flake, m_random.Next(0, (int)(m_landSize.Width - flake.Width)));
+            flake.Fill = new SolidColorBrush(Color.FromArgb((byte)_mRandom.Next(20, flakeQuantum * 12), 255, 255, 255));
+            Canvas.SetLeft(flake, _mRandom.Next(0, (int)(_mLandSize.Width - flake.Width)));
 
             // Add the flake to the UI
             ui_snowLand.Children.Add(flake);
 
             // Setup the animation
-            Storyboard flakeStory = new Storyboard();
-            DoubleAnimation animation = new DoubleAnimation();
+            var flakeStory = new Storyboard();
+            var animation = new DoubleAnimation();
             flakeStory.Children.Add(animation);
             Storyboard.SetTarget(animation, flake);
             Storyboard.SetTargetProperty(animation, "(Canvas.Top)");
             flakeStory.Completed += FlakeStory_Completed;
 
             // Add the animation to our list.
-            lock (m_storyToFlakeMap)
+            lock (_mStoryToFlakeMap)
             {
-                m_storyToFlakeMap.Add(flakeStory, flake);
+                _mStoryToFlakeMap.Add(flakeStory, flake);
             }
 
             // Set the animation time, for larger flakes we want to have shorter times
             // to make them feel closer to the user. So use the inverse quantum for the
             // max time.
-            int inverseQuantom = c_maxQuantum - flakeQuantum + c_minQuantum;
-            int seconds = m_random.Next(40, inverseQuantom * 20);
+            var inverseQuantom = CMaxQuantum - flakeQuantum + CMinQuantum;
+            var seconds = _mRandom.Next(40, inverseQuantom * 20);
             animation.Duration = new Duration(new TimeSpan(0, 0, seconds));
 
             // Set the animation params
-            animation.From = - flake.Height - m_statusBarOffset;
-            animation.To = m_landSize.Height;
+            animation.From = - flake.Height - _mStatusBarOffset;
+            animation.To = _mLandSize.Height;
 
             // Start it!
             flakeStory.Begin();
 
             // Randomly pick a new time to wake up.
-            m_flaker.Interval = new TimeSpan(0, 0, 0, 0, m_random.Next(300, 500));
+            _mFlaker.Interval = new TimeSpan(0, 0, 0, 0, _mRandom.Next(300, 500));
         }
 
         /// <summary>
@@ -151,26 +141,26 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void FlakeStory_Completed(object sender, object e)
         {
-            Storyboard flakeStory = (Storyboard)sender;
+            var flakeStory = (Storyboard)sender;
 
             // If we can get the flak give it a new X cord for looks.
-            if(m_storyToFlakeMap.ContainsKey(flakeStory))
+            if(_mStoryToFlakeMap.ContainsKey(flakeStory))
             {
-                Ellipse flake = m_storyToFlakeMap[flakeStory];
-                Canvas.SetLeft(flake, m_random.Next(0, (int)(m_landSize.Width - flake.Width)));
+                var flake = _mStoryToFlakeMap[flakeStory];
+                Canvas.SetLeft(flake, _mRandom.Next(0, (int)(_mLandSize.Width - flake.Width)));
             }
 
             // Restart the animation so it loops the flake
             flakeStory.Begin();
 
             // When we hit our max completed stories stop the spawner.
-            if (m_completedStories < c_minCompletedStories)
+            if (_mCompletedStories < CMinCompletedStories)
             {
-                m_completedStories++;
+                _mCompletedStories++;
             }
             else
             {
-                m_flaker.Stop();
+                _mFlaker.Stop();
             }
         }
 
@@ -191,7 +181,7 @@ namespace Baconit.HelperControls
             }
 
             // Start the snow!
-            m_flaker.Start();
+            _mFlaker.Start();
         }
 
         /// <summary>
@@ -203,7 +193,7 @@ namespace Baconit.HelperControls
             {
                 if (State == SnowyStates.Flurries)
                 {
-                    m_flaker.Stop();
+                    _mFlaker.Stop();
                     ToggleGravity(false);
                     State = SnowyStates.SuspendedFlakes;
                 }
@@ -222,9 +212,9 @@ namespace Baconit.HelperControls
                     ToggleGravity(true);
 
                     // If we don't have enough completes resume the flaker.
-                    if (m_completedStories < c_minCompletedStories)
+                    if (_mCompletedStories < CMinCompletedStories)
                     {
-                        m_flaker.Start();
+                        _mFlaker.Start();
                     }
 
                     State = SnowyStates.Flurries;
@@ -237,9 +227,9 @@ namespace Baconit.HelperControls
         /// </summary>
         public void ToggleGravity(bool turnOn)
         {
-            lock (m_storyToFlakeMap)
+            lock (_mStoryToFlakeMap)
             {
-                foreach(KeyValuePair<Storyboard, Ellipse> storyToFlake in m_storyToFlakeMap)
+                foreach(var storyToFlake in _mStoryToFlakeMap)
                 {
                     if(turnOn)
                     {
@@ -260,8 +250,8 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void SnowLand_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            m_landSize = e.NewSize;
-            Clip = new RectangleGeometry() { Rect = new Rect(0,-m_statusBarOffset, m_landSize.Width,m_landSize.Height + m_statusBarOffset) };
+            _mLandSize = e.NewSize;
+            Clip = new RectangleGeometry { Rect = new Rect(0,-_mStatusBarOffset, _mLandSize.Width,_mLandSize.Height + _mStatusBarOffset) };
         }
     }
 }

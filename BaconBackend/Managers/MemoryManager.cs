@@ -1,10 +1,6 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.System;
 
 namespace BaconBackend.Managers
 {
@@ -28,7 +24,7 @@ namespace BaconBackend.Managers
     /// <summary>
     /// Used to send out memory reports.
     /// </summary>
-    public class OnMemoryReportArgs : EventArgs
+    public class MemoryReportArgs : EventArgs
     {
         public MemoryPressureStates CurrentPressure;
         public ulong CurrentMemoryUsage;
@@ -39,7 +35,7 @@ namespace BaconBackend.Managers
     /// <summary>
     /// Used to send memory clean up requests.
     /// </summary>
-    public class OnMemoryCleanupRequestArgs : EventArgs
+    public class MemoryCleanupRequestArgs : EventArgs
     {
         public MemoryPressureStates LastPressure;
         public MemoryPressureStates CurrentPressure;
@@ -56,15 +52,15 @@ namespace BaconBackend.Managers
 
         // These are the limits we use to define the memory pressure.
         // Expressed as % of memory available.
-        const double c_noneMemoryPressueLimit = 0.3;
-        const double c_veryLowMemoryPressueLimit = 0.5;
-        const double c_lowMemoryPressueLimit = 0.80;
-        const double c_mediumMemoryPressueLimit = .85;
+        private const double NoneMemoryPressureLimit = 0.3;
+        private const double VeryLowMemoryPressureLimit = 0.5;
+        private const double LowMemoryPressureLimit = 0.80;
+        private const double MediumMemoryPressureLimit = .85;
 
         // For low just do it every now and then to free up pages we don't need.
         // For medium and high to it more frequently.
-        const int c_lowTickRollover = 200;
-        const int c_mediumAndHighTickRollover = 10;
+        private const int LowTickRollover = 200;
+        private const int MediumAndHighTickRollover = 10;
 
         //
         // Events
@@ -74,23 +70,25 @@ namespace BaconBackend.Managers
         /// Fired when for memory reports. These are used just to inform the app of the
         /// current memory state.
         /// </summary>
-        public event EventHandler<OnMemoryReportArgs> OnMemoryReport
+        public event EventHandler<MemoryReportArgs> OnMemoryReport
         {
-            add { m_onMemoryReport.Add(value); }
-            remove { m_onMemoryReport.Remove(value); }
+            add => _memoryReport.Add(value);
+            remove => _memoryReport.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnMemoryReportArgs>> m_onMemoryReport = new SmartWeakEvent<EventHandler<OnMemoryReportArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<MemoryReportArgs>> _memoryReport = new SmartWeakEvent<EventHandler<MemoryReportArgs>>();
 
         /// <summary>
         /// Fired when we are asking people to cleanup up memory. This has a pressure that indicates
         /// how bad we need memory cleaned up.
         /// </summary>
-        public event EventHandler<OnMemoryCleanupRequestArgs> OnMemoryCleanUpRequest
+        public event EventHandler<MemoryCleanupRequestArgs> OnMemoryCleanUpRequest
         {
-            add { m_onMemoryCleanUpRequest.Add(value); }
-            remove { m_onMemoryCleanUpRequest.Remove(value); }
+            add => _memoryCleanUpRequest.Add(value);
+            remove => _memoryCleanUpRequest.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnMemoryCleanupRequestArgs>> m_onMemoryCleanUpRequest = new SmartWeakEvent<EventHandler<OnMemoryCleanupRequestArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<MemoryCleanupRequestArgs>> _memoryCleanUpRequest = new SmartWeakEvent<EventHandler<MemoryCleanupRequestArgs>>();
 
         //
         // Public vars
@@ -104,7 +102,7 @@ namespace BaconBackend.Managers
         /// <summary>
         /// How much memory we are currently using.
         /// </summary>
-        public double CurrentMemoryUsagePercentage = 0.0;
+        public double CurrentMemoryUsagePercentage;
 
         //
         // Private vars
@@ -113,27 +111,27 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Holds a ref to the manager
         /// </summary>
-        BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         /// <summary>
         /// Indicates if we are running or not.
         /// </summary>
-        bool m_isRunning = false;
+        private bool _isRunning;
 
         /// <summary>
         /// Used to keep track of how often we send a report.
         /// </summary>
-        int m_reportTick = 0;
+        private int _reportTick;
 
         /// <summary>
         /// Used to keep track of how often we send a request to clean up
         /// memory.
         /// </summary>
-        int m_cleanupTick = 0;
+        private int _cleanupTick;
 
         public MemoryManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
 
             // Start the watching thread.
             StartMemoryWatch();
@@ -147,11 +145,11 @@ namespace BaconBackend.Managers
             // If we should run.
             lock(this)
             {
-                if(m_isRunning)
+                if(_isRunning)
                 {
                     return;
                 }
-                m_isRunning = true;
+                _isRunning = true;
             }
 
             // Kick off a thread.
@@ -161,7 +159,7 @@ namespace BaconBackend.Managers
                 while (true)
                 {
                     // Sleep for some time, sleep longer if the memory pressure is lower.
-                    int sleepTime = 100;
+                    var sleepTime = 100;
                     switch(MemoryPressure)
                     {
                         case MemoryPressureStates.None:
@@ -174,35 +172,39 @@ namespace BaconBackend.Managers
                         case MemoryPressureStates.HighNoAllocations:
                             sleepTime = 100;
                             break;
+                        case MemoryPressureStates.VeryLow:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                     await Task.Delay(sleepTime);
 
                     // Make sure we aren't stopped.
-                    if (!m_isRunning)
+                    if (!_isRunning)
                     {
                         return;
                     }
 
                     // Calculate the current memory pressure.
-                    ulong usedMemory = Windows.System.MemoryManager.AppMemoryUsage;
-                    ulong memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit;
+                    var usedMemory = Windows.System.MemoryManager.AppMemoryUsage;
+                    var memoryLimit = Windows.System.MemoryManager.AppMemoryUsageLimit;
                     CurrentMemoryUsagePercentage = (double)usedMemory / (double)memoryLimit;
 
                     // Set the pressure state.
-                    MemoryPressureStates oldPressure = MemoryPressure;
-                    if(CurrentMemoryUsagePercentage < c_noneMemoryPressueLimit)
+                    var oldPressure = MemoryPressure;
+                    if(CurrentMemoryUsagePercentage < NoneMemoryPressureLimit)
                     {
                         MemoryPressure = MemoryPressureStates.None;
                     }
-                    else if (CurrentMemoryUsagePercentage < c_veryLowMemoryPressueLimit)
+                    else if (CurrentMemoryUsagePercentage < VeryLowMemoryPressureLimit)
                     {
                         MemoryPressure = MemoryPressureStates.VeryLow;
                     }
-                    else if(CurrentMemoryUsagePercentage < c_lowMemoryPressueLimit)
+                    else if(CurrentMemoryUsagePercentage < LowMemoryPressureLimit)
                     {
                         MemoryPressure = MemoryPressureStates.Low;
                     }
-                    else if (CurrentMemoryUsagePercentage < c_mediumMemoryPressueLimit)
+                    else if (CurrentMemoryUsagePercentage < MediumMemoryPressureLimit)
                     {
                         MemoryPressure = MemoryPressureStates.Medium;
                     }
@@ -218,13 +220,13 @@ namespace BaconBackend.Managers
                         FireMemoryCleanup(MemoryPressure, oldPressure);
 
                         // Set the count
-                        m_cleanupTick = 0;
+                        _cleanupTick = 0;
                     }
                     // If our new state is lower than our old state.
                     else if(MemoryPressure < oldPressure)
                     {
                         // We did well, but we can still be at medium or low, reset the counter.
-                        m_cleanupTick = 0;
+                        _cleanupTick = 0;
                     }
                     else
                     {
@@ -232,33 +234,29 @@ namespace BaconBackend.Managers
                         if(MemoryPressure >= MemoryPressureStates.Low)
                         {
                             // Count
-                            m_cleanupTick++;
+                            _cleanupTick++;
 
                             // Get the rollover count.
-                            int tickRollover = MemoryPressure == MemoryPressureStates.Low ? c_lowTickRollover : c_mediumAndHighTickRollover;
+                            var tickRollover = MemoryPressure == MemoryPressureStates.Low ? LowTickRollover : MediumAndHighTickRollover;
 
                             // Check for roll over
-                            if(m_cleanupTick > tickRollover)
+                            if(_cleanupTick > tickRollover)
                             {
                                 FireMemoryCleanup(MemoryPressure, oldPressure);
-                                m_cleanupTick = 0;
+                                _cleanupTick = 0;
                             }
                         }
                     }
 
                     // For now since this is only used by developer settings, don't bother
                     // if it isn't enabled.
-                    if (m_baconMan.UiSettingsMan.Developer_ShowMemoryOverlay)
-                    {
-                        // Check if we need to send a report, we only want to send a report every
-                        // 10 ticks so we don't spam too many. Also report if the state changed.
-                        m_reportTick++;
-                        if (m_reportTick > 5 || oldPressure != MemoryPressure)
-                        {
-                            FireMemoryReport(usedMemory, memoryLimit, CurrentMemoryUsagePercentage);
-                            m_reportTick = 0;
-                        }
-                    }
+                    if (!_baconMan.UiSettingsMan.DeveloperShowMemoryOverlay) continue;
+                    // Check if we need to send a report, we only want to send a report every
+                    // 10 ticks so we don't spam too many. Also report if the state changed.
+                    _reportTick++;
+                    if (_reportTick <= 5 && oldPressure == MemoryPressure) continue;
+                    FireMemoryReport(usedMemory, memoryLimit, CurrentMemoryUsagePercentage);
+                    _reportTick = 0;
                 }
             });
         }
@@ -273,8 +271,8 @@ namespace BaconBackend.Managers
         {
             try
             {
-                m_onMemoryReport.Raise(this, new OnMemoryReportArgs()
-                {
+                _memoryReport.Raise(this, new MemoryReportArgs
+                    {
                     AvailableMemory = memoryLimit,
                     CurrentMemoryUsage = usedMemory,
                     CurrentPressure = MemoryPressure,
@@ -284,23 +282,22 @@ namespace BaconBackend.Managers
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Memory report fire failed", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemeoryReportFiredFailed", e);
+                _baconMan.MessageMan.DebugDia("Memory report fire failed", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "MemoryReportFiredFailed", e);
             }
         }
 
         /// <summary>
         /// Fires a memory clean up request to those listening.
         /// </summary>
-        /// <param name="usedMemory"></param>
-        /// <param name="memoryLimit"></param>
-        /// <param name="usedPercentage"></param>
+        /// <param name="current"></param>
+        /// <param name="old"></param>
         public void FireMemoryCleanup(MemoryPressureStates current, MemoryPressureStates old)
         {
             try
             {
-                m_onMemoryCleanUpRequest.Raise(this, new OnMemoryCleanupRequestArgs()
-                {
+                _memoryCleanUpRequest.Raise(this, new MemoryCleanupRequestArgs
+                    {
                     CurrentPressure = current,
                     LastPressure = old
                 }
@@ -308,8 +305,8 @@ namespace BaconBackend.Managers
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Memory cleanup fire failed", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "MemeoryCleanupFiredFailed", e);
+                _baconMan.MessageMan.DebugDia("Memory cleanup fire failed", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "MemoryCleanupFiredFailed", e);
             }
         }
     }

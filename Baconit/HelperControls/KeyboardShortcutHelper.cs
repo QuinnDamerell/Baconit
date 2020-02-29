@@ -1,39 +1,35 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
 namespace Baconit.HelperControls
 {
-    class KeyboardShortcutHelper
+    internal class KeyboardShortcutHelper
     {
         /// <summary>
         /// Fired when a quick search key combo is detected
         /// </summary>
         public event EventHandler<EventArgs> OnQuickSearchActivation
         {
-            add { m_onQuickSearchActivation.Add(value); }
-            remove { m_onQuickSearchActivation.Remove(value); }
+            add => _mOnQuickSearchActivation.Add(value);
+            remove => _mOnQuickSearchActivation.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onQuickSearchActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnQuickSearchActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         /// <summary>
         /// Fired when a escape key press is detected
         /// </summary>
         public event EventHandler<EventArgs> OnGoBackActivation
         {
-            add { m_onGoBackActivation.Add(value); }
-            remove { m_onGoBackActivation.Remove(value); }
+            add => _mOnGoBackActivation.Add(value);
+            remove => _mOnGoBackActivation.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onGoBackActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnGoBackActivation = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         // Private Vars
-        bool m_isControlKeyDown = false;
+        private bool _mIsControlKeyDown;
 
         public KeyboardShortcutHelper()
         {
@@ -51,9 +47,9 @@ namespace Baconit.HelperControls
         {
             if (e.VirtualKey == Windows.System.VirtualKey.Control)
             {
-                m_isControlKeyDown = true;
+                _mIsControlKeyDown = true;
             }
-            else if (m_isControlKeyDown)
+            else if (_mIsControlKeyDown)
             {
                 // I had this on the key down event but it didn't seem to fire 100%
                 // reliably. So this place seems to work better.
@@ -63,7 +59,7 @@ namespace Baconit.HelperControls
                     if (DeviceHelper.CurrentDevice() != DeviceTypes.Mobile)
                     {
                         // Fire the event
-                        m_onQuickSearchActivation.Raise(this, new EventArgs());
+                        _mOnQuickSearchActivation.Raise(this, new EventArgs());
                         e.Handled = true;
                     }
                 }
@@ -79,12 +75,12 @@ namespace Baconit.HelperControls
         {
             if (e.VirtualKey == Windows.System.VirtualKey.Control)
             {
-                m_isControlKeyDown = false;
+                _mIsControlKeyDown = false;
             }
             else if(e.VirtualKey == Windows.System.VirtualKey.Escape)
             {
                 // If we have an escape key hit fire go back.
-                m_onGoBackActivation.Raise(this, new EventArgs());
+                _mOnGoBackActivation.Raise(this, new EventArgs());
             }
         }
     }

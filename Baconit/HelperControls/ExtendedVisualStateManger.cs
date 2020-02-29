@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Baconit.HelperControls
@@ -27,17 +22,14 @@ namespace Baconit.HelperControls
 
         public static bool GoToElementState(FrameworkElement root, string stateName, bool useTransitions)
         {
-            ExtendedVisualStateManager customVisualStateManager = VisualStateManager.GetCustomVisualStateManager(root) as ExtendedVisualStateManager;
+            var customVisualStateManager = GetCustomVisualStateManager(root) as ExtendedVisualStateManager;
 
             return ((customVisualStateManager != null) && customVisualStateManager.GoToStateInternal(root, stateName, useTransitions));
         }
 
         private bool GoToStateInternal(FrameworkElement stateGroupsRoot, string stateName, bool useTransitions)
         {
-            VisualStateGroup group;
-            VisualState state;
-
-            return (TryGetState(stateGroupsRoot, stateName, out group, out state) && this.GoToStateCore(null, stateGroupsRoot, stateName, group, state, useTransitions));
+            return (TryGetState(stateGroupsRoot, stateName, out var @group, out var state) && GoToStateCore(null, stateGroupsRoot, stateName, group, state, useTransitions));
         }
 
         private static bool TryGetState(FrameworkElement element, string stateName, out VisualStateGroup group, out VisualState state)
@@ -45,9 +37,9 @@ namespace Baconit.HelperControls
             group = null;
             state = null;
 
-            foreach (VisualStateGroup group2 in VisualStateManager.GetVisualStateGroups(element))
+            foreach (var group2 in GetVisualStateGroups(element))
             {
-                foreach (VisualState state2 in group2.States)
+                foreach (var state2 in group2.States)
                 {
                     if (state2.Name == stateName)
                     {

@@ -1,16 +1,12 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
 using BaconBackend.Managers;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI;
-using Windows.UI.Xaml.Media;
 
 namespace BaconBackend.Collectors
 {
@@ -22,10 +18,10 @@ namespace BaconBackend.Collectors
         public class PostCollectorContext
         {
             public User User;
-            public Subreddit subreddit;
-            public SortTypes sortType;
-            public SortTimeTypes sortTimeType;
-            public string forcePostId;
+            public Subreddit Subreddit;
+            public SortTypes SortType;
+            public SortTimeTypes SortTimeType;
+            public string ForcePostId;
             public string UniqueId;
         }
 
@@ -33,51 +29,61 @@ namespace BaconBackend.Collectors
         /// Returns a collector for the given type. If the collector doesn't exist one will be created.
         /// </summary>
         /// <param name="subreddit"></param>
+        /// <param name="baconMan"></param>
+        /// <param name="sort"></param>
+        /// <param name="sortTime"></param>
         /// <returns></returns>
         public static PostCollector GetCollector(Subreddit subreddit, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week, string forcePostId = null)
         {
-            PostCollectorContext container = new PostCollectorContext() { subreddit = subreddit, sortType = sort, forcePostId = forcePostId, sortTimeType = sortTime };
+            var container = new PostCollectorContext
+            {
+                Subreddit = subreddit,
+                SortType = sort,
+                ForcePostId = forcePostId,
+                SortTimeType = sortTime,
+                UniqueId = subreddit.Id + sort + sortTime +
+                           (string.IsNullOrWhiteSpace(forcePostId) ? string.Empty : forcePostId)
+            };
             // Make the uniqueId. If we have a force post add that also so we don't get an existing collector with the real subreddit.
-            container.UniqueId = subreddit.Id + sort + sortTime + (String.IsNullOrWhiteSpace(forcePostId) ? String.Empty : forcePostId);
-            return (PostCollector)Collector<Post>.GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
+            return (PostCollector)GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
         }
 
         /// <summary>
         /// Returns a collector for the given type. If the collector doesn't exist one will be created.
         /// </summary>
-        /// <param name="subreddit"></param>
+        /// <param name="user"></param>
+        /// <param name="baconMan"></param>
+        /// <param name="sort"></param>
+        /// <param name="sortTime"></param>
         /// <returns></returns>
         public static PostCollector GetCollector(User user, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week)
         {
-            PostCollectorContext container = new PostCollectorContext() { User = user, sortType = sort, sortTimeType = sortTime };
+            var container = new PostCollectorContext { User = user, SortType = sort, SortTimeType = sortTime };
             container.UniqueId = "t2_"+user.Id + sort + sortTime;
-            return (PostCollector)Collector<Post>.GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
+            return (PostCollector)GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
         }
 
         //
         // Private vars
         //
-        User m_user = null;
-        Subreddit m_subreddit = null;
-        SortTypes m_sortType = SortTypes.Hot;
-        SortTimeTypes m_sortTimeType = SortTimeTypes.Week;
-        BaconManager m_baconMan;
+        private readonly Subreddit _subreddit;
+        private readonly BaconManager _baconMan;
 
         public PostCollector(PostCollectorContext collectorContext, BaconManager baconMan)
             : base(baconMan, collectorContext.UniqueId)
         {
             // Set the vars
-            m_user = collectorContext.User;
-            m_subreddit = collectorContext.subreddit;
-            m_sortType = collectorContext.sortType;
-            m_sortTimeType = collectorContext.sortTimeType;
-            m_baconMan = baconMan;
+            var user = collectorContext.User;
+            _subreddit = collectorContext.Subreddit;
+            var sortType = collectorContext.SortType;
+            var sortTimeType = collectorContext.SortTimeType;
+            _baconMan = baconMan;
 
             // If we are doing a top sort setup the sort time
-            string optionalArgs = String.Empty;
-            if(m_sortType == SortTypes.Top)
+            var optionalArgs = string.Empty;
+            if(sortType == SortTypes.Top)
             {
-                switch(m_sortTimeType)
+                switch(sortTimeType)
                 {
                     case SortTimeTypes.AllTime:
                         optionalArgs = "sort=top&t=all";
@@ -100,43 +106,43 @@ namespace BaconBackend.Collectors
                 }
             }
 
-            string postCollectionUrl = "";
-            bool hasEmptyRoot = false;
+            var postCollectionUrl = "";
+            var hasEmptyRoot = false;
 
 
-            if (m_subreddit != null)
+            if (_subreddit != null)
             {
-                if (m_subreddit.DisplayName.ToLower() == "frontpage")
+                if (_subreddit.DisplayName.ToLower() == "frontpage")
                 {
                     // Special case for the front page
-                    postCollectionUrl = $"/{SortTypeToString(m_sortType)}/.json";
+                    postCollectionUrl = $"/{SortTypeToString(sortType)}/.json";
                 }
-                else if (m_subreddit.DisplayName.ToLower() == "saved")
+                else if (_subreddit.DisplayName.ToLower() == "saved")
                 {
                     // Special case for the saved posts
-                    postCollectionUrl = $"/user/{m_baconMan.UserMan.CurrentUser.Name}/saved/.json";
+                    postCollectionUrl = $"/user/{_baconMan.UserMan.CurrentUser.Name}/saved/.json";
                     optionalArgs = "type=links";
                 }
-                else if (!String.IsNullOrWhiteSpace(collectorContext.forcePostId))
+                else if (!string.IsNullOrWhiteSpace(collectorContext.ForcePostId))
                 {
                     // We are only going to try to grab one specific post. This is used by search and inbox to 
                     // link to a post. Since we are doing so, we need to make the unique id something unique for this post so we don't get
                     // a cache. This should match the unique id we use to look up the subreddit above.
-                    SetUniqueId(m_subreddit.Id + m_sortType + collectorContext.forcePostId);
-                    postCollectionUrl = $"/r/{m_subreddit.DisplayName}/comments/{collectorContext.forcePostId}/.json";
+                    SetUniqueId(_subreddit.Id + sortType + collectorContext.ForcePostId);
+                    postCollectionUrl = $"/r/{_subreddit.DisplayName}/comments/{collectorContext.ForcePostId}/.json";
                     hasEmptyRoot = true;
                 }
                 else
                 {
-                    postCollectionUrl = $"/r/{m_subreddit.DisplayName}/{SortTypeToString(m_sortType)}/.json";
+                    postCollectionUrl = $"/r/{_subreddit.DisplayName}/{SortTypeToString(sortType)}/.json";
                 }
             }
             else
             {
                 // Get posts for a user
-                postCollectionUrl = $"user/{m_user.Name}/submitted/.json";
+                postCollectionUrl = $"user/{user.Name}/submitted/.json";
 
-                switch(m_sortType)
+                switch(sortType)
                 {
                     case SortTypes.Controversial:
                         optionalArgs = "sort=controversial";
@@ -150,13 +156,17 @@ namespace BaconBackend.Collectors
                     case SortTypes.Top:
                         optionalArgs = "sort=top";
                         break;
+                    case SortTypes.Rising:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
             InitListHelper(postCollectionUrl, hasEmptyRoot, true, optionalArgs);
 
             // Listen to user changes so we will update the subreddits
-            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
+            _baconMan.UserMan.OnUserUpdated += OnUserUpdated;
         }
 
 
@@ -165,7 +175,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void OnUserUpdated(object sender, OnUserUpdatedArgs args)
+        private void OnUserUpdated(object sender, UserUpdatedArgs args)
         {
             // If a user is added or removed update the subreddit to reflect the new user.
             if (args.Action != UserCallbackAction.Updated)
@@ -180,16 +190,9 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public Post GetPost(string postId)
         {
-            List<Post> posts = GetCurrentPosts();
+            var posts = GetCurrentPosts();
 
-            foreach(Post post in posts)
-            {
-                if(post.Id == postId)
-                {
-                    return post;
-                }
-            }
-            return null;
+            return posts.FirstOrDefault(post => post.Id == postId);
         }
 
         #region Post Modifiers
@@ -208,7 +211,7 @@ namespace BaconBackend.Collectors
             }
 
             // Using the post and suggested index, find the real post and index
-            Post collectionPost = post;
+            var collectionPost = post;
             FindPostInCurrentCollection(ref collectionPost, ref postPosition);
 
             if (collectionPost == null)
@@ -224,7 +227,7 @@ namespace BaconBackend.Collectors
             SaveSettings();
 
             // Fire off that a update happened.
-            FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+            FireCollectionUpdated(postPosition, new List<Post> { collectionPost }, false, false);
         }
 
         /// <summary>
@@ -241,7 +244,7 @@ namespace BaconBackend.Collectors
             }
 
             // Using the post and suggested index, find the real post and index
-            Post collectionPost = post;
+            var collectionPost = post;
             FindPostInCurrentCollection(ref collectionPost, ref postPosition);
 
             if (collectionPost == null)
@@ -257,7 +260,7 @@ namespace BaconBackend.Collectors
             SaveSettings();
 
             // Fire off that a update happened.
-            FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+            FireCollectionUpdated(postPosition, new List<Post> { collectionPost }, false, false);
         }
 
         /// <summary>
@@ -268,14 +271,14 @@ namespace BaconBackend.Collectors
         public void ChangePostVote(Post post, PostVoteAction action, int postPosition = 0)
         {
             // Ensure we are signed in.
-            if(!m_baconMan.UserMan.IsUserSignedIn)
+            if(!_baconMan.UserMan.IsUserSignedIn)
             {
-                m_baconMan.MessageMan.ShowSigninMessage("vote");
+                _baconMan.MessageMan.ShowSigninMessage("vote");
                 return;
             }
 
             // Using the post and suggested index, find the real post and index
-            Post collectionPost = post;
+            var collectionPost = post;
             FindPostInCurrentCollection(ref collectionPost, ref postPosition);
 
             if (collectionPost == null || postPosition == -1)
@@ -285,8 +288,8 @@ namespace BaconBackend.Collectors
             }
 
             // Update the like status
-            bool likesAction = action == PostVoteAction.UpVote;
-            int voteMultiplier = action == PostVoteAction.UpVote ? 1 : -1;
+            var likesAction = action == PostVoteAction.UpVote;
+            var voteMultiplier = action == PostVoteAction.UpVote ? 1 : -1;
             if(collectionPost.Likes.HasValue)
             {
                 if(collectionPost.Likes.Value == likesAction)
@@ -310,7 +313,7 @@ namespace BaconBackend.Collectors
             }
             
             // Fire off that a update happened.
-            FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+            FireCollectionUpdated(postPosition, new List<Post> { collectionPost }, false, false);
 
             // Start a task to make the vote
             Task.Run(async () =>
@@ -318,13 +321,13 @@ namespace BaconBackend.Collectors
                 try
                 {
                     // Build the data
-                    string voteDir = collectionPost.Likes.HasValue ? collectionPost.Likes.Value ? "1" : "-1" : "0";
-                    List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+                    var voteDir = collectionPost.Likes.HasValue ? collectionPost.Likes.Value ? "1" : "-1" : "0";
+                    var postData = new List<KeyValuePair<string, string>>();
                     postData.Add(new KeyValuePair<string, string>("id", "t3_"+collectionPost.Id));
                     postData.Add(new KeyValuePair<string, string>("dir", voteDir));
 
                     // Make the call
-                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString("api/vote", postData);
+                    var str = await _baconMan.NetworkMan.MakeRedditPostRequestAsString("api/vote", postData);
 
                     // Do some super simple validation
                     if(str != "{}")
@@ -334,8 +337,8 @@ namespace BaconBackend.Collectors
                 }
                 catch(Exception ex)
                 {
-                    m_baconMan.MessageMan.DebugDia("failed to vote!", ex);
-                    m_baconMan.MessageMan.ShowMessageSimple("That's Not Right", "Something went wrong while trying to cast your vote, try again later.");
+                    _baconMan.MessageMan.DebugDia("failed to vote!", ex);
+                    _baconMan.MessageMan.ShowMessageSimple("That's Not Right", "Something went wrong while trying to cast your vote, try again later.");
                 }
             });
         }
@@ -348,7 +351,7 @@ namespace BaconBackend.Collectors
         public async void SaveOrHidePost(Post post, bool? save, bool? hide, int postPosition = 0)
         {
             // Using the post and suggested index, find the real post and index
-            Post collectionPost = post;
+            var collectionPost = post;
             FindPostInCurrentCollection(ref collectionPost, ref postPosition);
 
             if (collectionPost == null)
@@ -372,7 +375,7 @@ namespace BaconBackend.Collectors
             }
 
             // Make the call to save or hide the post
-            bool success = await Task.Run(() => MiscellaneousHelper.SaveOrHideRedditItem(m_baconMan, "t3_" + collectionPost.Id, save, hide));
+            var success = await Task.Run(() => MiscellaneousHelper.SaveOrHideRedditItem(_baconMan, "t3_" + collectionPost.Id, save, hide));
 
             if (!success)
             {
@@ -393,7 +396,7 @@ namespace BaconBackend.Collectors
             else
             {
                 // Fire off that a update happened.
-                FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);
+                FireCollectionUpdated(postPosition, new List<Post> { collectionPost }, false, false);
             }
         }
 
@@ -404,7 +407,7 @@ namespace BaconBackend.Collectors
         public bool EditSelfPost(Post post, string serverResponse)
         {
             // Assume if we can find author we are successful. Not sure if that is safe or not... :)
-            if (!String.IsNullOrWhiteSpace(serverResponse) && serverResponse.Contains("\"author\""))
+            if (!string.IsNullOrWhiteSpace(serverResponse) && serverResponse.Contains("\"author\""))
             {
                 // Do the next part in a try catch so if we fail we will still report success since the
                 // message was sent to reddit.
@@ -412,11 +415,11 @@ namespace BaconBackend.Collectors
                 try
                 {
                     // Try to parse out the new selftext.
-                    int dataPos = serverResponse.IndexOf("\"selftext\":");
-                    int dataStartPos = serverResponse.IndexOf('"', dataPos + 11);
+                    var dataPos = serverResponse.IndexOf("\"selftext\":");
+                    var dataStartPos = serverResponse.IndexOf('"', dataPos + 11);
 
                     // Find the end of the string. We must ignore any \\\" because those are escaped (\\) \" from the comment.
-                    int dataEndPos = dataStartPos;
+                    var dataEndPos = dataStartPos;
                     while(dataEndPos < serverResponse.Length)
                     {
                         // Find the next "
@@ -431,7 +434,7 @@ namespace BaconBackend.Collectors
                     }
 
                     // Now get the string.
-                    string newSelfText = serverResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
+                    var newSelfText = serverResponse.Substring(dataStartPos, (dataEndPos - dataStartPos + 1));
 
                     // Remove the starting and ending "
                     newSelfText = newSelfText.Substring(1, newSelfText.Length - 2);
@@ -439,8 +442,8 @@ namespace BaconBackend.Collectors
                     newSelfText = Regex.Unescape(newSelfText);   
 
                     // Using the post and suggested index, find the real post and index
-                    Post collectionPost = post;
-                    int postPosition = 0;
+                    var collectionPost = post;
+                    var postPosition = 0;
                     FindPostInCurrentCollection(ref collectionPost, ref postPosition);
 
                     if (collectionPost == null)
@@ -455,25 +458,23 @@ namespace BaconBackend.Collectors
                     collectionPost.Selftext = newSelfText;
 
                     // Fire off that a update happened.
-                    FireCollectionUpdated(postPosition, new List<Post>() { collectionPost }, false, false);                   
+                    FireCollectionUpdated(postPosition, new List<Post> { collectionPost }, false, false);                   
                 }
                 catch (Exception e)
                 {
                     // We fucked up updating the UI for the post edit.
-                    m_baconMan.MessageMan.DebugDia("Failed updating selftext in UI", e);
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedUpdatingSelftextInUI");
+                    _baconMan.MessageMan.DebugDia("Failed updating selftext in UI", e);
+                    TelemetryManager.ReportUnexpectedEvent(this, "FailedUpdatingSelftextInUI");
                 }
 
                 // If the response was ok always return true.
                 return true;
             }
-            else
-            {
-                // Reddit returned something wrong
-                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, reddit returned and unexpected message.");
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
-                return false;
-            }
+
+            // Reddit returned something wrong
+            _baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, reddit returned and unexpected message.");
+            TelemetryManager.ReportUnexpectedEvent(this, "CommentPostReturnedUnexpectedMessage");
+            return false;
         }
 
         /// <summary>
@@ -482,15 +483,15 @@ namespace BaconBackend.Collectors
         public async void DeletePost(Post post)
         {
             // Try to delete it.
-            bool success = await Task.Run(()=> MiscellaneousHelper.DeletePost(m_baconMan, post.Id));
+            var success = await Task.Run(()=> MiscellaneousHelper.DeletePost(_baconMan, post.Id));
 
             if(success)
             {
-                m_baconMan.MessageMan.ShowMessageSimple("Bye Bye", "Your post has been deleted.");
+                _baconMan.MessageMan.ShowMessageSimple("Bye Bye", "Your post has been deleted.");
             }
             else
             {
-                m_baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, check your Internet connection.");
+                _baconMan.MessageMan.ShowMessageSimple("That's not right", "We can't edit your post right now, check your Internet connection.");
             }
         }
 
@@ -505,17 +506,15 @@ namespace BaconBackend.Collectors
         private void FindPostInCurrentCollection(ref Post post, ref int index)
         {
             // Get the current list
-            List<Post> posts = GetCurrentPostsInternal();
+            var posts = GetCurrentPostsInternal();
 
             // Find the post starting at the possible index
             for (; index < posts.Count; index++)
             {
-                if (posts[index].Id.Equals(post.Id))
-                {
-                    // Grab the post and break;
-                    post = posts[index];
-                    return;
-                }
+                if (!posts[index].Id.Equals(post.Id)) continue;
+                // Grab the post and break;
+                post = posts[index];
+                return;
             }
 
             // If we didn't find it kill them.
@@ -528,34 +527,29 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="elements"></param>
         /// <returns></returns>
-        override protected List<Post> ParseElementList(List<Element<Post>> elements)
+        protected override List<Post> ParseElementList(List<Element<Post>> elements)
         {
             // Converts the elements into a list.
-            List<Post> posts = new List<Post>();
-            foreach (Element<Post> element in elements)
-            {
-                posts.Add(element.Data);
-            }
-            return posts;
+            return elements.Select(element => element.Data).ToList();
         }
 
         /// <summary>
         /// Applies any common formatting to the posts.
         /// </summary>
         /// <param name="posts">Posts to be formatted</param>
-        override protected void ApplyCommonFormatting(ref List<Post> posts)
+        protected override void ApplyCommonFormatting(ref List<Post> posts)
         {
-            bool isFrontPage = m_subreddit != null && (m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage"));
-            bool showSubreddit = isFrontPage || m_subreddit == null;
+            var isFrontPage = _subreddit != null && (_subreddit.IsArtificial || _subreddit.DisplayName.ToLower().Equals("frontpage"));
+            var showSubreddit = isFrontPage || _subreddit == null;
 
-            foreach(Post post in posts)
+            foreach(var post in posts)
             {
                 // Set the first line
-                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                DateTime postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
+                var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                var postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
 
                 // if this is going to a subreddit add the user, if this is going to a user add the domain
-                if(m_subreddit != null)
+                if(_subreddit != null)
                 {
                     post.SubTextLine1 = TimeToTextHelper.TimeElapseToText(postTime) + $" ago by {post.Author}";
                 }
@@ -572,27 +566,25 @@ namespace BaconBackend.Collectors
                 post.FlipViewSecondary = showSubreddit ? $"r/{post.Subreddit.ToLower()}" : TimeToTextHelper.TimeElapseToText(postTime) + " ago";
 
                 // Set the title size
-                post.TitleMaxLines = m_baconMan.UiSettingsMan.SubredditList_ShowFullTitles ? 99 : 2;
+                post.TitleMaxLines = _baconMan.UiSettingsMan.SubredditListShowFullTitles ? 99 : 2;
 
                 // Set if we should show the save image or not
-                post.ShowSaveImageMenu = String.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+                post.ShowSaveImageMenu = string.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
 
                 // Set if this is owned by the current user
-                if(m_baconMan.UserMan.IsUserSignedIn && m_baconMan.UserMan.CurrentUser != null)
+                if(_baconMan.UserMan.IsUserSignedIn && _baconMan.UserMan.CurrentUser != null)
                 {
-                    post.IsPostOwnedByUser = post.Author.Equals(m_baconMan.UserMan.CurrentUser.Name, StringComparison.OrdinalIgnoreCase);
+                    post.IsPostOwnedByUser = post.Author.Equals(_baconMan.UserMan.CurrentUser.Name, StringComparison.OrdinalIgnoreCase);
                 }
 
                 // Check if it has been read
-                if (ReadPostsList.ContainsKey(post.Id))
-                {
-                    // Set the text color
-                    post.TitleTextColor = Color.FromArgb(255, 152, 152, 152);
+                if (!ReadPostsList.ContainsKey(post.Id)) continue;
+                // Set the text color
+                post.TitleTextColor = Color.FromArgb(255, 152, 152, 152);
 
-                    // Set the comments text if we want to.
-                    int commentDiff = post.NumComments - ReadPostsList[post.Id];
-                    post.NewCommentText = (ReadPostsList[post.Id] != -1 && commentDiff > 0) ? $"(+{commentDiff})" : String.Empty;
-                }
+                // Set the comments text if we want to.
+                var commentDiff = post.NumComments - ReadPostsList[post.Id];
+                post.NewCommentText = (ReadPostsList[post.Id] != -1 && commentDiff > 0) ? $"(+{commentDiff})" : string.Empty;
             }
         }
 
@@ -601,7 +593,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string SortTypeToString(SortTypes type)
+        private static string SortTypeToString(SortTypes type)
         {
             switch (type)
             {
@@ -624,7 +616,7 @@ namespace BaconBackend.Collectors
         /// </summary>
         private void SaveSettings()
         {
-            ReadPostsList = m_readPostsList;
+            ReadPostsList = _readPostsList;
         }
 
         /// <summary>
@@ -634,27 +626,18 @@ namespace BaconBackend.Collectors
         /// </summary>
         private HashList<string, int> ReadPostsList
         {
-            get
-            {
-                if (m_readPostsList == null)
-                {
-                    if (m_baconMan.SettingsMan.RoamingSettings.ContainsKey("SubredditPostCollector.ReadPostsList"))
-                    {
-                        m_readPostsList = m_baconMan.SettingsMan.ReadFromRoamingSettings<HashList<string, int>>("SubredditPostCollector.ReadPostsList");
-                    }
-                    else
-                    {
-                        m_readPostsList = new HashList<string, int>(150);
-                    }
-                }
-                return m_readPostsList;
-            }
+            get =>
+                _readPostsList ?? (_readPostsList =
+                    _baconMan.SettingsMan.RoamingSettings.ContainsKey("SubredditPostCollector.ReadPostsList")
+                        ? _baconMan.SettingsMan.ReadFromRoamingSettings<HashList<string, int>>(
+                            "SubredditPostCollector.ReadPostsList")
+                        : new HashList<string, int>(150));
             set
             {
-                m_readPostsList = value;
-                m_baconMan.SettingsMan.WriteToRoamingSettings<HashList<string, int>>("SubredditPostCollector.ReadPostsList", m_readPostsList);
+                _readPostsList = value;
+                _baconMan.SettingsMan.WriteToRoamingSettings("SubredditPostCollector.ReadPostsList", _readPostsList);
             }
         }
-        private HashList<string, int> m_readPostsList = null;
+        private HashList<string, int> _readPostsList;
     }
 }

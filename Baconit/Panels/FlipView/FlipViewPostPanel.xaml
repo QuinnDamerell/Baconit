@@ -392,7 +392,7 @@
                                                    SourceId="{x:Bind Context.Post.Id}" />
 
                     <!--  The post header control  -->
-                    <ContentControl Grid.Row="2"
+                    <ContentControl Grid.Row="1"
                                     HorizontalContentAlignment="Stretch"
                                     ContentTemplate="{StaticResource FlipViewStoryHeader}" />
                 </Grid>

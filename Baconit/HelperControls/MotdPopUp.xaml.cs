@@ -1,18 +1,8 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -25,14 +15,15 @@ namespace Baconit.HelperControls
         /// </summary>
         public event EventHandler<EventArgs> OnHideComplete
         {
-            add { m_onHideComplete.Add(value); }
-            remove { m_onHideComplete.Remove(value); }
+            add => _mOnHideComplete.Add(value);
+            remove => _mOnHideComplete.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onHideComplete = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnHideComplete = new SmartWeakEvent<EventHandler<EventArgs>>();
 
         public MotdPopUp(string title, string markdownContent)
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Set the title and markdown
             ui_titleText.Text = title;
@@ -67,7 +58,7 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void HideDialog_Completed(object sender, object e)
         {
-            m_onHideComplete.Raise(this, new EventArgs());
+            _mOnHideComplete.Raise(this, new EventArgs());
         }
 
         /// <summary>
@@ -75,7 +66,7 @@ namespace Baconit.HelperControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.BackButtonArgs e)
         {
             if(e.IsHandled)
             {
@@ -89,12 +80,12 @@ namespace Baconit.HelperControls
             e.IsHandled = true;
         }
 
-        private void MarkdownText_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        private void MarkdownText_OnMarkdownLinkTapped(object sender, UniversalMarkdown.MarkdownLinkTappedArgs e)
         {            
             try
             {
                 // See if what we have is a reddit link
-                RedditContentContainer redditContent = MiscellaneousHelper.TryToFindRedditContentInLink(e.Link);
+                var redditContent = MiscellaneousHelper.TryToFindRedditContentInLink(e.Link);
 
                 if(redditContent != null && redditContent.Type != RedditContentType.Website)
                 {
@@ -112,7 +103,7 @@ namespace Baconit.HelperControls
             }
             catch (Exception ex)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "MOTDLinkFailedToOpen", ex);
+                TelemetryManager.ReportUnexpectedEvent(this, "MOTDLinkFailedToOpen", ex);
                 App.BaconMan.MessageMan.DebugDia("MOTDLinkFailedToOpen", ex);
             }
         }

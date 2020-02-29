@@ -1,20 +1,11 @@
 ﻿using Baconit.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 
 namespace Baconit.ContentPanels.Panels
@@ -24,19 +15,19 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        IContentPanelBaseInternal m_base;
+        private readonly IContentPanelBaseInternal _mBase;
 
         /// <summary>
         /// Holds a reference to the web view if there is one.
         /// </summary>
-        WebView m_webView = null;
+        private WebView _mWebView;
 
         public WebPageContentPanel(IContentPanelBaseInternal panelBase)
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Capture the base
-            m_base = panelBase;
+            _mBase = panelBase;
 
             // Listen for back presses
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
@@ -47,13 +38,7 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Indicates how large the panel is in memory.
         /// </summary>
-        public PanelMemorySizes PanelMemorySize
-        {
-            get
-            {
-                return PanelMemorySizes.Large;
-            }
-        }
+        public PanelMemorySizes PanelMemorySize => PanelMemorySizes.Large;
 
         /// <summary>
         /// Fired when we should load the content.
@@ -67,7 +52,7 @@ namespace Baconit.ContentPanels.Panels
                 lock (this)
                 {
                     // If we are destroyed or already created return.
-                    if (m_base.IsDestoryed || m_webView != null)
+                    if (_mBase.IsDestoryed || _mWebView != null)
                     {
                         return;
                     }
@@ -118,38 +103,38 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         private void MakeWebView()
         {
-            if (m_webView != null)
+            if (_mWebView != null)
             {
                 return;
             }
 
             // Make the webview
-            m_webView = new WebView(WebViewExecutionMode.SeparateThread);
+            _mWebView = new WebView(WebViewExecutionMode.SeparateThread);
 
             // Setup the listeners, we need all of these because some web pages don't trigger
             // some of them.
-            m_webView.FrameNavigationCompleted += NavigationCompleted;
-            m_webView.NavigationFailed += NavigationFailed;
-            m_webView.DOMContentLoaded += DOMContentLoaded;
-            m_webView.ContentLoading += ContentLoading;
-            m_webView.ContainsFullScreenElementChanged += ContainsFullScreenElementChanged;
+            _mWebView.FrameNavigationCompleted += NavigationCompleted;
+            _mWebView.NavigationFailed += NavigationFailed;
+            _mWebView.DOMContentLoaded += DomContentLoaded;
+            _mWebView.ContentLoading += ContentLoading;
+            _mWebView.ContainsFullScreenElementChanged += ContainsFullScreenElementChanged;
 
             // Navigate
             try
             {
-                m_webView.Navigate(new Uri(m_base.Source.Url, UriKind.Absolute));
+                _mWebView.Navigate(new Uri(_mBase.Source.Url, UriKind.Absolute));
             }
             catch (Exception e)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToMakeUriInWebControl", e);
-                m_base.FireOnError(true, "This web page failed to load");
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToMakeUriInWebControl", e);
+                _mBase.FireOnError(true, "This web page failed to load");
             }
 
             // Now add an event for navigating.
-            m_webView.NavigationStarting += NavigationStarting;
+            _mWebView.NavigationStarting += NavigationStarting;
 
             // Insert this before the full screen button.
-            ui_contentRoot.Children.Insert(0, m_webView);
+            ui_contentRoot.Children.Insert(0, _mWebView);
         }
 
         /// <summary>
@@ -158,48 +143,48 @@ namespace Baconit.ContentPanels.Panels
         private void DestroyWebView()
         {
             // Destroy if it exists
-            if (m_webView != null)
+            if (_mWebView != null)
             {
                 // Clear handlers
-                m_webView.FrameNavigationCompleted -= NavigationCompleted;
-                m_webView.NavigationFailed -= NavigationFailed;
-                m_webView.DOMContentLoaded -= DOMContentLoaded;
-                m_webView.ContentLoading -= ContentLoading;
-                m_webView.NavigationStarting -= NavigationStarting;
-                m_webView.ContainsFullScreenElementChanged -= ContainsFullScreenElementChanged;
+                _mWebView.FrameNavigationCompleted -= NavigationCompleted;
+                _mWebView.NavigationFailed -= NavigationFailed;
+                _mWebView.DOMContentLoaded -= DomContentLoaded;
+                _mWebView.ContentLoading -= ContentLoading;
+                _mWebView.NavigationStarting -= NavigationStarting;
+                _mWebView.ContainsFullScreenElementChanged -= ContainsFullScreenElementChanged;
 
                 // Clear the webview
-                m_webView.Stop();
-                m_webView.NavigateToString("");
+                _mWebView.Stop();
+                _mWebView.NavigateToString("");
 
                 // Remove it from the UI.
-                ui_contentRoot.Children.Remove(m_webView);
+                ui_contentRoot.Children.Remove(_mWebView);
             }
 
             // Null it
-            m_webView = null;
+            _mWebView = null;
         }
 
-        private void DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
+        private void DomContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            m_base.FireOnLoading(false);
+            _mBase.FireOnLoading(false);
             HideReadingModeLoading();
         }
 
         private void ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
         {
-            m_base.FireOnLoading(false);
+            _mBase.FireOnLoading(false);
             HideReadingModeLoading();
         }
 
         private void NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            m_base.FireOnLoading(false);
+            _mBase.FireOnLoading(false);
             HideReadingModeLoading();
         }
         private void NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
-            m_base.FireOnError(true, "This web page is broken");
+            _mBase.FireOnError(true, "This web page is broken");
         }
 
         private void NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
@@ -221,14 +206,14 @@ namespace Baconit.ContentPanels.Panels
             // Navigate.
             try
             {
-                m_webView.Navigate(new Uri("http://www.readability.com/m?url=" + m_base.Source.Url, UriKind.Absolute) );
+                _mWebView.Navigate(new Uri("http://www.readability.com/m?url=" + _mBase.Source.Url, UriKind.Absolute) );
             }
             catch (Exception ex)
             {
-                App.BaconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToNavReadingMode", ex);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToNavReadingMode", ex);
             }
 
-            App.BaconMan.TelemetryMan.ReportEvent(this, "ReadingModeEnabled");
+            TelemetryManager.ReportEvent(this, "ReadingModeEnabled");
         }
 
         private void HideReadingModeLoading()
@@ -244,18 +229,18 @@ namespace Baconit.ContentPanels.Panels
 
         private async void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (m_webView != null)
+            if (_mWebView != null)
             {
                 // Go back
-                if (m_webView.CanGoBack)
+                if (_mWebView.CanGoBack)
                 {
-                    m_webView.GoBack();
+                    _mWebView.GoBack();
                 }
 
                 // Delay a little while so CanGoBack gets updated
                 await Task.Delay(500);
 
-                ToggleBackButton(m_webView.CanGoBack);
+                ToggleBackButton(_mWebView.CanGoBack);
             }
         }
 
@@ -295,7 +280,7 @@ namespace Baconit.ContentPanels.Panels
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
-                ui_fullScreenHolder.Visibility = (m_base.CanGoFullscreen) ? Visibility.Visible : Visibility.Collapsed;
+                ui_fullScreenHolder.Visibility = (_mBase.CanGoFullscreen) ? Visibility.Visible : Visibility.Collapsed;
             });
         }
 
@@ -306,7 +291,7 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="e"></param>
         private void FullScreenHolder_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ToggleFullScreen(!m_base.IsFullscreen);
+            ToggleFullScreen(!_mBase.IsFullscreen);
         }
 
         /// <summary>
@@ -314,7 +299,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.BackButtonArgs e)
         {
             if (e.IsHandled)
             {
@@ -332,12 +317,12 @@ namespace Baconit.ContentPanels.Panels
         /// <param name="args"></param>
         private void ContainsFullScreenElementChanged(WebView sender, object args)
         {
-            if (m_webView == null)
+            if (_mWebView == null)
             {
                 return;
             }
 
-            if (m_webView.ContainsFullScreenElement)
+            if (_mWebView.ContainsFullScreenElement)
             {
                 // Go full screen
                 ToggleFullScreen(true);
@@ -363,16 +348,16 @@ namespace Baconit.ContentPanels.Panels
 
         private bool ToggleFullScreen(bool goFullScreen)
         {
-            bool didAction = false;
+            var didAction = false;
 
             // Set the state
-            didAction = m_base.FireOnFullscreenChanged(goFullScreen);
+            didAction = _mBase.FireOnFullscreenChanged(goFullScreen);
 
             // Update the icon
-            ui_fullScreenIcon.Symbol = m_base.IsFullscreen ? Symbol.BackToWindow : Symbol.FullScreen;
+            ui_fullScreenIcon.Symbol = _mBase.IsFullscreen ? Symbol.BackToWindow : Symbol.FullScreen;
 
             // Set our manipulation mode to capture all input
-            ManipulationMode = m_base.IsFullscreen ? ManipulationModes.All : ManipulationModes.System;
+            ManipulationMode = _mBase.IsFullscreen ? ManipulationModes.All : ManipulationModes.System;
 
             return didAction;
         }

@@ -3,11 +3,6 @@ using BaconBackend.DataObjects;
 using Baconit.ContentPanels;
 using Baconit.ContentPanels.Panels;
 using Baconit.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 
 namespace Baconit.Panels.FlipView
@@ -16,7 +11,7 @@ namespace Baconit.Panels.FlipView
     /// This class is what is bound to the flip view for each item.
     /// It holds the properties that represent a post.
     /// </summary>
-    class FlipViewPostItem : BindableBase
+    internal class FlipViewPostItem : BindableBase
     {
         public FlipViewPostItem(IPanelHost host, PostCollector collector, Post post, string targetComment)
         {
@@ -29,48 +24,33 @@ namespace Baconit.Panels.FlipView
         /// </summary>
         public FlipViewPostContext Context
         {
-            get
-            {
-                return m_context;
-            }
-            set
-            {
-                SetProperty(ref m_context, value);
-            }
+            get => _context;
+            set => SetProperty(ref _context, value);
         }
-        FlipViewPostContext m_context;
+
+        private FlipViewPostContext _context;
 
         /// <summary>
         /// If the post is visible.
         /// </summary>
         public bool IsVisible
         {
-            get
-            {
-                return m_isVisible;
-            }
-            set
-            {
-                SetProperty(ref m_isVisible, value);
-            }
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
         }
-        bool m_isVisible = false;
+
+        private bool _isVisible;
 
         /// <summary>
         /// If the post should load comments
         /// </summary>
         public bool LoadComments
         {
-            get
-            {
-                return m_loadComments;
-            }
-            set
-            {
-                SetProperty(ref m_loadComments, value);
-            }
+            get => _loadComments;
+            set => SetProperty(ref _loadComments, value);
         }
-        bool m_loadComments = false;
+
+        private bool _loadComments;
 
         /// <summary>
         /// Check if post would be rendered as Markdown
@@ -79,8 +59,8 @@ namespace Baconit.Panels.FlipView
         {
             get
             {
-                ContentPanelSource source = ContentPanelSource.CreateFromPost(Context.Post);
-                return ContentPanelBase.getControlType(source, this) == typeof(MarkdownContentPanel) ? Visibility.Visible : Visibility.Collapsed;
+                var source = ContentPanelSource.CreateFromPost(Context.Post);
+                return ContentPanelBase.GetControlType(source, this) == typeof(MarkdownContentPanel) ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

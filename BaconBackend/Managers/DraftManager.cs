@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -16,56 +13,53 @@ namespace BaconBackend.Managers
         public string Title;
         public string UrlOrText;
         public string Subreddit;
-        public bool isSelfText;
+        public bool IsSelfText;
     }
 
     public class DraftManager
     {
-        const string c_postDraftFile = "PostSubmissionDraft.json";
+        private const string PostDraftFile = "PostSubmissionDraft.json";
 
-        BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         public DraftManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         /// <summary>
         /// Returns if we have a draft file or not.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> HasPostSubmitDraft()
+        public static async Task<bool> HasPostSubmitDraft()
         {
-            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            IStorageItem file = await folder.TryGetItemAsync(c_postDraftFile);
+            var folder = ApplicationData.Current.LocalFolder;
+            var file = await folder.TryGetItemAsync(PostDraftFile);
             return file != null;
         }
 
         /// <summary>
         /// Saves a current post to the draft file.
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="urlOrText"></param>
-        /// <param name="isSelfText"></param>
-        /// <param name="subreddit"></param>
+        /// <param name="data"></param>
         public async Task<bool> SavePostSubmissionDraft(PostSubmissionDraftData data)
         {
             try
             {
                 // Get the folder and file.
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.CreateFileAsync(c_postDraftFile, CreationCollisionOption.ReplaceExisting);
+                var folder = ApplicationData.Current.LocalFolder;
+                var file = await folder.CreateFileAsync(PostDraftFile, CreationCollisionOption.ReplaceExisting);
 
                 // Serialize the data
-                string fileData = JsonConvert.SerializeObject(data);
+                var fileData = JsonConvert.SerializeObject(data);
 
                 // Write to the file
-                await Windows.Storage.FileIO.WriteTextAsync(file, fileData);
+                await FileIO.WriteTextAsync(file, fileData);
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("failed to write draft", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToWriteDraftFile",e);
+                _baconMan.MessageMan.DebugDia("failed to write draft", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToWriteDraftFile",e);
                 return false;
             }
             return true;
@@ -80,8 +74,8 @@ namespace BaconBackend.Managers
             try
             {
                 // Get the folder and file.
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.CreateFileAsync(c_postDraftFile, CreationCollisionOption.OpenIfExists);
+                var folder = ApplicationData.Current.LocalFolder;
+                var file = await folder.CreateFileAsync(PostDraftFile, CreationCollisionOption.OpenIfExists);
 
                 // Check that is exists.
                 if(file == null)
@@ -90,15 +84,15 @@ namespace BaconBackend.Managers
                 }
 
                 // Get the data
-                string fileData = await Windows.Storage.FileIO.ReadTextAsync(file);
+                var fileData = await FileIO.ReadTextAsync(file);
 
                 // Deseralize the data
                 return JsonConvert.DeserializeObject<PostSubmissionDraftData>(fileData);
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("failed to read draft", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToReadDraftFile", e);
+                _baconMan.MessageMan.DebugDia("failed to read draft", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToReadDraftFile", e);
                 return null;
             }
         }
@@ -106,17 +100,15 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Deletes an existing draft
         /// </summary>
-        public async void DiscardPostSubmissionDraft()
+        public static async void DiscardPostSubmissionDraft()
         {
-            if(await HasPostSubmitDraft())
+            if (!await HasPostSubmitDraft()) return;
+            var folder = ApplicationData.Current.LocalFolder;
+            var file = await folder.GetFileAsync(PostDraftFile);
+            if (file != null)
             {
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.GetFileAsync(c_postDraftFile);
-                if (file != null)
-                {
-                    await file.DeleteAsync();
-                }
-            }          
+                await file.DeleteAsync();
+            }
         }
     }
 }

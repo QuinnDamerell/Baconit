@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.System.Profile;
+﻿using Windows.System.Profile;
 
 namespace BaconBackend.Helpers
 {
@@ -19,7 +14,7 @@ namespace BaconBackend.Helpers
     {
         public static DeviceTypes CurrentDevice()
         {
-            string deviceFamily = AnalyticsInfo.VersionInfo.DeviceFamily;
+            var deviceFamily = AnalyticsInfo.VersionInfo.DeviceFamily;
             switch(deviceFamily)
             {
                 case "Windows.Desktop":

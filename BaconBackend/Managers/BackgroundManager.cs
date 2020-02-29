@@ -1,9 +1,6 @@
 ﻿using BaconBackend.Helpers;
 using BaconBackend.Managers.Background;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Background;
@@ -14,10 +11,10 @@ namespace BaconBackend.Managers
     {
         // Since this updater will do multiple things, it will always fire at 30 minutes
         // and each action will check if they should act or not.
-        private const int c_backgroundUpdateTime = 30;
-        private const string c_backgroundTaskName = "Baconit Background Updater";
+        private const int BackgroundUpdateTime = 30;
+        private const string BackgroundTaskName = "Baconit Background Updater";
 
-        private BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         /// <summary>
         /// In charge of image updates
@@ -37,7 +34,7 @@ namespace BaconBackend.Managers
 
         public BackgroundManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
             ImageUpdaterMan = new BackgroundImageUpdater(baconMan);
             MessageUpdaterMan = new BackgroundMessageUpdater(baconMan);
             BandMan = new BackgroundBandManager(baconMan);
@@ -52,7 +49,7 @@ namespace BaconBackend.Managers
             IBackgroundTaskRegistration foundTask = null;
             foreach (var task in BackgroundTaskRegistration.AllTasks)
             {
-                if(task.Value.Name.Equals(c_backgroundTaskName))
+                if(task.Value.Name.Equals(BackgroundTaskName))
                 {
                     foundTask = task.Value;
                 }
@@ -60,12 +57,9 @@ namespace BaconBackend.Managers
 
             // For some dumb reason in WinRT we have to ask for permission to run in the background each time
             // our app is updated....
-            String currentAppVersion = String.Format("{0}.{1}.{2}.{3}",
-                Package.Current.Id.Version.Build,
-                Package.Current.Id.Version.Major,
-                Package.Current.Id.Version.Minor,
-                Package.Current.Id.Version.Revision);
-            if (String.IsNullOrWhiteSpace(AppVersionWithBackgroundAccess) || !AppVersionWithBackgroundAccess.Equals(currentAppVersion))
+            var currentAppVersion =
+                $"{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Revision}";
+            if (string.IsNullOrWhiteSpace(AppVersionWithBackgroundAccess) || !AppVersionWithBackgroundAccess.Equals(currentAppVersion))
             {
                 // Update current version
                 AppVersionWithBackgroundAccess = currentAppVersion;
@@ -75,23 +69,24 @@ namespace BaconBackend.Managers
             }
 
             // Request access to run in the background.
-            BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
+            var status = await BackgroundExecutionManager.RequestAccessAsync();
             LastSystemBackgroundUpdateStatus = (int)status;
             if(status != BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity && status != BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
             {
-                m_baconMan.MessageMan.DebugDia("System denied us access from running in the background");
+                _baconMan.MessageMan.DebugDia("System denied us access from running in the background");
             }
             
-            if (ImageUpdaterMan.IsLockScreenEnabled || ImageUpdaterMan.IsDeskopEnabled || MessageUpdaterMan.IsEnabled)
+            if (ImageUpdaterMan.IsLockScreenEnabled || ImageUpdaterMan.IsDesktopEnabled || MessageUpdaterMan.IsEnabled)
             {
                 if (foundTask == null)
                 {
                     // We need to make a new task
-                    BackgroundTaskBuilder builder = new BackgroundTaskBuilder();
-                    builder.Name = c_backgroundTaskName;
-                    builder.TaskEntryPoint = "BaconBackground.BackgroundEntry";
-                    builder.SetTrigger(new TimeTrigger(c_backgroundUpdateTime, false));
-                    builder.SetTrigger(new MaintenanceTrigger(c_backgroundUpdateTime, false));
+                    var builder = new BackgroundTaskBuilder
+                    {
+                        Name = BackgroundTaskName, TaskEntryPoint = "BaconBackground.BackgroundEntry"
+                    };
+                    builder.SetTrigger(new TimeTrigger(BackgroundUpdateTime, false));
+                    builder.SetTrigger(new MaintenanceTrigger(BackgroundUpdateTime, false));
 
                     try
                     {
@@ -99,18 +94,15 @@ namespace BaconBackend.Managers
                     }
                     catch(Exception e)
                     {
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failed to register background task", e);
-                        m_baconMan.MessageMan.DebugDia("failed to register background task", e);
+                        TelemetryManager.ReportUnexpectedEvent(this, "failed to register background task", e);
+                        _baconMan.MessageMan.DebugDia("failed to register background task", e);
                     }
                 }
             }
             else
             {
-                if(foundTask != null)
-                {
-                    // We need to stop and unregister the background task.
-                    foundTask.Unregister(true);
-                }
+                // We need to stop and unregister the background task.
+                foundTask?.Unregister(true);
             }
         }
 
@@ -120,19 +112,19 @@ namespace BaconBackend.Managers
         public async Task RunUpdate(RefCountedDeferral refDefferal)
         {
             // If we are a background task report the time
-            if (m_baconMan.IsBackgroundTask)
+            if (_baconMan.IsBackgroundTask)
             {
                 LastUpdateTime = DateTime.Now;
             }
 
             // If we are not a background task check message of the day
-            if(!m_baconMan.IsBackgroundTask)
+            if(!_baconMan.IsBackgroundTask)
             {
                 // Sleep for a little while to give the UI some time get work done.
                 await Task.Delay(1000);
 
                 // Check for MOTD updates.
-                await m_baconMan.MotdMan.CheckForUpdates();
+                await _baconMan.MotdMan.CheckForUpdates();
 
                 // Sleep for a little while to give the UI some time get work done.
                 await Task.Delay(5000);
@@ -157,22 +149,20 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (m_lastAttemptedUpdate.Equals(new DateTime(0)))
+                if (!_lastAttemptedUpdate.Equals(new DateTime(0))) return _lastAttemptedUpdate;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundManager.LastUpdateTime"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundManager.LastUpdateTime"))
-                    {
-                        m_lastAttemptedUpdate = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundManager.LastUpdateTime");
-                    }
+                    _lastAttemptedUpdate = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundManager.LastUpdateTime");
                 }
-                return m_lastAttemptedUpdate;
+                return _lastAttemptedUpdate;
             }
             private set
             {
-                m_lastAttemptedUpdate = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("BackgroundManager.LastUpdateTime", m_lastAttemptedUpdate);
+                _lastAttemptedUpdate = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundManager.LastUpdateTime", _lastAttemptedUpdate);
             }
         }
-        private DateTime m_lastAttemptedUpdate = new DateTime(0);
+        private DateTime _lastAttemptedUpdate = new DateTime(0);
 
         /// <summary>
         /// Indicates what we got as a response the last time we asked for permission to run
@@ -182,26 +172,19 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (!m_lastSystemBackgroundUpdateStatus.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundManager.LastSystemBackgroundUpdateStatus"))
-                    {
-                        m_lastSystemBackgroundUpdateStatus = m_baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundManager.LastSystemBackgroundUpdateStatus");
-                    }
-                    else
-                    {
-                        m_lastSystemBackgroundUpdateStatus = 3;
-                    }
-                }
-                return m_lastSystemBackgroundUpdateStatus.Value;
+                if (_lastSystemBackgroundUpdateStatus.HasValue) return _lastSystemBackgroundUpdateStatus.Value;
+                _lastSystemBackgroundUpdateStatus = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundManager.LastSystemBackgroundUpdateStatus") 
+                    ? _baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundManager.LastSystemBackgroundUpdateStatus") 
+                    : 3;
+                return _lastSystemBackgroundUpdateStatus.Value;
             }
             private set
             {
-                m_lastSystemBackgroundUpdateStatus = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<int>("BackgroundManager.LastSystemBackgroundUpdateStatus", m_lastSystemBackgroundUpdateStatus.Value);
+                _lastSystemBackgroundUpdateStatus = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundManager.LastSystemBackgroundUpdateStatus", _lastSystemBackgroundUpdateStatus.Value);
             }
         }
-        private int? m_lastSystemBackgroundUpdateStatus = null;
+        private int? _lastSystemBackgroundUpdateStatus;
 
         /// <summary>
         /// The last app version we requested access for. For some reason in WinRT you have to request access each time
@@ -209,28 +192,20 @@ namespace BaconBackend.Managers
         /// </summary>
         private string AppVersionWithBackgroundAccess
         {
-            get
-            {
-                if (m_appVersionWithBackgroundAccess ==  null)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundManager.AppVersionWithBackgroundAccess"))
-                    {
-                        m_appVersionWithBackgroundAccess = m_baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundManager.AppVersionWithBackgroundAccess");
-                    }
-                    else
-                    {
-                        m_appVersionWithBackgroundAccess = String.Empty;
-                    }
-                }
-                return m_appVersionWithBackgroundAccess;
-            }
+            get =>
+                _appVersionWithBackgroundAccess ?? (_appVersionWithBackgroundAccess =
+                    _baconMan.SettingsMan.LocalSettings.ContainsKey(
+                        "BackgroundManager.AppVersionWithBackgroundAccess")
+                        ? _baconMan.SettingsMan.ReadFromLocalSettings<string>(
+                            "BackgroundManager.AppVersionWithBackgroundAccess")
+                        : string.Empty);
             set
             {
-                m_appVersionWithBackgroundAccess = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<string>("BackgroundManager.AppVersionWithBackgroundAccess", m_appVersionWithBackgroundAccess);
+                _appVersionWithBackgroundAccess = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundManager.AppVersionWithBackgroundAccess", _appVersionWithBackgroundAccess);
             }
         }
-        private string m_appVersionWithBackgroundAccess = null;
+        private string _appVersionWithBackgroundAccess;
 
         #endregion
     }

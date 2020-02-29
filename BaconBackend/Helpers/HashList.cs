@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaconBackend.Helpers
 {
@@ -12,35 +8,35 @@ namespace BaconBackend.Helpers
     /// When length-capping must happen, earlier added keys are deleted first.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class HashList<Key, Value>
+    public class HashList<TKey, TValue>
     {
         /// <summary>
         /// The map used to hold the values
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-        private Dictionary<Key, Value> m_dictonary = null;
+        private Dictionary<TKey, TValue> _dictionary;
 
         /// <summary>
         /// The list used to preserve order
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-        public List<Key> m_list = null;
+        public List<TKey> List;
 
         /// <summary>
         /// The max size the list can be
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-        public int m_maxSize = 0;
+        public int MaxSize;
 
         /// <summary>
-        /// Initializes a new, empty hashlist with capped length.
+        /// Initializes a new, empty hash-list with capped length.
         /// </summary>
-        /// <param name="maxSize">The maximum number of keys that can be in the hashlist at once.</param>
+        /// <param name="maxSize">The maximum number of keys that can be in the hash-list at once.</param>
         public HashList(int maxSize)
         {
-            m_dictonary = new Dictionary<Key, Value>();
-            m_list = new List<Key>();
-            m_maxSize = maxSize;
+            _dictionary = new Dictionary<TKey, TValue>();
+            List = new List<TKey>();
+            MaxSize = maxSize;
         }
 
         /// <summary>
@@ -48,13 +44,10 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="i">The key of the value to get or set.</param>
         /// <returns>The value associated with the specified key. If the specified key is not found, a get operation throws a KeyNotFoundException, and a set operation creates a new element with the specified key.</returns>
-        public Value this[Key i]
+        public TValue this[TKey i]
         {
-            get { return m_dictonary[i]; }
-            set
-            {
-                Add(i, value);
-            }
+            get => _dictionary[i];
+            set => Add(i, value);
         }
 
         /// <summary>
@@ -62,43 +55,43 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="key">The key of the element to add.</param>
         /// <param name="value">The value of the element to add. The value can be null for reference types.</param>
-        public void Add(Key key, Value value)
+        public void Add(TKey key, TValue value)
         {
-            if (!m_dictonary.ContainsKey(key))
+            if (!_dictionary.ContainsKey(key))
             {
-                m_list.Add(key);
-                m_dictonary.Add(key, value);
+                List.Add(key);
+                _dictionary.Add(key, value);
 
-                while (m_list.Count > m_maxSize)
+                while (List.Count > MaxSize)
                 {
-                    Key remove = m_list[0];
-                    m_dictonary.Remove(remove);
-                    m_list.Remove(remove);
+                    var remove = List[0];
+                    _dictionary.Remove(remove);
+                    List.Remove(remove);
                 }
             }
             else
             {
-                m_dictonary[key] = value;
+                _dictionary[key] = value;
             }
         }
 
         /// <summary>
-        /// Clears the hashlist
+        /// Clears the hash-list
         /// </summary>
         public void Clear()
         {
-            m_list.Clear();
-            m_dictonary.Clear();
+            List.Clear();
+            _dictionary.Clear();
         }
         
         /// <summary>
         /// Removes an item.
         /// </summary>
         /// <param name="item">The key of the element to remove.</param>
-        public void Remove(Key item)
+        public void Remove(TKey item)
         {
-            m_dictonary.Remove(item);
-            m_list.Remove(item);
+            _dictionary.Remove(item);
+            List.Remove(item);
         }
 
         /// <summary>
@@ -106,9 +99,9 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="item">The key to locate in the hashtable.</param>
         /// <returns>If the hashtable contains an element with the specified key.</returns>
-        public bool ContainsKey(Key item)
+        public bool ContainsKey(TKey item)
         {
-            return m_dictonary.ContainsKey(item);
+            return _dictionary.ContainsKey(item);
         }
 
         /// <summary>
@@ -116,22 +109,16 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="pos">The position of the key in the list.</param>
         /// <returns>The key and value of the item at the specified position.</returns>
-        public KeyValuePair<Key, Value> Get(int pos)
+        public KeyValuePair<TKey, TValue> Get(int pos)
         {
-            Key item = m_list[pos];
-            Value value = m_dictonary[item];
-            return new KeyValuePair<Key, Value>(item, value);
+            var item = List[pos];
+            var value = _dictionary[item];
+            return new KeyValuePair<TKey, TValue>(item, value);
         }
 
         /// <summary>
         /// Returns the count.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return m_list.Count; 
-            }
-        }
+        public int Count => List.Count;
     }
 }

@@ -4,13 +4,9 @@ using Microsoft.Band.Personalization;
 using Microsoft.Band.Tiles;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -25,12 +21,12 @@ namespace BaconBackend.Managers.Background
 
     public class BackgroundBandManager
     {
-        Guid c_bandTileGuid = new Guid("{D8665187-DC01-4573-8C3B-D5779FD168B2}");
-        BaconManager m_baconMan;
+        private readonly Guid _bandTileGuid = new Guid("{D8665187-DC01-4573-8C3B-D5779FD168B2}");
+        private readonly BaconManager _baconMan;
 
         public BackgroundBandManager(BaconManager manager)
         {
-            m_baconMan = manager;
+            _baconMan = manager;
         }
 
         /// <summary>
@@ -40,7 +36,7 @@ namespace BaconBackend.Managers.Background
         {
             try
             {
-                IBandInfo pairedBand = await GetPairedBand();
+                var pairedBand = await GetPairedBand();
                 if (pairedBand == null)
                 {
                     // We don't have a band.
@@ -48,16 +44,16 @@ namespace BaconBackend.Managers.Background
                 }
 
                 // Try to connect to the band.
-                using (IBandClient bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
+                using (var bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
                 {
-                    string versionString = await bandClient.GetHardwareVersionAsync();
-                    int version = int.Parse(versionString);
+                    var versionString = await bandClient.GetHardwareVersionAsync();
+                    var version = int.Parse(versionString);
                     BandVersion = version >= 20 ? BandVersions.V2 : BandVersions.V1;   
                 }
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to get band version.", e);
+                _baconMan.MessageMan.DebugDia("Failed to get band version.", e);
             }
         }
 
@@ -73,7 +69,7 @@ namespace BaconBackend.Managers.Background
             {
                 try
                 {
-                    IBandInfo pairedBand = await GetPairedBand();
+                    var pairedBand = await GetPairedBand();
                     if (pairedBand == null)
                     {
                         // We don't have a band.
@@ -81,15 +77,15 @@ namespace BaconBackend.Managers.Background
                     }
 
                     // Try to connect to the band.
-                    using (IBandClient bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
+                    using (var bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
                     {
-                        foreach(Tuple<string, string, string> newNote in newNotifications)
+                        foreach(var newNote in newNotifications)
                         {
-                            string title = newNote.Item1;
-                            string body = newNote.Item2;
+                            var title = newNote.Item1;
+                            var body = newNote.Item2;
 
                             // If the body is empty move the title to the body so it wraps
-                            if (String.IsNullOrWhiteSpace(body))
+                            if (string.IsNullOrWhiteSpace(body))
                             {
                                 body = title;
                                 title = "";
@@ -97,25 +93,28 @@ namespace BaconBackend.Managers.Background
 
                             // If we have a title clip it to only two words. The title can't be very long and
                             // looks odd if it is clipped on the band.
-                            int firstSpace = String.IsNullOrWhiteSpace(title) ? -1 : title.IndexOf(' ');
+                            var firstSpace = string.IsNullOrWhiteSpace(title) ? -1 : title.IndexOf(' ');
                             if(firstSpace != -1)
                             {
-                                int secondSpace = title.IndexOf(' ', firstSpace + 1);
-                                if(secondSpace != -1)
+                                if (title != null)
                                 {
-                                    title = title.Substring(0,secondSpace);
+                                    var secondSpace = title.IndexOf(' ', firstSpace + 1);
+                                    if(secondSpace != -1)
+                                    {
+                                        title = title.Substring(0,secondSpace);
+                                    }
                                 }
                             }                    
 
                             // Send the message.
-                            await bandClient.NotificationManager.SendMessageAsync(c_bandTileGuid, title, body, DateTimeOffset.Now, Microsoft.Band.Notifications.MessageFlags.ShowDialog);
+                            await bandClient.NotificationManager.SendMessageAsync(_bandTileGuid, title, body, DateTimeOffset.Now, Microsoft.Band.Notifications.MessageFlags.ShowDialog);
                         }
                     }
                 }
                 catch(Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("failed to update band message", e);
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToUpdateBandMessages", e);
+                    _baconMan.MessageMan.DebugDia("failed to update band message", e);
+                    TelemetryManager.ReportUnexpectedEvent(this, "FailedToUpdateBandMessages", e);
                 }
             }
         }
@@ -125,27 +124,27 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         public async Task<bool> EnsureBandTileState()
         {
-            IBandInfo pairedBand = await GetPairedBand();
+            var pairedBand = await GetPairedBand();
             if(pairedBand == null)
             {
                 // We don't have a band.
                 return false;
             }
           
-            bool wasSuccess = true;
+            var wasSuccess = true;
             try
             {
                 // Try to connect to the band.
-                using (IBandClient bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
+                using (var bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
                 {
                     // Get the current set of tiles
-                    IEnumerable<BandTile> tiles = await bandClient.TileManager.GetTilesAsync();
+                    var tiles = await bandClient.TileManager.GetTilesAsync();
 
                     // See if our tile exists
                     BandTile baconitTile = null;
-                    foreach(BandTile tile in tiles)
+                    foreach(var tile in tiles)
                     {
-                        if(tile.TileId.Equals(c_bandTileGuid))
+                        if(tile.TileId.Equals(_bandTileGuid))
                         {
                             baconitTile = tile;
                         }
@@ -157,10 +156,10 @@ namespace BaconBackend.Managers.Background
                         if(ShowInboxOnBand)
                         {
                             // We need a tile, try to make one.
-                            int tileCapacity = await bandClient.TileManager.GetRemainingTileCapacityAsync();
+                            var tileCapacity = await bandClient.TileManager.GetRemainingTileCapacityAsync();
                             if (tileCapacity == 0)
                             {
-                                m_baconMan.MessageMan.ShowMessageSimple("Can't add tile to Band", "Baconit can't add a tile to your Microsoft Band because you reached the maximum number of tile. To add the Baconit tile remove one of the other tiles on your band.");
+                                _baconMan.MessageMan.ShowMessageSimple("Can't add tile to Band", "Baconit can't add a tile to your Microsoft Band because you reached the maximum number of tile. To add the Baconit tile remove one of the other tiles on your band.");
                                 wasSuccess = false;
                             }
                             else
@@ -170,14 +169,14 @@ namespace BaconBackend.Managers.Background
                                 BandIcon tileIcon = null;
 
                                 // This icon should be 24x24 pixels
-                                WriteableBitmap smallIconBitmap = await BitmapFactory.New(1, 1).FromContent(new Uri("ms-appx:///Assets/AppAssets/BandIcons/BandImage24.png", UriKind.Absolute));
+                                var smallIconBitmap = await BitmapFactory.New(1, 1).FromContent(new Uri("ms-appx:///Assets/AppAssets/BandIcons/BandImage24.png", UriKind.Absolute));
                                 smallIcon = smallIconBitmap.ToBandIcon();
                                 // This icon should be 46x46 pixels
-                                WriteableBitmap tileIconBitmap = await BitmapFactory.New(1, 1).FromContent(new Uri("ms-appx:///Assets/AppAssets/BandIcons/BandImage46.png", UriKind.Absolute));
+                                var tileIconBitmap = await BitmapFactory.New(1, 1).FromContent(new Uri("ms-appx:///Assets/AppAssets/BandIcons/BandImage46.png", UriKind.Absolute));
                                 tileIcon = tileIconBitmap.ToBandIcon();
      
                                 // Create a new tile
-                                BandTile tile = new BandTile(c_bandTileGuid)
+                                var tile = new BandTile(_bandTileGuid)
                                 {
                                     IsBadgingEnabled = true,
                                     Name = "Baconit",
@@ -187,8 +186,8 @@ namespace BaconBackend.Managers.Background
 
                                 if (!await bandClient.TileManager.AddTileAsync(tile))
                                 {
-                                    m_baconMan.MessageMan.DebugDia("failed to create tile");
-                                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToCreateTileOnBand");
+                                    _baconMan.MessageMan.DebugDia("failed to create tile");
+                                    TelemetryManager.ReportUnexpectedEvent(this, "FailedToCreateTileOnBand");
                                     wasSuccess = false;
                                 }
                             }
@@ -202,8 +201,8 @@ namespace BaconBackend.Managers.Background
                             // We need to remove it
                             if (!await bandClient.TileManager.RemoveTileAsync(baconitTile))
                             {
-                                m_baconMan.MessageMan.DebugDia("failed to remove tile");
-                                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToRemoveTileOnBand");
+                                _baconMan.MessageMan.DebugDia("failed to remove tile");
+                                TelemetryManager.ReportUnexpectedEvent(this, "FailedToRemoveTileOnBand");
                                 wasSuccess = false;
                             }
                         }
@@ -212,7 +211,7 @@ namespace BaconBackend.Managers.Background
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("band connect failed", e);
+                _baconMan.MessageMan.DebugDia("band connect failed", e);
                 wasSuccess = false;
             }
             return wasSuccess;
@@ -222,14 +221,10 @@ namespace BaconBackend.Managers.Background
         /// Gets the currently paired band
         /// </summary>
         /// <returns></returns>
-        public async Task<IBandInfo> GetPairedBand()
+        private static async Task<IBandInfo> GetPairedBand()
         {
-            IBandInfo[] pairedBands = await BandClientManager.Instance.GetBandsAsync();
-            if(pairedBands.Length != 0)
-            {
-                return pairedBands[0];
-            }
-            return null;
+            var pairedBands = await BandClientManager.Instance.GetBandsAsync();
+            return pairedBands.Length != 0 ? pairedBands[0] : null;
         }
 
         /// <summary>
@@ -240,7 +235,7 @@ namespace BaconBackend.Managers.Background
         {
             try
             {
-                IBandInfo pairedBand = await GetPairedBand();
+                var pairedBand = await GetPairedBand();
                 if (pairedBand == null)
                 {
                     // We don't have a band.
@@ -248,12 +243,12 @@ namespace BaconBackend.Managers.Background
                 }
 
                 // Try to connect to the band.
-                using (IBandClient bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
+                using (var bandClient = await BandClientManager.Instance.ConnectAsync(pairedBand))
                 {
                     WriteableBitmap bitmap = null;
                     BandImage newBandImage = null;
                     //byte[] pixelArray = null;
-                    using (AutoResetEvent are = new AutoResetEvent(false))
+                    using (var are = new AutoResetEvent(false))
                     {
                         // Get the bitmap on the UI thread.
                         await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
@@ -263,7 +258,7 @@ namespace BaconBackend.Managers.Background
                                 // Create a bitmap for the Me Tile image. 
                                 // The image must be 310x102 pixels for Microsoft Band 1 
                                 // and 310x102 or 310x128 pixels for Microsoft Band 2.  
-                                ImageProperties properties = await file.Properties.GetImagePropertiesAsync();
+                                var properties = await file.Properties.GetImagePropertiesAsync();
                                 bitmap = new WriteableBitmap((int)properties.Width, (int)properties.Height);
                                 bitmap.SetSource((await file.OpenReadAsync()));
                                 newBandImage = bitmap.ToBandImage();
@@ -307,7 +302,7 @@ namespace BaconBackend.Managers.Background
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("failed to set band wallpaper", e);
+                _baconMan.MessageMan.DebugDia("failed to set band wallpaper", e);
                 return false;
             }
             return true;
@@ -322,26 +317,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_showInboxOnBand.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundBandManager.ShowInboxOnBand"))
-                    {
-                        m_showInboxOnBand = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundBandManager.ShowInboxOnBand");
-                    }
-                    else
-                    {
-                        m_showInboxOnBand = false;
-                    }
-                }
-                return m_showInboxOnBand.Value;
+                if (_showInboxOnBand.HasValue) return _showInboxOnBand.Value;
+                _showInboxOnBand = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundBandManager.ShowInboxOnBand") && _baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundBandManager.ShowInboxOnBand");
+                return _showInboxOnBand.Value;
             }
             set
             {
-                m_showInboxOnBand = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("BackgroundBandManager.ShowInboxOnBand", m_showInboxOnBand.Value);
+                _showInboxOnBand = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundBandManager.ShowInboxOnBand", _showInboxOnBand.Value);
             }
         }
-        private bool? m_showInboxOnBand = null;
+        private bool? _showInboxOnBand;
 
 
         /// <summary>
@@ -351,26 +337,19 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_bandVersion.HasValue)
+                if (!_bandVersion.HasValue)
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundBandManager.BandVersion"))
-                    {
-                        m_bandVersion = m_baconMan.SettingsMan.ReadFromLocalSettings<BandVersions>("BackgroundBandManager.BandVersion");
-                    }
-                    else
-                    {
-                        m_bandVersion = BandVersions.V1;
-                    }
+                    _bandVersion = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundBandManager.BandVersion") ? _baconMan.SettingsMan.ReadFromLocalSettings<BandVersions>("BackgroundBandManager.BandVersion") : BandVersions.V1;
                 }
-                return m_bandVersion.Value;
+                return _bandVersion.Value;
             }
-            set
+            private set
             {
-                m_bandVersion = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<BandVersions>("BackgroundBandManager.BandVersion", m_bandVersion.Value);
+                _bandVersion = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundBandManager.BandVersion", _bandVersion.Value);
             }
         }
-        private BandVersions? m_bandVersion = null;
+        private BandVersions? _bandVersion;
 
         #endregion
     }

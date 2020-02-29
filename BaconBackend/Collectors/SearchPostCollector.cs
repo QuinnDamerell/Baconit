@@ -1,12 +1,9 @@
 ﻿using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
-using BaconBackend.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaconBackend.Collectors
 {
@@ -30,41 +27,37 @@ namespace BaconBackend.Collectors
 
     public class SearchPostCollector : Collector<Post>
     {
-        private BaconManager m_baconMan;
-
         public SearchPostCollector(BaconManager baconMan, string searchTerm, PostSearchSorts sort = PostSearchSorts.Relevance, PostSearchTimes time = PostSearchTimes.AllTime, string subreddit = null,
-            string authorFilter = null, string websiteFilter = null, string selftextFilter = null, string isSelfPost = null, string isNsfw = null) :
+            string authorFilter = null, string websiteFilter = null, string selfTextFilter = null, string isSelfPost = null, string isNsfw = null) :
             base(baconMan, "SearchSubredditCollector")
         {
-            m_baconMan = baconMan;
-
             // Add the subreddit if needed            
-            if (!String.IsNullOrWhiteSpace(subreddit))
+            if (!string.IsNullOrWhiteSpace(subreddit))
             {
                 searchTerm += $" subreddit:{subreddit}";
             }
             // Add the author if needed            
-            if (!String.IsNullOrWhiteSpace(authorFilter))
+            if (!string.IsNullOrWhiteSpace(authorFilter))
             {
                 searchTerm += $" author:{authorFilter}";
             }
             // Add the website if needed            
-            if (!String.IsNullOrWhiteSpace(websiteFilter))
+            if (!string.IsNullOrWhiteSpace(websiteFilter))
             {
                 searchTerm += $" site:{websiteFilter}";
             }
             // Add the selftext if needed            
-            if (!String.IsNullOrWhiteSpace(selftextFilter))
+            if (!string.IsNullOrWhiteSpace(selfTextFilter))
             {
-                searchTerm += $" selftext:{selftextFilter}";
+                searchTerm += $" selftext:{selfTextFilter}";
             }
             // Add the is self if needed            
-            if (!String.IsNullOrWhiteSpace(isSelfPost))
+            if (!string.IsNullOrWhiteSpace(isSelfPost))
             {
                 searchTerm += $" self:{isSelfPost}";
             }
             // Add the nsfw if needed            
-            if (!String.IsNullOrWhiteSpace(isNsfw))
+            if (!string.IsNullOrWhiteSpace(isNsfw))
             {
                 searchTerm += $" nsfw:{isNsfw}";
             }
@@ -72,25 +65,25 @@ namespace BaconBackend.Collectors
             // Encode the query
             searchTerm = WebUtility.UrlEncode(searchTerm);
 
-            string sortString = PostSortToString(sort);
-            string timeString = PostTimeToString(time);
+            var sortString = PostSortToString(sort);
+            var timeString = PostTimeToString(time);
 
             // Set up the list helper
-            InitListHelper($"/search.json", false, false, $"q={searchTerm}&sort={sortString}&t={timeString}");
+            InitListHelper("/search.json", false, false, $"q={searchTerm}&sort={sortString}&t={timeString}");
         }
 
 
         /// <summary>
-        /// Fired when the subreddits should be formatted.
+        /// Fired when the posts should be formatted.
         /// </summary>
-        /// <param name="subreddits"></param>
+        /// <param name="posts"></param>
         protected override void ApplyCommonFormatting(ref List<Post> posts)
         {
-            foreach (Post post in posts)
+            foreach (var post in posts)
             {
                 // Set The time
-                DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                DateTime postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
+                var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                var postTime = origin.AddSeconds(post.CreatedUtc).ToLocalTime();
                 post.SubTextLine1 = TimeToTextHelper.TimeElapseToText(postTime) + " ago";
             }
         }
@@ -98,15 +91,10 @@ namespace BaconBackend.Collectors
         protected override List<Post> ParseElementList(List<Element<Post>> elements)
         {
             // Converts the elements into a list.
-            List<Post> posts = new List<Post>();
-            foreach (Element<Post> element in elements)
-            {
-                posts.Add(element.Data);
-            }
-            return posts;
+            return elements.Select(element => element.Data).ToList();
         }
 
-        public static string PostSortToString(PostSearchSorts sort)
+        private static string PostSortToString(PostSearchSorts sort)
         {
             switch(sort)
             {
@@ -123,7 +111,7 @@ namespace BaconBackend.Collectors
             }
         }
 
-        public static string PostTimeToString(PostSearchTimes time)
+        private static string PostTimeToString(PostSearchTimes time)
         {
             switch (time)
             {

@@ -2,9 +2,7 @@
 using BaconBackend.DataObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BaconBackend.Managers;
 
 namespace BaconBackend.Helpers
 {
@@ -29,16 +27,17 @@ namespace BaconBackend.Helpers
         /// </summary>
         public event EventHandler<TrendingSubsReadyEvent> OnTrendingSubReady
         {
-            add { m_onTrendingSubReady.Add(value); }
-            remove { m_onTrendingSubReady.Remove(value); }
+            add => _trendingSubReady.Add(value);
+            remove => _trendingSubReady.Remove(value);
         }
-        SmartWeakEvent<EventHandler<TrendingSubsReadyEvent>> m_onTrendingSubReady = new SmartWeakEvent<EventHandler<TrendingSubsReadyEvent>>();
+
+        private readonly SmartWeakEvent<EventHandler<TrendingSubsReadyEvent>> _trendingSubReady = new SmartWeakEvent<EventHandler<TrendingSubsReadyEvent>>();
 
         //
         //  Private vars
         //
-        BaconManager m_baconMan;
-        PostCollector m_collector;
+        private readonly BaconManager _baconMan;
+        private PostCollector _collector;
 
         /// <summary>
         /// Construct a new trending subreddits helper.
@@ -46,7 +45,7 @@ namespace BaconBackend.Helpers
         /// <param name="baconMan">The reddit connection manager used to get the trending subreddits.</param>
         public TrendingSubredditsHelper(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         /// <summary>
@@ -55,11 +54,11 @@ namespace BaconBackend.Helpers
         public void GetTrendingSubreddits()
         {
             // Check to see if we should update.
-            DateTime now = DateTime.Now;
+            var now = DateTime.Now;
             if(LastTrendingSubs.Count == 0 || now.Day != LastUpdate.Day || now.Month != LastUpdate.Month)
             {
                 // Make the subreddit
-                Subreddit trendingSub = new Subreddit()
+                var trendingSub = new Subreddit
                 {
                     DisplayName = "trendingsubreddits",
                     Id = "311a2",
@@ -68,12 +67,12 @@ namespace BaconBackend.Helpers
                 };
 
                 // Get the collector
-                m_collector = PostCollector.GetCollector(trendingSub, m_baconMan, SortTypes.New);
-                m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
-                m_collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
+                _collector = PostCollector.GetCollector(trendingSub, _baconMan, SortTypes.New);
+                _collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
+                _collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
 
                 // Force an update, get only one story.
-                m_collector.Update(true, 1);
+                _collector.Update(true, 1);
             }
             else
             {
@@ -87,7 +86,7 @@ namespace BaconBackend.Helpers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChange(object sender, CollectorStateChangeArgs e)
         {
             // If we go into an error state fire the event indicate we failed.
             if(e.State == CollectorState.Error)
@@ -96,14 +95,14 @@ namespace BaconBackend.Helpers
             }
         }
 
-        private void Collector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<Post> e)
         {
-            List<string> newTrendingSubs = new List<string>();
+            var newTrendingSubs = new List<string>();
             if (e.ChangedItems.Count > 0)
             {
                 // We got it!
-                Post todaysPost = e.ChangedItems[0];
-                string selfText = e.ChangedItems[0].Selftext;
+                var todaysPost = e.ChangedItems[0];
+                var selfText = e.ChangedItems[0].Selftext;
 
                 // Parse out the subreddits. This isn't going to be pretty.
                 // There inst any api to get these right now (that I can find)
@@ -112,11 +111,11 @@ namespace BaconBackend.Helpers
                 {
                     // This is so bad. The only way to really find them is to look for the ## and then **
                     // I hope they never change this or this will explode so quickly
-                    int nextHash = selfText.IndexOf("##");
+                    var nextHash = selfText.IndexOf("##", StringComparison.Ordinal);
                     while (nextHash != -1)
                     {
                         // Find the bold indicator
-                        int nextBold = selfText.IndexOf("**", nextHash);
+                        var nextBold = selfText.IndexOf("**", nextHash, StringComparison.Ordinal);
                         if(nextBold == -1)
                         {
                             break;
@@ -124,24 +123,24 @@ namespace BaconBackend.Helpers
                         nextBold += 2;
 
                         // Find the last bold indicator
-                        int endBold = selfText.IndexOf("**", nextBold);
+                        var endBold = selfText.IndexOf("**", nextBold, StringComparison.Ordinal);
                         if (endBold == -1)
                         {
                             break;
                         }
 
                         // Get the subreddit
-                        string subreddit = selfText.Substring(nextBold, endBold - nextBold);
+                        var subreddit = selfText.Substring(nextBold, endBold - nextBold);
                         newTrendingSubs.Add(subreddit);
 
                         // Update the index
-                        nextHash = selfText.IndexOf("##", endBold + 2);
+                        nextHash = selfText.IndexOf("##", endBold + 2, StringComparison.Ordinal);
                     }
                 }
                 catch(Exception ex)
                 {
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedtoParseTrendingPost", ex);
-                    m_baconMan.MessageMan.DebugDia("failed to parse trending subs post", ex);
+                    TelemetryManager.ReportUnexpectedEvent(this, "failedtoParseTrendingPost", ex);
+                    _baconMan.MessageMan.DebugDia("failed to parse trending subs post", ex);
                 }
             }
 
@@ -159,16 +158,16 @@ namespace BaconBackend.Helpers
         {
             try
             {
-                TrendingSubsReadyEvent eventArg = new TrendingSubsReadyEvent()
+                var eventArg = new TrendingSubsReadyEvent
                 {
                     TrendingSubredditsDisplayNames = newSubreddits
                 };
-                m_onTrendingSubReady.Raise(this, eventArg);
+                _trendingSubReady.Raise(this, eventArg);
             }
             catch(Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToFireReadyEvent", e);
-                m_baconMan.MessageMan.DebugDia("failed to fire trending subs ready event", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "failedToFireReadyEvent", e);
+                _baconMan.MessageMan.DebugDia("failed to fire trending subs ready event", e);
             }
         }
 
@@ -181,22 +180,20 @@ namespace BaconBackend.Helpers
         {
             get
             {
-                if (m_lastUpdate.Equals(new DateTime(0)))
+                if (!_mLastUpdate.Equals(new DateTime(0))) return _mLastUpdate;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("TrendingSubredditsHelper.LastUpdate"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("TrendingSubredditsHelper.LastUpdate"))
-                    {
-                        m_lastUpdate = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("TrendingSubredditsHelper.LastUpdate");
-                    }
+                    _mLastUpdate = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("TrendingSubredditsHelper.LastUpdate");
                 }
-                return m_lastUpdate;
+                return _mLastUpdate;
             }
             set
             {
-                m_lastUpdate = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("TrendingSubredditsHelper.LastUpdate", m_lastUpdate);
+                _mLastUpdate = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("TrendingSubredditsHelper.LastUpdate", _mLastUpdate);
             }
         }
-        private DateTime m_lastUpdate = new DateTime(0);
+        private DateTime _mLastUpdate = new DateTime(0);
 
 
         /// <summary>
@@ -206,26 +203,19 @@ namespace BaconBackend.Helpers
         {
             get
             {
-                if (m_lastTrendingSubs == null)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("MessageOfTheDayManager.LastTrendingSubs"))
-                    {
-                        m_lastTrendingSubs = m_baconMan.SettingsMan.ReadFromLocalSettings<List<string>>("MessageOfTheDayManager.LastTrendingSubs");
-                    }
-                    else
-                    {
-                        m_lastTrendingSubs = new List<string>();
-                    }
-                }
-                return m_lastTrendingSubs;
+                if (_mLastTrendingSubs != null) return _mLastTrendingSubs;
+                _mLastTrendingSubs = _baconMan.SettingsMan.LocalSettings.ContainsKey("MessageOfTheDayManager.LastTrendingSubs") 
+                    ? _baconMan.SettingsMan.ReadFromLocalSettings<List<string>>("MessageOfTheDayManager.LastTrendingSubs") 
+                    : new List<string>();
+                return _mLastTrendingSubs;
             }
             set
             {
-                m_lastTrendingSubs = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<List<string>>("MessageOfTheDayManager.LastTrendingSubs", m_lastTrendingSubs);
+                _mLastTrendingSubs = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("MessageOfTheDayManager.LastTrendingSubs", _mLastTrendingSubs);
             }
         }
-        private List<string> m_lastTrendingSubs = null;
+        private List<string> _mLastTrendingSubs;
 
         #endregion
     }

@@ -4,19 +4,9 @@ using Baconit.Interfaces;
 using Microsoft.Band;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -24,27 +14,27 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class MicrosoftBandSettings : UserControl, IPanel
     {
-        const string c_earthPornReplace = "earthimages";
-        List<string> m_subredditNameList = new List<string> { "earthporn" };
+        private const string CEarthPornReplace = "earthimages";
+        private List<string> _mSubredditNameList = new List<string> { "earthporn" };
 
-        DispatcherTimer m_bandCheckTimer = null;
+        private readonly DispatcherTimer _mBandCheckTimer;
 
-        bool m_hasChanges = false;
-        bool m_ignoreUpdates = false;
-        IPanelHost m_host;
+        private bool _mHasChanges;
+        private bool _mIgnoreUpdates;
+        private IPanelHost _mHost;
 
         public MicrosoftBandSettings()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            m_bandCheckTimer = new DispatcherTimer();
-            m_bandCheckTimer.Tick += BandCheckTimer_Tick;
-            m_bandCheckTimer.Interval = new TimeSpan(0, 0, 5);
+            _mBandCheckTimer = new DispatcherTimer();
+            _mBandCheckTimer.Tick += BandCheckTimer_Tick;
+            _mBandCheckTimer.Interval = new TimeSpan(0, 0, 5);
         }
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
         }
 
         public void OnPanelPulledToTop(Dictionary<string, object> arguments)
@@ -56,7 +46,7 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
             ui_loadingOverlay.Margin = new Thickness(0, -statusBarHeight, 0, 0);
@@ -65,7 +55,7 @@ namespace Baconit.Panels.SettingsPanels
             BandCheckTimer_Tick(null, null);
 
             // Update the UI
-            m_ignoreUpdates = true;
+            _mIgnoreUpdates = true;
 
             ui_enableBandWallpaperUpdate.IsOn = App.BaconMan.BackgroundMan.ImageUpdaterMan.IsBandWallpaperEnabled;
             ui_wallpaperSubreddit.IsEnabled = App.BaconMan.BackgroundMan.ImageUpdaterMan.IsBandWallpaperEnabled;
@@ -75,18 +65,18 @@ namespace Baconit.Panels.SettingsPanels
             ui_syncToBand.IsEnabled = App.BaconMan.BackgroundMan.MessageUpdaterMan.IsEnabled;
             ui_messageInboxNotEnabled.Visibility = App.BaconMan.BackgroundMan.MessageUpdaterMan.IsEnabled ? Visibility.Collapsed : Visibility.Visible;
 
-            m_ignoreUpdates = false;
+            _mIgnoreUpdates = false;
         }
 
         public async void OnNavigatingFrom()
         {
             // Stop the timer
-            m_bandCheckTimer.Stop();
+            _mBandCheckTimer.Stop();
 
             // When we leave run an update
-            if (m_hasChanges)
+            if (_mHasChanges)
             {
-                m_hasChanges = false;
+                _mHasChanges = false;
 
                 // Make sure the updater is enabled if it should be.
                 await App.BaconMan.BackgroundMan.EnsureBackgroundSetup();
@@ -122,12 +112,12 @@ namespace Baconit.Panels.SettingsPanels
         /// <param name="e"></param>
         private async void BandCheckTimer_Tick(object sender, object e)
         {
-            IBandInfo[] pairedBands = await BandClientManager.Instance.GetBandsAsync();
+            var pairedBands = await BandClientManager.Instance.GetBandsAsync();
             if (pairedBands.Length != 0)
             {
                 ui_noBandConnected.Visibility = Visibility.Collapsed;
                 ui_noBandBlock.Visibility = Visibility.Collapsed;
-                m_bandCheckTimer.Stop();
+                _mBandCheckTimer.Stop();
 
                 // Get the band version
                 App.BaconMan.BackgroundMan.BandMan.GetBandVersion();
@@ -136,7 +126,7 @@ namespace Baconit.Panels.SettingsPanels
             {
                 ui_noBandConnected.Visibility = Visibility.Visible;
                 ui_noBandBlock.Visibility = Visibility.Visible;
-                m_bandCheckTimer.Start();
+                _mBandCheckTimer.Start();
             }
         }
 
@@ -144,40 +134,40 @@ namespace Baconit.Panels.SettingsPanels
 
         private void EnableBandWallpaperUpdate_Toggled(object sender, RoutedEventArgs e)
         {
-            if(m_ignoreUpdates)
+            if(_mIgnoreUpdates)
             {
                 return;
             }
 
             App.BaconMan.BackgroundMan.ImageUpdaterMan.IsBandWallpaperEnabled = ui_enableBandWallpaperUpdate.IsOn;
             ui_wallpaperSubreddit.IsEnabled = ui_enableBandWallpaperUpdate.IsOn;
-            m_hasChanges = true;
+            _mHasChanges = true;
         }
 
         private void WallpaperSubreddit_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (m_ignoreUpdates)
+            if (_mIgnoreUpdates)
             {
                 return;
             }
 
             App.BaconMan.BackgroundMan.ImageUpdaterMan.BandSubredditName = (string)ui_wallpaperSubreddit.SelectedItem;
-            m_hasChanges = true;
+            _mHasChanges = true;
         }
 
         private void SetupSubredditLists()
         {
             // Get the current name list.
-            m_subredditNameList = SubredditListToNameList(App.BaconMan.SubredditMan.SubredditList);
+            _mSubredditNameList = SubredditListToNameList(App.BaconMan.SubredditMan.SubredditList);
 
             // See if the user is signed in.
-            bool isUserSignedIn = App.BaconMan.UserMan.IsUserSignedIn;
+            var isUserSignedIn = App.BaconMan.UserMan.IsUserSignedIn;
 
             // Try to find the indexes
-            int bandIndex = -1;
-            int earthPornIndex = -1;
-            int count = 0;
-            foreach (string name in m_subredditNameList)
+            var bandIndex = -1;
+            var earthPornIndex = -1;
+            var count = 0;
+            foreach (var name in _mSubredditNameList)
             {
                 if (bandIndex == -1)
                 {
@@ -208,18 +198,18 @@ namespace Baconit.Panels.SettingsPanels
             // so play nice.
             if (earthPornIndex != -1)
             {
-                m_subredditNameList[earthPornIndex] = c_earthPornReplace;
+                _mSubredditNameList[earthPornIndex] = CEarthPornReplace;
             }
 
             // Fix up the subs if they weren't found.
             if (bandIndex == -1)
             {
-                m_subredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName);
-                bandIndex = m_subredditNameList.Count - 1;
+                _mSubredditNameList.Add(App.BaconMan.BackgroundMan.ImageUpdaterMan.DesktopSubredditName);
+                bandIndex = _mSubredditNameList.Count - 1;
             }
 
             // Set the list
-            ui_wallpaperSubreddit.ItemsSource = m_subredditNameList;
+            ui_wallpaperSubreddit.ItemsSource = _mSubredditNameList;
 
             // Set the values
             ui_wallpaperSubreddit.SelectedIndex = bandIndex;
@@ -227,8 +217,8 @@ namespace Baconit.Panels.SettingsPanels
 
         private List<string> SubredditListToNameList(List<Subreddit> subreddits)
         {
-            List<string> nameList = new List<string>();
-            foreach (Subreddit sub in subreddits)
+            var nameList = new List<string>();
+            foreach (var sub in subreddits)
             {
                 nameList.Add(sub.DisplayName.ToLower());
             }
@@ -241,7 +231,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private async void SyncToBand_Toggled(object sender, RoutedEventArgs e)
         {
-            if(m_ignoreUpdates)
+            if(_mIgnoreUpdates)
             {
                 return;
             }
@@ -253,7 +243,7 @@ namespace Baconit.Panels.SettingsPanels
             App.BaconMan.BackgroundMan.BandMan.ShowInboxOnBand = ui_syncToBand.IsOn;
 
             // Attempt to set the new state.
-            bool wasSuccess = await App.BaconMan.BackgroundMan.BandMan.EnsureBandTileState();
+            var wasSuccess = await App.BaconMan.BackgroundMan.BandMan.EnsureBandTileState();
 
             // Done, hide the loading.
             ui_loadingOverlay.Hide();
@@ -261,10 +251,10 @@ namespace Baconit.Panels.SettingsPanels
             if (!wasSuccess)
             {
                 // We failed, reset the values
-                m_ignoreUpdates = true;
+                _mIgnoreUpdates = true;
                 App.BaconMan.BackgroundMan.BandMan.ShowInboxOnBand = !App.BaconMan.BackgroundMan.BandMan.ShowInboxOnBand;
                 ui_syncToBand.IsOn = !ui_syncToBand.IsOn;
-                m_ignoreUpdates = false;
+                _mIgnoreUpdates = false;
 
                 // Show a message
                 App.BaconMan.MessageMan.ShowMessageSimple("Can't Connect", "We can't connected to you band right now. Make sure it is in range of your device.");

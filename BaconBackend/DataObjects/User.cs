@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaconBackend.DataObjects
 {
@@ -44,13 +39,13 @@ namespace BaconBackend.DataObjects
         public int InboxCount { get; set; }
 
         /// <summary>
-        /// The number of gold creddits the logged in user currently has.
+        /// The number of gold credits the logged in user currently has.
         /// </summary>
-        [JsonProperty(PropertyName = "gold_creddits")]
+        [JsonProperty(PropertyName = "gold_credits")]
         public int GoldCredits { get; set; }
 
         /// <summary>
-        /// If the user has access to modmail.
+        /// If the user has access to mod-mail.
         /// </summary>
         [JsonProperty(PropertyName = "has_mod_mail")]
         public bool HasModMail { get; set; }
@@ -74,7 +69,7 @@ namespace BaconBackend.DataObjects
         public bool IsOver18 { get; set; }
 
         /// <summary>
-        /// If the user has gold creddits.
+        /// If the user has gold credits.
         /// </summary>
         [JsonProperty(PropertyName = "is_gold")]
         public bool IsGold { get; set; }

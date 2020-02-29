@@ -3,22 +3,10 @@ using BaconBackend.Managers;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,7 +15,7 @@ namespace Baconit.ContentPanels
     /// <summary>
     /// Args for toggle full screen
     /// </summary>
-    public class OnToggleFullScreenEventArgs : EventArgs
+    public class ToggleFullScreenEventArgs : EventArgs
     {
         public bool GoFullScreen { get; set; }
     }
@@ -35,7 +23,7 @@ namespace Baconit.ContentPanels
     /// <summary>
     /// Args for OnContentLoadRequestArgs
     /// </summary>
-    public class OnContentLoadRequestArgs : EventArgs
+    public class ContentLoadRequestArgs : EventArgs
     {
         public string SourceId { get; set; }
     }
@@ -51,75 +39,77 @@ namespace Baconit.ContentPanels
         /// <summary>
         /// Indicates if we are full screen.
         /// </summary>
-        public bool IsFullscreen { get; private set; } = false;
+        public bool IsFullscreen { get; private set; }
 
         /// <summary>
         /// Holds the current panel if we have one.
         /// </summary>
-        IContentPanelBase m_currentPanelBase = null;
+        private IContentPanelBase _mCurrentPanelBase;
 
         /// <summary>
         /// Indicates if we are showing loading.
         /// </summary>
-        bool m_isLoadingShowing = false;
+        private bool _mIsLoadingShowing;
 
         /// <summary>
         /// Indicates if we are showing nsfw.
         /// </summary>
-        bool m_isNsfwShowing = false;
+        private bool _mIsNsfwShowing;
 
         /// <summary>
         /// Indicates if the generic message is showing.
         /// </summary>
-        bool m_isGenericMessageShowing = false;
+        private bool _mIsGenericMessageShowing;
 
         /// <summary>
         /// Indicates if we are showing the content load message.
         /// </summary>
-        bool m_isShowingContentLoadBlock = false;
+        private bool _mIsShowingContentLoadBlock;
 
         /// <summary>
         /// Keeps track of when the host was created.
         /// </summary>
-        DateTime m_hostCreationTime = DateTime.Now;
+        private readonly DateTime _mHostCreationTime = DateTime.Now;
 
         /// <summary>
         /// This holds a list of all of the post where the block has been lowered.
         /// </summary>
-        private static Dictionary<string, bool> s_previousLoweredNsfwBlocks = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> PreviousLoweredNsfwBlocks = new Dictionary<string, bool>();
 
         /// <summary>
         /// This is a list of subreddits the block has been lowered for
         /// </summary>
-        private static Dictionary<string, bool> s_previousLoweredNsfwSubreddits = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> PreviousLoweredNsfwSubreddits = new Dictionary<string, bool>();
 
         /// <summary>
         /// Fired when full screen is toggled.
         /// </summary>
-        public event EventHandler<OnToggleFullScreenEventArgs> OnToggleFullscreen
+        public event EventHandler<ToggleFullScreenEventArgs> OnToggleFullscreen
         {
-            add { m_onToggleFullscreen.Add(value); }
-            remove { m_onToggleFullscreen.Remove(value); }
+            add => _mOnToggleFullscreen.Add(value);
+            remove => _mOnToggleFullscreen.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>> m_onToggleFullscreen = new SmartWeakEvent<EventHandler<OnToggleFullScreenEventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<ToggleFullScreenEventArgs>> _mOnToggleFullscreen = new SmartWeakEvent<EventHandler<ToggleFullScreenEventArgs>>();
 
         /// <summary>
         /// Fired when the user taps the content load request message.
         /// </summary>
-        public event EventHandler<OnContentLoadRequestArgs> OnContentLoadRequest
+        public event EventHandler<ContentLoadRequestArgs> OnContentLoadRequest
         {
-            add { m_onContentLoadRequest.Add(value); }
-            remove { m_onContentLoadRequest.Remove(value); }
+            add => _mOnContentLoadRequest.Add(value);
+            remove => _mOnContentLoadRequest.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnContentLoadRequestArgs>> m_onContentLoadRequest = new SmartWeakEvent<EventHandler<OnContentLoadRequestArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<ContentLoadRequestArgs>> _mOnContentLoadRequest = new SmartWeakEvent<EventHandler<ContentLoadRequestArgs>>();
 
 
         public ContentPanelHost()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Note the time.
-            m_hostCreationTime = DateTime.Now;
+            _mHostCreationTime = DateTime.Now;
 
             // Do this now if we need to.
             ShowContentLoadBlockIfNeeded();
@@ -136,7 +126,7 @@ namespace Baconit.ContentPanels
             // Create out unique id
             Id = sourceId + DateTime.Now.Ticks;
 
-            if (!String.IsNullOrWhiteSpace(sourceId))
+            if (!string.IsNullOrWhiteSpace(sourceId))
             {
                 await Task.Run(() =>
                 {
@@ -154,14 +144,14 @@ namespace Baconit.ContentPanels
         private async Task UnRegisterPanel(string sourceId)
         {
             // Unregister
-            if (!String.IsNullOrWhiteSpace(sourceId))
+            if (!string.IsNullOrWhiteSpace(sourceId))
             {
                 await Task.Run(() =>
                 {
                     ContentPanelMaster.Current.UnRegisterForPanel(this, sourceId);
                 });
 
-                if(!String.IsNullOrWhiteSpace(SourceId) && sourceId.Equals(SourceId))
+                if(!string.IsNullOrWhiteSpace(SourceId) && sourceId.Equals(SourceId))
                 {
                     SourceId = null;
                 }
@@ -177,8 +167,8 @@ namespace Baconit.ContentPanels
         /// </summary>
         public string SourceId
         {
-            get { return (string)GetValue(FlipPostProperty); }
-            set { SetValue(FlipPostProperty, value); }
+            get => (string)GetValue(FlipPostProperty);
+            set => SetValue(FlipPostProperty, value);
         }
 
         public static readonly DependencyProperty FlipPostProperty =
@@ -186,22 +176,19 @@ namespace Baconit.ContentPanels
                 "SourceId",
                 typeof(string),
                 typeof(ContentPanelHost),
-                new PropertyMetadata(null, new PropertyChangedCallback(OnSoruceIdChangedStatic)));
+                new PropertyMetadata(null, OnSoruceIdChangedStatic));
 
         private static void OnSoruceIdChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as ContentPanelHost;
-            if (instance != null)
-            {
-                // Send the post to the class.
-                instance.OnSoruceIdChanged((string)e.OldValue, (string)e.NewValue);
-            }
+            // Send the post to the class.
+            instance?.OnSoruceIdChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         private async void OnSoruceIdChanged(string oldValue, string newId)
         {
             // Unregister
-            if(!String.IsNullOrWhiteSpace(oldValue))
+            if(!string.IsNullOrWhiteSpace(oldValue))
             {
                 await UnRegisterPanel(oldValue);
             }
@@ -213,7 +200,7 @@ namespace Baconit.ContentPanels
             }
 
             // Register the new content
-            if(!String.IsNullOrWhiteSpace(newId))
+            if(!string.IsNullOrWhiteSpace(newId))
             {
                 await ResigerPanel(newId);
             }
@@ -232,7 +219,7 @@ namespace Baconit.ContentPanels
             lock(this)
             {
                 // Capture the panel
-                m_currentPanelBase = panelBase;
+                _mCurrentPanelBase = panelBase;
             }
 
             // Setup loading.
@@ -245,7 +232,7 @@ namespace Baconit.ContentPanels
             SetupNsfwBlock();
 
             // Add the panel to the UI.
-            UserControl userControl = (UserControl)panelBase.Panel;
+            var userControl = (UserControl)panelBase.Panel;
             ui_contentRoot.Children.Add(userControl);
         }
 
@@ -258,7 +245,7 @@ namespace Baconit.ContentPanels
             lock(this)
             {
                 // Release the panel
-                m_currentPanelBase = null;
+                _mCurrentPanelBase = null;
             }
 
             // Clear out the UI
@@ -276,7 +263,7 @@ namespace Baconit.ContentPanels
             lock(this)
             {
                 // If we don't have content yet show the loading screen.
-                if(m_currentPanelBase == null)
+                if(_mCurrentPanelBase == null)
                 {
                     ui_contentRoot.Opacity = 0;
                     ToggleProgress(true);
@@ -290,7 +277,7 @@ namespace Baconit.ContentPanels
         /// <param name="show"></param>
         public void OnLoadingChanged()
         {
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var panelBase = _mCurrentPanelBase;
             if(panelBase != null)
             {
                 ToggleProgress(panelBase.IsLoading);
@@ -303,7 +290,7 @@ namespace Baconit.ContentPanels
         /// <param name="show"></param>
         public void OnErrorChanged()
         {
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var panelBase = _mCurrentPanelBase;
             if (panelBase != null)
             {
                 ToggleGenericMessage(panelBase.HasError, panelBase.ErrorText);
@@ -328,8 +315,8 @@ namespace Baconit.ContentPanels
         /// </summary>
         public bool IsVisible
         {
-            get { return (bool)GetValue(IsVisibleProperty); }
-            set { SetValue(IsVisibleProperty, value); }
+            get => (bool)GetValue(IsVisibleProperty);
+            set => SetValue(IsVisibleProperty, value);
         }
 
         public static readonly DependencyProperty IsVisibleProperty =
@@ -337,15 +324,12 @@ namespace Baconit.ContentPanels
                 "IsVisible",
                 typeof(bool),
                 typeof(ContentPanelHost),
-                new PropertyMetadata(false, new PropertyChangedCallback(OnIsVisibleChangedStatic)));
+                new PropertyMetadata(false, OnIsVisibleChangedStatic));
 
         private static void OnIsVisibleChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as ContentPanelHost;
-            if (instance != null)
-            {
-                instance.OnVisibleChanged((bool)e.NewValue);
-            }
+            instance?.OnVisibleChanged((bool)e.NewValue);
         }
 
         /// <summary>
@@ -370,15 +354,12 @@ namespace Baconit.ContentPanels
             }
 
             // Fire the event on the panel if we have one.
-            IContentPanelBase panelBase = m_currentPanelBase;
-            if(panelBase != null)
-            {
-                panelBase.OnVisibilityChanged(isVisible);
-            }
+            var panelBase = _mCurrentPanelBase;
+            panelBase?.OnVisibilityChanged(isVisible);
 
             // We need to tell the master that our visibility has changed.
             // Sometimes we need to spin a bit because the source might not be set yet.
-            int sanityCount = 0;
+            var sanityCount = 0;
             while(SourceId == null && sanityCount < 50)
             {
                 await Task.Delay(5);
@@ -386,7 +367,7 @@ namespace Baconit.ContentPanels
             }
 
             // Capture the source id.
-            string sourceId = SourceId;
+            var sourceId = SourceId;
             if(sourceId != null)
             {
                 await Task.Run(() =>
@@ -405,7 +386,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         private void SetupLoading()
         {
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var panelBase = _mCurrentPanelBase;
             if (panelBase != null)
             {
                 // If we are turning on loading make the content transparent.
@@ -425,7 +406,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         private void ToggleProgress(bool show, bool disableActive = false)
         {
-            m_isLoadingShowing = show;
+            _mIsLoadingShowing = show;
 
             if (show)
             {
@@ -438,7 +419,7 @@ namespace Baconit.ContentPanels
 
                 // If we are trying to hide fast enough (the control was just made or the panel just added)
                 // don't bother showing loading since it will cause a weird looking UI.
-                TimeSpan timeSincePanelAdded = DateTime.Now - m_hostCreationTime;
+                var timeSincePanelAdded = DateTime.Now - _mHostCreationTime;
                 if (timeSincePanelAdded.TotalMilliseconds < 200)
                 {
                     VisualStateManager.GoToState(this, "HideProgressHolderInstant", true);
@@ -458,7 +439,7 @@ namespace Baconit.ContentPanels
         private void HideProgressHolder_Completed(object sender, object e)
         {
             ui_progressRing.IsActive = false;
-            m_isLoadingShowing = false;
+            _mIsLoadingShowing = false;
         }
 
         #endregion
@@ -485,36 +466,34 @@ namespace Baconit.ContentPanels
         /// </summary>
         public bool SetNsfwBlock(bool instantOff = false)
         {
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var panelBase = _mCurrentPanelBase;
 
             // If the post is over 18, and it hasn't been lowered, and we don't have block off, and we won't have per subreddit on and the subreddit has been lowered
             if (panelBase != null &&
-                panelBase.Source.IsNSFW &&
-                !s_previousLoweredNsfwBlocks.ContainsKey(panelBase.Source.Id) &&
-                    (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.Always ||
-                        (App.BaconMan.UiSettingsMan.FlipView_NsfwBlockingType == NsfwBlockType.PerSubreddit &&
-                         !String.IsNullOrWhiteSpace(panelBase.Source.Subreddit) &&
-                         !s_previousLoweredNsfwSubreddits.ContainsKey(panelBase.Source.Subreddit))))
+                panelBase.Source.IsNsfw &&
+                !PreviousLoweredNsfwBlocks.ContainsKey(panelBase.Source.Id) &&
+                    (App.BaconMan.UiSettingsMan.FlipViewNsfwBlockingType == NsfwBlockType.Always ||
+                        (App.BaconMan.UiSettingsMan.FlipViewNsfwBlockingType == NsfwBlockType.PerSubreddit &&
+                         !string.IsNullOrWhiteSpace(panelBase.Source.Subreddit) &&
+                         !PreviousLoweredNsfwSubreddits.ContainsKey(panelBase.Source.Subreddit))))
             {
-                m_isNsfwShowing = true;
+                _mIsNsfwShowing = true;
                 VisualStateManager.GoToState(this, "ShowNsfwBlock", true);
                 return true;
             }
+
+            _mIsNsfwShowing = false;
+
+            if (instantOff)
+            {
+                VisualStateManager.GoToState(this, "HideNsfwBlockInstant", true);
+            }
             else
             {
-                m_isNsfwShowing = false;
-
-                if (instantOff)
-                {
-                    VisualStateManager.GoToState(this, "HideNsfwBlockInstant", true);
-                }
-                else
-                {
-                    VisualStateManager.GoToState(this, "HideNsfwBlock", true);
-                }
-
-                return false;
+                VisualStateManager.GoToState(this, "HideNsfwBlock", true);
             }
+
+            return false;
         }
 
         /// <summary>
@@ -525,7 +504,7 @@ namespace Baconit.ContentPanels
         private void NsfwBlockRoot_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Set our state.
-            m_isNsfwShowing = false;
+            _mIsNsfwShowing = false;
 
             // Show the content if we can
             HideShowContentIfNeeded();
@@ -534,25 +513,25 @@ namespace Baconit.ContentPanels
             VisualStateManager.GoToState(this, "HideNsfwBlock", true);
 
             // Add the id so we don't block again.
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var panelBase = _mCurrentPanelBase;
             if (panelBase == null)
             {
                 return;
             }
-            if (!String.IsNullOrWhiteSpace(panelBase.Source.Id))
+            if (!string.IsNullOrWhiteSpace(panelBase.Source.Id))
             {
                 // Add to our list so we won't block again.
-                if (!s_previousLoweredNsfwBlocks.ContainsKey(panelBase.Source.Id))
+                if (!PreviousLoweredNsfwBlocks.ContainsKey(panelBase.Source.Id))
                 {
-                    s_previousLoweredNsfwBlocks.Add(panelBase.Source.Id, true);
+                    PreviousLoweredNsfwBlocks.Add(panelBase.Source.Id, true);
                 }
             }
-            if (!String.IsNullOrWhiteSpace(panelBase.Source.Subreddit))
+            if (!string.IsNullOrWhiteSpace(panelBase.Source.Subreddit))
             {
                 // Add to our list so we won't block again.
-                if (!s_previousLoweredNsfwSubreddits.ContainsKey(panelBase.Source.Subreddit))
+                if (!PreviousLoweredNsfwSubreddits.ContainsKey(panelBase.Source.Subreddit))
                 {
-                    s_previousLoweredNsfwSubreddits.Add(panelBase.Source.Subreddit, true);
+                    PreviousLoweredNsfwSubreddits.Add(panelBase.Source.Subreddit, true);
                 }
                 return;
             }
@@ -567,8 +546,8 @@ namespace Baconit.ContentPanels
         /// </summary>
         public bool CanGoFullscreen
         {
-            get { return (bool)GetValue(CanGoFullScreenProperty); }
-            set { SetValue(CanGoFullScreenProperty, value); }
+            get => (bool)GetValue(CanGoFullScreenProperty);
+            set => SetValue(CanGoFullScreenProperty, value);
         }
 
         public static readonly DependencyProperty CanGoFullScreenProperty =
@@ -576,7 +555,7 @@ namespace Baconit.ContentPanels
                 "CanGoFullScreen",
                 typeof(bool),
                 typeof(ContentPanelHost),
-                new PropertyMetadata(true, new PropertyChangedCallback(OnCanGoFullScreenChangedStatic)
+                new PropertyMetadata(true, OnCanGoFullScreenChangedStatic
                 ));
 
         private static void OnCanGoFullScreenChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -603,11 +582,11 @@ namespace Baconit.ContentPanels
             ManipulationMode = goFullscreen ? ManipulationModes.All : ManipulationModes.System;
 
             // Fire the event
-            OnToggleFullScreenEventArgs args = new OnToggleFullScreenEventArgs()
+            var args = new ToggleFullScreenEventArgs
             {
                 GoFullScreen = goFullscreen
             };
-            m_onToggleFullscreen.Raise(this, args);
+            _mOnToggleFullscreen.Raise(this, args);
             return true;
         }
 
@@ -620,8 +599,8 @@ namespace Baconit.ContentPanels
         /// </summary>
         private void SetupGenericMessage()
         {
-            bool setError = false;
-            IContentPanelBase panelBase = m_currentPanelBase;
+            var setError = false;
+            var panelBase = _mCurrentPanelBase;
             if (panelBase != null)
             {
                 // If we are turning on collapse the content.
@@ -643,8 +622,8 @@ namespace Baconit.ContentPanels
         private bool ShowContentLoadBlockIfNeeded()
         {
             // If we are blocking content show the request block.
-            m_isShowingContentLoadBlock = !App.BaconMan.UiSettingsMan.FlipView_LoadPostContentWithoutAction;
-            if (m_isShowingContentLoadBlock)
+            _mIsShowingContentLoadBlock = !App.BaconMan.UiSettingsMan.FlipViewLoadPostContentWithoutAction;
+            if (_mIsShowingContentLoadBlock)
             {
                 // Show the message
                 ToggleGenericMessage(true, "Tap anywhere to load content", "You can change this behavior in the settings", true);
@@ -652,7 +631,7 @@ namespace Baconit.ContentPanels
                 // Hide loading.
                 ToggleProgress(false, true);
             }
-            return m_isShowingContentLoadBlock;
+            return _mIsShowingContentLoadBlock;
         }
 
         /// <summary>
@@ -662,7 +641,7 @@ namespace Baconit.ContentPanels
         /// <param name="message"></param>
         private void ToggleGenericMessage(bool show, string message = null, string subMessage = null, bool instantOff = false)
         {
-            m_isGenericMessageShowing = show;
+            _mIsGenericMessageShowing = show;
 
             // Set the text
             if (show)
@@ -698,16 +677,16 @@ namespace Baconit.ContentPanels
         private async void GenericMessage_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // If we are showing the content load fire it.
-            if (m_isShowingContentLoadBlock)
+            if (_mIsShowingContentLoadBlock)
             {
-                OnContentLoadRequestArgs args = new OnContentLoadRequestArgs()
+                var args = new ContentLoadRequestArgs
                 {
                     SourceId = SourceId
                 };
-                m_onContentLoadRequest.Raise(this, args);
+                _mOnContentLoadRequest.Raise(this, args);
 
                 // Set bars
-                m_isShowingContentLoadBlock = false;
+                _mIsShowingContentLoadBlock = false;
                 ToggleGenericMessage(false);
 
                 // Show loading
@@ -720,9 +699,9 @@ namespace Baconit.ContentPanels
                     // Get the url, when we are unloaded we will not have a panel base
                     // thus we have to get the source from the master.
                     string url;
-                    if (m_currentPanelBase != null)
+                    if (_mCurrentPanelBase != null)
                     {
-                        url = m_currentPanelBase.Source.Url;
+                        url = _mCurrentPanelBase.Source.Url;
                     }
                     else
                     {
@@ -744,7 +723,7 @@ namespace Baconit.ContentPanels
         /// </summary>
         private void HideShowContentIfNeeded()
         {
-            if(!m_isNsfwShowing && !m_isLoadingShowing && !m_isGenericMessageShowing)
+            if(!_mIsNsfwShowing && !_mIsLoadingShowing && !_mIsGenericMessageShowing)
             {
                 ui_contentRoot.Opacity = 1;
             }

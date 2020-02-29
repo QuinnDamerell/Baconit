@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BaconBackend.Managers
+﻿namespace BaconBackend.Managers
 {
     public class CacheManager
     {
-        BaconManager m_baconMan;
+        private BaconManager _baconMan;
 
         public CacheManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
-        public bool HasFileCached(string fileName)
+        public static bool HasFileCached(string fileName)
         {
             return false;
         }

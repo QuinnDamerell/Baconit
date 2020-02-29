@@ -2,21 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using BaconBackend.Helpers;
-using System.Net;
+using BaconBackend.Managers;
 
 namespace BaconBackend.Collectors
 {
     public class MessageCollector : Collector<Message>
     {
-        private BaconManager m_baconMan;
+        private readonly BaconManager _mBaconMan;
 
         public MessageCollector(BaconManager baconMan) :
             base(baconMan, "messageInbox")
         {
-            m_baconMan = baconMan;
+            _mBaconMan = baconMan;
 
             // Set up the list helper
             InitListHelper("/message/inbox/.json");
@@ -24,7 +23,7 @@ namespace BaconBackend.Collectors
             // Sub ourselves to the on updated event.
             OnCollectionUpdated += MessageCollector_OnCollectionUpdated;
 
-            m_baconMan.UserMan.OnUserUpdated += OnUserUpdated;
+            _mBaconMan.UserMan.OnUserUpdated += OnUserUpdated;
         }
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace BaconBackend.Collectors
         /// <param name="messages"></param>
         protected override void ApplyCommonFormatting(ref List<Message> messages)
         {
-            foreach(Message message in messages)
+            foreach(var message in messages)
             {
                 // Set the first line
                 message.HeaderFirst = message.Subject;
@@ -53,12 +52,7 @@ namespace BaconBackend.Collectors
         protected override List<Message> ParseElementList(List<Element<Message>> elements)
         {
             // Converts the elements into a list.
-            List<Message> messages = new List<Message>();
-            foreach (Element<Message> element in elements)
-            {
-                messages.Add(element.Data);
-            }
-            return messages;
+            return elements.Select(element => element.Data).ToList();
         }
         
         #region Message Actions
@@ -69,7 +63,7 @@ namespace BaconBackend.Collectors
         public void ChangeMessageReadStatus(Message message, bool isRead, int messagePosition = 0)
         {
             // Using the post and suggested index, find the real post and index
-            Message collectionMessage = message;
+            var collectionMessage = message;
             FindMessageInCurrentCollection(ref collectionMessage, ref messagePosition);
 
             if (collectionMessage == null || messagePosition == -1)
@@ -82,7 +76,7 @@ namespace BaconBackend.Collectors
             collectionMessage.IsNew = isRead;
 
             // Fire off that a update happened.
-            FireCollectionUpdated(messagePosition, new List<Message>() { collectionMessage }, false, false);
+            FireCollectionUpdated(messagePosition, new List<Message> { collectionMessage }, false, false);
 
             // Start a task to make the vote
             Task.Run(async () =>
@@ -90,12 +84,12 @@ namespace BaconBackend.Collectors
                 try
                 {
                     // Build the data
-                    string request = collectionMessage.IsNew ? "/api/unread_message" : "/api/read_message";
-                    List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+                    var request = collectionMessage.IsNew ? "/api/unread_message" : "/api/read_message";
+                    var postData = new List<KeyValuePair<string, string>>();
                     postData.Add(new KeyValuePair<string, string>("id", collectionMessage.GetFullName()));
 
                     // Make the call
-                    string str = await m_baconMan.NetworkMan.MakeRedditPostRequestAsString(request, postData);
+                    var str = await _mBaconMan.NetworkMan.MakeRedditPostRequestAsString(request, postData);
 
                     // Do some super simple validation
                     if (str != "{}")
@@ -105,8 +99,8 @@ namespace BaconBackend.Collectors
                 }
                 catch (Exception ex)
                 {
-                    m_baconMan.MessageMan.DebugDia("failed to set message status!", ex);
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "failedToSetMessageRead", ex);
+                    _mBaconMan.MessageMan.DebugDia("failed to set message status!", ex);
+                    TelemetryManager.ReportUnexpectedEvent(this, "failedToSetMessageRead", ex);
                 }
             });
         }
@@ -118,7 +112,7 @@ namespace BaconBackend.Collectors
         private void FindMessageInCurrentCollection(ref Message message, ref int index)
         {
             // Get the current list
-            List<Message> messages = GetCurrentPostsInternal();
+            var messages = GetCurrentPostsInternal();
 
             // Find the message starting at the possible index
             for (; index < messages.Count; index++)
@@ -143,48 +137,44 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MessageCollector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<Message> e)
+        private void MessageCollector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<Message> e)
         {
             UpdateMessageCounts(GetCurrentPostsInternal());            
         }
 
-        private void OnUserUpdated(object sender, Managers.OnUserUpdatedArgs e)
+        private void OnUserUpdated(object sender, UserUpdatedArgs e)
         {
-            // If the user is now signed in update.
-            if (e.Action == Managers.UserCallbackAction.Added)
+            switch (e.Action)
             {
-                Update();
-            }
-            else if(e.Action == Managers.UserCallbackAction.Removed)
-            {
-                // If the user is logged out clear out the message ui.
-                UpdateMessageCounts(new List<Message>(), true);
+                // If the user is now signed in update.
+                case UserCallbackAction.Added:
+                    Update();
+                    break;
+                case UserCallbackAction.Removed:
+                    // If the user is logged out clear out the message ui.
+                    UpdateMessageCounts(new List<Message>(), true);
+                    break;
+                case UserCallbackAction.Updated:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
         private void UpdateMessageCounts(List<Message> messages, bool forceUiSet = false)
         {
             // Check to see if there are any unread messages
-            int unreadCount = 0;
-            foreach (Message searchMessage in messages)
-            {
-                if (searchMessage.IsNew)
-                {
-                    unreadCount++;
-                }
-            }
+            var unreadCount = messages.Count(searchMessage => searchMessage.IsNew);
 
-            if (messages.Count != 0 || forceUiSet)
-            {
-                // Update the UI
-                m_baconMan.UserMan.UpdateUnReadMessageCount(unreadCount);
+            if (messages.Count == 0 && !forceUiSet) return;
+            // Update the UI
+            _mBaconMan.UserMan.UpdateUnReadMessageCount(unreadCount);
 
-                // Update the notifications in the background
-                Task.Run(() =>
-                {
-                    m_baconMan.BackgroundMan.MessageUpdaterMan.UpdateNotifications(messages);
-                });
-            }
+            // Update the notifications in the background
+            Task.Run(() =>
+            {
+                _mBaconMan.BackgroundMan.MessageUpdaterMan.UpdateNotifications(messages);
+            });
         }
     }
 }

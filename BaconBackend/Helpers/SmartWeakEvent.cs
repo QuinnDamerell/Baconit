@@ -33,33 +33,33 @@ namespace BaconBackend.Helpers
     /// </summary>
     public sealed class SmartWeakEvent<T> where T : class
     {
-        Func<EventArgs, bool> m_betweenInvokesFunc = null;
+        private Func<EventArgs, bool> _mBetweenInvokesFunc;
 
-        struct EventEntry
+        private struct EventEntry
         {
             public readonly MethodInfo TargetMethod;
             public readonly WeakReference TargetReference;
 
             public EventEntry(MethodInfo targetMethod, WeakReference targetReference)
             {
-                this.TargetMethod = targetMethod;
-                this.TargetReference = targetReference;
+                TargetMethod = targetMethod;
+                TargetReference = targetReference;
             }
         }
 
-        readonly List<EventEntry> eventEntries = new List<EventEntry>();
+        private readonly List<EventEntry> _eventEntries = new List<EventEntry>();
 
         static SmartWeakEvent()
         {
             if (!typeof(T).GetTypeInfo().IsSubclassOf(typeof(Delegate)))
                 throw new ArgumentException("T must be a delegate type");
-            MethodInfo invoke = typeof(T).GetTypeInfo().GetDeclaredMethod("Invoke");
+            var invoke = typeof(T).GetTypeInfo().GetDeclaredMethod("Invoke");
             if (invoke == null || invoke.GetParameters().Length != 2)
                 throw new ArgumentException("T must be a delegate type taking 2 parameters");
-            ParameterInfo senderParameter = invoke.GetParameters()[0];
+            var senderParameter = invoke.GetParameters()[0];
             if (senderParameter.ParameterType != typeof(object))
                 throw new ArgumentException("The first delegate parameter must be of type 'object'");
-            ParameterInfo argsParameter = invoke.GetParameters()[1];
+            var argsParameter = invoke.GetParameters()[1];
             if (!(typeof(EventArgs).GetTypeInfo().IsAssignableFrom(argsParameter.ParameterType.GetTypeInfo())))
                 throw new ArgumentException("The second delegate parameter must be derived from type 'EventArgs'");
             if (invoke.ReturnType != typeof(void))
@@ -67,88 +67,82 @@ namespace BaconBackend.Helpers
         }
 
         /// <summary>
-        /// Sets a function to call between invokes of the callback. If the funtion returns true
+        /// Sets a function to call between invokes of the callback. If the function returns true
         /// the callbacks will continue, if false they will stop.
         /// </summary>
         /// <param name="func"></param>
         public void SetInBetweenInvokesAction(Func<EventArgs, bool> func)
         {
-            m_betweenInvokesFunc = func;
+            _mBetweenInvokesFunc = func;
         }
 
         public void Add(T eh)
         {
-            if (eh != null)
+            if (eh == null) return;
+            var d = (Delegate)(object)eh;
+
+            var attributes = d.GetMethodInfo().DeclaringType.GetTypeInfo().GetCustomAttributes(typeof(CompilerGeneratedAttribute), false);
+            var count = 0;
+            using (var enumerator = attributes.GetEnumerator())
             {
-                Delegate d = (Delegate)(object)eh;
-
-                IEnumerable<Attribute> attributes = d.GetMethodInfo().DeclaringType.GetTypeInfo().GetCustomAttributes(typeof(CompilerGeneratedAttribute), false);
-                int count = 0;
-                using (IEnumerator<Attribute> enumerator = attributes.GetEnumerator())
+                while (enumerator.MoveNext())
                 {
-                    while (enumerator.MoveNext())
-                    {
-                        count++;
-                    }
+                    count++;
                 }
-
-                if (count != 0)
-                    throw new ArgumentException("Cannot create weak event to anonymous method with closure.");
-
-                if (eventEntries.Count == eventEntries.Capacity)
-                    RemoveDeadEntries();
-                WeakReference target = d.Target != null ? new WeakReference(d.Target) : null;
-                eventEntries.Add(new EventEntry(d.GetMethodInfo(), target));
             }
+
+            if (count != 0)
+                throw new ArgumentException("Cannot create weak event to anonymous method with closure.");
+
+            if (_eventEntries.Count == _eventEntries.Capacity)
+                RemoveDeadEntries();
+            var target = d.Target != null ? new WeakReference(d.Target) : null;
+            _eventEntries.Add(new EventEntry(d.GetMethodInfo(), target));
         }
 
-        void RemoveDeadEntries()
+        private void RemoveDeadEntries()
         {
-            eventEntries.RemoveAll(ee => ee.TargetReference != null && !ee.TargetReference.IsAlive);
+            _eventEntries.RemoveAll(ee => ee.TargetReference != null && !ee.TargetReference.IsAlive);
         }
 
         public void Remove(T eh)
         {
-            if (eh != null)
+            if (eh == null) return;
+            var d = (Delegate)(object)eh;
+            for (var i = _eventEntries.Count - 1; i >= 0; i--)
             {
-                Delegate d = (Delegate)(object)eh;
-                for (int i = eventEntries.Count - 1; i >= 0; i--)
+                var entry = _eventEntries[i];
+                if (entry.TargetReference != null)
                 {
-                    EventEntry entry = eventEntries[i];
-                    if (entry.TargetReference != null)
+                    var target = entry.TargetReference.Target;
+                    if (target == null)
                     {
-                        object target = entry.TargetReference.Target;
-                        if (target == null)
-                        {
-                            eventEntries.RemoveAt(i);
-                        }
-                        else if (target == d.Target && entry.TargetMethod == d.GetMethodInfo())
-                        {
-                            eventEntries.RemoveAt(i);
-                            break;
-                        }
+                        _eventEntries.RemoveAt(i);
                     }
-                    else
+                    else if (target == d.Target && entry.TargetMethod == d.GetMethodInfo())
                     {
-                        if (d.Target == null && entry.TargetMethod == d.GetMethodInfo())
-                        {
-                            eventEntries.RemoveAt(i);
-                            break;
-                        }
+                        _eventEntries.RemoveAt(i);
+                        break;
                     }
+                }
+                else
+                {
+                    if (d.Target != null || entry.TargetMethod != d.GetMethodInfo()) continue;
+                    _eventEntries.RemoveAt(i);
+                    break;
                 }
             }
         }
 
         public void Raise(object sender, EventArgs e)
         {
-            bool needsCleanup = false;
+            var needsCleanup = false;
             object[] parameters = { sender, e };
-            foreach (EventEntry ee in eventEntries.ToArray())
+            foreach (var ee in _eventEntries.ToArray())
             {
                 if (ee.TargetReference != null)
                 {
-                    object target = ee.TargetReference.Target;
+                    var target = ee.TargetReference.Target;
                     if (target != null)
                     {
                         ee.TargetMethod.Invoke(target, parameters);
@@ -163,13 +157,11 @@ namespace BaconBackend.Helpers
                     ee.TargetMethod.Invoke(null, parameters);
                 }
 
-                if(m_betweenInvokesFunc != null)
+                if (_mBetweenInvokesFunc == null) continue;
+                // Call the function, if it returns false stop the callbacks.
+                if(!_mBetweenInvokesFunc.Invoke(e))
                 {
-                    // Call the function, if it returns false stop the callbacks.
-                    if(!m_betweenInvokesFunc.Invoke(e))
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
             if (needsCleanup)

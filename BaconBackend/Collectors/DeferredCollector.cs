@@ -1,13 +1,11 @@
 ﻿using BaconBackend.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Core;
 
 namespace BaconBackend.Collectors
 {
+
     /// <summary>
     /// Indicates the state of this collector
     /// </summary>
@@ -25,39 +23,43 @@ namespace BaconBackend.Collectors
     /// <typeparam name="T"></typeparam>
     public class DeferredCollector<T>
     {
+        private object _lock = new object();
+
         /// <summary>
         /// Fired when the state of the collector is changing.
         /// </summary>
-        public event EventHandler<OnCollectorStateChangeArgs> OnCollectorStateChange
+        public event EventHandler<CollectorStateChangeArgs> OnCollectorStateChange
         {
-            add { m_onCollectorStateChange.Add(value); }
-            remove { m_onCollectorStateChange.Remove(value); }
+            add => _collectorStateChange.Add(value);
+            remove => _collectorStateChange.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnCollectorStateChangeArgs>> m_onCollectorStateChange = new SmartWeakEvent<EventHandler<OnCollectorStateChangeArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<CollectorStateChangeArgs>> _collectorStateChange = new SmartWeakEvent<EventHandler<CollectorStateChangeArgs>>();
 
 
         /// <summary>
         /// Fired when the state of the collector is changing.
         /// </summary>
-        public event EventHandler<OnCollectionUpdatedArgs<T>> OnCollectionUpdated
+        public event EventHandler<CollectionUpdatedArgs<T>> OnCollectionUpdated
         {
-            add { m_onCollectionUpdated.Add(value); }
-            remove { m_onCollectionUpdated.Remove(value); }
+            add => _collectionUpdated.Add(value);
+            remove => _collectionUpdated.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnCollectionUpdatedArgs<T>>> m_onCollectionUpdated = new SmartWeakEvent<EventHandler<OnCollectionUpdatedArgs<T>>>();
+
+        private readonly SmartWeakEvent<EventHandler<CollectionUpdatedArgs<T>>> _collectionUpdated = new SmartWeakEvent<EventHandler<CollectionUpdatedArgs<T>>>();
 
         // The collector we are holding.
-        Collector<T> m_collector;
+        private readonly Collector<T> _collector;
 
         /// <summary>
-        /// The current number of items we will return from a prelaod.
+        /// The current number of items we will return from a pre-load.
         /// </summary>
-        int m_preLoadCount = 10;
+        private readonly int _preLoadCount = 10;
 
         /// <summary>
         /// Gets the current state of loading.
         /// </summary>
-        DeferredLoadState m_state = DeferredLoadState.Subset;
+        private DeferredLoadState _state = DeferredLoadState.Subset;
 
         /// <summary>
         /// Creates a new deferred collector given a collector.
@@ -66,21 +68,22 @@ namespace BaconBackend.Collectors
         /// <param name="preLoadReturnCount"></param>
         public DeferredCollector(Collector<T> collector, int preLoadReturnCount = 10)
         {
-            m_preLoadCount = preLoadReturnCount;
-            m_collector = collector;
+            _preLoadCount = preLoadReturnCount;
+            _collector = collector;
             collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
             collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
         }
 
         /// <summary>
-        /// Begins the precache of the items, this will get all of the items but only return some.
+        /// Begins the pre-cache of the items, this will get all of the items but only return some.
         /// </summary>
-        /// <param name="count"></param>
+        /// <param name="forceUpdate"></param>
+        /// <param name="requestCount"></param>
         public bool PreLoadItems(bool forceUpdate = false, int requestCount = 50)
         {
             // Tell the collector to update, when it returns we will only take a subset of
             // the results.
-            return m_collector.Update(forceUpdate, requestCount);
+            return _collector.Update(forceUpdate, requestCount);
         }
 
         /// <summary>
@@ -89,7 +92,10 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public DeferredLoadState GetState()
         {
-            return m_state;
+            lock (_lock)
+            {
+                return _state;
+            }
         }
 
         /// <summary>
@@ -101,39 +107,37 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public bool LoadAllItems(bool forceUpdate = false, int requestCount = 50)
         {
-            bool shouldUpdate = false;
+            var shouldUpdate = false;
 
-            lock(this)
+            lock(_lock)
             {
                 // Update our state
-                DeferredLoadState oldState = m_state;
-                m_state = DeferredLoadState.All;
+                var oldState = _state;
+                _state = DeferredLoadState.All;
 
                 // Check the state of the collector.
-                if (m_collector.State == CollectorState.Extending || m_collector.State == CollectorState.Updating)
+                if (_collector.State == CollectorState.Extending || _collector.State == CollectorState.Updating)
                 {
                     // If it is already updating just let it do it's thing.
                     // #todo bug: this will bug out if we are extending because the consumer might not have the full base list.
                     return true;
                 }
+
+                // The collector is idle. Check if already has loaded items or not.
+                // This will only work for collections that don't extend.
+                if (_collector.GetCurrentPosts().Count == 0)
+                {
+                    // We need to update the collection.
+                    shouldUpdate = true;
+                }
                 else
                 {
-                    // The collector is idle. Check if already has loaded items or not.
-                    // This will only work for collections that don't extend.
-                    if (m_collector.GetCurrentPosts().Count == 0)
+                    // The collector is idle and has posts, so if we haven't given them all out to so now.
+                    // Otherwise, do nothing.
+                    if(oldState == DeferredLoadState.Subset)
                     {
-                        // We need to update the collection.
-                        shouldUpdate = true;
-                    }
-                    else
-                    {
-                        // The collector is idle and has posts, so if we haven't given them all out to so now.
-                        // Otherwise, do nothing.
-                        if(oldState == DeferredLoadState.Subset)
-                        {
-                            SendDeferredItems();
-                            return true;
-                        }
+                        SendDeferredItems();
+                        return true;
                     }
                 }
             }
@@ -141,7 +145,7 @@ namespace BaconBackend.Collectors
             // Update if we should.
             if(forceUpdate || shouldUpdate)
             {
-                return m_collector.Update(forceUpdate, requestCount);
+                return _collector.Update(forceUpdate, requestCount);
             }
             return false;
         }
@@ -149,18 +153,16 @@ namespace BaconBackend.Collectors
         /// <summary>
         /// Returns the current posts the collector has.
         /// </summary>
-        /// <param name="getAll"></param>
+        /// <param name="getAllItems"></param>
         /// <returns></returns>
         public List<T> GetCurrentItems(bool getAllItems)
         {
-            List<T> items = m_collector.GetCurrentPosts();
+            var items = _collector.GetCurrentPosts();
 
-            if (!getAllItems)
+            if (getAllItems) return items;
+            if(items.Count > _preLoadCount)
             {
-                if(items.Count > m_preLoadCount)
-                {
-                    items = items.GetRange(0, m_preLoadCount);
-                }
+                items = items.GetRange(0, _preLoadCount);
             }
             return items;
         }
@@ -171,7 +173,7 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public Collector<T> GetCollector()
         {
-            return m_collector;
+            return _collector;
         }
 
 
@@ -186,25 +188,24 @@ namespace BaconBackend.Collectors
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
             {
                 // Get the items
-                List<T> curentItems = m_collector.GetCurrentPosts();
+                var currentPosts = _collector.GetCurrentPosts();
 
-                if(curentItems.Count > m_preLoadCount)
+                if (currentPosts.Count <= _preLoadCount) return;
+
+                // Only send the range we haven't sent already
+                currentPosts = currentPosts.GetRange(_preLoadCount, currentPosts.Count - _preLoadCount);
+
+                // Make the args for the event
+                var e = new CollectionUpdatedArgs<T>
                 {
-                    // Only send the range we haven't sent already
-                    curentItems = curentItems.GetRange(m_preLoadCount, curentItems.Count - m_preLoadCount);
+                    StartingPosition = _preLoadCount,
+                    ChangedItems = currentPosts,
+                    IsFreshUpdate = false,
+                    IsInsert = false
+                };
 
-                    // Make the args for the event
-                    OnCollectionUpdatedArgs<T> e = new OnCollectionUpdatedArgs<T>()
-                    {
-                        StartingPosition = m_preLoadCount,
-                        ChangedItems = curentItems,
-                        IsFreshUpdate = false,
-                        IsInsert = false
-                    };
-
-                    // Fire the event
-                    m_onCollectionUpdated.Raise(this, e);
-                }
+                // Fire the event
+                _collectionUpdated.Raise(this, e);
             });
         }
 
@@ -213,10 +214,10 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChange(object sender, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChange(object sender, CollectorStateChangeArgs e)
         {
             // Forward this along.
-            m_onCollectorStateChange.Raise(this, e);
+            _collectorStateChange.Raise(this, e);
         }
 
         /// <summary>
@@ -224,10 +225,10 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdated(object sender, OnCollectionUpdatedArgs<T> e)
+        private void Collector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<T> e)
         {
             // Make our own args
-            OnCollectionUpdatedArgs<T> ourArgs = new OnCollectionUpdatedArgs<T>()
+            var ourArgs = new CollectionUpdatedArgs<T>
             {
                 StartingPosition = e.StartingPosition,
                 ChangedItems = e.ChangedItems,
@@ -235,19 +236,19 @@ namespace BaconBackend.Collectors
                 IsInsert = e.IsInsert
             };
 
-            lock (this)
+            lock (_lock)
             {
                 // Check if we are deferred.
-                if (m_state == DeferredLoadState.Subset)
+                if (_state == DeferredLoadState.Subset)
                 {
                     // If the starting index is higher than our loaded count ignore
-                    if (ourArgs.StartingPosition > m_preLoadCount)
+                    if (ourArgs.StartingPosition > _preLoadCount)
                     {
                         return;
                     }
 
                     // Get the range we should send.
-                    int rangeLength = m_preLoadCount - ourArgs.StartingPosition;
+                    var rangeLength = _preLoadCount - ourArgs.StartingPosition;
                     rangeLength = Math.Min(rangeLength, ourArgs.ChangedItems.Count);
 
                     // If we are in the range send it.
@@ -264,7 +265,7 @@ namespace BaconBackend.Collectors
             }
 
             // Fire the event
-            m_onCollectionUpdated.Raise(this, ourArgs);
+            _collectionUpdated.Raise(this, ourArgs);
         }
     }
 }

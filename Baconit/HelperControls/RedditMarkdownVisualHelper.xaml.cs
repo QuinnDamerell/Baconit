@@ -1,19 +1,7 @@
 ﻿using BaconBackend.Helpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -39,7 +27,7 @@ namespace Baconit.HelperControls
         Fullscreen
     }
 
-    public class OnHelperTappedArgs : EventArgs
+    public class HelperTappedArgs : EventArgs
     {
         public VisualHelperTypes Type;
     }
@@ -49,16 +37,17 @@ namespace Baconit.HelperControls
         /// <summary>
         /// Fired when an element is clicked
         /// </summary>
-        public event EventHandler<OnHelperTappedArgs> OnHelperTapped
+        public event EventHandler<HelperTappedArgs> OnHelperTapped
         {
-            add { m_onHelperTapped.Add(value); }
-            remove { m_onHelperTapped.Remove(value); }
+            add => _mOnHelperTapped.Add(value);
+            remove => _mOnHelperTapped.Remove(value);
         }
-        SmartWeakEvent<EventHandler<OnHelperTappedArgs>> m_onHelperTapped = new SmartWeakEvent<EventHandler<OnHelperTappedArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<HelperTappedArgs>> _mOnHelperTapped = new SmartWeakEvent<EventHandler<HelperTappedArgs>>();
 
         public RedditMarkdownVisualHelper()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         private void Bold_Click(object sender, RoutedEventArgs e)
@@ -108,7 +97,7 @@ namespace Baconit.HelperControls
 
         private void FireTapped(VisualHelperTypes type)
         {
-            m_onHelperTapped.Raise(this, new OnHelperTappedArgs() { Type = type });
+            _mOnHelperTapped.Raise(this, new HelperTappedArgs { Type = type });
         }
 
         #region Fullscreen Status
@@ -118,8 +107,8 @@ namespace Baconit.HelperControls
         /// </summary>
         public VisualHelperFullscreenStatus FullscreenStatus
         {
-            get { return (VisualHelperFullscreenStatus)GetValue(FullscreenStatusProperty); }
-            set { SetValue(FullscreenStatusProperty, value); }
+            get => (VisualHelperFullscreenStatus)GetValue(FullscreenStatusProperty);
+            set => SetValue(FullscreenStatusProperty, value);
         }
 
         public static readonly DependencyProperty FullscreenStatusProperty =
@@ -127,15 +116,12 @@ namespace Baconit.HelperControls
                 "FullscreenStatus",
                 typeof(VisualHelperFullscreenStatus),
                 typeof(CircleIconButton),
-                new PropertyMetadata(VisualHelperFullscreenStatus.DontShow, new PropertyChangedCallback(OnFullscreenStatusChangedStatic)));
+                new PropertyMetadata(VisualHelperFullscreenStatus.DontShow, OnFullscreenStatusChangedStatic));
 
         private static void OnFullscreenStatusChangedStatic(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var instance = d as RedditMarkdownVisualHelper;
-            if (instance != null)
-            {
-                instance.OnFullscreenStatusChanged((VisualHelperFullscreenStatus)e.NewValue);
-            }
+            instance?.OnFullscreenStatusChanged((VisualHelperFullscreenStatus)e.NewValue);
         }
 
         private void OnFullscreenStatusChanged(VisualHelperFullscreenStatus newValue)
@@ -165,8 +151,8 @@ namespace Baconit.HelperControls
 
         #region Text Editing
 
-        const string c_exampleUrl = "http://www.example.com";
-        const string c_exampleText = "example";
+        private const string CExampleUrl = "http://www.example.com";
+        private const string CExampleText = "example";
 
         /// <summary>
         /// Preforms the selected edit type on the text box given.
@@ -180,17 +166,17 @@ namespace Baconit.HelperControls
             textBox.Focus(FocusState.Programmatic);
 
             // Get some vars
-            int selStart = textBox.SelectionStart;
-            int selLength = textBox.SelectionLength;
-            int newLineSelOffset = 0;
-            string curText = textBox.Text;
+            var selStart = textBox.SelectionStart;
+            var selLength = textBox.SelectionLength;
+            var newLineSelOffset = 0;
+            var curText = textBox.Text;
             string insertNewLine = null;
             string insertAtEnd = null;
-            bool isLink = false;
-            bool hasExampleText = false;
+            var isLink = false;
+            var hasExampleText = false;
 
             // For some reason the SelectionStart count /r/n as 1 instead of two. So add one for each /r/n we find.
-            for(int count = 0; count < selStart + newLineSelOffset; count++)
+            for(var count = 0; count < selStart + newLineSelOffset; count++)
             {
                 if(curText[count] == '\r' && count + 1 < curText.Length && curText[count + 1] == '\n')
                 {
@@ -201,7 +187,7 @@ namespace Baconit.HelperControls
             // Depending on the type see what we can do.
             switch (editType)
             {
-                case HelperControls.VisualHelperTypes.Bold:
+                case VisualHelperTypes.Bold:
                     if (selLength != 0)
                     {
                         // Wrap the selected text
@@ -210,11 +196,11 @@ namespace Baconit.HelperControls
                     else
                     {
                         // Or add to the end
-                        insertAtEnd = $"**{c_exampleText}**";
+                        insertAtEnd = $"**{CExampleText}**";
                         hasExampleText = true;
                     }
                     break;
-                case HelperControls.VisualHelperTypes.Italic:
+                case VisualHelperTypes.Italic:
                     if (selLength != 0)
                     {
                         // Wrap the selected text
@@ -223,40 +209,40 @@ namespace Baconit.HelperControls
                     else
                     {
                         // Or add to the end
-                        insertAtEnd = $"*{c_exampleText}*";
+                        insertAtEnd = $"*{CExampleText}*";
                         hasExampleText = true;
                     }
                     break;
-                case HelperControls.VisualHelperTypes.Link:
+                case VisualHelperTypes.Link:
                     if (selLength != 0)
                     {
                         // Wrap the selected text
-                        textBox.Text = curText.Insert(selStart + newLineSelOffset + selLength, $"]({c_exampleUrl})").Insert(selStart + newLineSelOffset, "[");
+                        textBox.Text = curText.Insert(selStart + newLineSelOffset + selLength, $"]({CExampleUrl})").Insert(selStart + newLineSelOffset, "[");
                     }
                     else
                     {
                         // Or add to the end
-                        insertAtEnd = $"[{c_exampleText}]({c_exampleUrl})";
+                        insertAtEnd = $"[{CExampleText}]({CExampleUrl})";
                     }
                     isLink = true;
                     break;
-                case HelperControls.VisualHelperTypes.NewLine:
-                    int injectPos = selStart + newLineSelOffset;
+                case VisualHelperTypes.NewLine:
+                    var injectPos = selStart + newLineSelOffset;
                     // Inject the new line at the current pos
                     textBox.Text = curText.Insert(injectPos, "  \r\n");
                     // Move the selection to the end of insert
                     textBox.SelectionStart = injectPos + 3 - newLineSelOffset;
                     break;
-                case HelperControls.VisualHelperTypes.Quote:
+                case VisualHelperTypes.Quote:
                     insertNewLine = "> ";
                     break;
-                case HelperControls.VisualHelperTypes.List:
+                case VisualHelperTypes.List:
                     insertNewLine = "* ";
                     break;
-                case HelperControls.VisualHelperTypes.NumberedList:
+                case VisualHelperTypes.NumberedList:
                     insertNewLine = "1. ";
                     break;
-                case HelperControls.VisualHelperTypes.Code:
+                case VisualHelperTypes.Code:
                     insertNewLine = "    ";
                     break;
 
@@ -267,14 +253,14 @@ namespace Baconit.HelperControls
             if (insertNewLine != null)
             {
                 // Search for a new line.
-                int offsetSelStart = selStart + newLineSelOffset;
-                int searchStart = offsetSelStart == curText.Length ? offsetSelStart - 1 : offsetSelStart;
+                var offsetSelStart = selStart + newLineSelOffset;
+                var searchStart = offsetSelStart == curText.Length ? offsetSelStart - 1 : offsetSelStart;
 
                 // Try to find it the new line before the cursor
-                int indexLastNewLine = curText.LastIndexOf('\n', searchStart);
+                var indexLastNewLine = curText.LastIndexOf('\n', searchStart);
 
                 // We need to make sure there are two new lines before this block
-                int searchNewlineCount = indexLastNewLine - 1;
+                var searchNewlineCount = indexLastNewLine - 1;
                 while (searchNewlineCount > 0)
                 {
                     // If we find an /r just move on.
@@ -284,16 +270,14 @@ namespace Baconit.HelperControls
                         continue;
                     }
                     // If we find an /n we are good.
-                    else if (curText[searchNewlineCount] == '\n')
+
+                    if (curText[searchNewlineCount] == '\n')
                     {
                         break;
                     }
                     // If it is anything else we need to add it.
-                    else
-                    {
-                        insertNewLine = "\r\n" + insertNewLine;
-                        break;
-                    }
+                    insertNewLine = "\r\n" + insertNewLine;
+                    break;
                 }
 
                 // Insert the text
@@ -315,7 +299,7 @@ namespace Baconit.HelperControls
             if (insertAtEnd != null)
             {
                 // If the last char isn't a space add one.
-                if (textBox.Text.Length > 0 && !Char.IsWhiteSpace(textBox.Text[textBox.Text.Length - 1]))
+                if (textBox.Text.Length > 0 && !char.IsWhiteSpace(textBox.Text[textBox.Text.Length - 1]))
                 {
                     textBox.Text += ' ';
                 }
@@ -326,12 +310,12 @@ namespace Baconit.HelperControls
             // If we added a link try to select the example url
             if (isLink)
             {
-                int urlStart = textBox.Text.LastIndexOf(c_exampleUrl);
-                if(urlStart != -1 && textBox.Text.Length > urlStart + c_exampleUrl.Length)
+                var urlStart = textBox.Text.LastIndexOf(CExampleUrl);
+                if(urlStart != -1 && textBox.Text.Length > urlStart + CExampleUrl.Length)
                 {
                     // +7 -7 so we don't selected the http://
                     textBox.SelectionStart = urlStart + 7 - newLineSelOffset;
-                    textBox.SelectionLength = c_exampleUrl.Length - 7;
+                    textBox.SelectionLength = CExampleUrl.Length - 7;
                 }
             }
 
@@ -340,11 +324,11 @@ namespace Baconit.HelperControls
             {
                 // Note we could accidentally select the word "example" anywhere in the text box...
                 // but that's ok for now.
-                int exampleStart = textBox.Text.LastIndexOf(c_exampleText);
-                if (exampleStart != -1 && textBox.Text.Length > exampleStart + c_exampleText.Length)
+                var exampleStart = textBox.Text.LastIndexOf(CExampleText);
+                if (exampleStart != -1 && textBox.Text.Length > exampleStart + CExampleText.Length)
                 {
                     textBox.SelectionStart = exampleStart - newLineSelOffset;
-                    textBox.SelectionLength = c_exampleText.Length;
+                    textBox.SelectionLength = CExampleText.Length;
                 }
             }
         }

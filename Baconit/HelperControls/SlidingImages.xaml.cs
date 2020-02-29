@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,15 +12,15 @@ namespace Baconit.HelperControls
 {
     public sealed partial class SlidingImages : UserControl
     {
-        const int c_animationAmmount = 60;
-        bool m_isStarted = false;
-        bool m_isAnimating = false;
-        bool m_isImageLoaded = false;
-        List<Uri> m_imageUris = null;
+        private const int CAnimationAmmount = 60;
+        private bool _mIsStarted;
+        private bool _mIsAnimating;
+        private bool _mIsImageLoaded;
+        private List<Uri> _mImageUris;
 
         public SlidingImages()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             SizeChanged += SlidingImages_SizeChanged;
         }
 
@@ -42,21 +33,21 @@ namespace Baconit.HelperControls
             // Make sure we aren't animating already.
             lock (this)
             {
-                if (m_isStarted)
+                if (_mIsStarted)
                 {
                     return;
                 }
             }
 
             // Set the list
-            m_imageUris = imageUris;
+            _mImageUris = imageUris;
             if (imageUris.Count == 0)
             {
                 throw new Exception("No Images Passed!");
             }
 
             // Set the first image
-            BitmapImage image = new BitmapImage(imageUris[0]) { CreateOptions = BitmapCreateOptions.None };
+            var image = new BitmapImage(imageUris[0]) { CreateOptions = BitmapCreateOptions.None };
             image.ImageOpened += Image_ImageOpened;
             ui_mainImage.Source = image;
         }
@@ -67,7 +58,7 @@ namespace Baconit.HelperControls
         public void BeginAnimation()
         {
             // Make sure we have an image
-            if(m_imageUris == null)
+            if(_mImageUris == null)
             {
                 throw new Exception("No image was set!");
             }
@@ -75,11 +66,11 @@ namespace Baconit.HelperControls
             // Make sure we aren't animating already.
             lock (this)
             {
-                if (m_isStarted)
+                if (_mIsStarted)
                 {
                     return;
                 }
-                m_isStarted = true;
+                _mIsStarted = true;
             }
 
             UpdateImageSize();
@@ -90,8 +81,8 @@ namespace Baconit.HelperControls
             // If we are already animating just jump out.
             lock (this)
             {
-                m_isAnimating = false;
-                m_isStarted = false;
+                _mIsAnimating = false;
+                _mIsStarted = false;
                 story_mainImageStory.Stop();
             }
         }
@@ -105,7 +96,7 @@ namespace Baconit.HelperControls
         private void Image_ImageOpened(object sender, RoutedEventArgs e)
         {
             // When the image is loaded set the flag and set the size
-            m_isImageLoaded = true;
+            _mIsImageLoaded = true;
 
             UpdateImageSize();
         }
@@ -113,42 +104,42 @@ namespace Baconit.HelperControls
         private void UpdateImageSize()
         {
             // If the image isn't loaded do nothing.
-            if(!m_isImageLoaded)
+            if(!_mIsImageLoaded)
             {
                 return;
             }
 
             // Get the image
-            BitmapImage image = ui_mainImage.Source as BitmapImage;
+            var image = ui_mainImage.Source as BitmapImage;
 
             // Figure out the scales
-            double heightScale = image.PixelHeight / this.ActualHeight;
-            double widthScale = (image.PixelWidth - c_animationAmmount) / this.ActualWidth;
+            var heightScale = image.PixelHeight / ActualHeight;
+            var widthScale = (image.PixelWidth - CAnimationAmmount) / ActualWidth;
 
             // If the control width is larger than the image with with the animation amount
             // we need to set the height larger than the control or we will show black on the sides
             if (heightScale > widthScale)
             {
-                double neededHeight = this.ActualHeight + (this.ActualHeight * (heightScale - widthScale));
+                var neededHeight = ActualHeight + (ActualHeight * (heightScale - widthScale));
                 ui_mainImage.Height = neededHeight;
-                ui_mainImageCompositeTrans.TranslateY = -(neededHeight - this.ActualHeight) / 2;
-                ui_mainImageClipTransform.Y = (neededHeight - this.ActualHeight) / 2;
+                ui_mainImageCompositeTrans.TranslateY = -(neededHeight - ActualHeight) / 2;
+                ui_mainImageClipTransform.Y = (neededHeight - ActualHeight) / 2;
             }
             else
             {
                 // If not just use the height.
-                ui_mainImage.Height = this.ActualHeight;
+                ui_mainImage.Height = ActualHeight;
                 ui_mainImageCompositeTrans.TranslateY = 0;
                 ui_mainImageClipTransform.Y = 0;
             }
 
             // Set the clipping rect
-            ui_mainImage.Clip.Rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
+            ui_mainImage.Clip.Rect = new Rect(0, 0, ActualWidth, ActualHeight);
 
             // If we shouldn't be animating don't
             lock (this)
             {
-                if (!m_isStarted)
+                if (!_mIsStarted)
                 {
                     return;
                 }
@@ -157,20 +148,20 @@ namespace Baconit.HelperControls
             // If we are already animating just jump out.
             lock (this)
             {
-                if(m_isAnimating)
+                if(_mIsAnimating)
                 {
                     return;
                 }
-                m_isAnimating = true;
+                _mIsAnimating = true;
             }
 
             // Setup the image transform
-            ui_mainImageCompositeTrans.TranslateX = -c_animationAmmount;
+            ui_mainImageCompositeTrans.TranslateX = -CAnimationAmmount;
             anim_mainImageTranslateAnim.To = 0;
-            anim_mainImageTranslateAnim.From = -c_animationAmmount;
+            anim_mainImageTranslateAnim.From = -CAnimationAmmount;
 
             // Setup the clip transform
-            anim_mainImageClipTranslateAnim.From = c_animationAmmount;
+            anim_mainImageClipTranslateAnim.From = CAnimationAmmount;
             anim_mainImageClipTranslateAnim.To = 0;
             Storyboard.SetTarget(anim_mainImageClipTranslateAnim, ui_mainImage.Clip.Transform);
 
@@ -183,14 +174,14 @@ namespace Baconit.HelperControls
             // Make sure we should still be going
             lock (this)
             {
-                if (!m_isAnimating)
+                if (!_mIsAnimating)
                 {
                     return;
                 }
             }
 
             // Flip the direction and start again!
-            double temp = anim_mainImageTranslateAnim.From.Value;            
+            var temp = anim_mainImageTranslateAnim.From.Value;            
             anim_mainImageTranslateAnim.From = anim_mainImageTranslateAnim.To;
             anim_mainImageTranslateAnim.To = temp;
 

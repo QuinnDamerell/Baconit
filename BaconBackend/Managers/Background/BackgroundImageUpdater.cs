@@ -1,21 +1,16 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
 using BaconBackend.Helpers;
-using BaconBackend.Interfaces;
 using Microsoft.ApplicationInsights.DataContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.UserProfile;
-using Windows.UI.Core;
 
 namespace BaconBackend.Managers.Background
 {
@@ -35,49 +30,50 @@ namespace BaconBackend.Managers.Background
         ///
         /// Const Vars
         ///
-        private const int c_maxImageCacheCount = 5;
-        private const string c_imageLockScreenCacheFolderPath = "LockScreenImageCache";
-        private const string c_imageDesktopCacheFolderPath = "DesktopImageCache";
-        private const string c_imageBandCacheFolderPath = "BandImageCache";
+        private const int CMaxImageCacheCount = 5;
+        private const string CImageLockScreenCacheFolderPath = "LockScreenImageCache";
+        private const string CImageDesktopCacheFolderPath = "DesktopImageCache";
+        private const string CImageBandCacheFolderPath = "BandImageCache";
 
         ///
         /// Private
         ///
-        private BaconManager m_baconMan;
-        private StorageFolder m_lockScreenImageCacheFolder = null;
-        private StorageFolder m_desktopImageCacheFolder = null;
-        private StorageFolder m_bandImageCacheFolder = null;
-        private bool m_isRunning = false;
+        private readonly BaconManager _baconMan;
+        private StorageFolder _mLockScreenImageCacheFolder;
+        private StorageFolder _mDesktopImageCacheFolder;
+        private StorageFolder _mBandImageCacheFolder;
+        private bool _isRunning;
 
-        private RefCountedDeferral m_lockScreenRefDeferral = null;
-        private RefCountedDeferral m_desktopRefDeferral = null;
-        private RefCountedDeferral m_bandRefDeferral = null;
+        private RefCountedDeferral _lockScreenRefDeferral;
+        private RefCountedDeferral _mDesktopRefDeferral;
+        private RefCountedDeferral _mBandRefDeferral;
 
 
         public BackgroundImageUpdater(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         /// <summary>
         /// Kicks off an update of the images.
         /// </summary>
+        /// <param name="refDeferral"></param>
         /// <param name="force"></param>
         public async Task RunUpdate(RefCountedDeferral refDeferral, bool force = false)
         {
-            if ((IsDeskopEnabled || IsLockScreenEnabled || IsBandWallpaperEnabled) && UserProfilePersonalizationSettings.IsSupported())
+            if ((IsDesktopEnabled || IsLockScreenEnabled || IsBandWallpaperEnabled) && UserProfilePersonalizationSettings.IsSupported())
             {
-                TimeSpan timeSinceLastRun = DateTime.Now - LastImageUpdate;
-                if(timeSinceLastRun.TotalMinutes > UpdateFrquency || force)
+                var timeSinceLastRun = DateTime.Now - LastImageUpdate;
+                if(timeSinceLastRun.TotalMinutes > UpdateFrequency || force)
                 {
                     // Make sure we aren't running
                     lock(this)
                     {
-                        if(m_isRunning)
+                        if(_isRunning)
                         {
                             return;
                         }
-                        m_isRunning = true;
+                        _isRunning = true;
                     }
 
                     // Do the updates
@@ -91,49 +87,49 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         private async Task KickOffUpdate(bool force, RefCountedDeferral refDeferral)
         {
-            m_baconMan.TelemetryMan.ReportLog(this, "Updater updating.");
+            TelemetryManager.ReportLog(this, "Updater updating.");
             try
             {
                 // Figure out if we need to do a full update
-                int fullUpdateFequencyMins = UpdateFrquency * c_maxImageCacheCount;
-                TimeSpan timeSinceLastFullUpdate = DateTime.Now - LastFullUpdate;
+                var fullUpdateFrequencyMin = UpdateFrequency * CMaxImageCacheCount;
+                var timeSinceLastFullUpdate = DateTime.Now - LastFullUpdate;
 
-                if (timeSinceLastFullUpdate.TotalMinutes > fullUpdateFequencyMins || force)
+                if (timeSinceLastFullUpdate.TotalMinutes > fullUpdateFrequencyMin || force)
                 {
-                    m_baconMan.TelemetryMan.ReportLog(this, "Running full update");
+                    TelemetryManager.ReportLog(this, "Running full update");
 
                     // Update lock screen images
                     if (IsLockScreenEnabled)
                     {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
+                        TelemetryManager.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose);
 
                         // Make a deferral scope object so we can do our work without being killed.
                         // Note! We need release this object or it will hang the app around forever!
-                        m_lockScreenRefDeferral = refDeferral;
-                        m_lockScreenRefDeferral.AddRef();
+                        _lockScreenRefDeferral = refDeferral;
+                        _lockScreenRefDeferral.AddRef();
 
                         // Kick off the update, this will happen async.
                         GetSubredditStories(LockScreenSubredditName, UpdateTypes.LockScreen);
                     }
 
-                    if(IsDeskopEnabled)
+                    if(IsDesktopEnabled)
                     {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose); 
+                        TelemetryManager.ReportLog(this, "Updating lock screen", SeverityLevel.Verbose); 
                                         
                         // Shortcut: If lock screen in enabled and it is the same subreddit just share the same cache. If not,
                         // get the desktop images
                         if (IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
                         {
-                            m_baconMan.TelemetryMan.ReportLog(this, "Desktop same sub as lockscreen, skipping image update.", SeverityLevel.Verbose);
+                            TelemetryManager.ReportLog(this, "Desktop same sub as lockscreen, skipping image update.", SeverityLevel.Verbose);
                         }
                         else
                         {
-                            m_baconMan.TelemetryMan.ReportLog(this, "Updating desktop image", SeverityLevel.Verbose);
+                            TelemetryManager.ReportLog(this, "Updating desktop image", SeverityLevel.Verbose);
 
                             // Make a deferral scope object so we can do our work without being killed.
                             // Note! We need release this object or it will hang the app around forever!
-                            m_desktopRefDeferral = refDeferral;
-                            m_desktopRefDeferral.AddRef();
+                            _mDesktopRefDeferral = refDeferral;
+                            _mDesktopRefDeferral.AddRef();
 
                             // Kick off the update, this will happen async.
                             GetSubredditStories(DesktopSubredditName, UpdateTypes.Desktop);                           
@@ -143,12 +139,12 @@ namespace BaconBackend.Managers.Background
                     // Update lock screen images
                     if (IsBandWallpaperEnabled)
                     {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Updating band wallpaper", SeverityLevel.Verbose);
+                        TelemetryManager.ReportLog(this, "Updating band wallpaper", SeverityLevel.Verbose);
 
                         // Make a deferral scope object so we can do our work without being killed.
                         // Note! We need release this object or it will hang the app around forever!
-                        m_bandRefDeferral = refDeferral;
-                        m_bandRefDeferral.AddRef();
+                        _mBandRefDeferral = refDeferral;
+                        _mBandRefDeferral.AddRef();
 
                         // Kick off the update, this will happen async.
                         GetSubredditStories(BandSubredditName, UpdateTypes.Band);
@@ -157,7 +153,7 @@ namespace BaconBackend.Managers.Background
                 // Else full update
                 else
                 {
-                    m_baconMan.TelemetryMan.ReportLog(this, "No need for a full update, just rotating.");
+                    TelemetryManager.ReportLog(this, "No need for a full update, just rotating.");
 
                     // If we aren't doing a full update just rotate the images.
                     await DoImageRotation(UpdateTypes.All);
@@ -165,14 +161,14 @@ namespace BaconBackend.Managers.Background
                     // Stop the running state
                     lock (this)
                     {
-                        m_isRunning = false;
+                        _isRunning = false;
                     }
                 }
             }
             catch(Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to set background image", e);
+                _baconMan.MessageMan.DebugDia("Failed to set background image", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "Failed to set background image", e);
             }
         }
 
@@ -186,25 +182,28 @@ namespace BaconBackend.Managers.Background
         {
             try
             {
-                bool wasSuccess = false;
-                if(type == UpdateTypes.LockScreen)
+                var wasSuccess = false;
+                switch (type)
                 {
-                    wasSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
-                }
-                else if(type == UpdateTypes.Desktop)
-                {
-                    wasSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
-                }
-                else if(type == UpdateTypes.Band)
-                {
-                    wasSuccess = await DoSingleImageRotation(UpdateTypes.Band);
-                }
-                else
-                {
-                    bool firstSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
-                    bool secondSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
-                    bool thirdSuccess = await DoSingleImageRotation(UpdateTypes.Band);
-                    wasSuccess = firstSuccess && secondSuccess && thirdSuccess;
+                    case UpdateTypes.LockScreen:
+                        wasSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
+                        break;
+                    case UpdateTypes.Desktop:
+                        wasSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
+                        break;
+                    case UpdateTypes.Band:
+                        wasSuccess = await DoSingleImageRotation(UpdateTypes.Band);
+                        break;
+                    case UpdateTypes.All:
+                        break;
+                    default:
+                    {
+                        var firstSuccess = await DoSingleImageRotation(UpdateTypes.LockScreen);
+                        var secondSuccess = await DoSingleImageRotation(UpdateTypes.Desktop);
+                        var thirdSuccess = await DoSingleImageRotation(UpdateTypes.Band);
+                        wasSuccess = firstSuccess && secondSuccess && thirdSuccess;
+                        break;
+                    }
                 }      
                 
                 // If we successfully updated set the time.
@@ -215,8 +214,8 @@ namespace BaconBackend.Managers.Background
             }
             catch (Exception e)
             {
-                m_baconMan.MessageMan.DebugDia("Failed to set background image", e);
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to set background image", e);
+                _baconMan.MessageMan.DebugDia("Failed to set background image", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "Failed to set background image", e);
             }
         }
 
@@ -228,76 +227,83 @@ namespace BaconBackend.Managers.Background
         private async Task<bool> DoSingleImageRotation(UpdateTypes type)
         {
             // Make sure we should do the update.
-            if ((IsLockScreenEnabled && type == UpdateTypes.LockScreen) || (IsDeskopEnabled && type == UpdateTypes.Desktop) || (IsBandWallpaperEnabled && type == UpdateTypes.Band))
+            if ((!IsLockScreenEnabled || type != UpdateTypes.LockScreen) &&
+                (!IsDesktopEnabled || type != UpdateTypes.Desktop) &&
+                (!IsBandWallpaperEnabled || type != UpdateTypes.Band)) return true;
+            // If the lock screen and desktop are the same subreddit use the same files.
+            var fileCacheType = type;    
+            // If this is a desktop update, and lock is enabled, and they are the same subreddit...
+            if (type == UpdateTypes.Desktop && IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
             {
-                // If the lock screen and desktop are the same subreddit use the same files.
-                UpdateTypes fileCacheType = type;    
-                // If this is a desktop update, and lock is enabled, and they are the same subreddit...
-                if (type == UpdateTypes.Desktop && IsLockScreenEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
+                // If they are all the same use the lock screen cache for the desktop.
+                fileCacheType = UpdateTypes.LockScreen;
+            }
+
+            // Get the current files..
+            var files = await GetCurrentCacheImages(fileCacheType);
+
+            TelemetryManager.ReportLog(this, "Current images in cache :" + files.Count);
+
+            if (files.Count == 0) return true;
+            var currentIndex = 0;
+            switch (type)
+            {
+                case UpdateTypes.LockScreen:
                 {
-                    // If they are all the same use the lock screen cache for the desktop.
-                    fileCacheType = UpdateTypes.LockScreen;
+                    // Update the index
+                    CurrentLockScreenRotationIndex++;
+                    if (CurrentLockScreenRotationIndex >= files.Count)
+                    {
+                        CurrentLockScreenRotationIndex = 0;
+                    }
+                    currentIndex = CurrentLockScreenRotationIndex;
+                    break;
                 }
-
-                // Get the current files..
-                IReadOnlyList<StorageFile> files = await GetCurrentCacheImages(fileCacheType);
-
-                m_baconMan.TelemetryMan.ReportLog(this, "Current images in cache :" + files.Count);
-
-                if (files != null && files.Count != 0)
+                case UpdateTypes.Band:
                 {
-                    int currentIndex = 0;
-                    if(type == UpdateTypes.LockScreen)
+                    // Update the index
+                    CurrentBandRotationIndex++;
+                    if (CurrentBandRotationIndex >= files.Count)
                     {
-                        // Update the index
-                        CurrentLockScreenRotationIndex++;
-                        if (CurrentLockScreenRotationIndex >= files.Count)
-                        {
-                            CurrentLockScreenRotationIndex = 0;
-                        }
-                        currentIndex = CurrentLockScreenRotationIndex;
+                        CurrentBandRotationIndex = 0;
                     }
-                    else if(type == UpdateTypes.Band)
+                    currentIndex = CurrentBandRotationIndex;
+                    break;
+                }
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
+                {
+                    // Update the index
+                    CurrentDesktopRotationIndex++;
+                    if (CurrentDesktopRotationIndex >= files.Count)
                     {
-                        // Update the index
-                        CurrentBandRotationIndex++;
-                        if (CurrentBandRotationIndex >= files.Count)
-                        {
-                            CurrentBandRotationIndex = 0;
-                        }
-                        currentIndex = CurrentBandRotationIndex;
+                        CurrentDesktopRotationIndex = 0;
                     }
-                    else
-                    {
-                        // Update the index
-                        CurrentDesktopRotationIndex++;
-                        if (CurrentDesktopRotationIndex >= files.Count)
-                        {
-                            CurrentDesktopRotationIndex = 0;
-                        }
-                        currentIndex = CurrentDesktopRotationIndex;
-                    }
-
-                    m_baconMan.TelemetryMan.ReportLog(this, "Current index used to set image :" + currentIndex);
-
-                    // Set the image
-                    bool wasSuccess = await SetBackgroundImage(type, files[currentIndex]);
-
-                    if (!wasSuccess)
-                    {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Image update failed", SeverityLevel.Error);
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, type == UpdateTypes.LockScreen ? "LockscreenImageUpdateFailed" : "DesktopImageUpdateFailed");
-                    }
-                    else
-                    {
-                        m_baconMan.TelemetryMan.ReportLog(this, "Image update success");
-                    }
-
-                    return wasSuccess;
+                    currentIndex = CurrentDesktopRotationIndex;
+                    break;
                 }
             }
+
+            TelemetryManager.ReportLog(this, "Current index used to set image :" + currentIndex);
+
+            // Set the image
+            var wasSuccess = await SetBackgroundImage(type, files[currentIndex]);
+
+            if (!wasSuccess)
+            {
+                TelemetryManager.ReportLog(this, "Image update failed", SeverityLevel.Error);
+                TelemetryManager.ReportUnexpectedEvent(this, type == UpdateTypes.LockScreen ? "LockscreenImageUpdateFailed" : "DesktopImageUpdateFailed");
+            }
+            else
+            {
+                TelemetryManager.ReportLog(this, "Image update success");
+            }
+
+            return wasSuccess;
             // Return true if we are disabled
-            return true;
         }
 
         #endregion
@@ -308,30 +314,35 @@ namespace BaconBackend.Managers.Background
         /// This will kick off the process of getting the stories for a subreddit.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
         private void GetSubredditStories(string name, UpdateTypes type)
         {
             // Create a fake subreddit, the ID needs to be unique
-            Subreddit subreddit = new Subreddit() { Id = DateTime.Now.Ticks.ToString(), DisplayName = name };
+            var subreddit = new Subreddit { Id = DateTime.Now.Ticks.ToString(), DisplayName = name };
 
             // Get the collector for the subreddit
-            PostCollector collector = PostCollector.GetCollector(subreddit, m_baconMan);
+            var collector = PostCollector.GetCollector(subreddit, _baconMan);
 
-            // Sub to the collector callback
-            if(type == UpdateTypes.LockScreen)
+            switch (type)
             {
-                collector.OnCollectionUpdated += Collector_OnCollectionUpdatedLockScreen;
-                collector.OnCollectorStateChange += Collector_OnCollectorStateChangeLockScreen;
-            }
-            else if(type == UpdateTypes.Band)
-            {
-                collector.OnCollectionUpdated += Collector_OnCollectionUpdatedBand;
-                collector.OnCollectorStateChange += Collector_OnCollectorStateChangeBand;
-            }
-            else
-            {
-                collector.OnCollectionUpdated += Collector_OnCollectionUpdatedDesktop;
-                collector.OnCollectorStateChange += Collector_OnCollectorStateChangeDesktop;
+                // Sub to the collector callback
+                case UpdateTypes.LockScreen:
+                    collector.OnCollectionUpdated += Collector_OnCollectionUpdatedLockScreen;
+                    collector.OnCollectorStateChange += Collector_OnCollectorStateChangeLockScreen;
+                    break;
+                case UpdateTypes.Band:
+                    collector.OnCollectionUpdated += Collector_OnCollectionUpdatedBand;
+                    collector.OnCollectorStateChange += Collector_OnCollectorStateChangeBand;
+                    break;
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
+                    collector.OnCollectionUpdated += Collector_OnCollectionUpdatedDesktop;
+                    collector.OnCollectorStateChange += Collector_OnCollectorStateChangeDesktop;
+                    break;
             }
 
             // Kick off the update
@@ -343,7 +354,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChangeLockScreen(object sender, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChangeLockScreen(object sender, CollectorStateChangeArgs e)
         {
             Collector_OnCollectorStateChange(UpdateTypes.LockScreen, e);
         }
@@ -353,7 +364,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChangeDesktop(object sender, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChangeDesktop(object sender, CollectorStateChangeArgs e)
         {
             Collector_OnCollectorStateChange(UpdateTypes.Desktop, e);
         }
@@ -363,7 +374,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChangeBand(object sender, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChangeBand(object sender, CollectorStateChangeArgs e)
         {
             Collector_OnCollectorStateChange(UpdateTypes.Band, e);
         }
@@ -371,18 +382,16 @@ namespace BaconBackend.Managers.Background
         /// <summary>
         /// Fired when the collector state changed for the either
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="type"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectorStateChange(UpdateTypes type, OnCollectorStateChangeArgs e)
+        private void Collector_OnCollectorStateChange(UpdateTypes type, CollectorStateChangeArgs e)
         {
-            if(e.State == CollectorState.Error)
-            {
-                // We had an error. This is the end of the line, kill the deferral
-                ReleaseDeferral(type);
+            if (e.State != CollectorState.Error) return;
+            // We had an error. This is the end of the line, kill the deferral
+            ReleaseDeferral(type);
 
-                // And try to set isRunning
-                UnSetIsRunningIfDone();
-            }
+            // And try to set isRunning
+            UnSetIsRunningIfDone();
         }
 
         /// <summary>
@@ -390,7 +399,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdatedLockScreen(object sender, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectionUpdatedLockScreen(object sender, CollectionUpdatedArgs<Post> e)
         {
             Collector_OnCollectionUpdated(UpdateTypes.LockScreen, e);
         }
@@ -400,7 +409,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdatedDesktop(object sender, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectionUpdatedDesktop(object sender, CollectionUpdatedArgs<Post> e)
         {
             Collector_OnCollectionUpdated(UpdateTypes.Desktop, e);
         }
@@ -410,7 +419,7 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdatedBand(object sender, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectionUpdatedBand(object sender, CollectionUpdatedArgs<Post> e)
         {
             Collector_OnCollectionUpdated(UpdateTypes.Band, e);
         }
@@ -418,9 +427,10 @@ namespace BaconBackend.Managers.Background
         /// <summary>
         /// Fired when the stories come in for a type
         /// </summary>
-        /// <param name="sender"></param>
+
+        /// <param name="type"></param>
         /// <param name="e"></param>
-        private void Collector_OnCollectionUpdated(UpdateTypes type, OnCollectionUpdatedArgs<Post> e)
+        private void Collector_OnCollectionUpdated(UpdateTypes type, CollectionUpdatedArgs<Post> e)
         {
             if(e.ChangedItems.Count > 0)
             {
@@ -436,22 +446,22 @@ namespace BaconBackend.Managers.Background
         /// <summary>
         /// Used to lock the get images process
         /// </summary>
-        object m_getImageLock = new object();
+        private readonly object _getImageLock = new object();
 
-        int m_desktopRequestCount = 0;
-        int m_desktopDoneCount = 0;
-        int m_lockScreenRequestCount = 0;
-        int m_lockScreenDoneCount = 0;
-        int m_bandRequestCount = 0;
-        int m_bandDoneCount = 0;
+        private int _desktopRequestCount;
+        private int _desktopDoneCount;
+        private int _lockScreenRequestCount;
+        private int _lockScreenDoneCount;
+        private int _bandRequestCount;
+        private int _bandDoneCount;
 
         /// <summary>
         /// Given a list of post this gets the images and puts them into file cache.
         /// </summary>
         /// <param name="posts"></param>
-        /// <param name="isLockScreen"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        private async void GetImagesFromPosts(List<Post> posts, UpdateTypes type)
+        private async void GetImagesFromPosts(IEnumerable<Post> posts, UpdateTypes type)
         {
             // First, remove all of the existing images
             try
@@ -460,80 +470,84 @@ namespace BaconBackend.Managers.Background
             }
             catch(Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToDeleteCacheImages", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToDeleteCacheImages", e);
             }
 
-            // Setup the vars
-            if(type == UpdateTypes.LockScreen)
+            switch (type)
             {
-                m_lockScreenRequestCount = 0;
-                m_lockScreenDoneCount = 0;
-            }
-            else if(type == UpdateTypes.Band)
-            {
-                m_bandRequestCount = 0;
-                m_bandDoneCount = 0;
-            }
-            else
-            {
-                m_desktopRequestCount = 0;
-                m_desktopDoneCount = 0;
+                // Setup the vars
+                case UpdateTypes.LockScreen:
+                    _lockScreenRequestCount = 0;
+                    _lockScreenDoneCount = 0;
+                    break;
+                case UpdateTypes.Band:
+                    _bandRequestCount = 0;
+                    _bandDoneCount = 0;
+                    break;
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
+                    _desktopRequestCount = 0;
+                    _desktopDoneCount = 0;
+                    break;
             }
 
             // Figure out all of the images we need to request.
-            List<Tuple<string, string>> imageRequestList = new List<Tuple<string, string>>();
-            foreach (Post post in posts)
+            var imageRequestList = new List<Tuple<string, string>>();
+            foreach (var post in posts)
             {
-                string imageUrl = ImageManager.GetImageUrl(post.Url);
-                if (!String.IsNullOrWhiteSpace(imageUrl))
+                var imageUrl = ImageManager.GetImageUrl(post.Url);
+                if (!string.IsNullOrWhiteSpace(imageUrl))
                 {
                     imageRequestList.Add(new Tuple<string, string>(imageUrl, post.Id));
                 }
 
-                if(imageRequestList.Count > c_maxImageCacheCount)
+                if(imageRequestList.Count > CMaxImageCacheCount)
                 {
                     break;
                 }
             }
 
-            // Now set our request counts before we start requesting. We must do this to ensure
-            // the numbers are correct when the request come back.
-            if(type == UpdateTypes.LockScreen)
+            switch (type)
             {
-                m_lockScreenRequestCount = imageRequestList.Count;
-            }
-            else if(type == UpdateTypes.Band)
-            {
-                m_bandRequestCount = imageRequestList.Count;
-            }
-            else
-            {
-                m_desktopRequestCount = imageRequestList.Count;
+                // Now set our request counts before we start requesting. We must do this to ensure
+                // the numbers are correct when the request come back.
+                case UpdateTypes.LockScreen:
+                    _lockScreenRequestCount = imageRequestList.Count;
+                    break;
+                case UpdateTypes.Band:
+                    _bandRequestCount = imageRequestList.Count;
+                    break;
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
+                    _desktopRequestCount = imageRequestList.Count;
+                    break;
             }
 
             // Now make all of the request.
-            foreach(Tuple<string, string> request in imageRequestList)
+            foreach (var imageManagerRequest in imageRequestList.Select(request => new ImageManager.ImageManagerRequest
             {
-                // Make the request
-                ImageManager.ImageManagerRequest imageRequst = new ImageManager.ImageManagerRequest()
-                {
-                    Url = request.Item1,
-                    ImageId = request.Item2,
-                    Context = type
-                };
-                imageRequst.OnRequestComplete += OnRequestComplete;
-                m_baconMan.ImageMan.QueueImageRequest(imageRequst);
+                Url = request.Item1,
+                ImageId = request.Item2,
+                Context = type
+            }))
+            {
+                imageManagerRequest.OnRequestComplete += OnRequestComplete;
+                _baconMan.ImageMan.QueueImageRequest(imageManagerRequest);
             }  
 
             // If we have nothing to request this is the end of the line for this type.
-            if(imageRequestList.Count == 0)
-            {
-                // And kill the deferral
-                ReleaseDeferral(type);
+            if (imageRequestList.Count != 0) return;
+            // And kill the deferral
+            ReleaseDeferral(type);
 
-                // And set us to stopped.
-                UnSetIsRunningIfDone();
-            }
+            // And set us to stopped.
+            UnSetIsRunningIfDone();
         }
 
         /// <summary>
@@ -541,13 +555,13 @@ namespace BaconBackend.Managers.Background
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="response"></param>
-        public async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
+        private async void OnRequestComplete(object sender, ImageManager.ImageManagerResponseEventArgs response)
         {
             // Remove event listener
-            ImageManager.ImageManagerRequest request = (ImageManager.ImageManagerRequest)sender;
+            var request = (ImageManager.ImageManagerRequest)sender;
             request.OnRequestComplete -= OnRequestComplete;
 
-            UpdateTypes type = (UpdateTypes)response.Request.Context;
+            var type = (UpdateTypes)response.Request.Context;
 
             // Make sure we were successfully.
             if (response.Success)
@@ -555,106 +569,115 @@ namespace BaconBackend.Managers.Background
                 try
                 {
                     // Get the target size
-                    Size targetImageSize = LastKnownScreenResoultion;
-                    if (type == UpdateTypes.Band)
+                    var targetImageSize = LastKnownScreenResolution;
+                    switch (type)
                     {
-                        if(m_baconMan.BackgroundMan.BandMan.BandVersion == BandVersions.V1)
-                        {
+                        case UpdateTypes.Band when _baconMan.BackgroundMan.BandMan.BandVersion == BandVersions.V1:
                             targetImageSize = new Size(310, 102);
-                        }
-                        else
-                        {
+                            break;
+                        case UpdateTypes.Band:
                             targetImageSize = new Size(310, 128);
-                        }
-                    }
-                    else if(type == UpdateTypes.Desktop && DeviceHelper.CurrentDevice() == DeviceTypes.Mobile)
-                    {
-                        // If we are desktop on mobile we want to do a bit larger than the screen res because
-                        // there is a sliding image animation when you switch to all apps. Lets make the width 30% larger.
-                        targetImageSize.Width *= 1.3;
+                            break;
+                        case UpdateTypes.Desktop when DeviceHelper.CurrentDevice() == DeviceTypes.Mobile:
+                            // If we are desktop on mobile we want to do a bit larger than the screen res because
+                            // there is a sliding image animation when you switch to all apps. Lets make the width 30% larger.
+                            targetImageSize.Width *= 1.3;
+                            break;
+                        case UpdateTypes.All:
+                            break;
+                        case UpdateTypes.LockScreen:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     // Resize the image to fit nicely
-                    InMemoryRandomAccessStream image = await ResizeImage(response.ImageStream, targetImageSize);
+                    var image = await ResizeImage(response.ImageStream, targetImageSize);
 
                     // Write the file
                     await WriteImageToFile(image, type);
                 }
                 catch (Exception e)
                 {
-                    m_baconMan.MessageMan.DebugDia("Failed to write background image", e);
-                    m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "Failed to write background image", e);
+                    _baconMan.MessageMan.DebugDia("Failed to write background image", e);
+                    TelemetryManager.ReportUnexpectedEvent(this, "Failed to write background image", e);
                 }
             }
 
             // Indicate that this image is done.
-            bool isDone = false;
-            lock (m_getImageLock)
-            {                
-                if(type == UpdateTypes.LockScreen)
+            var isDone = false;
+            lock (_getImageLock)
+            {
+                switch (type)
                 {
-                    m_lockScreenDoneCount++;
-                    isDone = m_lockScreenDoneCount >= m_lockScreenRequestCount;
-                }
-                else if(type == UpdateTypes.Band)
-                {
-                    m_bandDoneCount++;
-                    isDone = m_bandDoneCount >= m_bandRequestCount;
-                }
-                else
-                {
-                    m_desktopDoneCount++;
-                    isDone = m_desktopDoneCount >= m_desktopRequestCount;
+                    case UpdateTypes.LockScreen:
+                        _lockScreenDoneCount++;
+                        isDone = _lockScreenDoneCount >= _lockScreenRequestCount;
+                        break;
+                    case UpdateTypes.Band:
+                        _bandDoneCount++;
+                        isDone = _bandDoneCount >= _bandRequestCount;
+                        break;
+                    case UpdateTypes.All:
+                        break;
+                    case UpdateTypes.Desktop:
+                        break;
+                    default:
+                        _desktopDoneCount++;
+                        isDone = _desktopDoneCount >= _desktopRequestCount;
+                        break;
                 }
             }
 
             // if we are done done then tell the images to rotate and clean up.
-            if(isDone)
+            if (!isDone) return;
+            switch (type)
             {
                 // Set this high so we roll over.
-                if(type == UpdateTypes.LockScreen)
-                {
+                case UpdateTypes.LockScreen:
                     CurrentLockScreenRotationIndex = 99;
-                }
-                else if (type == UpdateTypes.Band)
-                {
+                    break;
+                case UpdateTypes.Band:
                     CurrentBandRotationIndex = 99;
-                }
-                else
-                {
+                    break;
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
                     CurrentDesktopRotationIndex = 99;
-                }
-
-                // Do the rotate
-                await DoImageRotation(type);
-
-                // If this is a lock screen update this might also be a desktop update. This happens when the lock screen and desktop
-                // share the same subreddit, they share the same images.
-                if (type == UpdateTypes.LockScreen && IsDeskopEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
-                {
-                    // Off set the two so they don't show the same image
-                    CurrentDesktopRotationIndex = 1;
-
-                    // We also need to update the desktop.
-                    await DoImageRotation(UpdateTypes.Desktop);
-                }
-
-                // We are done, set the last update time
-                LastFullUpdate = DateTime.Now;
-
-                // And kill the deferral
-                ReleaseDeferral(type);
-
-                // And set us to stopped.
-                UnSetIsRunningIfDone(); 
+                    break;
             }
+
+            // Do the rotate
+            await DoImageRotation(type);
+
+            // If this is a lock screen update this might also be a desktop update. This happens when the lock screen and desktop
+            // share the same subreddit, they share the same images.
+            if (type == UpdateTypes.LockScreen && IsDesktopEnabled && LockScreenSubredditName.Equals(DesktopSubredditName))
+            {
+                // Off set the two so they don't show the same image
+                CurrentDesktopRotationIndex = 1;
+
+                // We also need to update the desktop.
+                await DoImageRotation(UpdateTypes.Desktop);
+            }
+
+            // We are done, set the last update time
+            LastFullUpdate = DateTime.Now;
+
+            // And kill the deferral
+            ReleaseDeferral(type);
+
+            // And set us to stopped.
+            UnSetIsRunningIfDone();
         }
 
         private async Task DeleteAllCacheImages(UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(type);
-            IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
-            foreach (StorageFile file in files)
+            var localFolder = await GetImageCacheFolder(type);
+            var files = await localFolder.GetFilesAsync();
+            foreach (var file in files)
             {
                 await file.DeleteAsync();
             }
@@ -662,8 +685,8 @@ namespace BaconBackend.Managers.Background
 
         private async Task WriteImageToFile(InMemoryRandomAccessStream stream, UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(type);
-            StorageFile file = await localFolder.CreateFileAsync("cachedImage.jpg", CreationCollisionOption.GenerateUniqueName);
+            var localFolder = await GetImageCacheFolder(type);
+            var file = await localFolder.CreateFileAsync("cachedImage.jpg", CreationCollisionOption.GenerateUniqueName);
 
             using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
@@ -674,23 +697,22 @@ namespace BaconBackend.Managers.Background
         private async Task<InMemoryRandomAccessStream> ResizeImage(InMemoryRandomAccessStream stream, Size requiredSize)
         {
             // Make a decoder for the current stream
-            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+            var decoder = await BitmapDecoder.CreateAsync(stream);
 
-            uint imageHeight = decoder.PixelHeight;
-            uint imageWidth = decoder.PixelWidth;
+            var imageHeight = decoder.PixelHeight;
+            var imageWidth = decoder.PixelWidth;
 
-            double widthRatio = imageWidth / requiredSize.Width;
-            double heightRatio = imageHeight / requiredSize.Height;
+            var widthRatio = imageWidth / requiredSize.Width;
+            var heightRatio = imageHeight / requiredSize.Height;
                
-            uint outputHeight = imageHeight;
-            uint outputWidth = imageWidth;
-            bool centerOnX = false;
+            uint outputHeight;
+            uint outputWidth;
+            var centerOnX = false;
 
             if (widthRatio < heightRatio)
             {
                 outputHeight = (uint)(imageHeight / widthRatio);
                 outputWidth = (uint)requiredSize.Width;
-                centerOnX = false;
             }
             else
             {
@@ -700,13 +722,13 @@ namespace BaconBackend.Managers.Background
             }
 
             // Make an output stream and an encoder
-            InMemoryRandomAccessStream outputStream = new InMemoryRandomAccessStream();
-            BitmapEncoder enc = await BitmapEncoder.CreateForTranscodingAsync(outputStream, decoder);
+            var outputStream = new InMemoryRandomAccessStream();
+            var enc = await BitmapEncoder.CreateForTranscodingAsync(outputStream, decoder);
 
             // convert the entire bitmap to a 125px by 125px bitmap
             enc.BitmapTransform.ScaledHeight = outputHeight;
             enc.BitmapTransform.ScaledWidth = outputWidth;
-            BitmapBounds bound = new BitmapBounds();
+            var bound = new BitmapBounds();
             bound.Height = (uint)requiredSize.Height;
             bound.Width = (uint)requiredSize.Width;
 
@@ -715,12 +737,12 @@ namespace BaconBackend.Managers.Background
 
             if(centerOnX)
             {
-                int width = ((int)outputWidth / 2) - ((int)bound.Width / 2);
+                var width = ((int)outputWidth / 2) - ((int)bound.Width / 2);
                 bound.X = (uint)(width > 0 ? width : 0);
             }
             else
             {
-                int height = ((int)outputHeight / 2) - ((int)bound.Height / 2);
+                var height = ((int)outputHeight / 2) - ((int)bound.Height / 2);
                 bound.Y = (uint)(height > 0 ? height : 0);
             }
             enc.BitmapTransform.Bounds = bound;
@@ -742,9 +764,9 @@ namespace BaconBackend.Managers.Background
         {
             lock(this)
             {
-                if(m_lockScreenRefDeferral == null && m_desktopRefDeferral == null && m_bandRefDeferral == null)
+                if(_lockScreenRefDeferral == null && _mDesktopRefDeferral == null && _mBandRefDeferral == null)
                 {
-                    m_isRunning = false;
+                    _isRunning = false;
                 }
             }
         }
@@ -757,29 +779,24 @@ namespace BaconBackend.Managers.Background
         {
             lock(this)
             {
-                if (type == UpdateTypes.LockScreen)
+                switch (type)
                 {
-                    if (m_lockScreenRefDeferral != null)
-                    {
-                        m_lockScreenRefDeferral.ReleaseRef();
-                    }
-                    m_lockScreenRefDeferral = null;
-                }
-                else if(type == UpdateTypes.Band)
-                {
-                    if (m_bandRefDeferral != null)
-                    {
-                        m_bandRefDeferral.ReleaseRef();
-                    }
-                    m_bandRefDeferral = null;
-                }
-                else
-                {
-                    if (m_desktopRefDeferral != null)
-                    {
-                        m_desktopRefDeferral.ReleaseRef();
-                    }
-                    m_desktopRefDeferral = null;
+                    case UpdateTypes.LockScreen:
+                        _lockScreenRefDeferral?.ReleaseRef();
+                        _lockScreenRefDeferral = null;
+                        break;
+                    case UpdateTypes.Band:
+                        _mBandRefDeferral?.ReleaseRef();
+                        _mBandRefDeferral = null;
+                        break;
+                    case UpdateTypes.All:
+                        break;
+                    case UpdateTypes.Desktop:
+                        break;
+                    default:
+                        _mDesktopRefDeferral?.ReleaseRef();
+                        _mDesktopRefDeferral = null;
+                        break;
                 }
             }  
         }
@@ -790,7 +807,7 @@ namespace BaconBackend.Managers.Background
         /// <returns></returns>
         private async Task<IReadOnlyList<StorageFile>> GetCurrentCacheImages(UpdateTypes type)
         {
-            StorageFolder localFolder = await GetImageCacheFolder(type);
+            var localFolder = await GetImageCacheFolder(type);
             return await localFolder.GetFilesAsync();
         }
 
@@ -800,30 +817,31 @@ namespace BaconBackend.Managers.Background
         /// <returns></returns>
         private async Task<StorageFolder> GetImageCacheFolder(UpdateTypes type)
         {
-            if(type == UpdateTypes.LockScreen)
+            switch (type)
             {
-                if (m_lockScreenImageCacheFolder == null)
+                case UpdateTypes.LockScreen:
                 {
-                    m_lockScreenImageCacheFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(c_imageLockScreenCacheFolderPath, CreationCollisionOption.OpenIfExists);
+                    return _mLockScreenImageCacheFolder ?? (_mLockScreenImageCacheFolder =
+                        await ApplicationData.Current.LocalFolder.CreateFolderAsync(
+                            CImageLockScreenCacheFolderPath, CreationCollisionOption.OpenIfExists));
                 }
-                return m_lockScreenImageCacheFolder;
-            }
-            else if(type == UpdateTypes.Band)
-            {
-                if (m_bandImageCacheFolder == null)
+                case UpdateTypes.Band:
                 {
-                    m_bandImageCacheFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(c_imageBandCacheFolderPath, CreationCollisionOption.OpenIfExists);
+                    return _mBandImageCacheFolder ?? (_mBandImageCacheFolder =
+                        await ApplicationData.Current.LocalFolder.CreateFolderAsync(CImageBandCacheFolderPath,
+                            CreationCollisionOption.OpenIfExists));
                 }
-                return m_bandImageCacheFolder;
+                case UpdateTypes.All:
+                    break;
+                case UpdateTypes.Desktop:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
-            else
-            {
-                if (m_desktopImageCacheFolder == null)
-                {
-                    m_desktopImageCacheFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(c_imageDesktopCacheFolderPath, CreationCollisionOption.OpenIfExists);
-                }
-                return m_desktopImageCacheFolder;
-            }
+
+            return _mDesktopImageCacheFolder ?? (_mDesktopImageCacheFolder =
+                await ApplicationData.Current.LocalFolder.CreateFolderAsync(CImageDesktopCacheFolderPath,
+                    CreationCollisionOption.OpenIfExists));
         }
 
         /// <summary>
@@ -832,11 +850,11 @@ namespace BaconBackend.Managers.Background
         /// <returns></returns>
         private async Task<bool> SetBackgroundImage(UpdateTypes type, StorageFile file)
         {
-            bool wasSuccess = false;
+            var wasSuccess = false;
 
             if(type == UpdateTypes.Band)
             {
-                wasSuccess = await m_baconMan.BackgroundMan.BandMan.UpdateBandWallpaper(file);
+                await _baconMan.BackgroundMan.BandMan.UpdateBandWallpaper(file);
                 // The band can fail quite a lot, if so don't count this as a fail.
                 wasSuccess = true;
             }
@@ -844,7 +862,7 @@ namespace BaconBackend.Managers.Background
             else if (UserProfilePersonalizationSettings.IsSupported())
             {
                 // Try to set the image
-                UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
+                var profileSettings = UserProfilePersonalizationSettings.Current;
                 if (type == UpdateTypes.LockScreen)
                 {
                     wasSuccess = await profileSettings.TrySetLockScreenImageAsync(file);
@@ -866,54 +884,36 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_isLockScreenEnabled.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsLockScreenEnabled"))
-                    {
-                        m_isLockScreenEnabled = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsLockScreenEnabled");
-                    }
-                    else
-                    {
-                        m_isLockScreenEnabled = false;
-                    }
-                }
-                return m_isLockScreenEnabled.Value;
+                if (_isLockScreenEnabled.HasValue) return _isLockScreenEnabled.Value;
+                _isLockScreenEnabled = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsLockScreenEnabled") && _baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsLockScreenEnabled");
+                return _isLockScreenEnabled.Value;
             }
             set
             {
-                m_isLockScreenEnabled = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("BackgroundImageUpdater.IsLockScreenEnabled", m_isLockScreenEnabled.Value);
+                _isLockScreenEnabled = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.IsLockScreenEnabled", _isLockScreenEnabled.Value);
             }
         }
-        private bool? m_isLockScreenEnabled = null;
+        private bool? _isLockScreenEnabled;
 
         /// <summary>
         /// Indicates if desktop wallpaper update is enabled
         /// </summary>
-        public bool IsDeskopEnabled
+        public bool IsDesktopEnabled
         {
             get
             {
-                if (!m_isDeskopEnabled.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsDeskopEnabled"))
-                    {
-                        m_isDeskopEnabled = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsDeskopEnabled");
-                    }
-                    else
-                    {
-                        m_isDeskopEnabled = false;
-                    }
-                }
-                return m_isDeskopEnabled.Value;
+                if (_isDesktopEnabled.HasValue) return _isDesktopEnabled.Value;
+                _isDesktopEnabled = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsDesktopEnabled") && _baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsDesktopEnabled");
+                return _isDesktopEnabled.Value;
             }
             set
             {
-                m_isDeskopEnabled = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("BackgroundImageUpdater.IsDeskopEnabled", m_isDeskopEnabled.Value);
+                _isDesktopEnabled = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.IsDesktopEnabled", _isDesktopEnabled.Value);
             }
         }
-        private bool? m_isDeskopEnabled = null;
+        private bool? _isDesktopEnabled;
 
         /// <summary>
         /// Indicates if band wallpaper update is enabled
@@ -922,26 +922,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_isBandWallpaperEnabled.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsBandWallpaperEnabled"))
-                    {
-                        m_isBandWallpaperEnabled = m_baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsBandWallpaperEnabled");
-                    }
-                    else
-                    {
-                        m_isBandWallpaperEnabled = false;
-                    }
-                }
-                return m_isBandWallpaperEnabled.Value;
+                if (_isBandWallpaperEnabled.HasValue) return _isBandWallpaperEnabled.Value;
+                _isBandWallpaperEnabled = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.IsBandWallpaperEnabled") && _baconMan.SettingsMan.ReadFromLocalSettings<bool>("BackgroundImageUpdater.IsBandWallpaperEnabled");
+                return _isBandWallpaperEnabled.Value;
             }
             set
             {
-                m_isBandWallpaperEnabled = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<bool>("BackgroundImageUpdater.IsBandWallpaperEnabled", m_isBandWallpaperEnabled.Value);
+                _isBandWallpaperEnabled = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.IsBandWallpaperEnabled", _isBandWallpaperEnabled.Value);
             }
         }
-        private bool? m_isBandWallpaperEnabled = null;
+        private bool? _isBandWallpaperEnabled;
 
         /// <summary>
         /// Indicates which image in the cache we are on for lock screen
@@ -950,26 +941,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_currentLockScreenRotationIndex.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentLockScreenRotationIndex"))
-                    {
-                        m_currentLockScreenRotationIndex = m_baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentLockScreenRotationIndex");
-                    }
-                    else
-                    {
-                        m_currentLockScreenRotationIndex = 0;
-                    }
-                }
-                return m_currentLockScreenRotationIndex.Value;
+                if (_currentLockScreenRotationIndex.HasValue) return _currentLockScreenRotationIndex.Value;
+                _currentLockScreenRotationIndex = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentLockScreenRotationIndex") ? _baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentLockScreenRotationIndex") : 0;
+                return _currentLockScreenRotationIndex.Value;
             }
             set
             {
-                m_currentLockScreenRotationIndex = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<int>("BackgroundImageUpdater.CurrentLockScreenRotationIndex", m_currentLockScreenRotationIndex.Value);
+                _currentLockScreenRotationIndex = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.CurrentLockScreenRotationIndex", _currentLockScreenRotationIndex.Value);
             }
         }
-        private int? m_currentLockScreenRotationIndex = null;
+        private int? _currentLockScreenRotationIndex;
 
         /// <summary>
         /// Indicates which image in the cache we are on for band screen
@@ -978,26 +960,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_currentBandRotationIndex.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentBandRotationIndex"))
-                    {
-                        m_currentBandRotationIndex = m_baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentBandRotationIndex");
-                    }
-                    else
-                    {
-                        m_currentBandRotationIndex = 0;
-                    }
-                }
-                return m_currentBandRotationIndex.Value;
+                if (_currentBandRotationIndex.HasValue) return _currentBandRotationIndex.Value;
+                _currentBandRotationIndex = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentBandRotationIndex") ? _baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentBandRotationIndex") : 0;
+                return _currentBandRotationIndex.Value;
             }
             set
             {
-                m_currentBandRotationIndex = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<int>("BackgroundImageUpdater.CurrentBandRotationIndex", m_currentBandRotationIndex.Value);
+                _currentBandRotationIndex = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.CurrentBandRotationIndex", _currentBandRotationIndex.Value);
             }
         }
-        private int? m_currentBandRotationIndex = null;
+        private int? _currentBandRotationIndex;
 
         /// <summary>
         /// Indicates which image in the cache we are on for desktop
@@ -1006,54 +979,36 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (!m_currentDesktopRotationIndex.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentDesktopRotationIndex"))
-                    {
-                        m_currentDesktopRotationIndex = m_baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentDesktopRotationIndex");
-                    }
-                    else
-                    {
-                        m_currentDesktopRotationIndex = 0;
-                    }
-                }
-                return m_currentDesktopRotationIndex.Value;
+                if (_currentDesktopRotationIndex.HasValue) return _currentDesktopRotationIndex.Value;
+                _currentDesktopRotationIndex = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.CurrentDesktopRotationIndex") ? _baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.CurrentDesktopRotationIndex") : 0;
+                return _currentDesktopRotationIndex.Value;
             }
             set
             {
-                m_currentDesktopRotationIndex = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<int>("BackgroundImageUpdater.CurrentDesktopRotationIndex", m_currentDesktopRotationIndex.Value);
+                _currentDesktopRotationIndex = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.CurrentDesktopRotationIndex", _currentDesktopRotationIndex.Value);
             }
         }
-        private int? m_currentDesktopRotationIndex = null;
+        private int? _currentDesktopRotationIndex;
 
         /// <summary>
         /// Indicates which image in the cache we are on
         /// </summary>
-        public int UpdateFrquency
+        public int UpdateFrequency
         {
             get
             {
-                if (!m_updateFrquency.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.UpdateFrquency"))
-                    {
-                        m_updateFrquency = m_baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.UpdateFrquency");
-                    }
-                    else
-                    {
-                        m_updateFrquency = 120;
-                    }
-                }
-                return m_updateFrquency.Value;
+                if (_updateFrequency.HasValue) return _updateFrequency.Value;
+                _updateFrequency = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.UpdateFrequency") ? _baconMan.SettingsMan.ReadFromLocalSettings<int>("BackgroundImageUpdater.UpdateFrequency") : 120;
+                return _updateFrequency.Value;
             }
             set
             {
-                m_updateFrquency = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<int>("BackgroundImageUpdater.UpdateFrquency", m_updateFrquency.Value);
+                _updateFrequency = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.UpdateFrequency", _updateFrequency.Value);
             }
         }
-        private int? m_updateFrquency = null;
+        private int? _updateFrequency;
 
         /// <summary>
         /// The last time the background image was rotated
@@ -1062,22 +1017,20 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (m_lastImageUpdate.Equals(new DateTime(0)))
+                if (!_lastImageUpdate.Equals(new DateTime(0))) return _lastImageUpdate;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastImageUpdate"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastImageUpdate"))
-                    {
-                        m_lastImageUpdate = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundImageUpdater.LastImageUpdate");
-                    }
+                    _lastImageUpdate = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundImageUpdater.LastImageUpdate");
                 }
-                return m_lastImageUpdate;
+                return _lastImageUpdate;
             }
             private set
             {
-                m_lastImageUpdate = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("BackgroundImageUpdater.LastImageUpdate", m_lastImageUpdate);
+                _lastImageUpdate = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.LastImageUpdate", _lastImageUpdate);
             }
         }
-        private DateTime m_lastImageUpdate = new DateTime(0);
+        private DateTime _lastImageUpdate = new DateTime(0);
 
         /// <summary>
         /// The last time the background images where updated
@@ -1086,22 +1039,20 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (m_lastFullUpdate.Equals(new DateTime(0)))
+                if (!_lastFullUpdate.Equals(new DateTime(0))) return _lastFullUpdate;
+                if (_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastFullUpdate"))
                 {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastFullUpdate"))
-                    {
-                        m_lastFullUpdate = m_baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundImageUpdater.LastFullUpdate");
-                    }
+                    _lastFullUpdate = _baconMan.SettingsMan.ReadFromLocalSettings<DateTime>("BackgroundImageUpdater.LastFullUpdate");
                 }
-                return m_lastFullUpdate;
+                return _lastFullUpdate;
             }
             private set
             {
-                m_lastFullUpdate = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<DateTime>("BackgroundImageUpdater.LastFullUpdate", m_lastFullUpdate);
+                _lastFullUpdate = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.LastFullUpdate", _lastFullUpdate);
             }
         }
-        private DateTime m_lastFullUpdate = new DateTime(0);
+        private DateTime _lastFullUpdate = new DateTime(0);
 
         /// <summary>
         /// Indicates which subreddit to update from. Note we only grab the URL here
@@ -1111,27 +1062,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (m_lockScreenSubredditUrl == null)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LockScreenSubredditUrl"))
-                    {
-                        m_lockScreenSubredditUrl = m_baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.LockScreenSubredditUrl");
-                    }
-                    else
-                    {
-                        // Default to a nice earth image subreddit, it is not what it sounds like.
-                        m_lockScreenSubredditUrl = "earthporn";
-                    }
-                }
-                return m_lockScreenSubredditUrl;
+                if (_lockScreenSubredditUrl != null) return _lockScreenSubredditUrl;
+                _lockScreenSubredditUrl = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LockScreenSubredditUrl") ? _baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.LockScreenSubredditUrl") : "earthporn";
+                return _lockScreenSubredditUrl;
             }
             set
             {
-                m_lockScreenSubredditUrl = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<string>("BackgroundImageUpdater.LockScreenSubredditUrl", m_lockScreenSubredditUrl);
+                _lockScreenSubredditUrl = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.LockScreenSubredditUrl", _lockScreenSubredditUrl);
             }
         }
-        private string m_lockScreenSubredditUrl = null;
+        private string _lockScreenSubredditUrl;
 
         /// <summary>
         /// Indicates which subreddit to update from. Note we only grab the URL here
@@ -1141,27 +1082,17 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (m_desktopSubredditUrl == null)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.DesktopSubredditUrl"))
-                    {
-                        m_desktopSubredditUrl = m_baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.DesktopSubredditUrl");
-                    }
-                    else
-                    {
-                        // Default to a nice earth image subreddit, it is not what it sounds like.
-                        m_desktopSubredditUrl = "earthporn";
-                    }
-                }
-                return m_desktopSubredditUrl;
+                if (_desktopSubredditUrl != null) return _desktopSubredditUrl;
+                _desktopSubredditUrl = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.DesktopSubredditUrl") ? _baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.DesktopSubredditUrl") : "earthporn";
+                return _desktopSubredditUrl;
             }
             set
             {
-                m_desktopSubredditUrl = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<string>("BackgroundImageUpdater.DesktopSubredditUrl", m_desktopSubredditUrl);
+                _desktopSubredditUrl = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.DesktopSubredditUrl", _desktopSubredditUrl);
             }
         }
-        private string m_desktopSubredditUrl = null;
+        private string _desktopSubredditUrl;
 
         /// <summary>
         /// Indicates which subreddit to update from. Note we only grab the URL here
@@ -1171,58 +1102,38 @@ namespace BaconBackend.Managers.Background
         {
             get
             {
-                if (m_bandSubredditName == null)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.BandSubredditName"))
-                    {
-                        m_bandSubredditName = m_baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.BandSubredditName");
-                    }
-                    else
-                    {
-                        // Default to a nice earth image subreddit, it is not what it sounds like.
-                        m_bandSubredditName = "earthporn";
-                    }
-                }
-                return m_bandSubredditName;
+                if (_bandSubredditName != null) return _bandSubredditName;
+                _bandSubredditName = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.BandSubredditName") ? _baconMan.SettingsMan.ReadFromLocalSettings<string>("BackgroundImageUpdater.BandSubredditName") : "earthporn";
+                return _bandSubredditName;
             }
             set
             {
-                m_bandSubredditName = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<string>("BackgroundImageUpdater.BandSubredditName", m_bandSubredditName);
+                _bandSubredditName = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.BandSubredditName", _bandSubredditName);
             }
         }
-        private string m_bandSubredditName = null;
+        private string _bandSubredditName;
 
 
         /// <summary>
         /// Indicates which subreddit to update from. Note we only grab the URL here
         /// because we don't want to write a subreddit object across roaming settings.
         /// </summary>
-        public Size LastKnownScreenResoultion
+        public Size LastKnownScreenResolution
         {
             get
             {
-                if (!m_lastKnownScreenResoultion.HasValue)
-                {
-                    if (m_baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastKnownScreenResoultion"))
-                    {
-                        m_lastKnownScreenResoultion = m_baconMan.SettingsMan.ReadFromLocalSettings<Size>("BackgroundImageUpdater.LastKnownScreenResoultion");
-                    }
-                    else
-                    {
-                        // Do a good default size
-                        m_lastKnownScreenResoultion = new Size(1920, 1080);
-                    }
-                }
-                return m_lastKnownScreenResoultion.Value;
+                if (_lastKnownScreenResolution.HasValue) return _lastKnownScreenResolution.Value;
+                _lastKnownScreenResolution = _baconMan.SettingsMan.LocalSettings.ContainsKey("BackgroundImageUpdater.LastKnownScreenResolution") ? _baconMan.SettingsMan.ReadFromLocalSettings<Size>("BackgroundImageUpdater.LastKnownScreenResolution") : new Size(1920, 1080);
+                return _lastKnownScreenResolution.Value;
             }
             set
             {
-                m_lastKnownScreenResoultion = value;
-                m_baconMan.SettingsMan.WriteToLocalSettings<Size>("BackgroundImageUpdater.LastKnownScreenResoultion", m_lastKnownScreenResoultion.Value);
+                _lastKnownScreenResolution = value;
+                _baconMan.SettingsMan.WriteToLocalSettings("BackgroundImageUpdater.LastKnownScreenResolution", _lastKnownScreenResolution.Value);
             }
         }
-        private Size? m_lastKnownScreenResoultion = null;
+        private Size? _lastKnownScreenResolution;
 
         #endregion
     }

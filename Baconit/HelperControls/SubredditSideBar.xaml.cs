@@ -4,20 +4,11 @@ using Baconit.Interfaces;
 using Baconit.Panels;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -28,64 +19,65 @@ namespace Baconit.HelperControls
         /// <summary>
         /// The panel host
         /// </summary>
-        IPanelHost m_host;
+        private IPanelHost _mHost;
 
         /// <summary>
         /// The current subreddit we are showing
         /// </summary>
-        Subreddit m_currentSubreddit;
+        private Subreddit _mCurrentSubreddit;
 
         /// <summary>
         /// A brush for active buttons
         /// </summary>
-        SolidColorBrush m_buttonActive;
+        private readonly SolidColorBrush _mButtonActive;
 
         /// <summary>
         /// A brush for inactive buttons
         /// </summary>
-        SolidColorBrush m_buttonInactive;
+        private readonly SolidColorBrush _mButtonInactive;
 
         /// <summary>
         /// Fired when the sidebar should be closed because we are navigating somewhere.
         /// </summary>
         public event EventHandler<EventArgs> OnShouldClose
         {
-            add { m_onShouldClose.Add(value); }
-            remove { m_onShouldClose.Remove(value); }
+            add => _mOnShouldClose.Add(value);
+            remove => _mOnShouldClose.Remove(value);
         }
-        SmartWeakEvent<EventHandler<EventArgs>> m_onShouldClose = new SmartWeakEvent<EventHandler<EventArgs>>();
+
+        private readonly SmartWeakEvent<EventHandler<EventArgs>> _mOnShouldClose = new SmartWeakEvent<EventHandler<EventArgs>>();
 
 
         public SubredditSideBar()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Get the accent color
-            Color accentColor = ((SolidColorBrush)App.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
+            var accentColor = ((SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"]).Color;
 
             // Set the title color
-            Color darkAccent = accentColor;
+            var darkAccent = accentColor;
             darkAccent.A = 170;
             ui_titleHeaderContainer.Background = new SolidColorBrush(darkAccent);
 
             // Set the button container background
-            Color darkerAccent = accentColor;
+            var darkerAccent = accentColor;
             darkerAccent.A = 90;
             ui_buttonContainer.Background = new SolidColorBrush(darkerAccent);
 
             // Set the active button background
-            Color buttonActive = accentColor;
+            var buttonActive = accentColor;
             buttonActive.A = 200;
-            m_buttonActive = new SolidColorBrush(buttonActive);
+            _mButtonActive = new SolidColorBrush(buttonActive);
 
             // Get the button inactive color
-            Color buttonAccent = accentColor;
+            var buttonAccent = accentColor;
             buttonAccent.A = 90;
-            m_buttonInactive = new SolidColorBrush(buttonAccent);
+            _mButtonInactive = new SolidColorBrush(buttonAccent);
 
             // Set the submit link and text colors
-            ui_submitPostButton.Background = m_buttonInactive;
-            ui_searchSubreddit.Background = m_buttonInactive;
+            ui_submitPostButton.Background = _mButtonInactive;
+            ui_searchSubreddit.Background = _mButtonInactive;
         }
 
         /// <summary>
@@ -95,10 +87,10 @@ namespace Baconit.HelperControls
         public void SetSubreddit(IPanelHost host, Subreddit subreddit)
         {
             // Capture host
-            m_host = host;
+            _mHost = host;
 
             // Make sure we don't already have it.
-            if (m_currentSubreddit != null && m_currentSubreddit.Id.Equals(subreddit.Id))
+            if (_mCurrentSubreddit != null && _mCurrentSubreddit.Id.Equals(subreddit.Id))
             {
                 // Update the buttons
                 SetSubButton();
@@ -112,15 +104,15 @@ namespace Baconit.HelperControls
             }
 
             // Set the current subreddit
-            m_currentSubreddit = subreddit;
+            _mCurrentSubreddit = subreddit;
 
             // Set the title
-            ui_titleTextBlock.Text = m_currentSubreddit.DisplayName;
+            ui_titleTextBlock.Text = _mCurrentSubreddit.DisplayName;
 
             // Set the subs, if the value doesn't exist or the subreddit is fake make it "many"
-            if (m_currentSubreddit.SubscriberCount.HasValue && !m_currentSubreddit.IsArtifical)
+            if (_mCurrentSubreddit.SubscriberCount.HasValue && !_mCurrentSubreddit.IsArtificial)
             {
-                ui_subscribersTextBlock.Text = String.Format("{0:N0}", m_currentSubreddit.SubscriberCount) + " subscribers";
+                ui_subscribersTextBlock.Text = $"{_mCurrentSubreddit.SubscriberCount:N0}" + " subscribers";
             }
             else
             {
@@ -144,19 +136,19 @@ namespace Baconit.HelperControls
         private void SetSubButton(bool? forcedState = null)
         {
             // If the subreddit is artifical disable this button
-            if(m_currentSubreddit.IsArtifical)
+            if(_mCurrentSubreddit.IsArtificial)
             {
                 ui_subscribeButton.IsEnabled = false;
             }
 
             // If we are being forced to show something show it, if not check if the user is subed or not.
-            bool isSubed = forcedState.HasValue ? forcedState.Value : App.BaconMan.SubredditMan.IsSubredditSubscribedTo(m_currentSubreddit.DisplayName);
+            var isSubed = forcedState.HasValue ? forcedState.Value : App.BaconMan.SubredditMan.IsSubredditSubscribedTo(_mCurrentSubreddit.DisplayName);
 
             // Set the text
             ui_subscribeButton.Content = isSubed ? "unsubscribe" : "subscribe";
 
             // Set the button color
-            ui_subscribeButton.Background = isSubed ? m_buttonActive : m_buttonInactive;
+            ui_subscribeButton.Background = isSubed ? _mButtonActive : _mButtonInactive;
         }
 
         /// <summary>
@@ -175,16 +167,16 @@ namespace Baconit.HelperControls
             }
 
             // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditSubscribeTapped");
+            TelemetryManager.ReportEvent(this, "SubredditSubscribeTapped");
 
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
-            bool subscribe = ui_subscribeButton.Content.Equals("subscribe");
+            var subscribe = ui_subscribeButton.Content.Equals("subscribe");
 
             // Update the button now so the UI responds
             SetSubButton(subscribe);
 
             // Make the request
-            bool success = await App.BaconMan.SubredditMan.ChangeSubscriptionStatus(m_currentSubreddit.Id, subscribe);
+            var success = await App.BaconMan.SubredditMan.ChangeSubscriptionStatus(_mCurrentSubreddit.Id, subscribe);
 
             if (!success)
             {
@@ -205,13 +197,13 @@ namespace Baconit.HelperControls
         private void SetPinButton(bool? forcedState = null)
         {
             // If we are being forced to show something show it, if not check if the user is subed or not.
-            bool isPinned = forcedState.HasValue ? forcedState.Value : App.BaconMan.TileMan.IsSubredditPinned(m_currentSubreddit.DisplayName);
+            var isPinned = forcedState.HasValue ? forcedState.Value : TileManager.IsSubredditPinned(_mCurrentSubreddit.DisplayName);
 
             // Set the text
             ui_pinToStartButton.Content = isPinned ? "unpin from start" : "pin to start";
 
             // Set the button color
-            ui_pinToStartButton.Background = isPinned ? m_buttonActive : m_buttonInactive;
+            ui_pinToStartButton.Background = isPinned ? _mButtonActive : _mButtonInactive;
         }
 
         /// <summary>
@@ -222,23 +214,23 @@ namespace Baconit.HelperControls
         private async void PinButton_Click(object sender, RoutedEventArgs e)
         {
             // Use the text here, this can be risky but it makes sure we do a action that matches the UI.
-            bool pin = ui_pinToStartButton.Content.Equals("pin to start");
+            var pin = ui_pinToStartButton.Content.Equals("pin to start");
 
             // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubPinToStartTapped");
+            TelemetryManager.ReportEvent(this, "SubPinToStartTapped");
 
             // Update the button now so the UI responds
             SetPinButton(pin);
 
             // Make the request
-            bool success = false;
+            var success = false;
             if(pin)
             {
-                success = await App.BaconMan.TileMan.CreateSubredditTile(m_currentSubreddit);
+                success = await TileManager.CreateSubredditTile(_mCurrentSubreddit);
             }
             else
             {
-                success = await App.BaconMan.TileMan.RemoveSubredditTile(m_currentSubreddit);
+                success = await TileManager.RemoveSubredditTile(_mCurrentSubreddit);
             }
 
             if (!success)
@@ -256,7 +248,7 @@ namespace Baconit.HelperControls
 
         private void SetSearchButton()
         {
-            ui_searchSubreddit.Content = m_currentSubreddit.IsArtifical ? "search reddit" : "search this subreddit";
+            ui_searchSubreddit.Content = _mCurrentSubreddit.IsArtificial ? "search reddit" : "search this subreddit";
         }
 
         /// <summary>
@@ -266,13 +258,13 @@ namespace Baconit.HelperControls
         /// <param name="e"></param>
         private void SearchSubreddit_Click(object sender, RoutedEventArgs e)
         {
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SubSidebarSearchTapped");
+            TelemetryManager.ReportEvent(this, "SubSidebarSearchTapped");
 
-            Dictionary<string, object> args = new Dictionary<string, object>();
+            var args = new Dictionary<string, object>();
             // If this is an artificial subreddit make the name "" so we just search all posts.
-            string displayName = m_currentSubreddit.IsArtifical ? "" : m_currentSubreddit.DisplayName;
-            args.Add(PanelManager.NAV_ARGS_SEARCH_SUBREDDIT_NAME, displayName);
-            m_host.Navigate(typeof(Search), "Search", args);
+            var displayName = _mCurrentSubreddit.IsArtificial ? "" : _mCurrentSubreddit.DisplayName;
+            args.Add(PanelManager.NavArgsSearchSubredditName, displayName);
+            _mHost.Navigate(typeof(Search), "Search", args);
             FireShouldClose();
         }
 
@@ -290,14 +282,14 @@ namespace Baconit.HelperControls
             }
 
             // Report
-            App.BaconMan.TelemetryMan.ReportEvent(this, "SidebarSubmitPostTapped");
+            TelemetryManager.ReportEvent(this, "SidebarSubmitPostTapped");
 
-            Dictionary<string, object> args = new Dictionary<string, object>();
-            if (!m_currentSubreddit.IsArtifical && !m_currentSubreddit.DisplayName.Equals("frontpage") && !m_currentSubreddit.DisplayName.Equals("all"))
+            var args = new Dictionary<string, object>();
+            if (!_mCurrentSubreddit.IsArtificial && !_mCurrentSubreddit.DisplayName.Equals("frontpage") && !_mCurrentSubreddit.DisplayName.Equals("all"))
             {
-                args.Add(PanelManager.NAV_ARGS_SUBMIT_POST_SUBREDDIT, m_currentSubreddit.DisplayName);
+                args.Add(PanelManager.NavArgsSubmitPostSubreddit, _mCurrentSubreddit.DisplayName);
             }
-            m_host.Navigate(typeof(SubmitPost), m_currentSubreddit.DisplayName, args);
+            _mHost.Navigate(typeof(SubmitPost), _mCurrentSubreddit.DisplayName, args);
             FireShouldClose();
         }
 
@@ -307,16 +299,16 @@ namespace Baconit.HelperControls
 
         private async void SetMarkdown()
         {
-            if (!String.IsNullOrWhiteSpace(m_currentSubreddit.Description))
+            if (!string.IsNullOrWhiteSpace(_mCurrentSubreddit.Description))
             {
                 // Delay this just a little so we don't hang the UI thread as much.
                 await Task.Delay(5);
 
-                ui_markdownTextBox.Markdown = m_currentSubreddit.Description;
+                ui_markdownTextBox.Markdown = _mCurrentSubreddit.Description;
             }
         }
 
-        private void MarkdownTextBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        private void MarkdownTextBox_OnMarkdownLinkTapped(object sender, UniversalMarkdown.MarkdownLinkTappedArgs e)
         {
             App.BaconMan.ShowGlobalContent(e.Link);
             FireShouldClose();
@@ -326,7 +318,7 @@ namespace Baconit.HelperControls
 
         private void FireShouldClose()
         {
-            m_onShouldClose.Raise(this, new EventArgs());
+            _mOnShouldClose.Raise(this, new EventArgs());
         }
     }
 }

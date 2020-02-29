@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Web.Http;
@@ -15,22 +12,21 @@ namespace BaconBackend.Managers
 
     public class NetworkManager
     {
-        BaconManager m_baconMan;
+        private readonly BaconManager _baconMan;
 
         public NetworkManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         /// <summary>
         /// Returns the reddit post as a string.
         /// </summary>
         /// <param name="apiUrl"></param>
-        /// <param name="postData"></param>
         /// <returns></returns>
         public async Task<string> MakeRedditGetRequestAsString(string apiUrl)
         {
-            IHttpContent content = await MakeRedditGetRequest(apiUrl);
+            var content = await MakeRedditGetRequest(apiUrl);
             return await content.ReadAsStringAsync();
         }
 
@@ -41,21 +37,15 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public async Task<IHttpContent> MakeRedditGetRequest(string apiUrl)
         {
-            if(m_baconMan.UserMan.IsUserSignedIn)
+            if (!_baconMan.UserMan.IsUserSignedIn) return await MakeGetRequest("https://www.reddit.com/" + apiUrl);
+            var accessToken = await _baconMan.UserMan.GetAccessToken();
+            if(string.IsNullOrWhiteSpace(accessToken))
             {
-                string accessToken = await m_baconMan.UserMan.GetAccessToken();
-                if(String.IsNullOrWhiteSpace(accessToken))
-                {
-                    throw new Exception("Failed to get (most likely refresh) the access token");
-                }
-                var byteArray = Encoding.UTF8.GetBytes(accessToken);
-                var authHeader = "bearer " + accessToken;
-                return await MakeGetRequest("https://oauth.reddit.com/" + apiUrl, authHeader);
+                throw new Exception("Failed to get (most likely refresh) the access token");
             }
-            else
-            {
-                return await MakeGetRequest("https://www.reddit.com/" + apiUrl);
-            }
+            var authHeader = "bearer " + accessToken;
+            return await MakeGetRequest("https://oauth.reddit.com/" + apiUrl, authHeader);
+
         }
 
         /// <summary>
@@ -66,7 +56,7 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public async Task<string> MakeRedditPostRequestAsString(string apiUrl, List<KeyValuePair<string, string>> postData)
         {
-            IHttpContent content = await MakeRedditPostRequest(apiUrl, postData);
+            var content = await MakeRedditPostRequest(apiUrl, postData);
             return await content.ReadAsStringAsync();
         }
 
@@ -78,44 +68,40 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public async Task<IHttpContent> MakeRedditPostRequest(string apiUrl, List<KeyValuePair<string, string>> postData)
         {
-            if (m_baconMan.UserMan.IsUserSignedIn)
-            {
-                string accessToken = await m_baconMan.UserMan.GetAccessToken();
-                var byteArray = Encoding.UTF8.GetBytes(accessToken);
-                var authHeader = "bearer " + accessToken;
-                return await MakePostRequest("https://oauth.reddit.com/" + apiUrl, postData, authHeader);
-            }
-            else
-            {
+            if (!_baconMan.UserMan.IsUserSignedIn)
                 return await MakePostRequest("https://www.reddit.com/" + apiUrl, postData);
-            }
+            var accessToken = await _baconMan.UserMan.GetAccessToken();
+            var authHeader = "bearer " + accessToken;
+            return await MakePostRequest("https://oauth.reddit.com/" + apiUrl, postData, authHeader);
+
         }
 
         /// <summary>
         /// Makes a generic get request.
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="authHeader"></param>
         /// <returns></returns>
-        public async Task<IHttpContent> MakeGetRequest(string url, string authHeader = "")
+        public static async Task<IHttpContent> MakeGetRequest(string url, string authHeader = "")
         {
-            if(String.IsNullOrWhiteSpace(url))
+            if(string.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }
-            HttpClient request = new HttpClient();
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, new Uri(url, UriKind.Absolute));
+            var request = new HttpClient();
+            var message = new HttpRequestMessage(HttpMethod.Get, new Uri(url, UriKind.Absolute));
             // Set the user agent
             message.Headers.Add("User-Agent", "Baconit");
             // Set the auth header
-            if (!String.IsNullOrWhiteSpace(authHeader))
+            if (!string.IsNullOrWhiteSpace(authHeader))
             {
                 message.Headers["Authorization"] = authHeader;
             }
-            HttpResponseMessage response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
-            if(response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable ||
-                response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
-                response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
-                response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
+            var response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
+            if(response.StatusCode == HttpStatusCode.ServiceUnavailable ||
+                response.StatusCode == HttpStatusCode.BadGateway ||
+                response.StatusCode == HttpStatusCode.GatewayTimeout ||
+                response.StatusCode == HttpStatusCode.InternalServerError)
             {
                 throw new ServiceDownException();
             }
@@ -129,18 +115,18 @@ namespace BaconBackend.Managers
         /// <param name="postData"></param>
         /// <param name="authHeader"></param>
         /// <returns></returns>
-        public async Task<IHttpContent> MakePostRequest(string url, List<KeyValuePair<string, string>> postData, string authHeader = "")
+        public static async Task<IHttpContent> MakePostRequest(string url, List<KeyValuePair<string, string>> postData, string authHeader = "")
         {
-            if (String.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }
-            HttpClient request = new HttpClient();
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Post, new Uri(url, UriKind.Absolute));
+            var request = new HttpClient();
+            var message = new HttpRequestMessage(HttpMethod.Post, new Uri(url, UriKind.Absolute));
             message.Headers.Add("User-Agent", "Baconit");
 
             // Set the auth header
-            if (!String.IsNullOrWhiteSpace(authHeader))
+            if (!string.IsNullOrWhiteSpace(authHeader))
             {
                 message.Headers["Authorization"] = authHeader;
             }
@@ -149,11 +135,11 @@ namespace BaconBackend.Managers
             message.Content = new HttpFormUrlEncodedContent(postData);
 
             // Send the request
-            HttpResponseMessage response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
-            if (response.StatusCode == Windows.Web.Http.HttpStatusCode.ServiceUnavailable ||
-              response.StatusCode == Windows.Web.Http.HttpStatusCode.BadGateway ||
-              response.StatusCode == Windows.Web.Http.HttpStatusCode.GatewayTimeout ||
-              response.StatusCode == Windows.Web.Http.HttpStatusCode.InternalServerError)
+            var response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
+            if (response.StatusCode == HttpStatusCode.ServiceUnavailable ||
+              response.StatusCode == HttpStatusCode.BadGateway ||
+              response.StatusCode == HttpStatusCode.GatewayTimeout ||
+              response.StatusCode == HttpStatusCode.InternalServerError)
             {
                 throw new ServiceDownException();
             }
@@ -165,20 +151,20 @@ namespace BaconBackend.Managers
         /// </summary>
         /// <param name="url">The url to request</param>
         /// <returns>IBuffer with the content</returns>
-        public async Task<IBuffer> MakeRawGetRequest(string url)
+        public static async Task<IBuffer> MakeRawGetRequest(string url)
         {
-            if (String.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 throw new Exception("The URL is null!");
             }
 
             // Build the request
-            HttpClient request = new HttpClient();
-            HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, new Uri(url, UriKind.Absolute));
+            var request = new HttpClient();
+            var message = new HttpRequestMessage(HttpMethod.Get, new Uri(url, UriKind.Absolute));
             message.Headers.Add("User-Agent", "Baconit");
 
             // Send the request
-            HttpResponseMessage response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
+            var response = await request.SendRequestAsync(message, HttpCompletionOption.ResponseHeadersRead);
             return await response.Content.ReadAsBufferAsync();
         }
 
@@ -188,16 +174,16 @@ namespace BaconBackend.Managers
         /// <typeparam name="T"></typeparam>
         /// <param name="content"></param>
         /// <returns></returns>
-        public async Task<T> DeseralizeObject<T>(IHttpContent content)
+        public static async Task<T> DeserializeObject<T>(IHttpContent content)
         {
             // NOTE!! We are really careful not to use a string here so we don't have to allocate a huge string.
-            IInputStream inputStream = await content.ReadAsInputStreamAsync();
-            using (StreamReader reader = new StreamReader(inputStream.AsStreamForRead()))
+            var inputStream = await content.ReadAsInputStreamAsync();
+            using (var reader = new StreamReader(inputStream.AsStreamForRead()))
             using (JsonReader jsonReader = new JsonTextReader(reader))
             {
                 // Parse the Json as an object
-                JsonSerializer serializer = new JsonSerializer();
-                T jsonObject = await Task.Run(() => serializer.Deserialize<T>(jsonReader));
+                var serializer = new JsonSerializer();
+                var jsonObject = await Task.Run(() => serializer.Deserialize<T>(jsonReader));
                 return jsonObject;
             }
         }

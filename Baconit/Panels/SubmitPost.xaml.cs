@@ -5,23 +5,10 @@ using Baconit.HelperControls;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -32,31 +19,31 @@ namespace Baconit.Panels
         /// <summary>
         /// Holds a reference to the panel host.
         /// </summary>
-        IPanelHost m_host;
+        private IPanelHost _mHost;
 
         /// <summary>
         /// Holds a list to the current subreddits.
         /// </summary>
-        List<Subreddit> m_currentSubreddits = null;
+        private List<Subreddit> _mCurrentSubreddits;
 
         /// <summary>
         /// Used to save a draft every now and then.
         /// </summary>
-        DispatcherTimer m_draftTimer;
+        private readonly DispatcherTimer _mDraftTimer;
 
         /// <summary>
         /// Indicates if we are open or not.
         /// </summary>
-        bool m_isVisible = false;
+        private bool _mIsVisible;
 
         public SubmitPost()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Setup the draft timer
-            m_draftTimer = new DispatcherTimer();
-            m_draftTimer.Interval = new TimeSpan(0, 0, 10);
-            m_draftTimer.Tick += DraftTimer_Tick;
+            _mDraftTimer = new DispatcherTimer();
+            _mDraftTimer.Interval = new TimeSpan(0, 0, 10);
+            _mDraftTimer.Tick += DraftTimer_Tick;
 
             // Switch to the correct header
             VisualStateManager.GoToState(this, "ShowUrl", false);
@@ -64,12 +51,12 @@ namespace Baconit.Panels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            m_host = host;
+            _mHost = host;
 
             // Set the text is we were passed it
-            if (arguments.ContainsKey(PanelManager.NAV_ARGS_SUBMIT_POST_SUBREDDIT))
+            if (arguments.ContainsKey(PanelManager.NavArgsSubmitPostSubreddit))
             {
-                ui_subredditSuggestBox.Text = (string)arguments[PanelManager.NAV_ARGS_SUBMIT_POST_SUBREDDIT];
+                ui_subredditSuggestBox.Text = (string)arguments[PanelManager.NavArgsSubmitPostSubreddit];
             }
 
             // Resigner for back presses
@@ -78,7 +65,7 @@ namespace Baconit.Panels
 
         public async void OnNavigatingFrom()
         {
-            m_isVisible = false;
+            _mIsVisible = false;
 
             // Stop the timer
             DisableAutoSave();
@@ -89,10 +76,10 @@ namespace Baconit.Panels
 
         public async void OnNavigatingTo()
         {
-            m_isVisible = true;
+            _mIsVisible = true;
 
             // Start the draft timer
-            m_draftTimer.Start();
+            _mDraftTimer.Start();
 
             // If we have a draft and we don't have data in the UI ask the user if they
             // want to restore.
@@ -100,7 +87,7 @@ namespace Baconit.Panels
 
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            double statusBarHeight = await m_host.SetStatusBar(null, 0);
+            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
         }
@@ -133,7 +120,7 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void IsSelfPostCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            bool isChecked = ui_isSelfPostCheckBox.IsChecked.HasValue ? ui_isSelfPostCheckBox.IsChecked.Value : false;
+            var isChecked = ui_isSelfPostCheckBox.IsChecked.HasValue ? ui_isSelfPostCheckBox.IsChecked.Value : false;
 
             // Switch to the correct header
             VisualStateManager.GoToState(this, isChecked ? "ShowSelfText" : "ShowUrl", true);
@@ -176,7 +163,7 @@ namespace Baconit.Panels
             // Get the panel height, if the panel hasn't been shown yet
             // the height will be 0, so we will just need to make up a number.
             // The current height without text is about 162, so 170 is good.
-            double panelHeight = ui_formattedPreviewHolder.ActualHeight;
+            var panelHeight = ui_formattedPreviewHolder.ActualHeight;
             if(panelHeight == 0)
             {
                 panelHeight = 170;
@@ -226,7 +213,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, HelperControls.OnHelperTappedArgs e)
+        private void RedditMarkdownVisualHelper_OnHelperTapped(object sender, HelperTappedArgs e)
         {
             // Do the edit.
             RedditMarkdownVisualHelper.DoEdit(ui_postUrlTextBox, e.Type);
@@ -237,7 +224,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void FormattedTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.OnMarkdownLinkTappedArgs e)
+        private void FormattedTextBlock_OnMarkdownLinkTapped(object sender, UniversalMarkdown.MarkdownLinkTappedArgs e)
         {
             // Show it.
             App.BaconMan.ShowGlobalContent(e.Link);
@@ -260,17 +247,17 @@ namespace Baconit.Panels
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 // First get the list if we don't have it
-                if(m_currentSubreddits == null)
+                if(_mCurrentSubreddits == null)
                 {
-                    m_currentSubreddits = App.BaconMan.SubredditMan.SubredditList;
+                    _mCurrentSubreddits = App.BaconMan.SubredditMan.SubredditList;
                 }
 
                 // Do a simple starts with search for things that match the user's query.
-                List<string> filteredSubreddits = new List<string>();
-                string userStringLower = ui_subredditSuggestBox.Text.ToLower();
-                foreach (Subreddit sub in m_currentSubreddits)
+                var filteredSubreddits = new List<string>();
+                var userStringLower = ui_subredditSuggestBox.Text.ToLower();
+                foreach (var sub in _mCurrentSubreddits)
                 {
-                    if(!sub.IsArtifical && sub.DisplayName.ToLower().StartsWith(userStringLower))
+                    if(!sub.IsArtificial && sub.DisplayName.ToLower().StartsWith(userStringLower))
                     {
                         filteredSubreddits.Add(sub.DisplayName);
                     }
@@ -307,12 +294,12 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private async void Submit_Click(object sender, RoutedEventArgs e)
         {
-            bool isSelfText = ui_isSelfPostCheckBox.IsChecked.HasValue ? ui_isSelfPostCheckBox.IsChecked.Value : false;
+            var isSelfText = ui_isSelfPostCheckBox.IsChecked.HasValue ? ui_isSelfPostCheckBox.IsChecked.Value : false;
 
             // Grab local copies of the vars
-            string titleText = ui_postTitleTextBox.Text;
-            string urlOrMarkdownText = ui_postUrlTextBox.Text.Trim();
-            string subreddit = ui_subredditSuggestBox.Text;
+            var titleText = ui_postTitleTextBox.Text;
+            var urlOrMarkdownText = ui_postUrlTextBox.Text.Trim();
+            var subreddit = ui_subredditSuggestBox.Text;
 
             // Remove focus from the boxes, yes, this is the only and best way to do this. :(
             ui_postTitleTextBox.IsEnabled = false;
@@ -323,12 +310,12 @@ namespace Baconit.Panels
             ui_subredditSuggestBox.IsEnabled = true;
 
             // Do some basic validation.
-            if (String.IsNullOrWhiteSpace(titleText))
+            if (string.IsNullOrWhiteSpace(titleText))
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", "You can't submit a post with out a title.");
                 return;
             }
-            if (String.IsNullOrWhiteSpace(urlOrMarkdownText) && !isSelfText)
+            if (string.IsNullOrWhiteSpace(urlOrMarkdownText) && !isSelfText)
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", $"You can't submit a post with no link.");
                 return;
@@ -338,7 +325,7 @@ namespace Baconit.Panels
                 App.BaconMan.MessageMan.ShowMessageSimple("Hmmmmm", "That URL doesn't look quite right, take a second look.");
                 return;
             }
-            if (String.IsNullOrWhiteSpace(subreddit))
+            if (string.IsNullOrWhiteSpace(subreddit))
             {
                 App.BaconMan.MessageMan.ShowMessageSimple("Where's It Going?", $"You need to pick a subreddit to submit to.");
                 return;
@@ -348,12 +335,12 @@ namespace Baconit.Panels
             ui_loadingOverlay.Show(true, "Submitting Post...");
 
             // Make the request
-            SubmitNewPostResponse response = await MiscellaneousHelper.SubmitNewPost(App.BaconMan, titleText, urlOrMarkdownText, subreddit, isSelfText, ui_sendRepliesToInbox.IsChecked.Value);
+            var response = await MiscellaneousHelper.SubmitNewPost(App.BaconMan, titleText, urlOrMarkdownText, subreddit, isSelfText, ui_sendRepliesToInbox.IsChecked.Value);
 
             // Hide the overlay
             ui_loadingOverlay.Hide();
 
-            if(response.Success && !String.IsNullOrWhiteSpace(response.NewPostLink))
+            if(response.Success && !string.IsNullOrWhiteSpace(response.NewPostLink))
             {
                 // Navigate to the new post.
                 App.BaconMan.ShowGlobalContent(response.NewPostLink);
@@ -370,42 +357,42 @@ namespace Baconit.Panels
             else
             {
                 // Something went wrong, show an error.
-                string title = "We Can't Post That";
+                var title = "We Can't Post That";
                 string message;
 
                 switch(response.RedditError)
                 {
-                    case SubmitNewPostErrors.ALREADY_SUB:
+                    case SubmitNewPostErrors.AlreadySub:
                         message = "That link has already been submitted";
                         break;
-                    case SubmitNewPostErrors.BAD_CAPTCHA:
+                    case SubmitNewPostErrors.BadCaptcha:
                         message = "You need to provide a CAPTCHA to post. Baconit currently doesn't support CAPTCHA so you will have to post this from your desktop. After a few post try from Baconit again. Sorry about that.";
                         break;
-                    case SubmitNewPostErrors.DOMAIN_BANNED:
+                    case SubmitNewPostErrors.DomainBanned:
                         message = "The domain of this link has been banned for spam.";
                         break;
-                    case SubmitNewPostErrors.IN_TIMEOUT:
-                    case SubmitNewPostErrors.RATELIMIT:
+                    case SubmitNewPostErrors.InTimeout:
+                    case SubmitNewPostErrors.Ratelimit:
                         message = "You have posted too much recently, please wait a while before posting again.";
                         break;
-                    case SubmitNewPostErrors.NO_LINKS:
+                    case SubmitNewPostErrors.NoLinks:
                         message = "This subreddit only allows self text, you can't post links to it.";
                         break;
-                    case SubmitNewPostErrors.NO_SELFS:
+                    case SubmitNewPostErrors.NoSelfs:
                         message = "This subreddit only allows links, you can't post self text to it.";
                         break;
-                    case SubmitNewPostErrors.SUBREDDIT_NOEXIST:
+                    case SubmitNewPostErrors.SubredditNoexist:
                         message = "The subreddit your trying to post to doesn't exist.";
                         break;
-                    case SubmitNewPostErrors.SUBREDDIT_NOTALLOWED:
+                    case SubmitNewPostErrors.SubredditNotallowed:
                         message = "Your not allowed to post to the subreddit you selected.";
                         break;
-                    case SubmitNewPostErrors.BAD_URL:
+                    case SubmitNewPostErrors.BadUrl:
                         message = "Your URL is invalid, please make sure it is correct.";
                         break;
                     default:
-                    case SubmitNewPostErrors.INVALID_OPTION:
-                    case SubmitNewPostErrors.SUBREDDIT_REQUIRED:
+                    case SubmitNewPostErrors.InvalidOption:
+                    case SubmitNewPostErrors.SubredditRequired:
                         title = "Something Went Wrong";
                         message = "We can't post for you right now, check your Internet connection.";
                         break;
@@ -423,7 +410,7 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BaconMan_OnBackButton(object sender, BaconBackend.OnBackButtonArgs e)
+        private void BaconMan_OnBackButton(object sender, BaconBackend.BackButtonArgs e)
         {
             if(e.IsHandled)
             {
@@ -431,7 +418,7 @@ namespace Baconit.Panels
             }
 
             // Don't do anything while we are in the background.
-            if(!m_isVisible)
+            if(!_mIsVisible)
             {
                 return;
             }
@@ -453,7 +440,7 @@ namespace Baconit.Panels
         {
             // Make a message to show the user
             bool? saveChanges = null;
-            MessageDialog message = new MessageDialog("It looks like you have a post in progress, what would you like to do with it? If you save a draft you can come back an pick up at anytime.", "Leaving So Fast?");
+            var message = new MessageDialog("It looks like you have a post in progress, what would you like to do with it? If you save a draft you can come back an pick up at anytime.", "Leaving So Fast?");
             message.Commands.Add(new UICommand(
                 "Save a Draft",
                 (IUICommand command) => { saveChanges = true; }));
@@ -471,7 +458,8 @@ namespace Baconit.Panels
             {
                 return;
             }
-            else if(saveChanges.Value)
+
+            if(saveChanges.Value)
             {
                 // They want to save and exit
                 await SaveDraft();
@@ -484,7 +472,7 @@ namespace Baconit.Panels
             }
 
             // Now go back
-            m_host.GoBack();
+            _mHost.GoBack();
         }
 
         /// <summary>
@@ -493,7 +481,7 @@ namespace Baconit.Panels
         /// <returns></returns>
         private bool HasInfoToDraft()
         {
-            return !String.IsNullOrWhiteSpace(ui_postTitleTextBox.Text) || !String.IsNullOrWhiteSpace(ui_postUrlTextBox.Text);
+            return !string.IsNullOrWhiteSpace(ui_postTitleTextBox.Text) || !string.IsNullOrWhiteSpace(ui_postUrlTextBox.Text);
         }
 
         /// <summary>
@@ -519,16 +507,16 @@ namespace Baconit.Panels
             }
 
             // Make the data
-            PostSubmissionDraftData data = new PostSubmissionDraftData()
+            var data = new PostSubmissionDraftData
             {
                 Title = ui_postTitleTextBox.Text,
                 UrlOrText = ui_postUrlTextBox.Text,
-                isSelfText = ui_isSelfPostCheckBox.IsChecked.Value,
+                IsSelfText = ui_isSelfPostCheckBox.IsChecked.Value,
                 Subreddit = ui_subredditSuggestBox.Text
             };
 
             // Save the data
-            bool success = await App.BaconMan.DraftMan.SavePostSubmissionDraft(data);
+            var success = await App.BaconMan.DraftMan.SavePostSubmissionDraft(data);
 
             // Print the last save time
             if(success)
@@ -549,11 +537,11 @@ namespace Baconit.Panels
             }
 
             // See if we have something to restore
-            if(await App.BaconMan.DraftMan.HasPostSubmitDraft())
+            if(await DraftManager.HasPostSubmitDraft())
             {
                 // Make a message to show the user
-                bool restoreDraft = true;
-                MessageDialog message = new MessageDialog("It looks like you have draft of a submission, would you like to restore it?", "Draft Restore");
+                var restoreDraft = true;
+                var message = new MessageDialog("It looks like you have draft of a submission, would you like to restore it?", "Draft Restore");
                 message.Commands.Add(new UICommand(
                     "Restore Draft",
                     (IUICommand command) => { restoreDraft = true; }));
@@ -569,14 +557,14 @@ namespace Baconit.Panels
                 if(restoreDraft)
                 {
                     // Get the data
-                    PostSubmissionDraftData data = await App.BaconMan.DraftMan.GetPostSubmissionDraft();
+                    var data = await App.BaconMan.DraftMan.GetPostSubmissionDraft();
 
                     if(data != null)
                     {
                         // Restore it
                         ui_postTitleTextBox.Text = data.Title;
                         ui_postUrlTextBox.Text = data.UrlOrText;
-                        ui_isSelfPostCheckBox.IsChecked = data.isSelfText;
+                        ui_isSelfPostCheckBox.IsChecked = data.IsSelfText;
                         ui_subredditSuggestBox.Text = data.Subreddit;
 
                         // If we are self text open the box
@@ -600,7 +588,7 @@ namespace Baconit.Panels
         private void ClearDraft()
         {
             // Delete the data.
-            App.BaconMan.DraftMan.DiscardPostSubmissionDraft();
+            DraftManager.DiscardPostSubmissionDraft();
 
             // Clear the text
             ui_lastDraftSaveTime.Text = "";
@@ -619,7 +607,7 @@ namespace Baconit.Panels
             ClearDraft();
 
             // Go Back
-            m_host.GoBack();
+            _mHost.GoBack();
         }
 
         /// <summary>
@@ -627,7 +615,7 @@ namespace Baconit.Panels
         /// </summary>
         private void DisableAutoSave()
         {
-            m_draftTimer.Stop();
+            _mDraftTimer.Stop();
         }
 
         #endregion

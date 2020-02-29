@@ -1,14 +1,10 @@
-﻿using BaconBackend.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using System.Runtime.InteropServices.WindowsRuntime;
 using BaconBackend.Helpers;
 using Windows.Storage;
@@ -20,7 +16,7 @@ namespace BaconBackend.Managers
         /// <summary>
         /// The max number of image request allowed in parallel
         /// </summary>
-        private const int MAX_RUNNING_IMAGE_REQUESTS = 5;
+        private const int MaxRunningImageRequests = 5;
 
         /// <summary>
         /// Holds the context of each image.
@@ -47,10 +43,10 @@ namespace BaconBackend.Managers
             /// </summary>
             public event EventHandler<ImageManagerResponseEventArgs> OnRequestComplete
             {
-                add { m_onRequestComplete.Add(value); }
-                remove { m_onRequestComplete.Remove(value); }
+                add => MOnRequestComplete.Add(value);
+                remove => MOnRequestComplete.Remove(value);
             }
-            internal SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>> m_onRequestComplete = new SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>>();
+            internal SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>> MOnRequestComplete = new SmartWeakEvent<EventHandler<ImageManagerResponseEventArgs>>();
         }
 
         public class ImageManagerResponseEventArgs : EventArgs
@@ -63,7 +59,7 @@ namespace BaconBackend.Managers
             /// <summary>
             /// Indicates if the request was successful
             /// </summary>
-            public bool Success = false;
+            public bool Success;
 
             /// <summary>
             /// The image stream returned.
@@ -77,19 +73,19 @@ namespace BaconBackend.Managers
         private class ImageManagerRequestInternal
         {
             public ImageManagerRequestInternal(ImageManagerRequest context) { Context = context; }
-            public ImageManagerRequest Context;
-            public bool isServicing = false;
+            public readonly ImageManagerRequest Context;
+            public bool IsServicing;
         }
 
         //
         // Private Vars
         //
-        BaconManager m_baconMan;
-        List<ImageManagerRequestInternal> m_requestList = new List<ImageManagerRequestInternal>();
+        private readonly BaconManager _baconMan;
+        private readonly List<ImageManagerRequestInternal> _requestList = new List<ImageManagerRequestInternal>();
 
         public ImageManager(BaconManager baconMan)
         {
-            m_baconMan = baconMan;
+            _baconMan = baconMan;
         }
 
         /// <summary>
@@ -99,28 +95,26 @@ namespace BaconBackend.Managers
         public void QueueImageRequest(ImageManagerRequest orgionalRequest)
         {
             // Validate
-            if(String.IsNullOrWhiteSpace(orgionalRequest.Url))
+            if(string.IsNullOrWhiteSpace(orgionalRequest.Url))
             {
                 throw new Exception("You must supply both a ULR and callback");
             }
 
             ImageManagerRequestInternal serviceRequest = null;
             // Lock the list
-            lock(m_requestList)
+            lock(_requestList)
             {
                 // Add the current request to the back of the list.
-                m_requestList.Add(new ImageManagerRequestInternal(orgionalRequest));
+                _requestList.Add(new ImageManagerRequestInternal(orgionalRequest));
 
                 // Check if we should make the request now or not. If we don't
                 // when a request finishes it will pick up the new request.
-                for (int i = 0; i < MAX_RUNNING_IMAGE_REQUESTS; i++)
+                for (var i = 0; i < MaxRunningImageRequests; i++)
                 {
-                    if (m_requestList.Count > i && !m_requestList[i].isServicing)
-                    {
-                        serviceRequest = m_requestList[i];
-                        serviceRequest.isServicing = true;
-                        break;
-                    }
+                    if (_requestList.Count <= i || _requestList[i].IsServicing) continue;
+                    serviceRequest = _requestList[i];
+                    serviceRequest.IsServicing = true;
+                    break;
                 }
             }
 
@@ -142,31 +136,31 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         private async Task ServiceRequest(ImageManagerRequestInternal startingRequestedContext)
         {
-            ImageManagerRequestInternal currentRequest = startingRequestedContext;
+            var currentRequest = startingRequestedContext;
             while (currentRequest != null)
             {
                 // Service the request in a try catch
                 try
                 {
-                    string fileName = MakeFileNameFromUrl(currentRequest.Context.Url);
+                    var fileName = MakeFileNameFromUrl(currentRequest.Context.Url);
 
                     // First check if we have the file
-                    if (m_baconMan.CacheMan.HasFileCached(fileName))
+                    if (CacheManager.HasFileCached(fileName))
                     {
                         // If we have it cached pull it from there
                     }
                     else
                     {
                         // If not we have to get the image
-                        IBuffer imgBuffer = await m_baconMan.NetworkMan.MakeRawGetRequest(currentRequest.Context.Url);
+                        var imgBuffer = await NetworkManager.MakeRawGetRequest(currentRequest.Context.Url);
 
                         // Turn the stream into an image
-                        InMemoryRandomAccessStream imageStream = new InMemoryRandomAccessStream();
-                        Stream readStream = imgBuffer.AsStream();
-                        Stream writeStream = imageStream.AsStreamForWrite();
+                        var imageStream = new InMemoryRandomAccessStream();
+                        var readStream = imgBuffer.AsStream();
+                        var writeStream = imageStream.AsStreamForWrite();
 
                         // Copy the buffer
-                        // #todo perf - THERE HAS TO BE A BTTER WAY TO DO THIS.
+                        // #todo perf - THERE HAS TO BE A BETTER WAY TO DO THIS.
                         readStream.CopyTo(writeStream);
                         writeStream.Flush();
 
@@ -174,7 +168,7 @@ namespace BaconBackend.Managers
                         imageStream.Seek(0);
 
                         // Create a response
-                        ImageManagerResponseEventArgs response = new ImageManagerResponseEventArgs()
+                        var response = new ImageManagerResponseEventArgs
                         {
                             ImageStream = imageStream,
                             Request = currentRequest.Context,
@@ -182,43 +176,41 @@ namespace BaconBackend.Managers
                         };
 
                         // Fire the callback
-                        currentRequest.Context.m_onRequestComplete.Raise(currentRequest.Context, response);
+                        currentRequest.Context.MOnRequestComplete.Raise(currentRequest.Context, response);
                     }
                 }
                 catch (Exception e)
                 {
                     // Report the error
-                    m_baconMan.MessageMan.DebugDia("Error getting image", e);                 
+                    _baconMan.MessageMan.DebugDia("Error getting image", e);                 
 
                     // Create a response
-                    ImageManagerResponseEventArgs response = new ImageManagerResponseEventArgs()
+                    var response = new ImageManagerResponseEventArgs
                     {
                         Request = currentRequest.Context,
                         Success = false
                     };
 
                     // Send the response
-                    currentRequest.Context.m_onRequestComplete.Raise(currentRequest.Context, response);
+                    currentRequest.Context.MOnRequestComplete.Raise(currentRequest.Context, response);
                 }
 
                 // Once we are done, check to see if there is another we should service.
-                lock (m_requestList)
+                lock (_requestList)
                 {
                     // Remove the current request.
-                    m_requestList.Remove(currentRequest);
+                    _requestList.Remove(currentRequest);
 
                     // Kill the current request
                     currentRequest = null;
 
                     // Check if there is another request we should service now.
-                    for (int i = 0; i < MAX_RUNNING_IMAGE_REQUESTS; i++)
+                    for (var i = 0; i < MaxRunningImageRequests; i++)
                     {
-                        if (m_requestList.Count > i && !m_requestList[i].isServicing)
-                        {
-                            currentRequest = m_requestList[i];
-                            currentRequest.isServicing = true;
-                            break;
-                        }
+                        if (_requestList.Count <= i || _requestList[i].IsServicing) continue;
+                        currentRequest = _requestList[i];
+                        currentRequest.IsServicing = true;
+                        break;
                     }
                 }
             }
@@ -229,10 +221,10 @@ namespace BaconBackend.Managers
         /// </summary>
         /// <param name="url">The url</param>
         /// <returns>File system safe string</returns>
-        private string MakeFileNameFromUrl(string url)
+        private static string MakeFileNameFromUrl(string url)
         {
-            StringBuilder strBuilder = new StringBuilder();
-            foreach(char c in url)
+            var strBuilder = new StringBuilder();
+            foreach(var c in url)
             {
                 if ((c >= '0' && c <= '9')
                     || (c >= 'A' && c <= 'z'
@@ -251,12 +243,8 @@ namespace BaconBackend.Managers
         /// <returns></returns>
         public static bool IsThumbnailImage(string str)
         {
-            if(!String.IsNullOrWhiteSpace(str)
-                && str.Contains("http"))
-            {
-                return true;
-            }
-            return false;
+            return !string.IsNullOrWhiteSpace(str)
+                   && str.Contains("http");
         }
 
         /// <summary>
@@ -267,70 +255,68 @@ namespace BaconBackend.Managers
         {
             try
             {
-                string imageUrl = GetImageUrl(postUrl);
+                var imageUrl = GetImageUrl(postUrl);
 
                 // Fire off a request for the image.
-                Random rand = new Random((int)DateTime.Now.Ticks);
-                ImageManagerRequest request = new ImageManagerRequest()
+                var rand = new Random((int)DateTime.Now.Ticks);
+                var request = new ImageManagerRequest
                 {
-                    ImageId = rand.NextDouble().ToString(),
+                    ImageId = rand.NextDouble().ToString(CultureInfo.InvariantCulture),
                     Url = imageUrl
                 };
 
                 // Set the callback
-                request.OnRequestComplete += async (object sender, ImageManager.ImageManagerResponseEventArgs response) =>
+                request.OnRequestComplete += async (sender, response) =>
                 {
                     try
                     {
                         // If success
-                        if(response.Success)
+                        if (!response.Success) return;
+                        // Get the photos library
+                        var myPictures = await StorageLibrary.GetLibraryAsync(KnownLibraryId.Pictures);
+
+                        // Get the save folder
+                        var saveFolder = myPictures.SaveFolder;
+
+                        // Try to find the saved pictures folder
+                        StorageFolder savedPicturesFolder = null;
+                        var folders = await saveFolder.GetFoldersAsync();
+                        foreach(var folder in folders)
                         {
-                            // Get the photos library
-                            StorageLibrary myPictures = await Windows.Storage.StorageLibrary.GetLibraryAsync(Windows.Storage.KnownLibraryId.Pictures);
-
-                            // Get the save folder
-                            StorageFolder saveFolder = myPictures.SaveFolder;
-
-                            // Try to find the saved pictures folder
-                            StorageFolder savedPicturesFolder = null;
-                            IReadOnlyList<StorageFolder> folders = await saveFolder.GetFoldersAsync();
-                            foreach(StorageFolder folder in folders)
+                            if (folder.DisplayName.Equals("Saved Pictures"))
                             {
-                                if (folder.DisplayName.Equals("Saved Pictures"))
-                                {
-                                    savedPicturesFolder = folder;
-                                }
+                                savedPicturesFolder = folder;
                             }
-
-                            // If not found create it.
-                            if(savedPicturesFolder == null)
-                            {
-                                savedPicturesFolder = await saveFolder.CreateFolderAsync("Saved Pictures");
-                            }
-
-                            // Write the file.
-                            StorageFile file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
-                            using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
-                            {
-                                await RandomAccessStream.CopyAndCloseAsync(response.ImageStream.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
-                            }
-
-                            // Tell the user
-                            m_baconMan.MessageMan.ShowMessageSimple("Image Saved", "You can find the image in the 'Saved Pictures' folder in your photos library.");
                         }
+
+                        // If not found create it.
+                        if(savedPicturesFolder == null)
+                        {
+                            savedPicturesFolder = await saveFolder.CreateFolderAsync("Saved Pictures");
+                        }
+
+                        // Write the file.
+                        var file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
+                        using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                        {
+                            await RandomAccessStream.CopyAndCloseAsync(response.ImageStream.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
+                        }
+
+                        // Tell the user
+                        _baconMan.MessageMan.ShowMessageSimple("Image Saved", "You can find the image in the 'Saved Pictures' folder in your photos library.");
                     }
                     catch(Exception ex)
                     {
-                        m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSaveImageLocallyCallback", ex);
-                        m_baconMan.MessageMan.DebugDia("failed to save image locally in callback", ex);
+                        TelemetryManager.ReportUnexpectedEvent(this, "FailedToSaveImageLocallyCallback", ex);
+                        _baconMan.MessageMan.DebugDia("failed to save image locally in callback", ex);
                     }
                 };
                 QueueImageRequest(request);
             }
             catch (Exception e)
             {
-                m_baconMan.TelemetryMan.ReportUnexpectedEvent(this, "FailedToSaveImageLocally", e);
-                m_baconMan.MessageMan.DebugDia("failed to save image locally", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedToSaveImageLocally", e);
+                _baconMan.MessageMan.DebugDia("failed to save image locally", e);
             }
         }
 
@@ -343,7 +329,7 @@ namespace BaconBackend.Managers
         {
             // Send the url to lower, but we need both because some websites
             // have case sensitive urls.
-            string postUrlLower = postUrl.ToLower();
+            var postUrlLower = postUrl.ToLower();
 
             // Do a simple check.
             if (postUrlLower.EndsWith(".png") || postUrlLower.EndsWith(".jpg") || postUrlLower.EndsWith(".bmp"))
@@ -353,11 +339,9 @@ namespace BaconBackend.Managers
 
             // We also should look for something like quinn.com/image/hotStuff.jpg?argument=arg
             // But we must be careful not to just match anything with png or jpg in it.
-            int postOfLastSlash = postUrlLower.LastIndexOf('/');
+            var postOfLastSlash = postUrlLower.LastIndexOf('/');
             if(postOfLastSlash != -1)
             {
-                string endingStr = postUrlLower.Substring(postOfLastSlash);
-
                 // Check if we can find anything in the ending string.
                 if (postUrlLower.Contains(".png?") || postUrlLower.Contains(".jpg?") || postUrlLower.Contains(".bmp?"))
                 {
@@ -376,10 +360,10 @@ namespace BaconBackend.Managers
 
                 // See if we can get an image out of a url with no extension.
                 // #todo, is there  a better way?
-                int last = postUrl.LastIndexOf('/');
+                var last = postUrl.LastIndexOf('/');
                 if (last == -1)
                 {
-                    return String.Empty;
+                    return string.Empty;
                 }
 
                 return "http://i.imgur.com/" + postUrl.Substring(last + 1) + ".jpg";
@@ -389,45 +373,47 @@ namespace BaconBackend.Managers
             if (postUrlLower.Contains("qkme.me/"))
             {
                 // Try to parse the URL to get the image
-                int last = postUrl.LastIndexOf('/');
-                int lastQues = postUrl.LastIndexOf('?');
+                var last = postUrl.LastIndexOf('/');
+                var lastQues = postUrl.LastIndexOf('?');
                 if (last != -1 && lastQues != -1)
                 {
                     return "http://i.qkme.me/" + postUrl.Substring(last + 1, lastQues - last - 1) + ".jpg";
                 }
-                else if (last != -1)
+
+                if (last != -1)
                 {
                     return "http://i.qkme.me/" + postUrl.Substring(last + 1) + ".jpg";
                 }
 
                 // We failed
-                return String.Empty;
+                return string.Empty;
             }
 
             // Try to get a quick meme image
-            if (postUrlLower.Contains("quickmeme.com/"))
+            if (!postUrlLower.Contains("quickmeme.com/")) return string.Empty;
             {
                 // Try to parse the URL to get the image
-                int last = postUrl.LastIndexOf('/');
+                var last = postUrl.LastIndexOf('/');
                 if (last <= 0)
                 {
                     // We failed
-                    return String.Empty;
+                    return string.Empty;
                 }
 
-                int secondSlash = postUrl.LastIndexOf('/', last - 1);
+                var secondSlash = postUrl.LastIndexOf('/', last - 1);
                 if (last != -1 && secondSlash != -1)
                 {
                     return "http://i.qkme.me/" + postUrl.Substring(secondSlash + 1, last - secondSlash - 1) + ".jpg";
                 }
-                else if (last != -1)
+
+                if (last != -1)
                 {
                     return "http://i.qkme.me/" + postUrl.Substring(last + 1) + ".jpg";
                 }
             }
 
             // We can't get an image, return null
-            return String.Empty;
+            return string.Empty;
         }
     }
 }

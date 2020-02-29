@@ -1,45 +1,29 @@
 ﻿using Baconit.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Baconit.ContentPanels.Panels
 {
-    public sealed partial class CommentSpoilerContentPanel : UserControl, IContentPanel
+    public sealed partial class CommentSpoilerContentPanel : IContentPanel
     {
         /// <summary>
         /// Holds a reference to our base.
         /// </summary>
-        IContentPanelBaseInternal m_base;
+        private readonly IContentPanelBaseInternal _baseContentPanel;
 
-        public CommentSpoilerContentPanel(IContentPanelBaseInternal panelBase)
+        public CommentSpoilerContentPanel(IContentPanelBaseInternal panelBaseContentPanel)
         {
-            this.InitializeComponent();
-            m_base = panelBase;
+            InitializeComponent();
+            _baseContentPanel = panelBaseContentPanel;
         }
 
         /// <summary>
         /// Called by the host when it queries if we can handle a post.
         /// </summary>
-        /// <param name="post"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
-        static public bool CanHandlePost(ContentPanelSource source)
+        public static bool CanHandlePost(ContentPanelSource source)
         {
             // Check if we have the spoiler tag.
-            if (!String.IsNullOrWhiteSpace(source.Url) && source.Url.TrimStart().ToLower().StartsWith("/s"))
+            if (!string.IsNullOrWhiteSpace(source.Url) && source.Url.TrimStart().ToLower().StartsWith("/s"))
             {
                 return true;
             }
@@ -51,25 +35,18 @@ namespace Baconit.ContentPanels.Panels
         /// <summary>
         /// Indicates how large the panel is in memory.
         /// </summary>
-        public PanelMemorySizes PanelMemorySize
-        {
-            get
-            {
-                return PanelMemorySizes.Small;
-            }
-        }
+        public PanelMemorySizes PanelMemorySize => PanelMemorySizes.Small;
 
         /// <summary>
         /// Fired when we should load the content.
         /// </summary>
-        /// <param name="source"></param>
         public void OnPrepareContent()
         {
-            string spoilerText = m_base.Source.SelfText;
+            var spoilerText = _baseContentPanel.Source.SelfText;
 
             // Parse out the spoiler
-            int firstQuote = spoilerText.IndexOf('"');
-            int lastQuote = spoilerText.LastIndexOf('"');
+            var firstQuote = spoilerText.IndexOf('"');
+            var lastQuote = spoilerText.LastIndexOf('"');
             if (firstQuote != -1 && lastQuote != -1 && firstQuote != lastQuote)
             {
                 firstQuote++;
@@ -79,7 +56,7 @@ namespace Baconit.ContentPanels.Panels
             // Set the text
             ui_textBlock.Text = spoilerText;
 
-            m_base.FireOnLoading(false);
+            _baseContentPanel.FireOnLoading(false);
         }
 
         /// <summary>
