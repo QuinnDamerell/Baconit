@@ -120,7 +120,8 @@
     <Compile Include="Helpers\SmartWeakEvent.cs" />
     <Compile Include="Helpers\TimeToTextHelper.cs" />
     <Compile Include="Helpers\TrendingSubredditsHelper.cs" />
-    <Compile Include="Helpers\YouTubeHelper.cs" />
+    <Compile Include="Helpers\YouTube\YouTubeHelper.cs" />
+    <Compile Include="Helpers\YouTube\YouTubeVideoInfo.cs" />
     <Compile Include="Interfaces\IBackendActionListener.cs" />
     <Compile Include="Managers\AuthManager.cs" />
     <Compile Include="Managers\BackgroundManager.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Properties\BaconBackend.rd.xml" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

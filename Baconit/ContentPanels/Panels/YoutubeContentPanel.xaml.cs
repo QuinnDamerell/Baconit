@@ -1,13 +1,16 @@
 ﻿using Baconit.Interfaces;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.System.Display;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using BaconBackend.Helpers;
+using BaconBackend.Helpers.YouTube;
 using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
@@ -67,12 +70,13 @@ namespace Baconit.ContentPanels.Panels
             Task.Run(async () =>
             {
                 // Get the video Uri
-                var youTubeUri = await GetYouTubeVideoUrl(_contentPanelBase.Source);
+                var youTubeVideoInfo = await GetYouTubeVideoInfoAsync(_contentPanelBase.Source);
+                var youtubeUrl = GetYouTubeUrl(youTubeVideoInfo);
 
                 // Back to the UI thread with pri
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
-                    if (youTubeUri == null)
+                    if (string.IsNullOrWhiteSpace(youtubeUrl))
                     {
                         // If we failed fallback to the browser.
                         _contentPanelBase.FireOnFallbackToBrowser();
@@ -83,7 +87,7 @@ namespace Baconit.ContentPanels.Panels
                     // Setup the video
                     _videoPlayer = new MediaElement {AutoPlay = false, AreTransportControlsEnabled = true};
                     _videoPlayer.CurrentStateChanged += VideoPlayerOnCurrentStateChanged;
-                    _videoPlayer.Source = youTubeUri.Uri;
+                    _videoPlayer.Source = new Uri(youtubeUrl);
                     ui_contentRoot.Children.Add(_videoPlayer);
                 });
             });
@@ -178,7 +182,7 @@ namespace Baconit.ContentPanels.Panels
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        private static async Task<YouTubeUri> GetYouTubeVideoUrl(ContentPanelSource source)
+        private static async Task<YouTubeVideoInfo> GetYouTubeVideoInfoAsync(ContentPanelSource source)
         {
             if (string.IsNullOrWhiteSpace(source.Url))
             {
@@ -192,9 +196,7 @@ namespace Baconit.ContentPanels.Panels
 
                 if (!string.IsNullOrWhiteSpace(youtubeVideoId))
                 {
-                    // We found it!
-                    // #todo make this quality an option dependent on device!
-                    return await YouTubeHelper.GetVideoUriAsync(youtubeVideoId, YouTubeQuality.QualityMedium);
+                    return await YouTubeHelper.GetVideoInfoAsync(youtubeVideoId);
                 }
             }
             catch (Exception ex)
@@ -279,6 +281,23 @@ namespace Baconit.ContentPanels.Panels
             return null;
         }
 
+        private static string GetYouTubeUrl(YouTubeVideoInfo youTubeVideoInfo)
+        {
+            var url = string.Empty;
+            var streamingData = youTubeVideoInfo?.StreamingData;
+            if(streamingData == null) return url;
+
+            // sometimes the url comes back with no value, there is a cipher value that has a secondary URL, however there is some kind
+            // of auth needed to access the url, I suspect that it's in the players JS library and it makes an auth token
+            // for the player behind the scenes.
+            var format = streamingData.Formats.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Url));
+            if (format != null)
+            {
+                url = format.Url;
+            }
+
+            return url;
+        }
         #endregion
     }
 }
