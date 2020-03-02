@@ -473,6 +473,7 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public Visibility GildedVisibility => Gilded ? Visibility.Visible : Visibility.Collapsed;
 
+        [JsonIgnore] public Visibility HasIcons => Gilded || IsStickied ? Visibility.Visible : Visibility.Collapsed;
 
         #region FlipView Vars
 

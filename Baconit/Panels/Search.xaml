@@ -15,7 +15,7 @@
         <DataTemplate x:Key="SearchResultListItem" x:DataType="dataObjects:SearchResult">
             <Grid>
                 <!--  The Search Header  -->
-                <Border Background="#0A0A0A"
+                <Border Background="Black"
                         Padding="12,12,6,12"
                         Visibility="{x:Bind ShowHeader}">
                     <TextBlock Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"

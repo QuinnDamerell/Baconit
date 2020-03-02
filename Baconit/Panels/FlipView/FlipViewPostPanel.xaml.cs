@@ -1573,5 +1573,23 @@ namespace Baconit.Panels.FlipView
             // Forward the call along.
             _onContentLoadRequest.Raise(this, e);
         }
+
+        private void OnUserTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var context = GetContext();
+            if (context == null) return;
+
+            var args = new Dictionary<string, object> {{PanelManager.NavArgsUserName, context.Post.Author}};
+            context.Host.Navigate(typeof(UserProfile), context.Post.Author, args);
+        }
+
+        private void OnSubredditTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var context = GetContext();
+            if (context == null) return;
+
+            var args = new Dictionary<string, object> {{PanelManager.NavArgsSubredditName, context.Post.Subreddit}};
+            context.Host.Navigate(typeof(SubredditPanel), context.Post.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
+        }
     }
 }

@@ -71,7 +71,7 @@ namespace BaconBackend.Managers
             // Request access to run in the background.
             var status = await BackgroundExecutionManager.RequestAccessAsync();
             LastSystemBackgroundUpdateStatus = (int)status;
-            if(status != BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity && status != BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
+            if(status != BackgroundAccessStatus.AllowedSubjectToSystemPolicy && status != BackgroundAccessStatus.AllowedSubjectToSystemPolicy)
             {
                 _baconMan.MessageMan.DebugDia("System denied us access from running in the background");
             }

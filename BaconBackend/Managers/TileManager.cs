@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
+using NotificationsExtensions;
 
 namespace BaconBackend.Managers
 {
@@ -129,20 +130,20 @@ namespace BaconBackend.Managers
                     {
                         Children =
                         {
-                            new TileText
+                            new AdaptiveText
                             {
                                 Text = _baconMan.UserMan.CurrentUser.Name,
-                                Style = TileTextStyle.Caption
+                                HintStyle = AdaptiveTextStyle.Caption
                             },
-                            new TileText
+                            new AdaptiveText
                             {
                                 Text = $"{_baconMan.UserMan.CurrentUser.CommentKarma:N0}" + " comment karma",
-                                Style = TileTextStyle.CaptionSubtle
+                                HintStyle = AdaptiveTextStyle.CaptionSubtle
                             },
-                            new TileText
+                            new AdaptiveText
                             {
                                 Text = $"{_baconMan.UserMan.CurrentUser.LinkKarma:N0}" + " link karma",
-                                Style = TileTextStyle.CaptionSubtle
+                                HintStyle = AdaptiveTextStyle.CaptionSubtle
                             },                           
                         }
                     },
@@ -151,10 +152,10 @@ namespace BaconBackend.Managers
                 // If we have messages replace the user name with the message string.
                 if (unreadCount != 0)
                 {
-                    var unreadCountText = new TileText
+                    var unreadCountText = new AdaptiveText
                     {
                         Text = unreadCount + " Unread Inbox Message" + (unreadCount == 1 ? "" : "s"),
-                        Style = TileTextStyle.Body
+                        HintStyle = AdaptiveTextStyle.Body
                     };
                     ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = unreadCountText;
                 }
@@ -169,10 +170,10 @@ namespace BaconBackend.Managers
                 if(daysUntil == 0)
                 {
                     // Make the text
-                    var cakeDayText = new TileText
+                    var cakeDayText = new AdaptiveText
                     {
                         Text = "Today is your cake day!",
-                        Style = TileTextStyle.Body
+                        HintStyle = AdaptiveTextStyle.Body
                     };
                     ((TileBindingContentAdaptive)content.Visual.TileWide.Content).Children[0] = cakeDayText;
                 }

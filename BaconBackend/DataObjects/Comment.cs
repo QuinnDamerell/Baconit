@@ -86,14 +86,14 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "score")]
         public int Score
         {
-            get => _mScore;
+            get => _score;
             set
             {
-                _mScore = value;
+                _score = value;
                 NotifyPropertyChanged(nameof(ScoreText));
             }
         }
-        [JsonIgnore] private int _mScore;
+        [JsonIgnore] private int _score;
 
         /// <summary>
         /// true: the logged-in user upvoted the comment.
@@ -131,55 +131,54 @@ namespace BaconBackend.DataObjects
         //
         // UI Vars
         //
-        private static readonly Color ColorGray = Color.FromArgb(255, 153, 153, 153);
         private static readonly SolidColorBrush TransparentBrush = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-        private static SolidColorBrush s_veryLightAccentBrush;
-        private static SolidColorBrush s_opAuthorBackground;
-        private static SolidColorBrush s_accentBrush;
-        private static SolidColorBrush s_brightAccentColor;
+        private static SolidColorBrush _veryLightAccentBrush;
+        private static SolidColorBrush _opAuthorBackground;
+        private static SolidColorBrush _accentBrush;
+        private static SolidColorBrush _brightAccentColor;
 
         private static SolidColorBrush GetAccentBrush()
         {
             // Not thread safe, but that's ok
-            return s_accentBrush ?? (s_accentBrush =
+            return _accentBrush ?? (_accentBrush =
                 (SolidColorBrush) Application.Current.Resources["SystemControlBackgroundAccentBrush"]);
         }
 
         private static SolidColorBrush GetBrightAccentColor()
         {            
             // Not thread safe, but that's ok
-            if (s_brightAccentColor != null) return s_brightAccentColor;
+            if (_brightAccentColor != null) return _brightAccentColor;
             var accent = GetAccentBrush().Color;
             const int colorAdd = 70;
             accent.B = (byte)Math.Min(255, accent.B + colorAdd);
             accent.R = (byte)Math.Min(255, accent.R + colorAdd);
             accent.G = (byte)Math.Min(255, accent.G + colorAdd);
-            s_brightAccentColor = new SolidColorBrush(accent);
-            return s_brightAccentColor;
+            _brightAccentColor = new SolidColorBrush(accent);
+            return _brightAccentColor;
         }
 
         private static SolidColorBrush GetLightenedAccentBrush()
         {
             // Not thread safe, but that's ok
-            if (s_veryLightAccentBrush != null) return s_veryLightAccentBrush;
+            if (_veryLightAccentBrush != null) return _veryLightAccentBrush;
             var accentBrush = GetAccentBrush();
             var accentColor = accentBrush.Color;
             accentColor.A = 30;
-            s_veryLightAccentBrush = new SolidColorBrush(accentColor);
-            return s_veryLightAccentBrush;
+            _veryLightAccentBrush = new SolidColorBrush(accentColor);
+            return _veryLightAccentBrush;
         }
 
         private static SolidColorBrush GetOpAuthorBackground()
         {
             // Not thread safe, but that's ok
-            if (s_opAuthorBackground != null) return s_opAuthorBackground;
+            if (_opAuthorBackground != null) return _opAuthorBackground;
             var accent = GetAccentBrush().Color;
             const int colorAdd = 25;
             accent.B = (byte)Math.Max(0, accent.B - colorAdd);
             accent.R = (byte)Math.Max(0, accent.R - colorAdd);
             accent.G = (byte)Math.Max(0, accent.G - colorAdd);
-            s_opAuthorBackground = new SolidColorBrush(accent);
-            return s_opAuthorBackground;
+            _opAuthorBackground = new SolidColorBrush(accent);
+            return _opAuthorBackground;
         }
 
         /// <summary>
@@ -189,15 +188,15 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public bool IsHighlighted
         {
-            get => _mIsHighlighted;
+            get => _isHighlighted;
             set
             {
-                _mIsHighlighted = value;
+                _isHighlighted = value;
                 NotifyPropertyChanged(nameof(CommentBackgroundColor));
             }
         }
 
-        private bool _mIsHighlighted;
+        private bool _isHighlighted;
 
         /// <summary>
         /// Text representing the elapsed time since this comment was made.
@@ -257,8 +256,8 @@ namespace BaconBackend.DataObjects
         }
 
         /// <summary>
-        /// The color this comment's downvote button should be in the UI.
-        /// It is accented if and only if the user has downvoted this comment.
+        /// The color this comment's down-vote button should be in the UI.
+        /// It is accented if and only if the user has down-voted this comment.
         /// </summary>
         [JsonIgnore]
         public SolidColorBrush DownVoteColor
@@ -270,7 +269,7 @@ namespace BaconBackend.DataObjects
                     return GetAccentBrush();
                 }
 
-                return new SolidColorBrush(ColorGray);
+                return new SolidColorBrush(Color.FromArgb(255, 223, 35, 41));
             }
         }
 
@@ -288,7 +287,7 @@ namespace BaconBackend.DataObjects
                     return GetAccentBrush();
                 }
 
-                return new SolidColorBrush(ColorGray);
+                return new SolidColorBrush(Color.FromArgb(255, 57, 163, 26));
             }
         }
 
@@ -357,13 +356,13 @@ namespace BaconBackend.DataObjects
         /// The visibility of this comment uncollapsed.
         /// </summary>
         [JsonIgnore]
-        public Visibility ShowFullCommentVis => _mShowFullComment ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility ShowFullCommentVis => _showFullComment ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// The visibility of this comment as collapsed.
         /// </summary>
         [JsonIgnore]
-        public Visibility ShowCollapsedCommentVis => _mShowFullComment ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ShowCollapsedCommentVis => _showFullComment ? Visibility.Collapsed : Visibility.Visible;
 
         /// <summary>
         /// The visibility of the comment author's flair.
@@ -383,15 +382,15 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public bool ShowFullComment
         {
-            get => _mShowFullComment;
+            get => _showFullComment;
             set
             {
-                _mShowFullComment = value;
+                _showFullComment = value;
                 NotifyPropertyChanged(nameof(ShowFullCommentVis));
                 NotifyPropertyChanged(nameof(ShowCollapsedCommentVis));
             }
         }
-        [JsonIgnore] private bool _mShowFullComment = true;
+        [JsonIgnore] private bool _showFullComment = true;
 
         /// <summary>
         /// Whether the comment is written by the author of the post it is on.
@@ -399,14 +398,14 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public bool IsCommentFromOp
         {
-            get => _mIsCommentFromOp;
+            get => _isCommentFromOp;
             set
             {
-                _mIsCommentFromOp = value;
+                _isCommentFromOp = value;
                 NotifyPropertyChanged(nameof(AuthorTextBackground));
             }
         }
-        [JsonIgnore] private bool _mIsCommentFromOp;
+        [JsonIgnore] private bool _isCommentFromOp;
 
         /// <summary>
         /// Text representing the additional comments that are children to this one.
@@ -415,14 +414,14 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public string CollapsedCommentCount
         {
-            get => _mCollapsedCommentCount;
+            get => _collapsedCommentCount;
             set
             {
-                _mCollapsedCommentCount = value;
+                _collapsedCommentCount = value;
                 NotifyPropertyChanged(nameof(CollapsedCommentCount));
             }
         }
-        [JsonIgnore] private string _mCollapsedCommentCount = "";
+        [JsonIgnore] private string _collapsedCommentCount = "";
 
         /// <summary>
         /// Text to represent this comment's current score.
@@ -436,16 +435,16 @@ namespace BaconBackend.DataObjects
         [JsonIgnore]
         public bool IsCommentOwnedByUser
         {
-            get => _mIsCommentOwnedByUser;
+            get => _isCommentOwnedByUser;
             set
             {
-                _mIsCommentOwnedByUser = value;
+                _isCommentOwnedByUser = value;
                 NotifyPropertyChanged(nameof(CommentButton3Text));
                 NotifyPropertyChanged(nameof(CommentButton4Text));
             }
 
         }
-        [JsonIgnore] private bool _mIsCommentOwnedByUser;
+        [JsonIgnore] private bool _isCommentOwnedByUser;
 
         /// <summary>
         /// Text that is shown on the UI for comment button 3
@@ -457,7 +456,7 @@ namespace BaconBackend.DataObjects
         /// Text that is shown on the UI for comment button 4
         /// </summary>
         [JsonIgnore]
-        public string CommentButton4Text => IsCommentOwnedByUser ? "delete" : "user";
+        public string CommentButton4Text => IsCommentOwnedByUser ? "delete  |" : "|";
 
         /// <summary>
         /// Indicates if the comment has been deleted or not.

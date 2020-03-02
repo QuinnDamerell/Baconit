@@ -19,19 +19,19 @@ using Baconit.Panels.FlipView;
 
 namespace Baconit.Panels
 {
-    public sealed partial class SubredditPanel : UserControl, IPanel
+    public sealed partial class SubredditPanel : IPanel
     {
         //
         // Private vars
         //
-        private bool _mIsVisible;
-        private Subreddit _mSubreddit;
-        private PostCollector _mCollector;
-        private IPanelHost _mHost;
-        private readonly ObservableCollection<Post> _mPostsLists = new ObservableCollection<Post>();
-        private SortTypes _mCurrentSortType;
-        private SortTimeTypes _mCurrentSortTimeType;
-        private LoadingOverlay _mLoadingOverlay;
+        private bool _isVisible;
+        private Subreddit _subreddit;
+        private PostCollector _collector;
+        private IPanelHost _host;
+        private readonly ObservableCollection<Post> _postsLists = new ObservableCollection<Post>();
+        private SortTypes _currentSortType;
+        private SortTimeTypes _currentSortTimeType;
+        private LoadingOverlay _loadingOverlay;
 
         public SubredditPanel()
         {
@@ -40,7 +40,7 @@ namespace Baconit.Panels
             Loaded += SubredditPanel_Loaded;
 
             // Set the post list
-            ui_postList.ItemsSource = _mPostsLists;
+            ui_postList.ItemsSource = _postsLists;
         }
 
         private void SubredditPanel_Loaded(object sender, RoutedEventArgs e)
@@ -54,7 +54,7 @@ namespace Baconit.Panels
         public async void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
             // Capture the host
-            _mHost = host;
+            _host = host;
 
             Subreddit subreddit = null;
             if (arguments.ContainsKey(PanelManager.NavArgsSubredditName))
@@ -92,7 +92,7 @@ namespace Baconit.Panels
                     // Try to go back now.
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                     {
-                        _mHost.GoBack();
+                        _host.GoBack();
                     });
                 });
 
@@ -115,27 +115,27 @@ namespace Baconit.Panels
 
         public void OnNavigatingFrom()
         {
-            _mIsVisible = false;
+            _isVisible = false;
         }
 
         public void OnNavigatingTo()
         {
-            _mIsVisible = true;
+            _isVisible = true;
 
             // Make sure we are up to date
-            _mCollector?.Update();
+            _collector?.Update();
 
             // Set the task bar color
-            _mHost.SetStatusBar(Color.FromArgb(255,10,10,10));
+            _host.SetStatusBar(Color.FromArgb(255,10,10,10));
         }
 
         public void OnCleanupPanel()
         {
-            if(_mCollector != null)
+            if(_collector != null)
             {
                 // Remove the listeners so we won't get updates.
-                _mCollector.OnCollectorStateChange -= Collector_OnCollectorStateChange;
-                _mCollector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
+                _collector.OnCollectorStateChange -= Collector_OnCollectorStateChange;
+                _collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
             }
         }
 
@@ -153,7 +153,7 @@ namespace Baconit.Panels
         public void SetupPage(Subreddit subreddit, SortTypes sortType, SortTimeTypes sortTimeType)
         {
             // Capture the subreddit
-            _mSubreddit = subreddit;
+            _subreddit = subreddit;
 
             // Get the sort type
             SetCurrentSort(sortType);
@@ -162,18 +162,18 @@ namespace Baconit.Panels
             SetCurrentTimeSort(sortTimeType);
 
             // Get the collector and register for updates.
-            _mCollector = PostCollector.GetCollector(_mSubreddit, App.BaconMan, _mCurrentSortType, _mCurrentSortTimeType);
-            _mCollector.OnCollectorStateChange += Collector_OnCollectorStateChange;
-            _mCollector.OnCollectionUpdated += Collector_OnCollectionUpdated;
+            _collector = PostCollector.GetCollector(_subreddit, App.BaconMan, _currentSortType, _currentSortTimeType);
+            _collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
+            _collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
             // Kick off an update of the subreddits if needed.
-            _mCollector.Update(false, 30);
+            _collector.Update(false, 30);
 
             // Set any posts that exist right now
-            SetPosts(0, _mCollector.GetCurrentPosts(), true);
+            SetPosts(0, _collector.GetCurrentPosts(), true);
 
             // Setup the UI with the name.
-            ui_subredditName.Text = $"/r/{_mSubreddit.DisplayName}";
+            ui_subredditName.Text = $"/r/{_subreddit.DisplayName}";
         }
 
         #endregion
@@ -183,7 +183,8 @@ namespace Baconit.Panels
         /// <summary>
         /// Fired when the collector state is updated.
         /// </summary>
-        /// <param name="state">The new state</param>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void Collector_OnCollectorStateChange(object sender, CollectorStateChangeArgs args)
         {
             // Set loading if needed.
@@ -193,7 +194,7 @@ namespace Baconit.Panels
             ui_postList.SuppressEndOfListEvent = args.State == CollectorState.Updating || args.State == CollectorState.Extending;
 
             // If we had an error show a message.
-            if (_mIsVisible && args.State == CollectorState.Error)
+            if (_isVisible && args.State == CollectorState.Error)
             {
                 if(args.ErrorState == CollectorErrorState.ServiceDown)
                 {
@@ -206,21 +207,20 @@ namespace Baconit.Panels
             }
 
             // Show no posts if nothing was loaded
-            if (args.State == CollectorState.Idle || args.State == CollectorState.FullyExtended)
+            if (args.State != CollectorState.Idle && args.State != CollectorState.FullyExtended) return;
+
+            var postLoaded = _collector.GetCurrentPosts().Count != 0;
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                var postLoaded = _mCollector.GetCurrentPosts().Count != 0;
-                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    ui_noPostText.Visibility = postLoaded ? Visibility.Collapsed : Visibility.Visible;
-                });
-            }
+                ui_noPostText.Visibility = postLoaded ? Visibility.Collapsed : Visibility.Visible;
+            });
         }
 
         /// <summary>
         /// Fired when the collection list has been updated.
         /// </summary>
-        /// <param name="startingPos"></param>
-        /// <param name="changedPosts"></param>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void Collector_OnCollectionUpdated(object sender, CollectionUpdatedArgs<Post> args)
         {
             // Update the post or posts
@@ -246,7 +246,8 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="startingPos"></param>
         /// <param name="newPosts"></param>
-        private async void SetPosts(int startingPos, List<Post> newPosts, bool isFreshUpdate)
+        /// <param name="isFreshUpdate"></param>
+        private async void SetPosts(int startingPos, IReadOnlyCollection<Post> newPosts, bool isFreshUpdate)
         {
             // Dispatch to the UI thread
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -255,19 +256,19 @@ namespace Baconit.Panels
                 var insertIndex = startingPos;
 
                 // Lock the list
-                lock(_mPostsLists)
+                lock(_postsLists)
                 {
                     // Set up the objects for the UI
                     foreach (var post in newPosts)
                     {
                         // Check if we are adding or inserting.
-                        var isReplace = insertIndex < _mPostsLists.Count;
+                        var isReplace = insertIndex < _postsLists.Count;
 
                         // If this is a replace and the urls are the same just set the image
-                        if (isReplace && post.Url == _mPostsLists[insertIndex].Url)
+                        if (isReplace && post.Url == _postsLists[insertIndex].Url)
                         {
-                            post.Image = _mPostsLists[insertIndex].Image;
-                            post.ImageVisibility = _mPostsLists[insertIndex].ImageVisibility;
+                            post.Image = _postsLists[insertIndex].Image;
+                            post.ImageVisibility = _postsLists[insertIndex].ImageVisibility;
                         }
                         else
                         {
@@ -286,37 +287,37 @@ namespace Baconit.Panels
 
                         if (isReplace)
                         {
-                            if(_mPostsLists[insertIndex].Id.Equals(post.Id))
+                            if(_postsLists[insertIndex].Id.Equals(post.Id))
                             {
                                 // If the post is the same, just update the UI vars.
                                 // If we replace the entire post the UI freaks out.
-                                _mPostsLists[insertIndex].Score = post.Score;
-                                _mPostsLists[insertIndex].TitleTextColor = post.TitleTextColor;
-                                _mPostsLists[insertIndex].Title = post.Title;
-                                _mPostsLists[insertIndex].Likes = post.Likes;
-                                _mPostsLists[insertIndex].SubTextLine1 = post.SubTextLine1;
-                                _mPostsLists[insertIndex].NewCommentText = post.NewCommentText;
-                                _mPostsLists[insertIndex].SubTextLine2PartOne = post.SubTextLine2PartOne;
-                                _mPostsLists[insertIndex].SubTextLine2PartTwo = post.SubTextLine2PartTwo;
+                                _postsLists[insertIndex].Score = post.Score;
+                                _postsLists[insertIndex].TitleTextColor = post.TitleTextColor;
+                                _postsLists[insertIndex].Title = post.Title;
+                                _postsLists[insertIndex].Likes = post.Likes;
+                                _postsLists[insertIndex].SubTextLine1 = post.SubTextLine1;
+                                _postsLists[insertIndex].NewCommentText = post.NewCommentText;
+                                _postsLists[insertIndex].SubTextLine2PartOne = post.SubTextLine2PartOne;
+                                _postsLists[insertIndex].SubTextLine2PartTwo = post.SubTextLine2PartTwo;
                             }
                             else
                             {
                                 // Replace the current item
-                                _mPostsLists[insertIndex] = post;
+                                _postsLists[insertIndex] = post;
                             }
                         }
                         else
                         {
                             // Add it to the end
-                            _mPostsLists.Add(post);
+                            _postsLists.Add(post);
                         }
                         insertIndex++;
                     }
 
                     // If it was a fresh update, remove anything past the last story sent.
-                    while(isFreshUpdate && _mPostsLists.Count > newPosts.Count)
+                    while(isFreshUpdate && _postsLists.Count > newPosts.Count)
                     {
-                        _mPostsLists.RemoveAt(_mPostsLists.Count - 1);
+                        _postsLists.RemoveAt(_postsLists.Count - 1);
                     }
                 }
             });
@@ -339,9 +340,9 @@ namespace Baconit.Panels
                 Post owningPost = null;
 
                 // Lock the list
-                lock(_mPostsLists)
+                lock(_postsLists)
                 {
-                    foreach (var post in _mPostsLists)
+                    foreach (var post in _postsLists)
                     {
                         if (post.Id.Equals(response.Request.ImageId))
                         {
@@ -389,7 +390,7 @@ namespace Baconit.Panels
         private void PostTitle_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Get the post
-            var tappedPost = (sender as FrameworkElement).DataContext as Post;
+            var tappedPost = (sender as FrameworkElement)?.DataContext as Post;
 
             // Go Go Go!
             NavigateToFlipView(tappedPost);
@@ -402,8 +403,8 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void UpVote_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var post = (sender as FrameworkElement).DataContext as Post;
-            _mCollector.ChangePostVote(post, PostVoteAction.UpVote);
+            var post = (sender as FrameworkElement)?.DataContext as Post;
+            _collector.ChangePostVote(post, PostVoteAction.UpVote);
         }
 
         /// <summary>
@@ -413,25 +414,26 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void DownVote_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var post = (sender as FrameworkElement).DataContext as Post;
-            _mCollector.ChangePostVote(post, PostVoteAction.DownVote);
+            var post = (sender as FrameworkElement)?.DataContext as Post;
+            _collector.ChangePostVote(post, PostVoteAction.DownVote);
         }
 
         private void NavigateToFlipView(Post post)
         {
             // Send the subreddit and post to flipview
-            var args = new Dictionary<string, object>();
-            args.Add(PanelManager.NavArgsSubredditName, _mSubreddit.DisplayName);
-            args.Add(PanelManager.NavArgsSubredditSort, _mCurrentSortType);
-            args.Add(PanelManager.NavArgsSubredditSortTime, _mCurrentSortTimeType);
-            args.Add(PanelManager.NavArgsPostId, post.Id);
-            _mHost.Navigate(typeof(FlipViewPanel), _mSubreddit.DisplayName + _mCurrentSortType + _mCurrentSortTimeType, args);
+            var args = new Dictionary<string, object>
+            {
+                {PanelManager.NavArgsSubredditName, _subreddit.DisplayName},
+                {PanelManager.NavArgsSubredditSort, _currentSortType},
+                {PanelManager.NavArgsSubredditSortTime, _currentSortTimeType},
+                {PanelManager.NavArgsPostId, post.Id}
+            };
+            _host.Navigate(typeof(FlipViewPanel), _subreddit.DisplayName + _currentSortType + _currentSortTimeType, args);
         }
 
         private void Post_Holding(object sender, HoldingRoutedEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            if (element != null)
+            if (sender is FrameworkElement element)
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
@@ -440,8 +442,7 @@ namespace Baconit.Panels
 
         private void Post_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            if (element != null)
+            if (sender is FrameworkElement element)
             {
                 FlyoutBase.ShowAttachedFlyout(element);
             }
@@ -450,30 +451,30 @@ namespace Baconit.Panels
 
         private void SavePost_Click(object sender, RoutedEventArgs e)
         {
-            var post = (sender as FrameworkElement).DataContext as Post;
-            _mCollector.SaveOrHidePost(post, !post.IsSaved, null);
+            var post = (sender as FrameworkElement)?.DataContext as Post;
+            _collector.SaveOrHidePost(post, post != null && !post.IsSaved, null);
             TelemetryManager.ReportEvent(this, "PostSavedTapped");
         }
 
         private void HidePost_Click(object sender, RoutedEventArgs e)
         {
-            var post = (sender as FrameworkElement).DataContext as Post;
-            _mCollector.SaveOrHidePost(post, null, !post.IsHidden);
+            var post = (sender as FrameworkElement)?.DataContext as Post;
+            _collector.SaveOrHidePost(post, null, post != null && !post.IsHidden);
             TelemetryManager.ReportEvent(this, "HidePostTapped");
         }
 
         private void CopyLink_Click(object sender, RoutedEventArgs e)
         {
             // Get the post and copy the url into the clipboard
-            var post = (sender as FrameworkElement).DataContext as Post;
+            var post = (sender as FrameworkElement)?.DataContext as Post;
             var data = new DataPackage();
-            if (string.IsNullOrWhiteSpace(post.Url))
+            if (post != null && string.IsNullOrWhiteSpace(post.Url))
             {
                 data.SetText("http://www.reddit.com" + post.Permalink);
             }
             else
             {
-                data.SetText(post.Url);
+                if (post != null) data.SetText(post.Url);
             }
             Clipboard.SetContent(data);
             TelemetryManager.ReportEvent(this, "CopyLinkTapped");
@@ -482,9 +483,9 @@ namespace Baconit.Panels
         private void CopyPermalink_Click(object sender, RoutedEventArgs e)
         {
             // Get the post and copy the url into the clipboard
-            var post = (sender as FrameworkElement).DataContext as Post;
+            var post = (sender as FrameworkElement)?.DataContext as Post;
             var data = new DataPackage();
-            data.SetText("http://www.reddit.com" + post.Permalink);
+            if (post != null) data.SetText("http://www.reddit.com" + post.Permalink);
             Clipboard.SetContent(data);
             TelemetryManager.ReportEvent(this, "CopyLinkTapped");
         }
@@ -492,16 +493,19 @@ namespace Baconit.Panels
         private void ViewUser_Click(object sender, RoutedEventArgs e)
         {
             // Get the post
-            var post = (sender as FrameworkElement).DataContext as Post;
-            var args = new Dictionary<string, object>();
-            args.Add(PanelManager.NavArgsUserName, post.Author);
-            _mHost.Navigate(typeof(UserProfile), post.Author, args);
+            var post = (sender as FrameworkElement)?.DataContext as Post;
+            if (post != null)
+            {
+                var args = new Dictionary<string, object> {{PanelManager.NavArgsUserName, post.Author}};
+                _host.Navigate(typeof(UserProfile), post.Author, args);
+            }
+
             TelemetryManager.ReportEvent(this, "SubredditNavToUser");
         }
 
         private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            _mHost.ToggleMenu(true);
+            _host.ToggleMenu(true);
         }
 
         #endregion
@@ -512,7 +516,7 @@ namespace Baconit.Panels
         {
             // Suppress more event until we get more items.
             ui_postList.SuppressEndOfListEvent = true;
-            _mCollector.ExtendCollection();
+            _collector.ExtendCollection();
         }
 
         #endregion
@@ -541,21 +545,23 @@ namespace Baconit.Panels
         private void SortMenuItem_Click(object sender, RoutedEventArgs e)
         {
             // Get the new sort
-            var item = sender as MenuFlyoutItem;
+            if (!(sender is MenuFlyoutItem item)) return;
             var newType = GetSortFromString(item.Text);
 
             // Don't do anything if we already are.
-            if(newType == _mCurrentSortType)
+            if(newType == _currentSortType)
             {
                 return;
             }
 
             // Navigate to the new page
-            var args = new Dictionary<string, object>();
-            args.Add(PanelManager.NavArgsSubredditName, _mSubreddit.DisplayName);
-            args.Add(PanelManager.NavArgsSubredditSort, newType);
-            args.Add(PanelManager.NavArgsSubredditSortTime, _mCurrentSortTimeType);
-            _mHost.Navigate(typeof(SubredditPanel), _mSubreddit.GetNavigationUniqueId(newType, _mCurrentSortTimeType), args);
+            var args = new Dictionary<string, object>
+            {
+                {PanelManager.NavArgsSubredditName, _subreddit.DisplayName},
+                {PanelManager.NavArgsSubredditSort, newType},
+                {PanelManager.NavArgsSubredditSortTime, _currentSortTimeType}
+            };
+            _host.Navigate(typeof(SubredditPanel), _subreddit.GetNavigationUniqueId(newType, _currentSortTimeType), args);
         }
 
         private SortTypes GetSortFromString(string sort)
@@ -572,14 +578,13 @@ namespace Baconit.Panels
                 case "top":
                         return SortTypes.Top;
                 default:
-                case "hot":
-                        return SortTypes.Hot;
+                    return SortTypes.Hot;
             }
         }
 
         private void SetCurrentSort(SortTypes type)
         {
-            _mCurrentSortType = type;
+            _currentSortType = type;
             switch (type)
             {
                 case SortTypes.Rising:
@@ -597,10 +602,12 @@ namespace Baconit.Panels
                 case SortTypes.Top:
                     ui_sortText.Text = "Top";
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
 
             // Show or hide the time sort if it is top or not.
-            ui_timeSortHolder.Visibility = _mCurrentSortType == SortTypes.Top ? Visibility.Visible : Visibility.Collapsed;
+            ui_timeSortHolder.Visibility = _currentSortType == SortTypes.Top ? Visibility.Visible : Visibility.Collapsed;
         }
 
         #endregion
@@ -629,21 +636,23 @@ namespace Baconit.Panels
         private void SortTimeMenuItem_Click(object sender, RoutedEventArgs e)
         {
             // Get the new sort time
-            var item = sender as MenuFlyoutItem;
+            if (!(sender is MenuFlyoutItem item)) return;
             var newType = GetTimeSortFromString(item.Text);
 
             // Don't do anything if we already are.
-            if (newType == _mCurrentSortTimeType)
+            if (newType == _currentSortTimeType)
             {
                 return;
             }
 
             // Navigate to the new page
-            var args = new Dictionary<string, object>();
-            args.Add(PanelManager.NavArgsSubredditName, _mSubreddit.DisplayName);
-            args.Add(PanelManager.NavArgsSubredditSort, _mCurrentSortType);
-            args.Add(PanelManager.NavArgsSubredditSortTime, newType);
-            _mHost.Navigate(typeof(SubredditPanel), _mSubreddit.GetNavigationUniqueId(_mCurrentSortType, newType), args);
+            var args = new Dictionary<string, object>
+            {
+                {PanelManager.NavArgsSubredditName, _subreddit.DisplayName},
+                {PanelManager.NavArgsSubredditSort, _currentSortType},
+                {PanelManager.NavArgsSubredditSortTime, newType}
+            };
+            _host.Navigate(typeof(SubredditPanel), _subreddit.GetNavigationUniqueId(_currentSortType, newType), args);
         }
 
         private SortTimeTypes GetTimeSortFromString(string timeSort)
@@ -660,7 +669,6 @@ namespace Baconit.Panels
                 case "past month":
                     return SortTimeTypes.Month;
                 default:
-                case "past week":
                     return SortTimeTypes.Week;
                 case "past year":
                     return SortTimeTypes.Year;
@@ -669,7 +677,7 @@ namespace Baconit.Panels
 
         private void SetCurrentTimeSort(SortTimeTypes type)
         {
-            _mCurrentSortTimeType = type;
+            _currentSortTimeType = type;
             switch (type)
             {
                 case SortTimeTypes.AllTime:
@@ -690,6 +698,8 @@ namespace Baconit.Panels
                 case SortTimeTypes.Year:
                     ui_sortTimeText.Text = "Past Year";
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
@@ -702,16 +712,16 @@ namespace Baconit.Panels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AppBarSideBarOpen_OnIconTapped(object sender, EventArgs e)
+        private void AppBarSideBarOpen_OnIconTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
             // Make sure we have a sub
-            if(_mSubreddit == null)
+            if(_subreddit == null)
             {
                 return;
             }
 
             // Set the subreddit
-            ui_subredditSideBar.SetSubreddit(_mHost, _mSubreddit);
+            ui_subredditSideBar.SetSubreddit(_host, _subreddit);
 
             // Show the side bar
             ui_splitView.IsPaneOpen = true;
@@ -755,17 +765,17 @@ namespace Baconit.Panels
                 // Make sure we don't have one already, if so get out of here.
                 lock (this)
                 {
-                    if (_mLoadingOverlay != null)
+                    if (_loadingOverlay != null)
                     {
                         return;
                     }
-                    _mLoadingOverlay = new LoadingOverlay();
+                    _loadingOverlay = new LoadingOverlay();
                 }
 
-                _mLoadingOverlay.OnHideComplete += LoadingOverlay_OnHideComplete;
-                Grid.SetRowSpan(_mLoadingOverlay, 5);
-                ui_contentRoot.Children.Add(_mLoadingOverlay);
-                _mLoadingOverlay.Show(showLoading);
+                _loadingOverlay.OnHideComplete += LoadingOverlay_OnHideComplete;
+                Grid.SetRowSpan(_loadingOverlay, 5);
+                ui_contentRoot.Children.Add(_loadingOverlay);
+                _loadingOverlay.Show(showLoading);
             });
         }
 
@@ -774,14 +784,14 @@ namespace Baconit.Panels
         /// </summary>
         private void HideFullScreenLoading()
         {
-            LoadingOverlay overlay = null;
+            LoadingOverlay overlay;
             lock (this)
             {
-                if (_mLoadingOverlay == null)
+                if (_loadingOverlay == null)
                 {
                     return;
                 }
-                overlay = _mLoadingOverlay;
+                overlay = _loadingOverlay;
             }
 
             overlay?.Hide();
@@ -794,10 +804,10 @@ namespace Baconit.Panels
         /// <param name="e"></param>
         private void LoadingOverlay_OnHideComplete(object sender, EventArgs e)
         {
-            ui_contentRoot.Children.Remove(_mLoadingOverlay);
+            ui_contentRoot.Children.Remove(_loadingOverlay);
             lock (this)
             {
-                _mLoadingOverlay = null;
+                _loadingOverlay = null;
             }
         }
 
@@ -808,20 +818,20 @@ namespace Baconit.Panels
             // Dispatch to the UI thread
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                ui_progressBar.IsIndeterminate = show ? true : false;
+                ui_progressBar.IsIndeterminate = show;
                 ui_progressBar.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             });
         }
 
-        private void MenuButton_Click(object sender, EventArgs e)
+        private void MenuButton_Click(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
-            _mHost.ToggleMenu(true);
+            _host.ToggleMenu(true);
         }
 
-        private void Refresh_Click(object sender, EventArgs e)
+        private void Refresh_Click(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
             // Kick off an update.
-            _mCollector.Update(true);
+            _collector.Update(true);
         }
 
         /// <summary>

@@ -103,7 +103,8 @@
                     </Grid.RowDefinitions>
 
                     <!--  Story title  -->
-                    <TextBlock Margin="8,8,8,2"
+                    <TextBlock Grid.Row="0"
+                               Margin="8,8,8,2"
                                HorizontalAlignment="Center"
                                Text="{x:Bind Context.Post.Title}"
                                TextAlignment="Center"
@@ -113,8 +114,80 @@
                         </TextBlock.RenderTransform>
                     </TextBlock>
 
+                    <Grid Grid.Row="1"
+                          Margin="8,2,8,2"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Viewbox Grid.Column="0"
+                                 Stretch="Uniform"
+                                 Margin="0 0 0 3"
+                                 Height="14"
+                                 Visibility="{x:Bind Context.Post.GildedVisibility}">
+                            <PathIcon Data="M10,12.5h-8.5l6.8,5-2.6,8.1,6.8-5,6.8,5-2.6-8.1,6.8-5h-8.5l-2.6-8.1z" Foreground="#DDB152" />
+                        </Viewbox>
+
+                        <Viewbox Grid.Column="1"
+                                 Stretch="Uniform" 
+                                 Margin="3 0 0 0"
+                                 Height="10"
+                                 Visibility="{x:Bind Context.Post.StickyVisibility}">
+                            <PathIcon Data="M312 320h136V56c0-13.3-10.7-24-24-24H24C10.7 32 0 42.7 0 56v400c0 13.3 10.7 24 24 24h264V344c0-13.2 10.8-24 24-24zm129 55l-98 98c-4.5 4.5-10.6 7-17 7h-6V352h128v6.1c0 6.3-2.5 12.4-7 16.9z" Foreground="#DDB152" />
+                        </Viewbox>
+
+                        <FontIcon Grid.Column="2"
+                                  Margin="0 2 0 0"
+                                  Glyph="&#xE915;" 
+                                  FontSize="12" 
+                                  Foreground="#939393" 
+                                  Visibility="{x:Bind Context.Post.HasIcons}" />
+
+                        <TextBlock Grid.Column="3" 
+                                   Margin="0 -2 0 0"
+                                   TextTrimming="CharacterEllipsis" 
+                                   TextAlignment="Left"
+                                   TextWrapping="NoWrap"
+                                   Tapped="OnUserTapped" Text="{x:Bind Context.Post.Author}" 
+                                   Foreground="{ThemeResource SystemControlHighlightAccentBrush}" />
+
+                        <FontIcon Grid.Column="4"
+                                  Margin="0 2 0 0"
+                                  Glyph="&#xE915;" 
+                                  FontSize="12" 
+                                  Foreground="#939393" />
+
+                        <TextBlock Grid.Column="5"
+                                   TextTrimming="WordEllipsis" 
+                                   FontSize="14"
+                                   Text="{x:Bind Context.Post.Score, Mode=OneWay}" />
+
+                        <FontIcon Grid.Column="6"
+                                  Margin="0 2 0 0"
+                                  Glyph="&#xE915;" 
+                                  FontSize="12" 
+                                  Foreground="#939393" />
+
+                        <TextBlock Grid.Column="7"
+                                   Margin="0 -2 0 0"
+                                   TextTrimming="CharacterEllipsis" 
+                                   TextAlignment="Left"
+                                   TextWrapping="NoWrap"
+                                   Tapped="OnSubredditTapped" 
+                                   Text="{x:Bind Context.Post.FlipViewSecondary}" 
+                                   Foreground="{ThemeResource SystemControlHighlightAccentBrush}" />
+                    </Grid>
                     <!--  Story subtext  -->
-                    <StackPanel Grid.Row="1"
+                    <!--<StackPanel Grid.Row="1"
                                 Margin="8,2,8,2"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -123,19 +196,44 @@
                             <TranslateTransform x:Name="ui_headerSubtextTransform" />
                         </StackPanel.RenderTransform>
 
-                        <TextBlock TextTrimming="WordEllipsis">
+                        --><!--<TextBlock TextTrimming="WordEllipsis">
                             <Run Foreground="#939393" Text="{x:Bind Context.Post.Author}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.Score, Mode=OneWay}" /><Run Foreground="#939393" Text=" • " /><Run Foreground="#939393" Text="{x:Bind Context.Post.FlipViewSecondary}" />
-                        </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.StickyVisibility}">
+                        </TextBlock>--><!--
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Tapped="OnUserTapped" Text="{x:Bind Context.Post.Author}" 
+                                   Foreground="{ThemeResource SystemControlHighlightAccentBrush}" />
+
+                        <FontIcon Glyph="&#xE915;" 
+                                  FontSize="10" 
+                                  Foreground="#939393" />
+
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Text="{x:Bind Context.Post.Score, Mode=OneWay}" />
+
+                        <FontIcon Glyph="&#xE915;" 
+                                  FontSize="10" 
+                                  Foreground="#939393" />
+
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Tapped="OnSubredditTapped" 
+                                   Text="{x:Bind Context.Post.FlipViewSecondary}" 
+                                   Foreground="{ThemeResource SystemControlHighlightAccentBrush}" />
+
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Visibility="{x:Bind Context.Post.StickyVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#107c10" Text="sticky" />
                         </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.FlairVisibility}">
+
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Visibility="{x:Bind Context.Post.FlairVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" Text="{x:Bind Context.Post.LinkFlairText}" />
                         </TextBlock>
-                        <TextBlock TextTrimming="WordEllipsis" Visibility="{x:Bind Context.Post.GildedVisibility}">
+
+                        <TextBlock TextTrimming="WordEllipsis" 
+                                   Visibility="{x:Bind Context.Post.GildedVisibility}">
                             <Run Foreground="#939393" Text=" • " /><Run Foreground="#DDB152" Text="gilded" />
                         </TextBlock>
-                    </StackPanel>
+                    </StackPanel>-->
 
                     <!--  Action icons  -->
                     <Grid Grid.Row="2"
@@ -197,8 +295,6 @@
                                                     Text="Save image"
                                                     Visibility="{x:Bind Context.Post.ShowSaveImageMenu}" />
                                     <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
-                                    <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
                                     <MenuFlyoutSeparator Visibility="{x:Bind Context.Post.DeletePostVisibility}" />
                                     <MenuFlyoutItem Click="DeletePost_Click"
                                                     Text="Delete post"
@@ -497,21 +593,27 @@
                         <StackPanel Grid.Row="2"
                                     Margin="0,5,0,0"
                                     Orientation="Horizontal">
-                            <Border Margin="-4,-4,-4,-13"
+                            <Border Margin="-4,-6,-4,-18"
                                     Background="#01000000"
-                                    Padding="4,4,14,13"
+                                    Padding="5,4,14,13"
                                     Tapped="CommentUp_Tapped">
-                                <TextBlock FontSize="15"
-                                           Foreground="{x:Bind UpVoteColor, Mode=OneWay}"
-                                           Text="up" />
+                                <Viewbox Stretch="Uniform" Height="12">
+                                    <PathIcon Data="M445.771,238.813L264.438,4.146c-2.019-2.612-5.223-4.143-8.428-4.146c-3.211-0.003-6.424,1.529-8.447,4.146
+			                            L66.229,238.813c-2.49,3.219-2.927,7.573-1.135,11.219c1.792,3.656,5.5,5.969,9.573,5.969h96v245.333
+			                            c0,5.896,4.771,10.667,10.667,10.667h149.333c5.896,0,10.667-4.771,10.667-10.667V256h96c4.073,0,7.781-2.313,9.573-5.969
+			                            C448.698,246.385,448.26,242.031,445.771,238.813z" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
+                                </Viewbox>
                             </Border>
-                            <Border Margin="-4,-4,-4,-13"
+                            <Border Margin="0,-4, 0,-18"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
                                     Tapped="CommentDown_Tapped">
-                                <TextBlock FontSize="15"
-                                           Foreground="{x:Bind DownVoteColor, Mode=OneWay}"
-                                           Text="down" />
+                                <Viewbox Stretch="Uniform" Height="12">
+                                    <PathIcon Data="M446.906,261.969c-1.792-3.656-5.5-5.969-9.573-5.969h-96V10.667C341.333,4.771,336.563,0,330.667,0H181.333
+			                            c-5.896,0-10.667,4.771-10.667,10.667V256h-96c-4.073,0-7.781,2.313-9.573,5.969c-1.792,3.646-1.354,8,1.135,11.219
+			                            l181.333,234.667c2.021,2.615,5.135,4.146,8.438,4.146s6.417-1.531,8.438-4.146l181.333-234.667
+			                            C448.26,269.969,448.698,265.615,446.906,261.969z" Foreground="{x:Bind DownVoteColor, Mode=OneWay}" />
+                                </Viewbox>
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"
@@ -561,7 +663,7 @@
 
     <!--  The main content root  -->
     <Grid x:Name="ui_contentRoot"
-          Background="#121212"
+          Background="Black"
           SizeChanged="ContentRoot_SizeChanged">
         <!--  This is the list view that lives in each flip view container, this is what the post and comments live in  -->
         <helperControls:EndDetectingListView x:Name="ui_listView"

@@ -199,7 +199,7 @@
                 </StackPanel>
             </StackPanel>
 
-            <Grid Grid.Row="1" Background="#191919">
+            <Grid Grid.Row="1" Background="Black">
                 <Pivot>
                     <PivotItem Header="SUBMITTED">
                         <Grid>

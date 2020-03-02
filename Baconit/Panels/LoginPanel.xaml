@@ -46,7 +46,7 @@
                         Grid.Row="5"
                         Margin="0,8"
                         HorizontalAlignment="Stretch"
-                        Background="#60FFFFFF"
+                        Background="{ThemeResource SystemControlHighlightAccentBrush}"
                         Click="LoginButton_Click"
                         Content="Login"
                         Foreground="#FFFFFF" />
@@ -55,7 +55,7 @@
                         Grid.Row="6"
                         Margin="0,8"
                         HorizontalAlignment="Stretch"
-                        Background="#60FFFFFF"
+                        Background="{ThemeResource SystemControlHighlightAccentBrush}"
                         Click="CreateAccount_Click"
                         Content="Create Account"
                         Foreground="#FFFFFF" />

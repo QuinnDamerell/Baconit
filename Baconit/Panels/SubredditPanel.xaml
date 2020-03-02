@@ -163,7 +163,7 @@
 
     <!--  This holds all of the UI except the loading overlay  -->
     <SplitView x:Name="ui_splitView"
-               Background="#0A0A0A"
+               Background="Black"
                PanePlacement="Right"
                SizeChanged="SplitView_SizeChanged">
         <SplitView.Content>
@@ -292,29 +292,19 @@
                            Text="There are no posts here."
                            Visibility="Collapsed" />
 
-                <!--  Custom App bar  -->
-                <Grid Grid.Row="2"
-                      Background="#1F1F1F"
-                      Padding="4">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <helperControl:CircleIconButton Grid.Column="0"
-                                                        OnIconTapped="Refresh_Click"
-                                                        SymbolIcon="Refresh" />
-                        <helperControl:CircleIconButton Grid.Column="1"
-                                                        FontIconGlyph="&#xE700;"
-                                                        OnIconTapped="MenuButton_Click" />
-                        <helperControl:CircleIconButton x:Name="ui_appBarSideBarOpen"
-                                                        Grid.Column="2"
-                                                        OnIconTapped="AppBarSideBarOpen_OnIconTapped"
-                                                        SymbolIcon="DockRight" />
-                    </Grid>
-                </Grid>
+                <CommandBar Grid.Row="2"
+                            Background="#1F1F1F">
+                    <AppBarButton Icon="Refresh"
+                                  Tapped="Refresh_Click"
+                                  Label="Refresh"/>
+                    <AppBarButton x:Name="ui_appBarSubButton"
+                                  Icon="Add"
+                                  Tapped="AppBarSideBarOpen_OnIconTapped"
+                                  Label="Add"/>
+                    <AppBarButton Icon="List"
+                                  Tapped="MenuButton_Click"
+                                  Label="Menu"/>
+                </CommandBar>
             </Grid>
         </SplitView.Content>
 
