@@ -144,12 +144,26 @@
 
             <!--  User header page  -->
             <StackPanel x:Name="ui_titleHeaderContainer" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
-                <!--  Name block  -->
-                <TextBlock x:Name="ui_userName"
-                           Margin="12,12,12,0"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Text=" " />
+                
+                <StackPanel Orientation="Horizontal">
+                    <!--  Name block  -->
+                    <TextBlock x:Name="ui_userName"
+                               Margin="12,12,12,0"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Text=" " />
+                    
+                    <Border Margin="0 16 0 0">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="15">
+                                <SymbolIcon Symbol="Cancel" />
+                            </Viewbox>
+                            <TextBlock Margin="6,3"
+                                           VerticalAlignment="Center"
+                                           Text="Block User" />                            
+                            </StackPanel>
+                    </Border>
+                </StackPanel>
 
                 <!--  Stats row  -->
                 <StackPanel Orientation="Horizontal">

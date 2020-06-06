@@ -47,7 +47,41 @@
                        Text="Pages cleaned up for memory pressure: 0"
                        TextWrapping="Wrap" />
 
+            <Grid Margin="0,12,0,12" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                           VerticalAlignment="Center"
+                           Text="Access Token:"/>
+
+                <TextBox Grid.Row="0" Grid.Column="1" 
+                         x:Name="AccessToken"
+                         Margin="12"
+                         TextWrapping="Wrap" 
+                         MinWidth="300"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                           VerticalAlignment="Center"
+                           Text="Refresh Token:"/>
+
+                <TextBox Grid.Row="1" Grid.Column="1" 
+                         x:Name="RefreshToken"
+                         Margin="12"
+                         TextWrapping="Wrap" />
+
+                <Button Grid.Row="2" Grid.Column="1"
+                        Margin="12"
+                        Click="UpdateRefreshToken_Click"
+                        Content="Update Tokens" />
+            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

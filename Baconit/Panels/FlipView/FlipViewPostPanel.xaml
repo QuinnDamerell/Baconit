@@ -593,7 +593,7 @@
                         <StackPanel Grid.Row="2"
                                     Margin="0,5,0,0"
                                     Orientation="Horizontal">
-                            <Border Margin="-4,-6,-4,-18"
+                            <!--Border Margin="-4,-6,-4,-18"
                                     Background="#01000000"
                                     Padding="5,4,14,13"
                                     Tapped="CommentUp_Tapped">
@@ -603,7 +603,7 @@
 			                            c0,5.896,4.771,10.667,10.667,10.667h149.333c5.896,0,10.667-4.771,10.667-10.667V256h96c4.073,0,7.781-2.313,9.573-5.969
 			                            C448.698,246.385,448.26,242.031,445.771,238.813z" Foreground="{x:Bind UpVoteColor, Mode=OneWay}" />
                                 </Viewbox>
-                            </Border>
+                            </>
                             <Border Margin="0,-4, 0,-18"
                                     Background="#01000000"
                                     Padding="4,4,14,13"
@@ -614,6 +614,22 @@
 			                            l181.333,234.667c2.021,2.615,5.135,4.146,8.438,4.146s6.417-1.531,8.438-4.146l181.333-234.667
 			                            C448.26,269.969,448.698,265.615,446.906,261.969z" Foreground="{x:Bind DownVoteColor, Mode=OneWay}" />
                                 </Viewbox>
+                            </Border-->
+                            <Border Margin="-4,-4,-4,-13"
+                                    Background="#01000000"
+                                    Padding="4,4,14,13"
+                                    Tapped="CommentUp_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="{x:Bind UpVoteColor, Mode=OneWay}"
+                                           Text="up" />
+                            </Border>
+                            <Border Margin="-4,-4,-4,-13"
+                                    Background="#01000000"
+                                    Padding="4,4,14,13"
+                                    Tapped="CommentDown_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="{x:Bind DownVoteColor, Mode=OneWay}"
+                                           Text="down" />
                             </Border>
                             <Border Margin="-4,-4,-4,-13"
                                     Background="#01000000"

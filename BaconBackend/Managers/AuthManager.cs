@@ -11,29 +11,28 @@ namespace BaconBackend.Managers
 {
 #pragma warning disable CS0649
 
+    public class AccessTokenResult
+    {
+        [JsonProperty(PropertyName="access_token")]
+        public string AccessToken;
+
+        [JsonProperty(PropertyName = "token_type")]
+        public string TokenType;
+
+        [JsonProperty(PropertyName = "expires_in")]
+        public string ExpiresIn;
+
+        [JsonProperty(PropertyName = "refresh_token")]
+        public string RefreshToken;
+
+        [JsonProperty(PropertyName = "ExpiresAt")]
+        public DateTime ExpiresAt;
+    }
+
     public class AuthManager
     {
-        private const string BaconitAppId = "EU5cWoJCJ5HcPQ";
-        private const string BaconitRedirectUrl = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
-
-        private class AccessTokenResult
-        {
-            [JsonProperty(PropertyName="access_token")]
-            public string AccessToken;
-
-            [JsonProperty(PropertyName = "token_type")]
-            public string TokenType;
-
-            [JsonProperty(PropertyName = "expires_in")]
-            public string ExpiresIn;
-
-            [JsonProperty(PropertyName = "refresh_token")]
-            public string RefreshToken;
-
-            [JsonProperty(PropertyName = "ExpiresAt")]
-            public DateTime ExpiresAt;
-        }
-
+        private const string BaconitAppId = "JQnDP8nMXTiXiQ";
+        private const string BaconitRedirectUrl = "http://localhost:48541/oauthRedirect";
         private readonly BaconManager _mBaconMan;
         private readonly ManualResetEvent _mRefreshEvent = new ManualResetEvent(false);
         private bool _mIsTokenRefreshing;
@@ -302,12 +301,10 @@ namespace BaconBackend.Managers
 
         private static string GetNonce()
         {
-            var rand = new Random((int)DateTime.Now.Ticks);
-            var nonce = rand.Next(1000000000);
-            return nonce.ToString();
+            return Guid.NewGuid().ToString("N");
         }
 
-        private async Task<AccessTokenResult> RefreshAccessToken(string code, bool isRefresh)
+        public async Task<AccessTokenResult> RefreshAccessToken(string code, bool isRefresh)
         {
             // Try to get the new token
             var data = await GetAccessToken(code, isRefresh);

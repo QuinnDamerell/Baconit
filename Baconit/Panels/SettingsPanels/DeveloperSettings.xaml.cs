@@ -1,5 +1,7 @@
-﻿using Baconit.Interfaces;
+﻿using System;
+using Baconit.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using BaconBackend.Managers;
@@ -101,6 +103,25 @@ namespace Baconit.Panels.SettingsPanels
         private void RateAndReviewReset_Click(object sender, RoutedEventArgs e)
         {
             App.BaconMan.UiSettingsMan.MainPageNextReviewAnnoy = 0;
+        }
+
+        private void UpdateRefreshToken_Click(object sender, RoutedEventArgs evt)
+        {
+            App.BaconMan.SettingsMan.WriteToRoamingSettings("AuthManager.AccessToken", new AccessTokenResult
+            {
+                AccessToken = AccessToken.Text,
+                RefreshToken = RefreshToken.Text,
+                ExpiresAt = DateTime.Now.AddSeconds(-10)
+            });
+        }
+
+        private static double CalculateSeconds()
+        {
+            var dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);//from 1970/1/1 00:00:00 to now
+            var dtNow = DateTime.Now;
+            var result = dtNow.Subtract(dt);
+            var seconds = Convert.ToInt32(result.TotalSeconds);
+            return seconds;
         }
     }
 }
