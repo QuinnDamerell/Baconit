@@ -31,8 +31,8 @@ namespace BaconBackend.Managers
 
     public class AuthManager
     {
-        private const string BaconitAppId = "JQnDP8nMXTiXiQ";
-        private const string BaconitRedirectUrl = "http://localhost:48541/oauthRedirect";
+        private const string BaconitAppId = "EU5cWoJCJ5HcPQ";
+        private const string BaconitRedirectUrl = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
         private readonly BaconManager _mBaconMan;
         private readonly ManualResetEvent _mRefreshEvent = new ManualResetEvent(false);
         private bool _mIsTokenRefreshing;
