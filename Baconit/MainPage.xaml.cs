@@ -44,22 +44,22 @@ namespace Baconit
         /// <summary>
         /// The main panel manager for the app
         /// </summary>
-        private readonly PanelManager _mPanelManager;
+        private readonly PanelManager _panelManager;
 
         /// <summary>
         /// Holds a ref to the current trending subs helper
         /// </summary>
-        private TrendingSubredditsHelper _mTrendingSubsHelper;
+        private TrendingSubredditsHelper _trendingSubsHelper;
 
         /// <summary>
         /// Holds the current subreddit list
         /// </summary>
-        private readonly ObservableCollection<Subreddit> _mSubreddits = new ObservableCollection<Subreddit>();
+        private readonly ObservableCollection<Subreddit> _subreddits = new ObservableCollection<Subreddit>();
 
         /// <summary>
         /// Used to detect keyboard strokes
         /// </summary>
-        private readonly KeyboardShortcutHelper _mKeyboardShortcutHepler;
+        private readonly KeyboardShortcutHelper _keyboardShortcutHelper;
 
         /// <summary>
         /// Used to tell us that we should navigate to a different subreddit than the default.
@@ -81,7 +81,7 @@ namespace Baconit
             InitializeComponent();
 
             // Set up the UI
-            VisualStateManager.GoToState(this, "HideQuichSeachResults", false);
+            VisualStateManager.GoToState(this, "HideQuickSearchResults", false);
 
             // Set ourselves as the backend action listener
             App.BaconMan.SetBackendActionListener(this);
@@ -100,8 +100,8 @@ namespace Baconit
             var panel = new WelcomePanel();
 
             // Create the panel manager
-            _mPanelManager = new PanelManager(this, (IPanel)panel);
-            ui_contentRoot.Children.Add(_mPanelManager);
+            _panelManager = new PanelManager(this, (IPanel)panel);
+            ui_contentRoot.Children.Add(_panelManager);
             App.BaconMan.OnBackButton += BaconMan_OnBackButton;
 
             // Sub to callbacks
@@ -113,14 +113,14 @@ namespace Baconit
             App.BaconMan.OnResuming += App_OnResuming;
 
             // Set the subreddit list
-            ui_subredditList.ItemsSource = _mSubreddits;
+            ui_subredditList.ItemsSource = _subreddits;
 
             // Setup the keyboard shortcut helper and sub.
-            _mKeyboardShortcutHepler = new KeyboardShortcutHelper();
-            _mKeyboardShortcutHepler.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
-            _mKeyboardShortcutHepler.OnGoBackActivation += KeyboardShortcutHepler_OnGoBackActivation;
+            _keyboardShortcutHelper = new KeyboardShortcutHelper();
+            _keyboardShortcutHelper.OnQuickSearchActivation += KeyboardShortcutHepler_OnQuickSearchActivation;
+            _keyboardShortcutHelper.OnGoBackActivation += KeyboardShortcutHepler_OnGoBackActivation;
 
-            _mPanelManager.OnNavigationComplete += PanelManager_OnNavigationComplete;
+            _panelManager.OnNavigationComplete += PanelManager_OnNavigationComplete;
 
             // Sub to the memory report
             App.BaconMan.MemoryMan.OnMemoryReport += MemoryMan_OnMemoryReport;
@@ -162,11 +162,15 @@ namespace Baconit
                 defaultDisplayName = _mSubredditFirstNavOverwrite;
             }
 
-            // Navigate to the start
-            var args = new Dictionary<string, object>();
-            args.Add(PanelManager.NavArgsSubredditName, defaultDisplayName);
-            _mPanelManager.Navigate(typeof(SubredditPanel), defaultDisplayName + SortTypes.Hot + SortTimeTypes.Week, args);
-            _mPanelManager.Navigate(typeof(WelcomePanel), "WelcomePanel");
+            var defaultSortType = App.BaconMan.UiSettingsMan.SubredditListDefaultSortType;
+            var defaultSortTime = App.BaconMan.UiSettingsMan.SubredditListDefaultSortTimeType;
+
+            var args = new Dictionary<string, object>
+            {
+                {PanelManager.NavArgsSubredditName, defaultDisplayName}
+            };
+            _panelManager.Navigate(typeof(SubredditPanel), string.Concat(defaultDisplayName, defaultSortType, defaultSortTime), args);
+            _panelManager.Navigate(typeof(WelcomePanel), "WelcomePanel");
 
             // Update the trending subreddits
             UpdateTrendingSubreddits();
@@ -181,17 +185,15 @@ namespace Baconit
         /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter.GetType() == typeof(string) && !string.IsNullOrWhiteSpace((string)e.Parameter))
+            if (e.Parameter.GetType() != typeof(string) || string.IsNullOrWhiteSpace((string) e.Parameter)) return;
+            var argument = (string)e.Parameter;
+            if (argument.StartsWith(TileManager.SubredditOpenArgument))
             {
-                var argument = (string)e.Parameter;
-                if (argument.StartsWith(TileManager.SubredditOpenArgument))
-                {
-                    _mSubredditFirstNavOverwrite = argument.Substring(TileManager.SubredditOpenArgument.Length);
-                }
-                else if(argument.StartsWith(BackgroundMessageUpdater.CMessageInboxOpenArgument))
-                {
-                    _mHadDeferredInboxNavigate = true;
-                }
+                _mSubredditFirstNavOverwrite = argument.Substring(TileManager.SubredditOpenArgument.Length);
+            }
+            else if(argument.StartsWith(BackgroundMessageUpdater.CMessageInboxOpenArgument))
+            {
+                _mHadDeferredInboxNavigate = true;
             }
         }
 
@@ -203,11 +205,9 @@ namespace Baconit
         /// <param name="e"></param>
         private void PanelManager_OnNavigationComplete(object sender, EventArgs e)
         {
-            if (_mHadDeferredInboxNavigate)
-            {
-                _mHadDeferredInboxNavigate = false;
-                _mPanelManager.Navigate(typeof(MessageInbox), "MessageInbox");
-            }
+            if (!_mHadDeferredInboxNavigate) return;
+            _mHadDeferredInboxNavigate = false;
+            _panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Baconit
             }
             else if(arguments != null && arguments.StartsWith(BackgroundMessageUpdater.CMessageInboxOpenArgument))
             {
-                _mPanelManager.Navigate(typeof(MessageInbox), "MessageInbox");
+                _panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             }
         }
 
@@ -239,15 +239,13 @@ namespace Baconit
         {
             UpdateTrendingSubreddits();
 
-            if(!_mReviewLeaveTime.Equals(DateTime.MinValue))
+            if (_mReviewLeaveTime.Equals(DateTime.MinValue)) return;
+            var timeSinceReviewLeave = DateTime.Now - _mReviewLeaveTime;
+            if(timeSinceReviewLeave.TotalMinutes < 5)
             {
-                var timeSinceReviewLeave = DateTime.Now - _mReviewLeaveTime;
-                if(timeSinceReviewLeave.TotalMinutes < 5)
-                {
-                    App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
-                }
-                _mReviewLeaveTime = DateTime.MinValue;
+                App.BaconMan.MessageMan.ShowMessageSimple("Thanks ❤", "Thank you for reviewing Baconit, we really appreciate your support of the app!");
             }
+            _mReviewLeaveTime = DateTime.MinValue;
         }
 
         /// <summary>
@@ -313,41 +311,41 @@ namespace Baconit
                     newSubreddit.DisplayName = newSubreddit.DisplayName.ToLower();
 
                     // If the two are the same, just update them.
-                    if (_mSubreddits.Count > insertCount && _mSubreddits[insertCount].Id.Equals(newSubreddit.Id))
+                    if (_subreddits.Count > insertCount && _subreddits[insertCount].Id.Equals(newSubreddit.Id))
                     {
                         // If they are the same just update it
-                        _mSubreddits[insertCount].DisplayName = newSubreddit.DisplayName;
-                        _mSubreddits[insertCount].FavIconUri = newSubreddit.FavIconUri;
-                        _mSubreddits[insertCount].IsFavorite = newSubreddit.IsFavorite;
-                        _mSubreddits[insertCount].Title = newSubreddit.Title;
+                        _subreddits[insertCount].DisplayName = newSubreddit.DisplayName;
+                        _subreddits[insertCount].FavIconUri = newSubreddit.FavIconUri;
+                        _subreddits[insertCount].IsFavorite = newSubreddit.IsFavorite;
+                        _subreddits[insertCount].Title = newSubreddit.Title;
                     }
                     // (subreddit insert) If the next element in the new list is the same as the current element in the old list, insert.
-                    else if (_mSubreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(_mSubreddits[insertCount].Id))
+                    else if (_subreddits.Count > insertCount && newSubreddits.Count > newListCount + 1 && newSubreddits[newListCount + 1].Id.Equals(_subreddits[insertCount].Id))
                     {
-                        _mSubreddits.Insert(insertCount, newSubreddit);
+                        _subreddits.Insert(insertCount, newSubreddit);
                     }
                     // (subreddit remove) If the current element in the new list is the same as the next element in the old list.
-                    else if (_mSubreddits.Count > insertCount + 1 && newSubreddits.Count > newListCount && newSubreddits[newListCount].Id.Equals(_mSubreddits[insertCount + 1].Id))
+                    else if (_subreddits.Count > insertCount + 1 && newSubreddits.Count > newListCount && newSubreddits[newListCount].Id.Equals(_subreddits[insertCount + 1].Id))
                     {
-                        _mSubreddits.RemoveAt(insertCount);
+                        _subreddits.RemoveAt(insertCount);
                     }
                     // If the old list is still larger than the new list, replace
-                    else if (_mSubreddits.Count > insertCount)
+                    else if (_subreddits.Count > insertCount)
                     {
-                        _mSubreddits[insertCount] = newSubreddit;
+                        _subreddits[insertCount] = newSubreddit;
                     }
                     // Or just add.
                     else
                     {
-                        _mSubreddits.Add(newSubreddit);
+                        _subreddits.Add(newSubreddit);
                     }
                     insertCount++;
                 }
 
                 // Remove any extra subreddits
-                while(_mSubreddits.Count > newSubreddits.Count)
+                while(_subreddits.Count > newSubreddits.Count)
                 {
-                    _mSubreddits.RemoveAt(_mSubreddits.Count - 1);
+                    _subreddits.RemoveAt(_subreddits.Count - 1);
                 }
             }
             catch(Exception e)
@@ -456,7 +454,7 @@ namespace Baconit
             CloseTrendingSubredditsPanelIfOpen();
             CloseAccoutPanelIfOpen();
             ToggleQuickSearch(true);
-            VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
+            VisualStateManager.GoToState(this, "HideQuickSearchResults", true);
 
             if (closeMenu)
             {
@@ -547,21 +545,21 @@ namespace Baconit
                 ToggleMenu(false);
 
                 // Navigate
-                _mPanelManager.Navigate(typeof(LoginPanel), "LoginPanel");
+                _panelManager.Navigate(typeof(LoginPanel), "LoginPanel");
             }
         }
 
         private void InboxGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Navigate to the inbox
-            _mPanelManager.Navigate(typeof(MessageInbox), "MessageInbox");
+            _panelManager.Navigate(typeof(MessageInbox), "MessageInbox");
             ToggleMenu(false);
         }
 
         private void SettingsGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Navigate to the settings page.
-            _mPanelManager.Navigate(typeof(Settings), "Settings");
+            _panelManager.Navigate(typeof(Settings), "Settings");
             ToggleMenu(false);
         }
 
@@ -577,7 +575,7 @@ namespace Baconit
                 // Navigate to the user.
                 var args = new Dictionary<string, object>();
                 args.Add(PanelManager.NavArgsUserName, App.BaconMan.UserMan.CurrentUser.Name);
-                _mPanelManager.Navigate(typeof(UserProfile), App.BaconMan.UserMan.CurrentUser.Name, args);
+                _panelManager.Navigate(typeof(UserProfile), App.BaconMan.UserMan.CurrentUser.Name, args);
                 TelemetryManager.ReportEvent(this, "GoToProfileViaGlobalMenu");
             }
             ToggleMenu(false);
@@ -615,9 +613,8 @@ namespace Baconit
             else
             {
                 // We have search content, go to search.
-                var args = new Dictionary<string, object>();
-                args.Add(PanelManager.NavArgsSearchQuery, ui_quickSearchBox.Text);
-                _mPanelManager.Navigate(typeof(Search), "Search", args);
+                var args = new Dictionary<string, object> {{PanelManager.NavArgsSearchQuery, ui_quickSearchBox.Text}};
+                _panelManager.Navigate(typeof(Search), "Search", args);
                 CloseAllPanels(true);
             }
         }
@@ -694,7 +691,7 @@ namespace Baconit
             // If we don't have a query hide the box
             if (string.IsNullOrWhiteSpace(query))
             {
-                VisualStateManager.GoToState(this, "HideQuichSeachResults", true);
+                VisualStateManager.GoToState(this, "HideQuickSearchResults", true);
                 return;
             }
 
@@ -705,31 +702,29 @@ namespace Baconit
             var placementPos = 0;
             foreach (var subreddit in subreddits)
             {
-                if (subreddit.DisplayName.ToLower().StartsWith(query))
+                if (!subreddit.DisplayName.ToLower().StartsWith(query)) continue;
+                switch (placementPos)
                 {
-                    switch (placementPos)
-                    {
-                        case 0:
-                            ui_quickSearchHiPriText.Text = "r/"+subreddit.DisplayName;
-                            ui_quickSearchHiPriText.DataContext = subreddit;
-                            break;
-                        case 1:
-                            ui_quickSearchMedPriText.Text = "r/" + subreddit.DisplayName;
-                            ui_quickSearchMedPriText.DataContext = subreddit;
-                            break;
-                        case 2:
-                            ui_quickSearchLowPriText.Text = "r/" + subreddit.DisplayName;
-                            ui_quickSearchLowPriText.DataContext = subreddit;
-                            break;
-                    }
-
-                    placementPos++;
-
-                    // Break if done
-                    if (placementPos == 3)
-                    {
+                    case 0:
+                        ui_quickSearchHiPriText.Text = "r/"+subreddit.DisplayName;
+                        ui_quickSearchHiPriText.DataContext = subreddit;
                         break;
-                    }
+                    case 1:
+                        ui_quickSearchMedPriText.Text = "r/" + subreddit.DisplayName;
+                        ui_quickSearchMedPriText.DataContext = subreddit;
+                        break;
+                    case 2:
+                        ui_quickSearchLowPriText.Text = "r/" + subreddit.DisplayName;
+                        ui_quickSearchLowPriText.DataContext = subreddit;
+                        break;
+                }
+
+                placementPos++;
+
+                // Break if done
+                if (placementPos == 3)
+                {
+                    break;
                 }
             }
 
@@ -769,7 +764,7 @@ namespace Baconit
             }
 
             // Show the search results
-            VisualStateManager.GoToState(this, "ShowQuichSeachResults", true);
+            VisualStateManager.GoToState(this, "ShowQuickSearchResults", true);
         }
 
 
@@ -780,11 +775,9 @@ namespace Baconit
         /// <param name="e"></param>
         private void QuickSearchLowPriGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if(ui_quickSearchLowPriText.DataContext != null)
-            {
-                NavigateToSubreddit((Subreddit)ui_quickSearchLowPriText.DataContext);
-                CloseAllPanels(true);
-            }
+            if (ui_quickSearchLowPriText.DataContext == null) return;
+            NavigateToSubreddit((Subreddit)ui_quickSearchLowPriText.DataContext);
+            CloseAllPanels(true);
         }
 
         /// <summary>
@@ -794,11 +787,9 @@ namespace Baconit
         /// <param name="e"></param>
         private void QuickSearchMedPriGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (ui_quickSearchMedPriText.DataContext != null)
-            {
-                NavigateToSubreddit((Subreddit)ui_quickSearchMedPriText.DataContext);
-                CloseAllPanels(true);
-            }
+            if (ui_quickSearchMedPriText.DataContext == null) return;
+            NavigateToSubreddit((Subreddit)ui_quickSearchMedPriText.DataContext);
+            CloseAllPanels(true);
         }
 
         /// <summary>
@@ -828,7 +819,7 @@ namespace Baconit
         {
             var args = new Dictionary<string, object>();
             args.Add(PanelManager.NavArgsSubredditName, subreddit.DisplayName.ToLower());
-            _mPanelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot, SortTimeTypes.Week), args);
+            _panelManager.Navigate(typeof(SubredditPanel), subreddit.GetNavigationUniqueId(SortTypes.Hot, SortTimeTypes.Week), args);
         }
 
         #endregion
@@ -846,19 +837,19 @@ namespace Baconit
                 // Make sure we don't already have one running.
                 lock(this)
                 {
-                    if(_mTrendingSubsHelper != null)
+                    if(_trendingSubsHelper != null)
                     {
                         return;
                     }
-                    _mTrendingSubsHelper = new TrendingSubredditsHelper(App.BaconMan);
+                    _trendingSubsHelper = new TrendingSubredditsHelper(App.BaconMan);
                 }
 
                 // Delay for a little while, give app time to process things it needs to.
                 await Task.Delay(500);
 
                 // Out side of the lock request an update
-                _mTrendingSubsHelper.OnTrendingSubReady += TrendingSubsHelper_OnTrendingSubReady;
-                _mTrendingSubsHelper.GetTrendingSubreddits();
+                _trendingSubsHelper.OnTrendingSubReady += TrendingSubsHelper_OnTrendingSubReady;
+                _trendingSubsHelper.GetTrendingSubreddits();
             });
         }
 
@@ -898,10 +889,10 @@ namespace Baconit
             });
 
             // Remove the callback
-            _mTrendingSubsHelper.OnTrendingSubReady -= TrendingSubsHelper_OnTrendingSubReady;
+            _trendingSubsHelper.OnTrendingSubReady -= TrendingSubsHelper_OnTrendingSubReady;
 
             // kill the object
-            _mTrendingSubsHelper = null;
+            _trendingSubsHelper = null;
         }
 
         /// <summary>
@@ -1009,25 +1000,25 @@ namespace Baconit
                 case RedditContentType.Subreddit:
                     var args = new Dictionary<string, object>();
                     args.Add(PanelManager.NavArgsSubredditName, container.Subreddit);
-                    _mPanelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
+                    _panelManager.Navigate(typeof(SubredditPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week, args);
                     break;
                 case RedditContentType.Post:
                     var postArgs = new Dictionary<string, object>();
                     postArgs.Add(PanelManager.NavArgsSubredditName, container.Subreddit);
                     postArgs.Add(PanelManager.NavArgsForcePostId, container.Post);
-                    _mPanelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post, postArgs);
+                    _panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post, postArgs);
                     break;
                 case RedditContentType.Comment:
                     var commentArgs = new Dictionary<string, object>();
                     commentArgs.Add(PanelManager.NavArgsSubredditName, container.Subreddit);
                     commentArgs.Add(PanelManager.NavArgsForcePostId, container.Post);
                     commentArgs.Add(PanelManager.NavArgsForceCommentId, container.Comment);
-                    _mPanelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post + container.Comment, commentArgs);
+                    _panelManager.Navigate(typeof(FlipViewPanel), container.Subreddit + SortTypes.Hot + SortTimeTypes.Week + container.Post + container.Comment, commentArgs);
                     break;
                 case RedditContentType.User:
                     var userArgs = new Dictionary<string, object>();
                     userArgs.Add(PanelManager.NavArgsUserName, container.User);
-                    _mPanelManager.Navigate(typeof(UserProfile), container.User, userArgs);
+                    _panelManager.Navigate(typeof(UserProfile), container.User, userArgs);
                     break;
             }
         }
@@ -1077,7 +1068,7 @@ namespace Baconit
         public void NavigateToLogin()
         {
             // Navigate
-            _mPanelManager.Navigate(typeof(LoginPanel), "LoginPanel");
+            _panelManager.Navigate(typeof(LoginPanel), "LoginPanel");
         }
 
         /// <summary>
@@ -1085,7 +1076,7 @@ namespace Baconit
         /// </summary>
         public bool NavigateBack()
         {
-            return _mPanelManager.GoBack();
+            return _panelManager.GoBack();
         }
 
 

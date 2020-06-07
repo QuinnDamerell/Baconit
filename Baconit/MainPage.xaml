@@ -13,7 +13,7 @@
         <!--  Animations  -->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="QuickSearch">
-                <VisualState x:Name="HideQuichSeachResults">
+                <VisualState x:Name="HideQuickSearchResults">
                     <Storyboard>
                         <DoubleAnimation Duration="00:00:00.2"
                                          From="1.0"
@@ -35,7 +35,7 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-                <VisualState x:Name="ShowQuichSeachResults">
+                <VisualState x:Name="ShowQuickSearchResults">
                     <Storyboard>
                         <DoubleAnimation Duration="00:00:00.2"
                                          From="0.0"
