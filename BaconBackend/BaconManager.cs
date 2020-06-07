@@ -167,7 +167,7 @@ namespace BaconBackend
             NetworkMan = new NetworkManager(this);
             MessageMan = new MessageManager(this);
             UiSettingsMan = new UiSettingManager(this);
-            TelemetryMan = new TelemetryManager();
+            TelemetryMan = new TelemetryManager(this);
             BackgroundMan = new BackgroundManager(this);
             MotdMan = new MessageOfTheDayManager(this);
             TileMan = new TileManager(this);

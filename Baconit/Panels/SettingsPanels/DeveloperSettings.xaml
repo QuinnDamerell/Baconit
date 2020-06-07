@@ -88,7 +88,7 @@
                          Margin="10 0 0 0"/>
 
                 <Button Grid.Row="3" Grid.Column="1"
-                        Click="UpdateRefreshToken_Click"
+                        Click="UpdateRefreshTokenClick"
                         VerticalAlignment="Center"
                         Content="Update Tokens" 
                         Margin="10 0 0 0"/>

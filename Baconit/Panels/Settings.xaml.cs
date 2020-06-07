@@ -16,6 +16,7 @@ namespace Baconit.Panels
             InitializeComponent();
 
             // Add the settings to the list
+            _mSettingsList.Add("Application");
             _mSettingsList.Add("Flip view");
             _mSettingsList.Add("Subreddit");
             _mSettingsList.Add("Comments");
@@ -73,28 +74,31 @@ namespace Baconit.Panels
             switch (ui_settingsList.SelectedIndex)
             {
                 case 0:
-                    _mHost.Navigate(typeof(FlipViewSettings), "FlipViewSettings");
+                    _mHost.Navigate(typeof(ApplicationSettings), "ApplicationSettings");
                     break;
                 case 1:
-                    _mHost.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
+                    _mHost.Navigate(typeof(FlipViewSettings), "FlipViewSettings");
                     break;
                 case 2:
-                    _mHost.Navigate(typeof(CommentSettings), "CommentsSettings");
+                    _mHost.Navigate(typeof(SubredditViewSettings), "SubredditViewSettings");
                     break;
                 case 3:
-                    _mHost.Navigate(typeof(MicrosoftBandSettings), "MicrosoftBandSettings");
+                    _mHost.Navigate(typeof(CommentSettings), "CommentsSettings");
                     break;
                 case 4:
-                    _mHost.Navigate(typeof(BackgroundMessageUpdatingSettings), "BackgroundMessageUpdating");
+                    _mHost.Navigate(typeof(MicrosoftBandSettings), "MicrosoftBandSettings");
                     break;
                 case 5:
-                    _mHost.Navigate(typeof(BackgroundUpdatingSettings), "BackgroundUpdatingSettings");
+                    _mHost.Navigate(typeof(BackgroundMessageUpdatingSettings), "BackgroundMessageUpdating");
                     break;
                 case 6:
+                    _mHost.Navigate(typeof(BackgroundUpdatingSettings), "BackgroundUpdatingSettings");
+                    break;
                 case 7:
+                case 8:
                     App.BaconMan.ShowGlobalContent("http://baconit.quinndamerell.com/privacy.html");
                     break;
-                case 8:
+                case 9:
                     _mHost.Navigate(typeof(AboutSettings), "AboutSettings");
                     break;
                 default:

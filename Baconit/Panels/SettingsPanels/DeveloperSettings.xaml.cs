@@ -12,8 +12,8 @@ namespace Baconit.Panels.SettingsPanels
 {
     public sealed partial class DeveloperSettings : UserControl, IPanel
     {
-        private IPanelHost _mHost;
-        private bool _mTakeAction;
+        private IPanelHost _host;
+        private bool _takeAction;
 
         public DeveloperSettings()
         {
@@ -22,7 +22,7 @@ namespace Baconit.Panels.SettingsPanels
 
         public void PanelSetup(IPanelHost host, Dictionary<string, object> arguments)
         {
-            _mHost = host;
+            _host = host;
         }
 
         public void OnNavigatingFrom()
@@ -39,16 +39,16 @@ namespace Baconit.Panels.SettingsPanels
         {
             // Set the status bar color and get the size returned. If it is not 0 use that to move the
             // color of the page into the status bar.
-            var statusBarHeight = await _mHost.SetStatusBar(null, 0);
+            var statusBarHeight = await _host.SetStatusBar(null, 0);
             ui_contentRoot.Margin = new Thickness(0, -statusBarHeight, 0, 0);
             ui_contentRoot.Padding = new Thickness(0, statusBarHeight, 0, 0);
 
-            _mTakeAction = false;
+            _takeAction = false;
             TelemetryManager.ReportEvent(this, "DevSettingsOpened");
             ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.DeveloperDebug;
             ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.DeveloperStopFatalCrashesAndReport;
             ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.DeveloperShowMemoryOverlay;
-            _mTakeAction = true;
+            _takeAction = true;
 
             // Set the clean up text
             ui_numberPagesCleanedUp.Text = $"Pages cleaned up for memory pressure: {App.BaconMan.UiSettingsMan.PagesMemoryCleanedUp}";
@@ -70,7 +70,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void DebuggingOn_Toggled(object sender, RoutedEventArgs e)
         {
-            if(!_mTakeAction)
+            if(!_takeAction)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void PreventAppCrashes_Toggled(object sender, RoutedEventArgs e)
         {
-            if (!_mTakeAction)
+            if (!_takeAction)
             {
                 return;
             }
@@ -88,7 +88,7 @@ namespace Baconit.Panels.SettingsPanels
 
         private void ShowMemoryOverlay_Toggled(object sender, RoutedEventArgs e)
         {
-            if(!_mTakeAction)
+            if(!_takeAction)
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace Baconit.Panels.SettingsPanels
             App.BaconMan.UiSettingsMan.MainPageNextReviewAnnoy = 0;
         }
 
-        private void UpdateRefreshToken_Click(object sender, RoutedEventArgs evt)
+        private void UpdateRefreshTokenClick(object sender, RoutedEventArgs evt)
         {
             App.BaconMan.SettingsMan.WriteToRoamingSettings("AuthManager.AccessToken", new AccessTokenResult
             {
@@ -113,15 +113,6 @@ namespace Baconit.Panels.SettingsPanels
                 RefreshToken = RefreshToken.Text,
                 ExpiresAt = DateTime.Now.AddSeconds(-10)
             });
-        }
-
-        private static double CalculateSeconds()
-        {
-            var dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);//from 1970/1/1 00:00:00 to now
-            var dtNow = DateTime.Now;
-            var result = dtNow.Subtract(dt);
-            var seconds = Convert.ToInt32(result.TotalSeconds);
-            return seconds;
         }
     }
 }

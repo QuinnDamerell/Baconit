@@ -214,6 +214,9 @@
     <Compile Include="Panels\SettingsPanels\AboutSettings.xaml.cs">
       <DependentUpon>AboutSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\SettingsPanels\ApplicationSettings.xaml.cs">
+      <DependentUpon>ApplicationSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\SettingsPanels\BackgroundMessageUpdatingSettings.xaml.cs">
       <DependentUpon>BackgroundMessageUpdatingSettings.xaml</DependentUpon>
     </Compile>
@@ -460,6 +463,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Panels\SettingsPanels\AboutSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Panels\SettingsPanels\ApplicationSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
