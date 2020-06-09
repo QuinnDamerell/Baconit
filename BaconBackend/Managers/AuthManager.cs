@@ -322,7 +322,7 @@ namespace BaconBackend.Managers
             }
 
             // Set the expires time
-            data.ExpiresAt = DateTime.Now.AddSeconds(3600);
+            data.ExpiresAt = DateTime.Now.AddSeconds(int.Parse(data.ExpiresIn));
 
             // If this was a refresh the refresh token won't be given again.
             // So set it to the current token.

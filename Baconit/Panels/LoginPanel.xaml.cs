@@ -223,12 +223,10 @@ namespace Baconit.Panels
                 // Try to get the new user
                 result = await App.BaconMan.UserMan.InternalUpdateUser();
 
-                if (result.WasSuccess)
-                {
-                    TelemetryManager.ReportEvent(this, "LoginSuccess");
-                    ShowWelcomeAndLeave();
-                    _startingAuth = false;
-                }
+                if (!result.WasSuccess) return;
+                TelemetryManager.ReportEvent(this, "LoginSuccess");
+                ShowWelcomeAndLeave();
+                _startingAuth = false;
             }
         }
 
