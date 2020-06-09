@@ -21,6 +21,8 @@ namespace Baconit.Panels
         /// </summary>
         private bool _mIsVisible;
 
+        private string _nonce;
+
         public LoginPanel()
         {
             InitializeComponent();
@@ -45,6 +47,8 @@ namespace Baconit.Panels
 
             ui_imageScrolBackground.BeginAnimation();
             _mIsVisible = true;
+            ui_loginUI.Visibility = Visibility.Visible;
+            AuthWebViewUi.Visibility = Visibility.Collapsed;
         }
 
         public void OnNavigatingFrom()
@@ -78,38 +82,42 @@ namespace Baconit.Panels
             var loginBegin = DateTime.Now;
 
             // Change the UI
-            CrossfadeUi(true);
+            //CrossfadeUi(true);
 
             // Make the call
-            var result = await App.BaconMan.UserMan.SignInNewUser();
+            //var result = await App.BaconMan.UserMan.SignInNewUser();
 
-            if(result.WasSuccess)
-            {
-                TelemetryManager.ReportEvent(this, "LoginSuccess");
-                TelemetryManager.ReportPerfEvent(this,"LoginTime", loginBegin);
-                ShowWelcomeAndLeave();
-            }
-            else
-            {
-                // We failed
-                CrossfadeUi(false);
+            _nonce = Guid.NewGuid().ToString("N");
+            AuthWebView.Source = new Uri(App.BaconMan.UserMan.AuthManager.GetAuthRequestString(_nonce));
+            AuthWebViewUi.Visibility = Visibility.Visible;
 
-                if (result.WasErrorNetwork)
-                {
-                    TelemetryManager.ReportEvent(this, "LoginFailedNetworkError");
-                    App.BaconMan.MessageMan.ShowMessageSimple("Check Your Connection", "We can't talk to reddit right now, check your internet connection.");
-                }
-                if(result.WasUserCanceled)
-                {
-                    // Don't do anything, they know what they did.
-                    TelemetryManager.ReportEvent(this, "LoginFailedUserCancled");
-                }
-                else
-                {
-                    App.BaconMan.MessageMan.ShowMessageSimple("Something Went Wrong", "We can't log you in right now, try again later.");
-                    TelemetryManager.ReportUnexpectedEvent(this, "LoginFailedUnknown");
-                }
-            }
+            //if(result.WasSuccess)
+            //{
+            //    TelemetryManager.ReportEvent(this, "LoginSuccess");
+            //    TelemetryManager.ReportPerfEvent(this,"LoginTime", loginBegin);
+            //    ShowWelcomeAndLeave();
+            //}
+            //else
+            //{
+            //    // We failed
+            //    CrossfadeUi(false);
+
+            //    if (result.WasErrorNetwork)
+            //    {
+            //        TelemetryManager.ReportEvent(this, "LoginFailedNetworkError");
+            //        App.BaconMan.MessageMan.ShowMessageSimple("Check Your Connection", "We can't talk to reddit right now, check your internet connection.");
+            //    }
+            //    if(result.WasUserCanceled)
+            //    {
+            //        // Don't do anything, they know what they did.
+            //        TelemetryManager.ReportEvent(this, "LoginFailedUserCancled");
+            //    }
+            //    else
+            //    {
+            //        App.BaconMan.MessageMan.ShowMessageSimple("Something Went Wrong", "We can't log you in right now, try again later.");
+            //        TelemetryManager.ReportUnexpectedEvent(this, "LoginFailedUnknown");
+            //    }
+            //}
         }
 
         private void CrossfadeUi(bool fadeInProgressUi)
@@ -186,6 +194,89 @@ namespace Baconit.Panels
         private void CreateAccount_Click(object sender, RoutedEventArgs e)
         {
             App.BaconMan.ShowGlobalContent("https://www.reddit.com/register");
+        }
+
+        private bool _startingAuth = false;
+        private async void AuthWebViewNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            var url = args.Uri.ToString();
+            var redirectPath = new Uri(AuthManager.BaconitRedirectUrl);
+
+            if (args.Uri.AbsolutePath.Equals(redirectPath.AbsolutePath) && !_startingAuth)
+            {
+                _startingAuth = true;
+                CrossfadeUi(true);
+                AuthWebViewUi.Visibility = Visibility.Collapsed;
+
+                var result = ParseState(url);
+
+                if (!result.WasSuccess) return;
+
+                // Try to get the access token
+                var accessToken = await App.BaconMan.UserMan.AuthManager.RefreshAccessToken(result.Message, false);
+                if (accessToken == null)
+                {
+                    CrossfadeUi(false);
+                    return;
+                }
+
+                // Try to get the new user
+                result = await App.BaconMan.UserMan.InternalUpdateUser();
+
+                if (result.WasSuccess)
+                {
+                    TelemetryManager.ReportEvent(this, "LoginSuccess");
+                    ShowWelcomeAndLeave();
+                    _startingAuth = false;
+                }
+            }
+        }
+
+        private UserManager.SignInResult ParseState(string url)
+        {
+            var startOfState = url.IndexOf("state=", StringComparison.Ordinal) + 6;
+            var endOfState = url.IndexOf("&", startOfState, StringComparison.Ordinal);
+            var startOfCode = url.IndexOf("code=", StringComparison.Ordinal) + 5;
+            var endOfCode = url.IndexOf("&", startOfCode, StringComparison.Ordinal);
+
+            if (startOfCode == 4)
+            {
+                return new UserManager.SignInResult
+                {
+                    Message = "Reddit returned an error!"
+                };
+            }
+
+            endOfCode = endOfCode == -1 ? url.Length : endOfCode;
+            endOfState = endOfState == -1 ? url.Length : endOfState;
+
+            var state = url.Substring(startOfState, endOfState - startOfState);
+            var code = url.Substring(startOfCode, endOfCode - startOfCode);
+
+            // Check the state
+            if (_nonce != state)
+            {
+                return new UserManager.SignInResult
+                {
+                    Message = "The state is not the same!"
+                };
+            }
+
+            // Check the code
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return new UserManager.SignInResult
+                {
+                    Message = "The code is empty!"
+                };
+            }
+
+            // Return the code!
+            return new UserManager.SignInResult
+            {
+                WasSuccess = true,
+                Message = code
+            };
         }
     }
 }

@@ -11,8 +11,10 @@
              mc:Ignorable="d">
 
     <Grid x:Name="ui_contentRoot">
+
         <helperControls:SlidingImages x:Name="ui_imageScrolBackground" Opacity="0.45" />
         <Grid>
+
             <Grid x:Name="ui_loginUI"
                   MaxWidth="280"
                   HorizontalAlignment="Center"
@@ -60,6 +62,17 @@
                         Content="Create Account"
                         Foreground="#FFFFFF" />
             </Grid>
+
+            <Grid x:Name="AuthWebViewUi"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Visibility="Collapsed">
+
+                <WebView x:Name="AuthWebView" 
+                         Margin="0,25,0,0"
+                         NavigationStarting="AuthWebViewNavigationStarting" />
+            </Grid>
+
             <Grid x:Name="ui_progressUI"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
@@ -86,6 +99,7 @@
                            FontSize="20"
                            Text="Logging you in" />
             </Grid>
+
             <Grid x:Name="ui_welcome"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"

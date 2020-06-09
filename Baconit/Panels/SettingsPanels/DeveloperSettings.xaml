@@ -46,53 +46,6 @@
                        Margin="0,12,0,0"
                        Text="Pages cleaned up for memory pressure: 0"
                        TextWrapping="Wrap" />
-
-            <Grid Margin="0,15,0,12" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition MinHeight="50"/>
-                    <RowDefinition MinHeight="50"/>
-                    <RowDefinition MinHeight="50"/>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-                           VerticalAlignment="Center"
-                           TextWrapping="Wrap" 
-                           Text="Add an Access Token and Refresh Token manually for authentication."/>
-
-                <TextBlock Grid.Row="1" Grid.Column="0" 
-                           VerticalAlignment="Center"
-                           Text="Access Token:"/>
-
-                <TextBox Grid.Row="1" Grid.Column="1" 
-                         x:Name="AccessToken"
-                         TextWrapping="Wrap" 
-                         VerticalAlignment="Center"
-                         HorizontalAlignment="Stretch"
-                         Margin="10 0 0 0"/>
-
-                <TextBlock Grid.Row="2" Grid.Column="0" 
-                           VerticalAlignment="Center"
-                           Text="Refresh Token:" />
-
-                <TextBox Grid.Row="2" Grid.Column="1" 
-                         x:Name="RefreshToken"
-                         TextWrapping="Wrap" 
-                         VerticalAlignment="Center"
-                         HorizontalAlignment="Stretch"
-                         Margin="10 0 0 0"/>
-
-                <Button Grid.Row="3" Grid.Column="1"
-                        Click="UpdateRefreshTokenClick"
-                        VerticalAlignment="Center"
-                        Content="Update Tokens" 
-                        Margin="10 0 0 0"/>
-            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -104,15 +104,5 @@ namespace Baconit.Panels.SettingsPanels
         {
             App.BaconMan.UiSettingsMan.MainPageNextReviewAnnoy = 0;
         }
-
-        private void UpdateRefreshTokenClick(object sender, RoutedEventArgs evt)
-        {
-            App.BaconMan.SettingsMan.WriteToRoamingSettings("AuthManager.AccessToken", new AccessTokenResult
-            {
-                AccessToken = AccessToken.Text,
-                RefreshToken = RefreshToken.Text,
-                ExpiresAt = DateTime.Now.AddSeconds(-10)
-            });
-        }
     }
 }

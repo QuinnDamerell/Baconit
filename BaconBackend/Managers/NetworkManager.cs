@@ -127,7 +127,7 @@ namespace BaconBackend.Managers
             }
             var request = new HttpClient();
             var message = new HttpRequestMessage(HttpMethod.Post, new Uri(url, UriKind.Absolute));
-            message.Headers.Add("User-Agent", "Baconit");
+            message.Headers.Add("User-Agent", "Baconit/5.0 by u/quinbd");
 
             // Set the auth header
             if (!string.IsNullOrWhiteSpace(authHeader))

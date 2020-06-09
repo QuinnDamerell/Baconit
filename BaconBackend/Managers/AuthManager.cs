@@ -13,7 +13,7 @@ namespace BaconBackend.Managers
 
     public class AccessTokenResult
     {
-        [JsonProperty(PropertyName="access_token")]
+        [JsonProperty(PropertyName = "access_token")]
         public string AccessToken;
 
         [JsonProperty(PropertyName = "token_type")]
@@ -31,8 +31,8 @@ namespace BaconBackend.Managers
 
     public class AuthManager
     {
-        private const string BaconitAppId = "EU5cWoJCJ5HcPQ";
-        private const string BaconitRedirectUrl = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
+        public const string BaconitAppId = "EU5cWoJCJ5HcPQ";
+        public const string BaconitRedirectUrl = "http://www.quinndamerell.com/Baconit/OAuth/Auth.php";
         private readonly BaconManager _mBaconMan;
         private readonly ManualResetEvent _mRefreshEvent = new ManualResetEvent(false);
         private bool _mIsTokenRefreshing;
@@ -51,14 +51,14 @@ namespace BaconBackend.Managers
         {
             // Try to get the request token
             var result = await GetRedditRequestToken();
-            if(!result.WasSuccess)
+            if (!result.WasSuccess)
             {
                 return result;
             }
 
             // Try to get the access token
             var accessToken = await RefreshAccessToken(result.Message, false);
-            if(accessToken == null)
+            if (accessToken == null)
             {
                 return new UserManager.SignInResult
                 {
@@ -163,6 +163,19 @@ namespace BaconBackend.Managers
             AccessTokenData = null;
         }
 
+        public string GetAuthRequestString(string nonce)
+        {
+            return "https://reddit.com/api/v1/authorize.compact?"
+                   + "client_id=" + BaconitAppId
+                   + "&response_type=code"
+                   + "&state=" + nonce
+                   + "&redirect_uri=" + BaconitRedirectUrl
+                   + "&duration=permanent"
+                   + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
+                   + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
+                   + "account,modtraffic,edit,modwiki,modself,history,flair";
+        }
+
         /// <summary>
         /// Gets a requests token from reddit
         /// </summary>
@@ -173,73 +186,66 @@ namespace BaconBackend.Managers
             var nonce = GetNonce();
 
             // Create the nav string
-            var tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
-                                     + "client_id=" + BaconitAppId
-                                     + "&response_type=code"
-                                     + "&state=" + nonce
-                                     + "&redirect_uri=" + BaconitRedirectUrl
-                                     + "&duration=permanent"
-                                     + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
-                                     + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
-                                     + "account,modtraffic,edit,modwiki,modself,history,flair";
+            var tokenRequestString = GetAuthRequestString(nonce);
 
             try
             {
                 var start = new Uri(tokenRequestString, UriKind.Absolute);
                 var end = new Uri(BaconitRedirectUrl, UriKind.Absolute);
+
                 var result = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, start, end);
 
                 switch (result.ResponseStatus)
                 {
                     case WebAuthenticationStatus.Success:
-                    {
-                        // Woot we got it! Parse out the token
-                        var startOfState = result.ResponseData.IndexOf("state=", StringComparison.Ordinal) + 6;
-                        var endOfState = result.ResponseData.IndexOf("&", startOfState, StringComparison.Ordinal);
-                        var startOfCode = result.ResponseData.IndexOf("code=", StringComparison.Ordinal) + 5;
-                        var endOfCode = result.ResponseData.IndexOf("&", startOfCode, StringComparison.Ordinal);
-
-                        // Make sure we found a code (result is -1 + 5 = 4)
-                        if(startOfCode == 4)
                         {
+                            // Woot we got it! Parse out the token
+                            var startOfState = result.ResponseData.IndexOf("state=", StringComparison.Ordinal) + 6;
+                            var endOfState = result.ResponseData.IndexOf("&", startOfState, StringComparison.Ordinal);
+                            var startOfCode = result.ResponseData.IndexOf("code=", StringComparison.Ordinal) + 5;
+                            var endOfCode = result.ResponseData.IndexOf("&", startOfCode, StringComparison.Ordinal);
+
+                            // Make sure we found a code (result is -1 + 5 = 4)
+                            if (startOfCode == 4)
+                            {
+                                return new UserManager.SignInResult
+                                {
+                                    Message = "Reddit returned an error!"
+                                };
+                            }
+
+                            // Check for the ends
+                            endOfCode = endOfCode == -1 ? result.ResponseData.Length : endOfCode;
+                            endOfState = endOfState == -1 ? result.ResponseData.Length : endOfState;
+
+                            var state = result.ResponseData.Substring(startOfState, endOfState - startOfState);
+                            var code = result.ResponseData.Substring(startOfCode, endOfCode - startOfCode);
+
+                            // Check the state
+                            if (nonce != state)
+                            {
+                                return new UserManager.SignInResult
+                                {
+                                    Message = "The state is not the same!"
+                                };
+                            }
+
+                            // Check the code
+                            if (string.IsNullOrWhiteSpace(code))
+                            {
+                                return new UserManager.SignInResult
+                                {
+                                    Message = "The code is empty!"
+                                };
+                            }
+
+                            // Return the code!
                             return new UserManager.SignInResult
                             {
-                                Message = "Reddit returned an error!"
+                                WasSuccess = true,
+                                Message = code
                             };
                         }
-
-                        // Check for the ends
-                        endOfCode = endOfCode == -1 ? result.ResponseData.Length : endOfCode;
-                        endOfState = endOfState == -1 ? result.ResponseData.Length : endOfState;
-
-                        var state = result.ResponseData.Substring(startOfState, endOfState - startOfState);
-                        var code = result.ResponseData.Substring(startOfCode, endOfCode - startOfCode);
-
-                        // Check the state
-                        if(nonce != state)
-                        {
-                            return new UserManager.SignInResult
-                            {
-                                Message = "The state is not the same!"
-                            };
-                        }
-
-                        // Check the code
-                        if(string.IsNullOrWhiteSpace(code))
-                        {
-                            return new UserManager.SignInResult
-                            {
-                                Message = "The code is empty!"
-                            };
-                        }
-
-                        // Return the code!
-                        return new UserManager.SignInResult
-                        {
-                            WasSuccess = true,
-                            Message = code
-                        };
-                    }
                     case WebAuthenticationStatus.ErrorHttp:
                         return new UserManager.SignInResult
                         {
@@ -257,7 +263,7 @@ namespace BaconBackend.Managers
                         };
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _mBaconMan.MessageMan.DebugDia("Failed to get request token", e);
                 return new UserManager.SignInResult
@@ -278,13 +284,15 @@ namespace BaconBackend.Managers
             try
             {
                 // Create the post data
-                var postData = new List<KeyValuePair<string, string>>();
-                postData.Add(new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"));
-                postData.Add(new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", code));
-                postData.Add(new KeyValuePair<string, string>("redirect_uri", BaconitRedirectUrl));
+                var postData = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
+                    new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", code),
+                    new KeyValuePair<string, string>("redirect_uri", BaconitRedirectUrl)
+                };
 
                 // Create the auth header
-                var byteArray = Encoding.UTF8.GetBytes(BaconitAppId+":");
+                var byteArray = Encoding.UTF8.GetBytes(BaconitAppId + ":");
                 var base64String = "Basic " + Convert.ToBase64String(byteArray);
                 var response = await NetworkManager.MakePostRequest(accessTokenRequest, postData, base64String);
                 var responseString = await response.ReadAsStringAsync();
@@ -308,17 +316,17 @@ namespace BaconBackend.Managers
         {
             // Try to get the new token
             var data = await GetAccessToken(code, isRefresh);
-            if(data == null)
+            if (data == null)
             {
                 return null;
             }
 
             // Set the expires time
-            data.ExpiresAt = DateTime.Now.AddSeconds(int.Parse(data.ExpiresIn));
+            data.ExpiresAt = DateTime.Now.AddSeconds(3600);
 
             // If this was a refresh the refresh token won't be given again.
             // So set it to the current token.
-            if(string.IsNullOrWhiteSpace(data.RefreshToken) && AccessTokenData != null)
+            if (string.IsNullOrWhiteSpace(data.RefreshToken) && AccessTokenData != null)
             {
                 data.RefreshToken = AccessTokenData.RefreshToken;
             }

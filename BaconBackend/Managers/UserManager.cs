@@ -46,12 +46,12 @@ namespace BaconBackend.Managers
         }
 
         private readonly BaconManager _baconMan;
-        private readonly AuthManager _authMan;
+        public readonly AuthManager AuthManager;
 
         public UserManager(BaconManager baconMan)
         {
             _baconMan = baconMan;
-            _authMan = new AuthManager(_baconMan);
+            AuthManager = new AuthManager(_baconMan);
         }
 
         /// <summary>
@@ -59,13 +59,18 @@ namespace BaconBackend.Managers
         /// </summary>
         public async Task<string> GetAccessToken()
         {
-            return await _authMan.GetAccessToken();
+            return await AuthManager.GetAccessToken();
+        }
+
+        public string GetAuthUrl(string nonce)
+        {
+            return AuthManager.GetAuthRequestString(nonce);
         }
 
         public async Task<SignInResult> SignInNewUser()
         {
             // Start the process by trying to auth a new user
-            var result = await _authMan.AuthNewUser();
+            var result = await AuthManager.AuthNewUser();
 
             // Check the result
             if(!result.WasSuccess)
@@ -97,7 +102,7 @@ namespace BaconBackend.Managers
         public void SignOut()
         {
             // Remove the auth
-            _authMan.DeleteCurrentAuth();
+            AuthManager.DeleteCurrentAuth();
 
             // Rest the current user object
             CurrentUser = null;
@@ -107,7 +112,7 @@ namespace BaconBackend.Managers
             FireOnUserUpdated(UserCallbackAction.Removed);
         }
 
-        private async Task<SignInResult> InternalUpdateUser()
+        public async Task<SignInResult> InternalUpdateUser()
         {
             try
             {
@@ -170,7 +175,7 @@ namespace BaconBackend.Managers
         /// <summary>
         /// Returns is a current user exists
         /// </summary>
-        public bool IsUserSignedIn => _authMan.IsUserSignedIn;
+        public bool IsUserSignedIn => AuthManager.IsUserSignedIn;
 
         /// <summary>
         /// Holds the current user information

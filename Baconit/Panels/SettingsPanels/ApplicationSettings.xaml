@@ -12,6 +12,7 @@
     <Grid x:Name="ApplicationSettingsRoot" Background="#333333">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
