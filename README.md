@@ -37,5 +37,3 @@ Todo. For now just match the style conventions used in the files.
 ###Special Thanks and Projects Used
 
 * [Json.Net](https://github.com/JamesNK/Newtonsoft.Json) - The most amazing json parser for C#.
-* [My Toolkit](https://github.com/MyToolkit/MyToolkit/wiki/YouTube) - Youtube video parsing and video discovery.
-
