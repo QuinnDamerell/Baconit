@@ -76,7 +76,7 @@ namespace Baconit.Panels
             // Ignore for now.
         }
 
-        private async void LoginButton_Click(object sender, RoutedEventArgs e)
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             TelemetryManager.ReportEvent(this, "LoginButtonClicked");
             var loginBegin = DateTime.Now;
