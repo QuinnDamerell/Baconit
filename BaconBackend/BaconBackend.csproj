@@ -110,6 +110,7 @@
     <Compile Include="DataObjects\DataContainer.cs" />
     <Compile Include="DataObjects\User.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Helpers\HashList.cs" />
     <Compile Include="Helpers\MiscellaneousHelper.cs" />
     <Compile Include="Helpers\RedditListHelper.cs" />

@@ -2,9 +2,11 @@
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using BaconBackend;
 
 
 namespace Baconit.Panels
@@ -232,24 +234,18 @@ namespace Baconit.Panels
 
         private UserManager.SignInResult ParseState(string url)
         {
-            var startOfState = url.IndexOf("state=", StringComparison.Ordinal) + 6;
-            var endOfState = url.IndexOf("&", startOfState, StringComparison.Ordinal);
-            var startOfCode = url.IndexOf("code=", StringComparison.Ordinal) + 5;
-            var endOfCode = url.IndexOf("&", startOfCode, StringComparison.Ordinal);
+            var parameters = new Uri(url).QueryDictionary();
 
-            if (startOfCode == 4)
+            var state = parameters.FirstOrDefault(p => p.Key.Equals("state", StringComparison.OrdinalIgnoreCase)).Value;
+            var code = parameters.FirstOrDefault(p => p.Key.Equals("code", StringComparison.OrdinalIgnoreCase)).Value;
+
+            if (string.IsNullOrWhiteSpace(state))
             {
                 return new UserManager.SignInResult
                 {
                     Message = "Reddit returned an error!"
                 };
             }
-
-            endOfCode = endOfCode == -1 ? url.Length : endOfCode;
-            endOfState = endOfState == -1 ? url.Length : endOfState;
-
-            var state = url.Substring(startOfState, endOfState - startOfState);
-            var code = url.Substring(startOfCode, endOfCode - startOfCode);
 
             // Check the state
             if (_nonce != state)
