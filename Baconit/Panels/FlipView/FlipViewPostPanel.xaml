@@ -40,14 +40,14 @@
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
 
-                        <DoubleAnimation x:Name="ui_animHeaderSubtextTranslate"
+                        <!--<DoubleAnimation x:Name="ui_animHeaderSubtextTranslate"
                                          Duration="0:0:0.95"
                                          Storyboard.TargetName="ui_headerSubtextTransform"
                                          Storyboard.TargetProperty="Y">
                             <DoubleAnimation.EasingFunction>
                                 <QuinticEase EasingMode="EaseOut" />
                             </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
+                        </DoubleAnimation>-->
 
                         <DoubleAnimation x:Name="ui_animHeaderIconsTranslate"
                                          Duration="0:0:0.8"

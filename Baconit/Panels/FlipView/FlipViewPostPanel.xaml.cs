@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using BaconBackend;
 using BaconBackend.Managers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -296,7 +297,7 @@ namespace Baconit.Panels.FlipView
                 }
                 if (!string.IsNullOrWhiteSpace(url))
                 {
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri(url, UriKind.Absolute));
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(url.UseOldReddit(), UriKind.Absolute));
                     TelemetryManager.ReportEvent(this, "OpenInBrowser");
                 }
             }
@@ -1054,7 +1055,7 @@ namespace Baconit.Panels.FlipView
                     var storyboard = (Storyboard)_stickyHeader.FindName("ui_storyCollapseHeader");
                     var animBody = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderBodyTranslate");
                     var animTitle = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderTitleTranslate");
-                    var animSubtext = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
+                    //var animSubtext = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderSubtextTranslate");
                     var animIcons = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderIconsTranslate");
                     var animFullscreenButton = (DoubleAnimation)_stickyHeader.FindName("ui_animHeaderFullscreenButtonRotate");
                     var stickyGrid = (Grid)_stickyHeader.FindName("ui_storyHeaderBlock");
@@ -1086,11 +1087,11 @@ namespace Baconit.Panels.FlipView
                             animTitle.From = animFrom;
                         }
 
-                        if (animSubtext != null)
-                        {
-                            animSubtext.To = animTo;
-                            animSubtext.From = animFrom;
-                        }
+                        //if (animSubtext != null)
+                        //{
+                        //    animSubtext.To = animTo;
+                        //    animSubtext.From = animFrom;
+                        //}
 
                         if (animIcons != null)
                         {
@@ -1156,14 +1157,14 @@ namespace Baconit.Panels.FlipView
 
                     // For the sticky header reset the transforms.
                     var titleTrans = (TranslateTransform)_storyHeader.FindName("ui_headerTitleTransform");
-                    var subtextTrans = (TranslateTransform)_storyHeader.FindName("ui_headerSubtextTransform");
+                    //var subtextTrans = (TranslateTransform)_storyHeader.FindName("ui_headerSubtextTransform");
                     var iconTrans = (TranslateTransform)_storyHeader.FindName("ui_headerIconsTransform");
                     var bodyTrans = (TranslateTransform)_storyHeader.FindName("ui_headerBodyTransform");
                     var stickyGrid = (Grid)_stickyHeader.FindName("ui_storyHeaderBlock");
                     if (stickyGrid == null) return;
                     var setTo = goFullscreen ? -stickyGrid.ActualHeight : 0;
                     if (titleTrans != null) titleTrans.Y = setTo;
-                    if (subtextTrans != null) subtextTrans.Y = setTo;
+                    //if (subtextTrans != null) subtextTrans.Y = setTo;
                     if (iconTrans != null) iconTrans.Y = setTo;
                     if (bodyTrans != null) bodyTrans.Y = setTo;
                 }

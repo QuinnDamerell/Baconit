@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
+using BaconBackend;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -148,7 +149,7 @@ namespace Baconit.HelperControls
         {
             try
             {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri(_mSource.Url, UriKind.Absolute));
+                await Windows.System.Launcher.LaunchUriAsync(new Uri(_mSource.Url.ToLowerInvariant().UseOldReddit(), UriKind.Absolute));
             }
             catch(Exception)
             { }
@@ -193,14 +194,21 @@ namespace Baconit.HelperControls
         {
             lock (this)
             {
-                if (State == GlobalContentStates.Opening)
+                switch (State)
                 {
-                    State = GlobalContentStates.Showing;
-                }
-                else if (State == GlobalContentStates.Closing)
-                {
-                    State = GlobalContentStates.Idle;
-                    CloseComplete();
+                    case GlobalContentStates.Opening:
+                        State = GlobalContentStates.Showing;
+                        break;
+                    case GlobalContentStates.Closing:
+                        State = GlobalContentStates.Idle;
+                        CloseComplete();
+                        break;
+                    case GlobalContentStates.Idle:
+                        break;
+                    case GlobalContentStates.Showing:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }

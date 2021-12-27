@@ -26,7 +26,7 @@ namespace Baconit.ContentPanels.Panels
 
         public static bool CanHandlePost(ContentPanelSource source)
         {
-            return source.IsVideo && !string.IsNullOrWhiteSpace(source.VideoUrl.AbsoluteUri);
+            return source.IsRedditVideo && !string.IsNullOrWhiteSpace(source.VideoUrl.AbsoluteUri);
         }
 
         public void OnPrepareContent()

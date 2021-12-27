@@ -1,6 +1,8 @@
 ﻿using BaconBackend.Collectors;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
@@ -184,6 +186,31 @@ namespace BaconBackend.DataObjects
 
         [JsonProperty(PropertyName = "post_hint")]
         public string PostHint { get; set; }
+        
+        [JsonProperty(PropertyName = "gallery_data")]
+        public GalleryData GalleryData { get; set; }
+
+        [JsonProperty(PropertyName = "media_metadata")]
+        public dynamic MediaMetaData { get; set; }
+
+        public IEnumerable<MediaImage> GetMediaImages()
+        {
+            var images = new List<MediaImage>();
+            if (MediaMetaData == null) return images;
+            var jObject = new Newtonsoft.Json.Linq.JObject(MediaMetaData);
+            images.AddRange(
+                from property in jObject.Properties().Where(p => p.HasValues) 
+                let jt = property.Value["s"]?["u"] 
+                where jt != null 
+                select new MediaImage { Id = property.Name, Url = jt.ToString() });
+            return images;
+        }
+
+        public class MediaImage
+        {
+            public string Id { get; set; }
+            public string Url { get; set; }
+        }
 
         [JsonIgnore]
         public bool IsVideo => !string.IsNullOrWhiteSpace(PostHint) && PostHint.Contains("video");
@@ -606,7 +633,25 @@ namespace BaconBackend.DataObjects
         #endregion
     }
 
-    
+    public class GalleryData
+    {
+        [JsonProperty(PropertyName = "items")]
+        public IEnumerable<GalleryMedia> Items { get; set; }
+    }
+
+    public class GalleryMedia
+    {
+        [JsonProperty(PropertyName = "media_id")]
+        public string MediaId { get; set; }
+        [JsonProperty(PropertyName = "id")]
+        public long Id { get; set; }
+    }
+
+    public class MediaMetaData
+    {
+
+    }
+
     public class SecureMedia
     {
         [JsonProperty(PropertyName = "reddit_video")]

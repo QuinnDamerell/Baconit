@@ -22,5 +22,17 @@ namespace BaconBackend
                        .FirstOrDefault()// before #
                    ?? new Dictionary<string, string>();
         }
+
+        public static string UseOldReddit(this string url)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return url;
+            var tempUrl = url.ToLowerInvariant();
+            if (tempUrl.Contains("www.reddit") && tempUrl.Contains("comments/"))
+            {
+                url = url.Replace("www.reddit", "old.reddit");
+            }
+
+            return url;
+        }
     }
 }

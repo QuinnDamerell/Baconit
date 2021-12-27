@@ -19,7 +19,7 @@ namespace Baconit.ContentPanels
         public bool ForceWeb = false;
 
         public bool IsVideo = false;
-
+        public bool IsRedditVideo = false;
         public Uri VideoUrl;
 
         // Make a private constructor so they can be only created by
@@ -37,13 +37,15 @@ namespace Baconit.ContentPanels
                 Subreddit = post.Subreddit,
                 IsNsfw = post.IsOver18,
                 IsSelf = post.IsSelf,
-                IsVideo = post.IsVideo && post.SecureMedia.RedditVideo != null
+                IsVideo = post.IsVideo,
+                IsRedditVideo = post.SecureMedia?.RedditVideo?.Url != null
             };
 
-            if (source.IsVideo)
+            if (source.IsRedditVideo)
             {
-                source.VideoUrl = new Uri(post.SecureMedia?.RedditVideo?.Url);
+                source.VideoUrl = new Uri(post.SecureMedia.RedditVideo.Url);
             }
+
             return source;
         }
 
