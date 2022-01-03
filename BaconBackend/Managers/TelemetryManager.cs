@@ -118,12 +118,12 @@ namespace BaconBackend.Managers
         {
             get
             {
-                if (!_baconMan.UiSettingsMan.DisableAnalyticCollection && _telemetryClient == null)
+                if (_baconMan.UiSettingsMan.AnalyticCollection && _telemetryClient == null)
                 {
                     _telemetryClient = new TelemetryClient();
                 }
 
-                if (_baconMan.UiSettingsMan.DisableAnalyticCollection)
+                if (_baconMan.UiSettingsMan.AnalyticCollection == false)
                 {
                     _telemetryClient = null;
                 }

@@ -2,12 +2,14 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using BaconBackend.Helpers.RedGif;
 using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
@@ -39,15 +41,16 @@ namespace Baconit.ContentPanels.Panels
         /// Called by the host when it queries if we can handle a post.
         /// </summary>
         /// <param name="post"></param>
+        /// <param name="source"></param>
         /// <returns></returns>
         public static bool CanHandlePost(ContentPanelSource source)
         {
             // See if we can find a imgur, gfycat gif, or a normal gif we can send to gfycat.
-            if (string.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) && string.IsNullOrWhiteSpace(GetGifUrl(source.Url)))
-            {
-                return false;
-            }
-            return true;
+            return 
+                !string.IsNullOrWhiteSpace(GetImgurUrl(source.Url)) || 
+                !string.IsNullOrWhiteSpace(GetGfyCatApiUrl(source.Url)) || 
+                !string.IsNullOrWhiteSpace(GetRedGifUrl(source.Url)) || 
+                !string.IsNullOrWhiteSpace(GetGifUrl(source.Url));
         }
 
         #region IContentPanel
@@ -67,14 +70,23 @@ namespace Baconit.ContentPanels.Panels
             // Run the rest on a background thread.
             Task.Run(async () =>
             {
-                // Try to get the imgur url
-                var gifUrl = GetImgurUrl(_mBase.Source.Url);
+                var gifUrl = GetRedGifUrl(_mBase.Source.Url);
 
-                // If that failed try to get a url from GfyCat
-                if (gifUrl.Equals(string.Empty))
+                if (!string.IsNullOrWhiteSpace(gifUrl))
                 {
-                    // We have to get it from gfycat
-                    gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(_mBase.Source.Url));
+                    gifUrl = await GetRedGifUrlFromWatchUrl(gifUrl);
+                }
+                else
+                {
+                    // Try to get the imgur url
+                    gifUrl = GetImgurUrl(_mBase.Source.Url);
+
+                    // If that failed try to get a url from GfyCat
+                    if (gifUrl.Equals(string.Empty))
+                    {
+                        // We have to get it from gfycat
+                        gifUrl = await GetGfyCatGifUrl(GetGfyCatApiUrl(_mBase.Source.Url));
+                    }
                 }
 
                 // Since some of this can be costly, delay the work load until we aren't animating.
@@ -97,8 +109,10 @@ namespace Baconit.ContentPanels.Panels
                         }
 
                         // Create the media element
-                        _mGifVideo = new MediaElement();
-                        _mGifVideo.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        _mGifVideo = new MediaElement
+                        {
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
                         _mGifVideo.Tapped += OnVideoTapped;
                         _mGifVideo.CurrentStateChanged += OnVideoCurrentStateChanged;
                         _mGifVideo.IsLooping = true;
@@ -221,6 +235,16 @@ namespace Baconit.ContentPanels.Panels
         #region Gif Url Parsing
 
         /// <summary>
+        /// Tries to get a RedGif url
+        /// </summary>
+        /// <param name="postUrl"></param>
+        /// <returns></returns>
+        private static string GetRedGifUrl(string postUrl)
+        {
+            return postUrl.Contains("redgifs.com/watch/") ? postUrl : string.Empty;
+        }
+
+        /// <summary>
         /// Tries to get a Imgur gif url
         /// </summary>
         /// <param name="postUrl"></param>
@@ -231,20 +255,17 @@ namespace Baconit.ContentPanels.Panels
             // have case sensitive urls.
             var postUrlLower = postUrl.ToLower();
 
+            if (!postUrlLower.Contains("imgur.com")) return string.Empty;
+
             // Check for imgur gifv
-            if (postUrlLower.Contains(".gifv") && postUrlLower.Contains("imgur.com"))
+            if (postUrlLower.Contains(".gifv"))
             {
                 // If the link is imgur, replace the .gifv with a .mp4 and we should get a video back.
                 return postUrl.Replace(".gifv", ".mp4");
             }
-            // Check for imgur gif
-            if (postUrlLower.Contains(".gif") && postUrlLower.Contains("imgur.com"))
-            {
-                // If the link is imgur, replace the .gifv with a .mp4 and we should get a video back.
-                return postUrl.Replace(".gif", ".mp4");
-            }
 
-            return string.Empty;
+            // Check for imgur gif
+            return postUrlLower.Contains(".gif") ? postUrl.Replace(".gif", ".mp4") : string.Empty;
         }
 
         /// <summary>
@@ -259,13 +280,12 @@ namespace Baconit.ContentPanels.Panels
             var postUrlLower = postUrl.ToLower();
 
             var lastSlash = postUrlLower.LastIndexOf('/');
-            if(lastSlash != -1)
+            if (lastSlash == -1) return string.Empty;
+
+            var urlEnding = postUrlLower.Substring(lastSlash);
+            if(urlEnding.Contains(".gif") || urlEnding.Contains(".gif?"))
             {
-                var urlEnding = postUrlLower.Substring(lastSlash);
-                if(urlEnding.Contains(".gif") || urlEnding.Contains(".gif?"))
-                {
-                    return postUrl;
-                }
+                return postUrl;
             }
             return string.Empty;
         }
@@ -300,6 +320,37 @@ namespace Baconit.ContentPanels.Panels
         }
 
 #pragma warning restore
+
+        /// <summary>
+        /// Gets a video url from redgif
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private async Task<string> GetRedGifUrlFromWatchUrl(string url)
+        {
+            // Return if we have nothing.
+            if (url.Equals(string.Empty))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var lastSegment = new Uri(url).Segments.Last();
+
+                // Make the call
+                var result = await RedGifHelper.GetVideoInfoAsync(lastSegment);
+                return result?.DataInfo?.VideoInfo == null ? url : result.DataInfo.VideoInfo.StandardDefUrl;
+            }
+            catch (Exception e)
+            {
+                App.BaconMan.MessageMan.DebugDia("failed to get image from redgif", e);
+                TelemetryManager.ReportUnexpectedEvent(this, "FailedRedGifApiCall", e);
+            }
+
+            return string.Empty;
+        }
+
 
         /// <summary>
         /// Gets a video url from gfycat

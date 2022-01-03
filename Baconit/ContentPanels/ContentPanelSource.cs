@@ -1,5 +1,7 @@
 ﻿using BaconBackend.DataObjects;
 using System;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Baconit.ContentPanels
 {
@@ -21,6 +23,7 @@ namespace Baconit.ContentPanels
         public bool IsVideo = false;
         public bool IsRedditVideo = false;
         public Uri VideoUrl;
+        public bool IsImageGallery = false;
 
         // Make a private constructor so they can be only created by
         // this class internally.
@@ -38,7 +41,8 @@ namespace Baconit.ContentPanels
                 IsNsfw = post.IsOver18,
                 IsSelf = post.IsSelf,
                 IsVideo = post.IsVideo,
-                IsRedditVideo = post.SecureMedia?.RedditVideo?.Url != null
+                IsRedditVideo = post.SecureMedia?.RedditVideo?.Url != null,
+                IsImageGallery = post.GalleryData?.Items?.Count() > 0
             };
 
             if (source.IsRedditVideo)
@@ -53,6 +57,15 @@ namespace Baconit.ContentPanels
         {
             var source = new ContentPanelSource {Id = CGenericIdBase + DateTime.Now.Ticks, Url = url};
             return source;
+        }
+
+        public override string ToString()
+        {
+#if DEBUG
+            return JsonConvert.SerializeObject(this);
+#else  
+            return base.ToString();
+#endif
         }
     }
 }

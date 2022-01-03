@@ -125,7 +125,8 @@
                                 Visibility="{x:Bind StickyVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="Sticky" />
+                                       Text="Sticky" 
+                                       FontSize="12" />
                         </Border>
                         <Border Margin="0,0,8,0"
                                 HorizontalAlignment="Left"
@@ -134,7 +135,8 @@
                                 Visibility="{x:Bind FlairVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="#DDFFFFFF"
-                                       Text="{x:Bind LinkFlairText}" />
+                                       Text="{x:Bind LinkFlairText}" 
+                                       FontSize="12" />
                         </Border>
                         <Border HorizontalAlignment="Left"
                                 Background="#A88745"
@@ -142,7 +144,19 @@
                                 Visibility="{x:Bind GildedVisibility}">
                             <TextBlock Margin="6,2,6,2"
                                        Foreground="White"
-                                       Text="Gilded" />
+                                       Text="Gilded" 
+                                       FontSize="12" />
+                        </Border>
+                        <Border HorizontalAlignment="Left"
+                                Background="Transparent"
+                                CornerRadius="2"
+                                BorderBrush="DarkRed"
+                                BorderThickness="1"
+                                Visibility="{x:Bind IsOver18}">
+                            <TextBlock Margin="6,2,6,2"
+                                       Foreground="Gray"
+                                       Text="NSFW" 
+                                       FontSize="12" />
                         </Border>
                     </StackPanel>
                 </StackPanel>

@@ -222,7 +222,7 @@ namespace BaconBackend.Managers
                 };
 
                 // Make the call
-                var jsonResponse = await _baconMan.NetworkMan.MakeRedditPostRequestAsString($"/api/subscribe", postData);
+                var jsonResponse = await _baconMan.NetworkMan.MakeRedditPostRequestAsString("/api/subscribe", postData);
 
                 // Validate the response
                 if (jsonResponse.Contains("{}"))
@@ -297,63 +297,59 @@ namespace BaconBackend.Managers
         /// This function handles subreddits that are being parsed from the web. It will add
         /// any subreddits that need to be added
         /// </summary>
-        private void HandleSubredditsFromWeb(List<Subreddit> subreddits)
+        private void HandleSubredditsFromWeb(IList<Subreddit> subreddits)
         {
+            subreddits = subreddits.OrderBy(p => p.DisplayName).ToList();
+
             // Add the defaults
             // #todo figure out what to add here
-            var subreddit = new Subreddit
-            {
-                DisplayName = "all",
-                Title = "The top of reddit",
-                Id = "all",
-                IsArtificial = true
-            };
-            subreddits.Add(subreddit);
-            subreddit = new Subreddit
+            subreddits.Insert(0, new Subreddit
             {
                 DisplayName = "frontpage",
                 Title = "Your front page",
                 Id = "frontpage",
                 IsArtificial = true
-            };
-            subreddits.Add(subreddit);
+            });
+            subreddits.Insert(0, new Subreddit
+            {
+                DisplayName = "all",
+                Title = "The top of reddit",
+                Id = "all",
+                IsArtificial = true
+            });
 
             if(!_baconMan.UserMan.IsUserSignedIn)
             {
                 // If the user isn't signed in add baconit, windowsphone, and windows for free!
-                subreddit = new Subreddit
+                subreddits.Add(new Subreddit
                 {
                     DisplayName = "baconit",
                     Title = "The best reddit app ever!",
                     Id = "2rfk9"
-                };
-                subreddits.Add(subreddit);
-                subreddit = new Subreddit
+                });
+                subreddits.Add(new Subreddit
                 {
                     DisplayName = "windowsphone",
                     Title = "Everything Windows Phone!",
                     Id = "2r71o"
-                };
-                subreddits.Add(subreddit);
-                subreddit = new Subreddit
+                });
+                subreddits.Add(new Subreddit
                 {
                     DisplayName = "windows",
                     Title = "Windows",
                     Id = "2qh3k"
-                };
-                subreddits.Add(subreddit);
+                });
             }
             else
             {
                 // If the user is signed in, add the saved subreddit.
-                subreddit = new Subreddit
+                subreddits.Insert(2, new Subreddit
                 {
                     DisplayName = "saved",
                     Title = "Your saved posts",
                     Id = "saved",
                     IsArtificial = true
-                };
-                subreddits.Add(subreddit);
+                });
             }
 
             // Send them on
@@ -451,7 +447,10 @@ namespace BaconBackend.Managers
                 if (_subredditList != null) return _subredditList;
                 if(_baconMan.SettingsMan.LocalSettings.ContainsKey("SubredditManager.SubredditList"))
                 {
-                    _subredditList = _baconMan.SettingsMan.ReadFromLocalSettings<List<Subreddit>>("SubredditManager.SubredditList");
+                    _subredditList = 
+                        _baconMan
+                            .SettingsMan
+                            .ReadFromLocalSettings<List<Subreddit>>("SubredditManager.SubredditList");
                 }
                 else
                 {

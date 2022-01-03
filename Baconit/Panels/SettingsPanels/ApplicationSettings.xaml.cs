@@ -37,7 +37,7 @@ namespace Baconit.Panels.SettingsPanels
 
             _takeAction = false;
             TelemetryManager.ReportEvent(this, "ApplicationSettings");
-            DisableAnalyticCollection.IsOn = App.BaconMan.UiSettingsMan.DisableAnalyticCollection;
+            AnalyticCollection.IsOn = App.BaconMan.UiSettingsMan.AnalyticCollection;
             _takeAction = true;
         }
 
@@ -47,13 +47,13 @@ namespace Baconit.Panels.SettingsPanels
 
         public void OnReduceMemory() { }
 
-        private void DisableAnalyticCollectionToggle(object sender, RoutedEventArgs e)
+        private void AnalyticCollectionToggle(object sender, RoutedEventArgs e)
         {
             if(!_takeAction)
             {
                 return;
             }
-            App.BaconMan.UiSettingsMan.DisableAnalyticCollection = DisableAnalyticCollection.IsOn;
+            App.BaconMan.UiSettingsMan.AnalyticCollection = AnalyticCollection.IsOn;
         }
     }
 }

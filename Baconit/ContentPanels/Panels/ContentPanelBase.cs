@@ -1,8 +1,10 @@
 ﻿using Baconit.Interfaces;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
 using BaconBackend.Managers;
 
 namespace Baconit.ContentPanels.Panels
@@ -238,7 +240,8 @@ namespace Baconit.ContentPanels.Panels
 
         #region Create Control
 
-        public static Type GetControlType(ContentPanelSource source, object callingClass = null) {
+        public static Type GetControlType(ContentPanelSource source, object callingClass = null)
+        {
             try
             {
                 if (GifImageContentPanel.CanHandlePost(source))
@@ -280,6 +283,7 @@ namespace Baconit.ContentPanels.Panels
                 App.BaconMan.MessageMan.DebugDia("Failed to query can handle post", e);
                 TelemetryManager.ReportUnexpectedEvent(callingClass, "FailedToQueryCanHandlePost", e);
             }
+
             return typeof(WebPageContentPanel);
         }
 
@@ -321,6 +325,11 @@ namespace Baconit.ContentPanels.Panels
                     {
                         // Create the panel
                         Panel = (IContentPanel)Activator.CreateInstance(controlType, this);
+
+#if DEBUG
+                        Debug.WriteLine($"Content Panel: {controlType.Name}");
+                        Debug.WriteLine($"Source: {source}");
+#endif
 
                         // Fire OnPrepareContent 
                         Panel.OnPrepareContent();

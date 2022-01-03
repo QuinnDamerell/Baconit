@@ -502,6 +502,12 @@ namespace BaconBackend.DataObjects
 
         [JsonIgnore] public Visibility HasIcons => Gilded || IsStickied ? Visibility.Visible : Visibility.Collapsed;
 
+        /// <summary>
+        /// Used by the subreddit list to show or hide NSFW tag
+        /// </summary>
+        [JsonIgnore]
+        public Visibility NsfwVisibility => IsOver18 ? Visibility.Visible : Visibility.Collapsed;
+
         #region FlipView Vars
 
 

@@ -114,6 +114,7 @@
     <Compile Include="Helpers\HashList.cs" />
     <Compile Include="Helpers\MiscellaneousHelper.cs" />
     <Compile Include="Helpers\RedditListHelper.cs" />
+    <Compile Include="Helpers\RedGif\RedGifHelper.cs" />
     <Compile Include="Helpers\RefCountedDeferral.cs" />
     <Compile Include="Helpers\SmartWeakEvent.cs" />
     <Compile Include="Helpers\TimeToTextHelper.cs" />
@@ -168,6 +169,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -113,36 +113,36 @@ namespace BaconBackend.Managers
         }
         private bool? _developerShowMemoryOverlay;
 
-        public bool DisableAnalyticCollection
+        public bool AnalyticCollection
         {
             get
             {
                 var hasValue =
                     _baconMan.SettingsMan.RoamingSettings.ContainsKey(
-                        "UiSettingManager.Developer_DisableAnalyticCollection");
+                        "UiSettingManager.Developer_AnalyticCollection");
 
                 if (hasValue)
                 {
-                    _disableAnalyticCollection =
+                    _analyticCollection =
                         _baconMan.SettingsMan.ReadFromRoamingSettings<bool>(
-                            "UiSettingManager.Developer_DisableAnalyticCollection");
+                            "UiSettingManager.Developer_AnalyticCollection");
                 }
-                return _disableAnalyticCollection;
+                return _analyticCollection;
             }
             set
             {
-                if (_disableAnalyticCollection == value) return;
-                _disableAnalyticCollection = value;
+                if (_analyticCollection == value) return;
+                _analyticCollection = value;
                 _baconMan.SettingsMan.WriteToRoamingSettings(
-                    "UiSettingManager.Developer_DisableAnalyticCollection", 
-                    _disableAnalyticCollection);
+                    "UiSettingManager.Developer_AnalyticCollection", 
+                    _analyticCollection);
                 if (value)
                 {
                     _baconMan.TelemetryMan.ReportEvent(this, "AnalyticCollectionEnabled", "true");
                 }
             }
         }
-        private bool _disableAnalyticCollection = true;
+        private bool _analyticCollection;
 
         #endregion
 

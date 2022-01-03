@@ -61,7 +61,7 @@ namespace BaconBackend.DataObjects
         /// <summary>
         /// Indicates this is not a real subreddit, we made it up.
         /// </summary>
-        [JsonProperty(PropertyName = "isArtifical")]
+        [JsonProperty(PropertyName = "isArtificial")]
         public bool IsArtificial { get; set; }        
 
         /// <summary>
@@ -81,10 +81,10 @@ namespace BaconBackend.DataObjects
             {
                 if (!IsFavorite) return new SolidColorBrush(Color.FromArgb(153, 255, 255, 255));
                 var accentBrush = (SolidColorBrush)Application.Current.Resources["SystemControlBackgroundAccentBrush"];
-                var accentcolor = accentBrush.Color;
-                accentcolor.B = (byte)Math.Min(255, accentBrush.Color.B + 50);
-                accentcolor.R = (byte)Math.Min(255, accentBrush.Color.R + 50);
-                accentcolor.G = (byte)Math.Min(255, accentBrush.Color.G + 50);
+                var accentBrushColor = accentBrush.Color;
+                accentBrushColor.B = (byte)Math.Min(255, accentBrush.Color.B + 50);
+                accentBrushColor.R = (byte)Math.Min(255, accentBrush.Color.R + 50);
+                accentBrushColor.G = (byte)Math.Min(255, accentBrush.Color.G + 50);
                 return accentBrush;
 
             }
