@@ -165,7 +165,7 @@ namespace BaconBackend.Managers
 
         public string GetAuthRequestString(string nonce)
         {
-            return "https://reddit.com/api/v1/authorize.compact?"
+            return "https://old.reddit.com/api/v1/authorize.compact?"
                    + "client_id=" + BaconitAppId
                    + "&response_type=code"
                    + "&state=" + nonce
@@ -280,7 +280,7 @@ namespace BaconBackend.Managers
         private async Task<AccessTokenResult> GetAccessToken(string code, bool isRefresh)
         {
             // Create the nav string
-            const string accessTokenRequest = "https://www.reddit.com/api/v1/access_token";
+            const string accessTokenRequest = "https://old.reddit.com/api/v1/access_token";
             try
             {
                 // Create the post data
