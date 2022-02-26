@@ -227,7 +227,7 @@ namespace BaconBackend.Managers
                 // Validate the response
                 if (jsonResponse.Contains("{}"))
                 {
-                    AddRecentlyChangedSubedSubreddit(subredditId, subscribe);
+                    AddRecentlyChangedSubbedSubreddit(subredditId, subscribe);
                     return true;
                 }
 
@@ -244,7 +244,7 @@ namespace BaconBackend.Managers
             return false;
         }
 
-        private void AddRecentlyChangedSubedSubreddit(string subredditId, bool subscribe)
+        private void AddRecentlyChangedSubbedSubreddit(string subredditId, bool subscribe)
         {
             if (!subscribe)
             {

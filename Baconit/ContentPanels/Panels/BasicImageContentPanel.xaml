@@ -3,13 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+             xmlns:viewmodel="using:Baconit.ContentPanels.Panels"
+             xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
              d:DesignHeight="300"
              d:DesignWidth="400"
              mc:Ignorable="d">
 
+    <UserControl.DataContext>
+        <viewmodel:ImageViewModel x:Name="ImageViewModel" />
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter 
+            x:Name="BoolToVisibilityConverter" 
+            TrueValue="Visible" 
+            FalseValue="Collapsed"/>
+    </UserControl.Resources>
     <Grid x:Name="ui_contentRoot"
-          Background="#191919"
-          SizeChanged="ContentRoot_SizeChanged">
+          Background="#191919">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">
                 <MenuFlyoutItem Click="SaveImage_Click" Text="Save image" />
@@ -49,13 +66,66 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <ScrollViewer x:Name="ui_scrollViewer"
+        <FlipView x:Name="ImageFlipView" Grid.Row="1" ItemsSource="{Binding Images}" Background="#191919">
+
+            <!-- Use a vertical stack panel for vertical flipping. -->
+            <FlipView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </FlipView.ItemsPanel>
+
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <controls:ImageEx 
+                            Source="{Binding Uri}" 
+                            Stretch="Uniform" 
+                            RightTapped="ContentRoot_RightTapped" 
+                            Holding="ContentRoot_Holding" />
+                        <Border 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Right" 
+                            Background="Gray" 
+                            CornerRadius="8" 
+                            Padding="7" 
+                            Margin="0,0,10,10"
+                            Visibility="{Binding DataContext.IsGallery, ElementName=ImageFlipView, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock>
+                                <Run Text="{Binding Index}"/> / <Run Text="{Binding DataContext.ImageCount, ElementName=ImageFlipView}"/>
+                            </TextBlock>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+
+        <!--<ScrollViewer x:Name="ui_scrollViewer"
                       HorizontalScrollBarVisibility="Auto"
                       IsZoomInertiaEnabled="True"
                       Style="{StaticResource ScrollViewerStyle}"
                       VerticalScrollBarVisibility="Auto"
                       ViewChanged="ScrollViewer_ViewChanged"
                       ViewChanging="ScrollViewer_ViewChanging"
-                      ZoomMode="Enabled" />
+                      ZoomMode="Enabled">
+            <FlipView x:Name="FlipViewVertical">
+    
+                -->
+        <!-- Use a vertical stack panel for vertical flipping. -->
+        <!--
+                <FlipView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </FlipView.ItemsPanel>
+    
+                <FlipView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                        </Grid>
+                    </DataTemplate>
+                </FlipView.ItemTemplate>
+            </FlipView>
+        </ScrollViewer>-->
     </Grid>
 </UserControl>

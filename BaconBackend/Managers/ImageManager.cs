@@ -296,14 +296,14 @@ namespace BaconBackend.Managers
                         }
 
                         // Write the file.
-                        var file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now.ToString("MM-dd-yy H.mm.ss")}.jpg");
+                        var file = await savedPicturesFolder.CreateFileAsync($"Baconit Saved Image {DateTime.Now:MM-dd-yy H.mm.ss}.jpg");
                         using (var fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
                         {
                             await RandomAccessStream.CopyAndCloseAsync(response.ImageStream.GetInputStreamAt(0), fileStream.GetOutputStreamAt(0));
                         }
 
                         // Tell the user
-                        _baconMan.MessageMan.ShowMessageSimple("Image Saved", "You can find the image in the 'Saved Pictures' folder in your photos library.");
+                        _baconMan.MessageMan.ShowMessageSimple("Image Saved", "You can find the image(s) in the 'Saved Pictures' folder in your photos library.");
                     }
                     catch(Exception ex)
                     {

@@ -4,7 +4,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dataObjects="using:BaconBackend.DataObjects"
              xmlns:helperControls="using:Baconit.HelperControls"
-             xmlns:local="using:Baconit.Panels"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:universalMarkdown="using:UniversalMarkdown"
              RequestedTheme="Dark"

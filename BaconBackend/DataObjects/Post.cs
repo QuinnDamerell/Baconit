@@ -2,11 +2,13 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Newtonsoft.Json.Linq;
 
 namespace BaconBackend.DataObjects
 {
@@ -190,28 +192,61 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "gallery_data")]
         public GalleryData GalleryData { get; set; }
 
-        [JsonProperty(PropertyName = "media_metadata")]
-        public dynamic MediaMetaData { get; set; }
+        private dynamic _mediaMetaData;
 
-        public IEnumerable<MediaImage> GetMediaImages()
+        [JsonProperty(PropertyName = "media_metadata")]
+        public dynamic MediaMetaData
         {
-            var images = new List<MediaImage>();
-            if (MediaMetaData == null) return images;
-            var jObject = new Newtonsoft.Json.Linq.JObject(MediaMetaData);
-            images.AddRange(
-                from property in jObject.Properties().Where(p => p.HasValues) 
-                let jt = property.Value["s"]?["u"] 
-                where jt != null 
-                select new MediaImage { Id = property.Name, Url = jt.ToString() });
-            return images;
+            get => _mediaMetaData;
+            set
+            {
+                _mediaMetaData = value;
+                MediaImages = GetMediaImages();
+            }
         }
 
-        public class MediaImage
+        public bool IsGallery => MediaImages.Any();
+
+        public IEnumerable<MediaImage> MediaImages { get; internal set; } = new List<MediaImage>();
+
+        internal IEnumerable<MediaImage> GetMediaImages()
         {
-            public string Id { get; set; }
+            if (MediaMetaData == null) return new List<MediaImage>();
+            var jObject = new JObject(MediaMetaData);
+            var props = jObject.Properties().Where(p => p.HasValues);
+
+            var previewImages = new List<PreviewMediaImage>();
+            foreach (var prop in props)
+            {
+                var children = prop.Children().ToList();
+                var previews = children.SelectMany(p => p["p"]).Select(p => p.ToObject<PreviewMediaImage>()).Where(p => p != null).OrderBy(p => p.Width).ToList();
+                if (previews.Count.Equals(0))
+                {
+                    continue;
+                }
+                var preview = previews.Any(p => p.Width > 640) ? previews.First(p => p.Width > 640) : previews.Last();
+                preview.MediaId = prop.Name;
+                previewImages.Add(preview);
+            }
+
+            return previewImages.Where(p => p != null && !string.IsNullOrWhiteSpace(p.Url)).Select(p => new MediaImage
+            {
+                Uri = new Uri(p.Url),
+                Url = p.Url,
+                Id = p.MediaId
+            });
+        }
+
+        internal class PreviewMediaImage
+        {
+            public string MediaId { get; set; }
+            [JsonProperty(PropertyName = "y")]
+            public int Height { get; set; }
+            [JsonProperty(PropertyName = "x")]
+            public int Width { get; set; }
+            [JsonProperty(PropertyName = "u")]
             public string Url { get; set; }
         }
-
         [JsonIgnore]
         public bool IsVideo => !string.IsNullOrWhiteSpace(PostHint) && PostHint.Contains("video");
 
@@ -637,6 +672,14 @@ namespace BaconBackend.DataObjects
         public Visibility FlipViewShowLoadingMoreCommentsVis => _flipViewShowLoadingMoreComments ? Visibility.Visible : Visibility.Collapsed;
 
         #endregion
+    }
+
+    public class MediaImage
+    {
+        public string Id { get; set; }
+        public string Url { get; set; }
+        public Uri Uri { get; set; }
+        public int Index { get; set; }
     }
 
     public class GalleryData

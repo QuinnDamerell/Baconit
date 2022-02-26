@@ -368,11 +368,20 @@ namespace Baconit.Panels.FlipView
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
             var context = GetContext();
-            if (context != null)
+            if (context == null) return;
+            if (context.Post.IsGallery)
+            {
+                foreach (var image in context.Post.MediaImages)
+                {
+                    App.BaconMan.ImageMan.SaveImageLocally(image.Url);
+                }
+            }
+            else
             {
                 App.BaconMan.ImageMan.SaveImageLocally(context.Post.Url);
-                TelemetryManager.ReportEvent(this, "CopyLinkTapped");
             }
+
+            TelemetryManager.ReportEvent(this, "CopyLinkTapped");
         }
 
         // I threw up a little while I wrote this.

@@ -569,7 +569,9 @@ namespace BaconBackend.Collectors
                 post.TitleMaxLines = _baconMan.UiSettingsMan.SubredditListShowFullTitles ? 99 : 2;
 
                 // Set if we should show the save image or not
-                post.ShowSaveImageMenu = string.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) ? Windows.UI.Xaml.Visibility.Collapsed : Windows.UI.Xaml.Visibility.Visible;
+                post.ShowSaveImageMenu = string.IsNullOrWhiteSpace(ImageManager.GetImageUrl(post.Url)) || !post.IsGallery
+                    ? Windows.UI.Xaml.Visibility.Collapsed 
+                    : Windows.UI.Xaml.Visibility.Visible;
 
                 // Set if this is owned by the current user
                 if(_baconMan.UserMan.IsUserSignedIn && _baconMan.UserMan.CurrentUser != null)

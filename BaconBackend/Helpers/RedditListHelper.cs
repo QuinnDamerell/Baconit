@@ -205,6 +205,7 @@ namespace BaconBackend.Helpers
                     {
                         // Parse the Json as an object
                         var serializer = new JsonSerializer();
+                        //var val = await jsonReader.ReadAsStringAsync();
                         root = await Task.Run(() => serializer.Deserialize<RootElement<T>>(jsonReader));
                     }
                 }

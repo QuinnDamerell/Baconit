@@ -1,5 +1,6 @@
 ﻿using BaconBackend.DataObjects;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -23,7 +24,8 @@ namespace Baconit.ContentPanels
         public bool IsVideo = false;
         public bool IsRedditVideo = false;
         public Uri VideoUrl;
-        public bool IsImageGallery = false;
+        public bool IsImageGallery => RedditImageGalleryUriList.Count > 0;
+        public ICollection<Uri> RedditImageGalleryUriList = new List<Uri>();
 
         // Make a private constructor so they can be only created by
         // this class internally.
@@ -42,13 +44,17 @@ namespace Baconit.ContentPanels
                 IsSelf = post.IsSelf,
                 IsVideo = post.IsVideo,
                 IsRedditVideo = post.SecureMedia?.RedditVideo?.Url != null,
-                IsImageGallery = post.GalleryData?.Items?.Count() > 0
+                RedditImageGalleryUriList = post.MediaImages.Select(p => p.Uri).ToList()
             };
 
-            if (source.IsRedditVideo)
+            if (source.Url.Contains("imgur.com")) // force the old site for now
             {
-                source.VideoUrl = new Uri(post.SecureMedia.RedditVideo.Url);
+                source.Url = string.Concat(source.Url, "?nc=1");
             }
+            if (!source.IsRedditVideo) return source;
+            if (post.SecureMedia?.RedditVideo == null) return source;
+            if (post.SecureMedia.RedditVideo.Url != null)
+                source.VideoUrl = new Uri(post.SecureMedia.RedditVideo.Url);
 
             return source;
         }
