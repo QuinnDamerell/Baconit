@@ -22,10 +22,6 @@
     </UserControl.Resources>
     <Grid x:Name="ui_contentRoot"
           Background="#191919">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
         <FlyoutBase.AttachedFlyout>
             <MenuFlyout x:Name="flyoutMenu">
@@ -66,7 +62,11 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <FlipView x:Name="ImageFlipView" Grid.Row="1" ItemsSource="{Binding Images}" Background="#191919">
+        <FlipView 
+            x:Name="ImageFlipView" 
+            ItemsSource="{Binding Images}" 
+            Background="#191919" 
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
 
             <!-- Use a vertical stack panel for vertical flipping. -->
             <FlipView.ItemsPanel>
@@ -83,22 +83,23 @@
                             Stretch="Uniform" 
                             RightTapped="ContentRoot_RightTapped" 
                             Holding="ContentRoot_Holding" />
-                        <Border 
-                            VerticalAlignment="Bottom" 
-                            HorizontalAlignment="Right" 
-                            Background="Gray" 
-                            CornerRadius="8" 
-                            Padding="7" 
-                            Margin="0,0,10,10"
-                            Visibility="{Binding DataContext.IsGallery, ElementName=ImageFlipView, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock>
-                                <Run Text="{Binding Index}"/> / <Run Text="{Binding DataContext.ImageCount, ElementName=ImageFlipView}"/>
-                            </TextBlock>
-                        </Border>
                     </Grid>
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>
+
+        <Border 
+            VerticalAlignment="Bottom" 
+            HorizontalAlignment="Right" 
+            Background="Gray" 
+            CornerRadius="8" 
+            Padding="7" 
+            Margin="0,0,10,10"
+            Visibility="{Binding DataContext.IsGallery, ElementName=ui_contentRoot, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock>
+                <Run Text="{Binding DataContext.SelectedItem.Index, ElementName=ui_contentRoot}"/> / <Run Text="{Binding DataContext.ImageCount, ElementName=ui_contentRoot}"/>
+            </TextBlock>
+        </Border>
 
         <!--<ScrollViewer x:Name="ui_scrollViewer"
                       HorizontalScrollBarVisibility="Auto"
