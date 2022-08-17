@@ -1,11 +1,14 @@
 ﻿using BaconBackend.Collectors;
 using BaconBackend.DataObjects;
+using Baconit.ContentPanels;
+using Baconit.ContentPanels.Panels;
 using Baconit.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace Baconit.Panels.FlipView
 {
@@ -68,5 +71,17 @@ namespace Baconit.Panels.FlipView
             }
         }
         bool m_loadComments = false;
+
+        /// <summary>
+        /// Check if post would be rendered as Markdown
+        /// </summary>
+        public Visibility RenderedAsMarkdown
+        {
+            get
+            {
+                ContentPanelSource source = ContentPanelSource.CreateFromPost(Context.Post);
+                return ContentPanelBase.getControlType(source, this) == typeof(MarkdownContentPanel) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
     }
 }

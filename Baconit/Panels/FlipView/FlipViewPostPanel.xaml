@@ -206,6 +206,15 @@
                                     <MenuFlyoutItem Click="EditPost_Click"
                                                     Text="Edit post"
                                                     Visibility="{x:Bind Context.Post.EditPostVisibility}" />
+                                    <MenuFlyoutItem Click="ZoomIn_Click"
+                                                    Text="Zoom in"
+                                                    Visibility="{x:Bind RenderedAsMarkdown}" />
+                                    <MenuFlyoutItem Click="ZoomOut_Click"
+                                                    Text="Zoom out"
+                                                    Visibility="{x:Bind RenderedAsMarkdown}" />
+                                    <MenuFlyoutItem Click="ZoomReset_Click"
+                                                    Text="Return to default zoom level"
+                                                    Visibility="{x:Bind RenderedAsMarkdown}" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
                         </helperControls:CircleIconButton>
