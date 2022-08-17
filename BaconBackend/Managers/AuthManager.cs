@@ -176,7 +176,7 @@ namespace BaconBackend.Managers
             string nonce = GetNonce();
 
             // Create the nav string
-            string tokenRequestString = "https://reddit.com/api/v1/authorize.compact?"
+            string tokenRequestString = "https://ssl.reddit.com/api/v1/authorize.compact?"
                 + "client_id=" + BACONIT_APP_ID
                 + "&response_type=code"
                 + "&state=" + nonce
@@ -185,7 +185,8 @@ namespace BaconBackend.Managers
                 + "&scope=modcontributors,modconfig,subscribe,wikiread,wikiedit,vote,mysubreddits,submit,"
                 + "modlog,modposts,modflair,save,modothers,read,privatemessages,report,identity,livemanage,"
                 + "account,modtraffic,edit,modwiki,modself,history,flair";
-
+            // TODO: New login page doesn't work with WebAuthenticationBroker...
+            // var loginUrlString = $"https://reddit.com/login/?dest={Uri.EscapeDataString(tokenRequestString)}";
             try
             {
                 Uri start = new Uri(tokenRequestString, UriKind.Absolute);
@@ -199,6 +200,10 @@ namespace BaconBackend.Managers
                     int endOfState = result.ResponseData.IndexOf("&", startOfState);
                     int startOfCode = result.ResponseData.IndexOf("code=") + 5;
                     int endOfCode = result.ResponseData.IndexOf("&", startOfCode);
+                    if (endOfCode == -1)
+                    {
+                        endOfCode = result.ResponseData.IndexOf("#", startOfCode);
+                    }
 
                     // Make sure we found a code (result is -1 + 5 = 4)
                     if(startOfCode == 4)
